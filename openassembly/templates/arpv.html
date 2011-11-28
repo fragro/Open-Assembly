@@ -1,0 +1,49 @@
+
+{% block extra-head %}
+
+    <link rel="stylesheet" type="text/css" href="/static/arpv.css">
+
+{% endblock %}
+
+{% block content%}
+
+<div class="landing">
+{% comment %}
+	<div class="button2" style="float:right;"><a href="javascript:;" onmousedown="toggleSlide('more_info');">How does Anonymous Random Photo Verification Work?</a>
+    </div>
+
+	<div class='reply_comment' id='more_info' style='display:none; overflow:hidden; height:1100px;width:100%;'>
+
+	</div>
+{% endcomment %}
+
+
+	<h2>One Human, One Vote</h2>
+
+	<p>
+		OpenAssembly is designed to be secured against users trying to manipulate or game the system. How does this work?
+		<ul>
+		<li>
+		You upload photos of yourself with one other activist. Make sure both faces are visible and recognizable.
+		<img style="float:right;" src="/static/img/promo/photo_op_small.png">
+		</li>
+		<li>
+		As more photos of you accumulate, other verified users anonymously and randomly determine if there is a single 
+		person in each pair of photos of you.
+		<li>
+		The trust network grows in real life as well as online, and OpenAssembly makes decisions based on verified users!
+		</li>
+		</ul>
+	</p>
+
+
+<span id="oa_arpv_form">
+
+{% include 'oa_arpv_form.html' %}
+
+</span>
+
+</div>
+
+{% endblock content %}
+

@@ -1,0 +1,30 @@
+{% extends 'index.html' %}
+{% load filetransfers %}
+{% load profiletags %}
+{% block title %}Upload file to Blobstore{% endblock %}
+
+
+{% block browser_bar %}
+
+{% endblock %}
+
+ {% block content %}
+<div class="stage">
+
+<div class="issuemask">
+    
+   <div class="issuebound">
+
+        <div class="issueback">
+        Upload ARPV
+        <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% render_upload_data upload_data %}
+          <table>{{ form.as_p }}</table>
+          <input type="submit" value="Upload" />
+        </form>
+
+ </div>
+</div>
+</div></div>
+{% endblock %}

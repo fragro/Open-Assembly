@@ -1,0 +1,30 @@
+{% load verificationtags %}
+{% block title %}{% endblock %}
+
+{% block extra-head %}
+
+    <link rel="stylesheet" type="text/css" href="/static/arpv.css">
+
+{% endblock %}
+
+{% block content%}
+
+<div class="email_reset">
+
+{% if user.is_authenticated and user.is_staff %}
+
+<div id="oa_arpv_task_form">
+
+	{% include 'oa_arpv_task_form.html' %}
+
+</div>
+
+{% else %}
+
+<h2>You are not yet authorized to commit this task</h2>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

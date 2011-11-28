@@ -1,0 +1,15 @@
+        {% pp_message_form POST=request.POST receiver=request.object sender=user %}
+                {% if pp_messages.reply %} 
+                Reply To: {{pp_messages.reply}}
+                <br>
+                {% endif %}
+                <br>To: {{pp_messages.user}}
+                {{ pp_messages.form.errors }}
+                <form method="post" action="">
+                    <br>{{pp_messages.form.description}}<br>
+                        {{pp_messages.form.form_id}}
+                        {% csrf_token %}
+               <input type="submit" value="Send Message">
+                </form>
+
+        {% endpp_message_form %}

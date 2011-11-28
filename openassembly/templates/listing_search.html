@@ -1,0 +1,65 @@
+{% load pp_url %}
+{% load topictags %}
+{% load consensustags %}
+{% load argumenttags %}
+{% load commenttags %}
+{% load tag_helpers %}
+{% load markup %}
+
+<div class="listing">
+    <div class="interest">
+        <span class="category">{{pp_consensus.consensus.content_object.get_verbose_name|title }}</span>
+        {% if request.dimension = 'c' %}
+            <span class="points"> {{ pp_consensus.consensus.controversy|floatformat:0 }}</span>
+            <span class="word">controversy</span>
+        {% else %}
+            <span class="points"> {{ pp_consensus.consensus.interest|floatformat:0 }}</span>
+            <span class="word">interest</span>
+            <span id="votes{{pp_consensus.consensus.pk}}" class="votes">
+                
+            </span>
+        {% endif %}
+    </div>
+    <div class="summary">
+
+        {% pp_get_sources object=pp_consensus.consensus.content_object type='img' %}
+            {% if pp_source.cur_img %}
+                <img src="{{pp_source.cur_img.url}}=s70-c" alt="{{pp_consensus.consensus.content_object.summary}}">
+            {% endif %}
+        {% endpp_get_sources %}
+
+        <a href="{% pp_url object=pp_consensus.consensus.content_object template='detail.html' %}"><b>{{pp_consensus.consensus.content_object.summary }}</b></a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=pp_consensus.consensus.content_object.user %}">{{ pp_consensus.consensus.content_object.user.username }}</a> - {{pp_consensus.consensus.content_object.created_dt|date:"(d/m/Y"}} at {{pp_consensus.consensus.content_object.created_dt|date:"h:sA)"}}</span><br>
+            
+            {% pp_if_forum_blob object=pp_consensus.consensus.content_object.parent %}
+                {% if pp_blob.is_blob %}
+                    <span class="re"><a href="{% pp_url template='detail.html' object=pp_consensus.consensus.content_object.parent %}">{{pp_consensus.consensus.content_object.parent.summary}}</a></span>
+                {% else %}<span class="re"><a href="{% pp_url template='issues.html' start=0 end=20 object=pp_consensus.consensus.content_object.parent dimension='hn' %}">{{pp_consensus.consensus.content_object.parent.summary}}</a></span>
+                {% endif %}
+            {% endpp_if_forum_blob %}
+              <div>
+                <p>
+                {{pp_consensus.consensus.content_object.description|slice:":95" }}...
+                </p>
+              </div>
+        <div class="info">
+        {% if pp_consensus.consensus.content_object.child != None %}
+        {{pp_consensus.consensus.content_object.children}} {{pp_consensus.consensus.content_object.child|title}}{{pp_consensus.consensus.content_object.children|pluralize}} and 
+        {% endif %}
+        {% pp_comment_count object=pp_consensus.consensus.content_object.id %}
+            {{ pp_comment.count }} Comment{{ pp_comment.count|pluralize}} and 
+        {% endpp_comment_count %}
+        {% pp_get_argument_count object=pp_consensus.consensus.content_object %}
+            {{pp_argumentation.count}} Argument{{pp_argumentation.count|pluralize}}
+        {% endpp_get_argument_count %}
+        </div>
+        <ul class="tags">
+        {% pp_get_tags_for_object object=pp_consensus.consensus %}
+          <li><b>Tags:</b></li>
+            {% for tag in pp_tag.tags %}
+                <li><a href="{% pp_url template='issues.html' object=tag start=0 end=20 dimension='hn' %}">{{tag.name}}</a></li>
+            {% endfor %}
+       {% endpp_get_tags_for_object %}
+       </ul>
+    </div>
+</div>
+

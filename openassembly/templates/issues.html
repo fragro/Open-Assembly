@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+{% load pp_url %}
+{% load topictags %}
+{% load blobtags %}
+{% load consensustags %}
+{% load argumenttags %}
+
+{% block extraheadtitle %}
+
+{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+
+<h1>{% if request.object %}{% if request.object.more_info %} <a href="/{{request.object.more_info}}.html">{{ request.object|title }}</a>{% else %}{{ request.object|title }}{% endif %}{% endif %}</h1> 
+
+<!-- Content -->
+
+            {% pp_get_blob_list dimension=request.dimension object=request.object start=request.start end=end %}
+
+                    {% for object in pp_blob.blob_list %}
+
+                        {% if object.content_object.summary != None %}
+                    
+                            {% include 'listing.html' %}
+
+                        {% else %}
+                        
+                        {% endif %}
+
+                        {% empty %}
+
+                            <h1>There doesn't seem to be anything here yet.</h1>
+
+                {% endfor %}
+
+        <!-- Pagination -->
+        <ul class="pagination">
+
+        {% if pp_blob.count > 20 %}
+            {% for s,e,n in request.rangelist %}
+               {% if not s >= pp_blob.count %}
+                <li><a href="{% pp_url template='issues.html' dimension=request.dimension object=request.object start=s end=e %}">{% if request.start == s %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </ul>
+        
+           {% endpp_get_blob_list %}
+    </div>
+    <!-- end #content -->
+    {% endblock %}

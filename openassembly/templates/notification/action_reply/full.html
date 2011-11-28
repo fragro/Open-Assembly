@@ -1,0 +1,23 @@
+{% load i18n %}
+
+{% blocktrans %}
+
+You have received the following notice from <a href="http://www.openassembly.org/">OpenAssembly</a>:
+
+<br><br>
+
+{{notice_message}}
+
+<br>
+
+<br>
+
+<a href="{{path}}">Check it out.</a>
+
+<br><br>
+
+To see other notices or change how you receive notifications, please go to <a href="{{ notices_url }}">your user profile</a>.
+
+<br>
+
+{% endblocktrans %}

@@ -1,0 +1,383 @@
+
+{% load pp_url %}
+{% load argumenttags %}
+{% load messagetags %}
+{% load profiletags %}
+{% load topictags %}
+{% load reputationtags %}
+{% load notificationtags %}
+{% load markup %}
+{% load badgetags %}
+{% load consensustags %}
+{% load subscriptiontags %}
+{% load sourcetags %}
+{% load filetransfers %}
+{% load tag_helpers %}
+{% load commenttags %}
+{% load blobtags %}
+
+{% block extra-head %}
+
+
+
+  <script type="text/javascript">
+
+    $(document).ready(function(){
+
+
+    {% pp_consensus_get object=object.id %}
+    {% if pp_consensus.consensus %}
+          {% pp_rating_js object=object %}
+
+           {{pp_consensus.rating_js|safe}} 
+
+          {% endpp_rating_js %}
+
+          {% pp_spectrum_js object=object %}
+
+           {{pp_consensus.spectrum_js|safe}}
+
+          {% endpp_spectrum_js %}
+
+    {% endif %}
+
+     });
+    
+{% endpp_consensus_get %}
+
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+                   {% pp_consensus_get object=object.pk user=user %}
+                       <div class="listing">
+                            <div class="interest">
+                                <span class="category">{{pp_consensus.consensus.content_object.get_verbose_name|title}}</span>
+                                <span class="points">
+                                    {% if pp_consensus.interest == 0 %}
+                                        -
+                                    {% else %}
+                                        {{pp_consensus.interest|floatformat:0 }}
+                                    {% endif %}
+                                </span>
+                                <span class="word">interest</span>
+                            </div>
+                            <div class="overview">
+                                <a href="{% pp_url object=object template='detail.html' %}"><b>{{object.summary}}</b></a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> - {{object.created_dt|date:"m/d/Y h:sA"}}</span>          
+
+
+
+<br>
+                                {% pp_if_forum_blob object=object.parent %}
+                                    {% if pp_blob.is_blob %}
+                                        <span class="re"><a href="{% pp_url template='detail.html' object=object.parent %}">{{object.parent.summary}}</a></span>
+                                    {% else %}<span class="re"><a href="{% pp_url template='issues.html' object=object.parent start=0 end=20 dimension='hn' %}">{{object.parent.summary}}</a></span>
+                                    {% endif %}
+                                {% endpp_if_forum_blob %}
+                                    <p>
+                                    <!-- For the film genome project -->
+                                    {% if object.video %}
+
+                                    {% pp_get_iframe_video object=object %}
+
+                                    <div id="video" class="viewer" style="width: 600px; height: 380px;"><iframe frameborder="0" id="videoWindow" scrolling="no" style="width: 600px; height: 380px; z-index: 5;" src="{{object.video.filename}}_iframe.html"></iframe></div>
+
+                                    <script src="/static/html5_video_voting/javascripts/embed.js"></script>
+                                    <script>
+
+                                        $('#video').poptastic({
+                                            'video_id' : {{object.video.video_id}},
+                                            'autoplay' : false,
+                                            'width'    : 600,
+                                            'height'   : 340,
+                                        });
+                                        $('#links a').click(function (e) {
+                                            e.preventDefault;
+                                            $('.viewer').hide();
+                                            var selected = $(this).attr('class');
+                                            $('#links a').removeClass('current');
+                                            $('#' + selected).show();
+                                            $(this).addClass('current');
+                                        });
+                                    </script>
+
+                                    <h2>Press spacebar to vote on your favorite scenes</h2>
+
+                                    {% endpp_get_iframe_video %}
+
+                                    {% endif %}
+                                    </p>
+                                    <p>
+                                        {{object.description|markdown }}
+                                    </p>
+
+                                    <div>
+                                        {% if object.location %}
+                                        <ul class="tags">
+                                            <li class="title"><b>Location:</b></li>
+                                            <li>{{object.location}}</li>
+                                        </ul><br>
+                                        {% endif %}
+
+                                        {% if object.target %}
+                                        <ul class="tags">
+                                            <li class="title"><b>Boycott Target:</b></li>
+                                            <li>{{object.target}}</li>
+                                        </ul><br>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <span id="urlsource">
+                                    {% include 'urlsource.html' %}
+                                    </span>
+                                </ul>         
+                        
+                 {% if object.pad %}
+                        <h2>Wiki</h2>
+                        <div id="pad"></div>
+                        {% if user.is_authenticated %}
+                            <script>
+                                    $(document).ready(function(){
+
+                                $('#pad').pad({'padId':'{{object.pk}}', 'host':'http://107.20.139.148:9001','showChat':'true','baseUrl':'/p/', 'showControls':'true', 'showLineNumbers':'false','userName' : '{{user.username}}'});
+
+                            });
+                            </script>
+                        {% else %}
+                        <div id="pad"></div>
+                        {% pp_get_pad object=object %}
+                            {{pp_source.text|safe}}
+                        {% endpp_get_pad %}
+                        {% endif %}
+                 {% endif %}                            
+                            
+                 <!--Flags are offline for the moment -->
+                 {% comment %}
+                    <ul class="sources">
+                        <li class="title">Flags:</li>
+                        {% pp_get_flags object=object user=user %}
+                            {% for flag, upimg, downimg in pp_flag.flags %}
+                        <li><div style="width:45%;">{{flag.votes}}-{{flag.flag_type}}<a><img src='/static/voteimgs/vote_down_{{downimg}}.gif'></a><a><img src='/static/voteimgs/vote_up_{{upimg}}.gif'></a></div></li>
+                            {% endfor %}
+
+                        {% endpp_get_flags %}
+                    </ul>   
+                 {% endcomment %}
+                            <table cellspacing="0" class="rating">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <b>Vote Your<br>Agreement: <span id="stars-cap-spec"></span></div></b><br>
+
+                                            {% pp_spectrum_form object=object user=user %}
+
+                                            <form method="post" action="">
+
+                                                <div id="stars-wrapper-spec{{object.id}}">
+
+                                                {{pp_consensus.form.spectrum}}
+                                                {{pp_consensus.form.form_id}}
+                                                </div>
+                                                {{csrf_string|safe}}
+
+                                            {# input type="submit" class='button green' value="Rating"> #}
+
+                                            </form>
+                                            {% endpp_spectrum_form %}
+                                            
+                                        </td>
+                                        <td>
+                                            <b>Vote How<br>Informative: <span id="stars-cap-rate"></span></b><br>
+                                            {% pp_rating_form object=object user=user %}
+
+                                            <form method="post" action="">
+
+                                                <div id="stars-wrapper-rate{{object.id}}">
+                                                
+                                                {{ pp_consensus.form.rating}}
+                                                {{pp_consensus.form.form_id}}
+                                                </div>
+                                                
+                                                {{csrf_string|safe}}
+
+                                            {# input type="submit" class='button green' value="Rating"> #}
+
+                                            </form>
+                                            {% endpp_rating_form %}
+                                        </td>
+                                        <td>
+                                         {% comment %}
+                                            <b><abbr title="Add other Flags to this submission to call out hyperbole, logical fallacies, or other erroneous issues.">Flag</abbr>:</b><br>
+                                            {% if user.is_authenticated and user.is_active %}
+
+                                            {% pp_flag_form object=object POST=request.POST user=user PATH_INFO=request.META.PATH_INFO QUERY_STRING=request.META.QUERY_STRING %}
+
+                                            <form method="post" action="">
+
+                                                {{ pp_flag.form.flag}}
+                                                {{pp_flag.form.form_id}}
+                                                {{csrf_string|safe}}
+
+                                            <input type="submit" class='button grey' value="Flag"> 
+                                            </form>
+                                            {% endpp_flag_form %}
+
+                                            {% endif %}
+                                            {% endcomment %}
+                                        </td>
+                                        <td>
+                                        {% ifequal object.user user %}
+                                        <b>Author Controls:</b><br>
+
+                                            <a class="btn_gen" href="{% pp_url template='submit.html' object=object dimension='edit' %}">edit</a>
+                                            {% endifequal %}
+                                            {% if object.user == user or user.is_staff %}
+
+                                            <span style="padding:5px;border:dotted;"><span style="cursor: pointer; cursor: hand" class="red btn_gen" onClick="checkDelete({{pp_consensus.consensus.content_type.pk}}, {{object.pk}});">Delete</span><input id="nukecheck" type="checkbox" name="vehicle" value="Deleted" />Sure?</span>
+                                            {% endif %}
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            </div>
+                            {% if object.children > 0 %}
+                                <h2>{{object.child}}</h2>
+                                    <div class="children_details">
+                                    {% pp_get_blob_list object=object dimension="h" %}
+                                                {% for object in pp_blob.blob_list %}
+                                                    {% include 'argument.html' %}
+                                                {% endfor %}
+                                   {% endpp_get_blob_list %}
+                                   </div>
+                            {% endif %}
+
+
+                            <div class="forms">
+                               
+                                <div class="socialhooks">
+                                {% pp_get_url object=object safe='True' dimension=dimension url=request.path|cut:"/" %}
+                                    <!-- AddThis Button BEGIN -->
+                                    <div class="addthis_toolbox addthis_default_style ">
+                                        <a class="addthis_button_preferred_1"></a>
+                                        <a class="addthis_button_preferred_2"></a>
+                                        <a class="addthis_button_preferred_3"></a>
+                                        <a class="addthis_button_preferred_4"></a>
+                                        <a class="addthis_button_compact"></a>
+                                    </div>
+
+                                    <script>
+                                        $(document).ready(function(){
+                                            var script = 'http://s7.addthis.com/js/250/addthis_widget.js#domready=1';
+                                            if ( window.addthis ) {
+                                                window.addthis = null;
+                                            }
+                                            $.getScript( script );
+                                    });
+                                    </script>
+                                    <!-- AddThis Button END -->
+                                {% endpp_get_url %}
+                                </div>
+                                <div>
+
+                                    <h2 class="acc_trigger"><a href="#">Comment</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                           <div id="pp_comment_form" class="reply_comment"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <h2 class="acc_trigger"><a href="#">Write an Argument Supporting {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_argument_form_yea" class="reply_comment>"></div>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="acc_trigger"><a href="#">Write an Argument Against {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_argument_form_nay" class="reply_comment"></div>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="acc_trigger"><a href="#">Add Sources/Citations or Tags</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_tagsource_form" class="reply_comment"></div>
+                                            <div id="pp_tag_form">
+                                            </div>
+                                            <div id="pp_urlsource_form">
+                                            </div>
+                                        </div>
+                                    </div>
+                                 {% if object.child %}
+                                    <h2 class="acc_trigger"><a href="#">Add {{ object.child|title }}</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_blob_child" class="reply_comment">
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endpp_consensus_get %}
+                        <!-- Social Hooks -->
+
+                        
+                        <!-- Comments AJAX For Accordion-->
+                          <script>
+                          $(document).ready(function() {
+                            //Set default open/close settings
+                            $('.acc_container').hide(); //Hide/close all containers
+                            $('.acc_trigger:first').addClass('active').next().show(); //Add "active" class to first trigger, then show/open the immediate next container
+                            //On Click
+                            $('.acc_trigger').click(function(){
+                                if( $(this).next().is(':hidden') ) { //If immediate next container is closed...
+                                    $('.acc_trigger').removeClass('active').next().slideUp(); //Remove all "active" state and slide up the immediate next container
+                                    $(this).toggleClass('active').next().slideDown(); //Add "active" state to clicked trigger and slide down the immediate next container
+                                }
+                                return false; //Prevent the browser jump to the link anchor
+                            });
+                          });
+                          </script>
+
+<h2 class="content_children_header">
+
+    {% pp_comment_count object=object.id %}
+        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>  | 
+
+    {% endpp_comment_count %}
+
+    {% pp_get_argument_count object=object arg_type='yea' %}
+
+        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
+
+    {% endpp_get_argument_count %}
+
+    {% pp_get_argument_count object=object arg_type='nay' %}
+
+        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+
+    {% endpp_get_argument_count %}
+
+</h2>
+
+    <div id="content_children" class= "content_children">
+                                
+                               
+    </div>
+
+</div>
+<!-- end #content -->
+
+    <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4e743d0b5609a737"></script>
+{% endblock %}

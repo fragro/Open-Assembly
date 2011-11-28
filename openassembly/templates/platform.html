@@ -1,0 +1,276 @@
+ {% load pp_url %}
+ {% load platformtags %}
+ {% load tag_helpers %}
+ {% load topictags %}
+
+ <script>
+        $(document).ready(function(){
+            
+            $('#bookmark_system ul').sortable({
+                tolerance: 'pointer',
+                opacity: .5,
+                connectWith: '#bookmark_system ul',
+                receive: function(event, ui) {
+                    if ($(ui.sender).attr('id') == 'votes') {
+                        var ReceiverId = $(this).closest('#trash').attr('id');
+                        if (ReceiverId != 'trash'){
+                        $.post("/add_platform/", {ctype: $(ui.item).attr('class'), object_pk: $(ui.item).attr('id')},
+                                function(data) {
+                                    if(data.FAIL == true){
+                                       $(ui.item).fadeOut('slow', function() {
+                                        $(ui.sender).attr('id').append(ui.item)
+                                        });   
+                                    }
+                                    if(data.FAIL == false){
+                                  
+                                    }
+                                }, "json");                                
+                        }
+                        if (ReceiverId == 'trash'){
+                            $(ui.item).fadeOut('slow', function() {
+                            // Animation complete.
+                            });                        
+                        }
+                    }
+                    if ($(ui.sender).attr('id') == 'platform') {
+                        remove_platform($(ui.item).attr('class'), $(ui.item).attr('id'));
+                        var ReceiverId = $(this).closest('#trash').attr('id');
+                        if (ReceiverId == 'trash'){
+                            $(ui.item).fadeOut('slow', function() {
+                            // Animation complete.
+                            });
+                        }
+                    }
+                }
+            });         
+        });
+</script>
+
+<link rel="stylesheet" type="text/css" href="/static/jquery.countdown.css">
+<script type="text/javascript" src="/static/jquery.countdown.min.js"></script>
+
+{% block content %}
+
+        {% include 'facilitator.html' %}
+
+{% oa_get_platform_dimensions object=object %}
+    <div class="button2" style="float:right;"><a href="javascript:;" onmousedown="toggleSlide('more_info');">How does the "platform election" work?</a>
+    </div>
+
+    <div class='reply_comment' id='more_info' style='display:none; overflow:hidden; height:1100px;width:100%;'>
+
+        <div class="faq" style="margin-top:10px;">
+        <h2>Platforms Focus Decentralized Discussion</h2>
+        <p>
+
+            One of the key problems with ideation websites is that a surge of activity is met with little to no
+            feedback. The community prefers so many ideas it is impossible to focus energy on accomplishing one or two of them. Ideation and brainstorming platforms all tend to break down when they are being used
+            by very large decentralized groups with a variety of preferences, because there is no way to reach consensus or compromise.
+        </p>
+        <p> <b> Platform elections </b> solve this problem by focusing the energy of the community on a small set of urgent or important ideas. This decreases ideas down to a workable set, where your group can focus decentralized energy into a cohesive unified action.
+        </p>
+        <img  style="margin-left:14%;margin-top:2%;margin-bottom:2%;" src="/static/img/platform_generation.png">
+           <p> Over time ideas will again explode in number. However facilitators, experience members, and groups working on the ground can actively broadcast, distribute, enact, and/or express the platform as much as possible to help focus the energy. New platform elections can be held when needed.
+        </p>
+        <p>
+            Here's the basic process. You go vote on the type of objects that are being considered in the platform, for instance Policy items. After you have voted on those items, they will appear on the group's platform page for you to drag into your candidate platform. Once you have a 100% complete candidate platform, you can simply wait until the candidate generation process has occured. You will be prompted to vote on those candidates by ranking them, and the platform that unifies will emerge.
+        </p>
+
+        <img style="margin-left:8%;margin-top:2%;margin-bottom:2%;" src="/static/img/platform.png">
+
+        <p>
+            With the platform election users could create a manifesto for their group in a democratic manner. Users could submit flyers or memes to create a unifying theme for a movement, and focus the identify of the community. The platforms could outline actions that best further the cause, or compile evidence of criminal activity. It's up to you to determine what the platform means to your group.
+        </p>
+
+        <div class="button2" style="float:left;"><a href="javascript:;" onmousedown="toggleSlide('more_info');">I'm ready!</a>
+    </div>
+        </div>
+
+    </div>
+
+
+<div>
+<!--begin platforms -->
+    <h1>{{object|title}} </h1>
+    {% for plat in oa_platform.platform_dimensions %}
+        <h2>{{plat|title}} Platform with {{plat.num_planks}} Planks</h2>
+        <div style="float:left;width:100%;" id="platform">
+        <div style="width:100%;">
+        <h3> Deadline for Your Candidate Platform Submission </h3>
+            <div style="width:50%;margin-bottom:50px;">
+                <p>
+                {{plat.deadline_dt}}
+                </p>
+                {% pp_datetime_less_than time=plat.deadline_dt %}
+                    {% if pp_tag.past %}
+                    <div id="{{plat.pk}}SubmissionCountdown"></div> 
+                    <script type="text/javascript"> 
+                    $(function () {
+                        $('#{{plat.pk}}SubmissionCountdown').countdown({until: new Date({{plat.deadline_dt.date.year}}, {{plat.deadline_dt.date.month}}-1, {{plat.deadline_dt.date.day}}, {{plat.deadline_dt.time.hour}}, {{plat.deadline_dt.time.minute}}, {{plat.deadline_dt.time.second}})}); 
+                    });
+                    </script> 
+                    {% else %}
+                        Platform candidate submission in progress.
+                    {% endif %}
+                {% endpp_datetime_less_than %}
+
+            </div>
+        </div>
+        <div style="width:100%;">
+        <h3> Deadline for Candidate Platform Voting</h3>
+            <div style="width:50%;margin-bottom:50px;">
+                <p>
+                {{plat.vote_deadline_dt}}
+                </p>
+                <div id="{{plat.pk}}VoteCountdown"></div> 
+                {% pp_datetime_less_than time=plat.vote_deadline_dt %}
+                    {% if pp_tag.past %}
+                        <script type="text/javascript"> 
+                        $(function () {
+                            $('#{{plat.pk}}VoteCountdown').countdown({until: new Date({{plat.vote_deadline_dt.year}}, {{plat.vote_deadline_dt.month}}-1, {{plat.vote_deadline_dt.day}}, {{plat.vote_deadline_dt.time.hour}}, {{plat.vote_deadline_dt.time.minute}}, {{plat.vote_deadline_dt.time.second}})}); 
+                        });
+                        </script> 
+                    {% else %}
+                        Platform candidate voting in progress.
+                    {% endif %}
+                {% endpp_datetime_less_than %}
+            </div>
+        </div>
+    {% oa_ingroup object=object user=user %}
+
+        {% if user.is_authenticated and pp_topic.in_group %}
+            {% oa_get_platform user=user platformdimension=plat%}
+
+            <h3>Your Ballot is <span id="ballot_complete{{plat.pk}}">{{oa_platform.completion}}%</span> Complete</h3>
+            <h4>Ordering doesn't matter</h4>
+    <script>
+            $(document).ready(function(){
+                
+                $('#bookmark_system{{plat.pk}} ul').sortable({
+                    tolerance: 'pointer',
+                    opacity: .5,
+                    connectWith: '#bookmark_system{{plat.pk}} ul',
+                    receive: function(event, ui) {
+                        if ($(ui.sender).attr('id') == 'votes{{plat.pk}}') {
+
+                            $.post("/add_platform/", {ctype: $(ui.item).attr('class'), object_pk: $(ui.item).attr('id')},
+                            function(data) {
+                                if(data.FAIL == true){
+                                   $(ui.item).fadeOut('slow', function() {
+                                        $(ui.sender).append(ui.item);
+                                        $(ui.item).fadeIn('slow');
+                                    });   
+                                }
+                                if(data.FAIL == false){
+                                    $('#ballot_complete{{plat.pk}}').html(data.complete_perc);
+                                }
+                            }, "json");                                
+                        }
+                        if ($(ui.sender).attr('id') == 'platform{{plat.pk}}') {
+                            $.post("/remove_platform/", {ctype: $(ui.item).attr('class'), object_pk: $(ui.item).attr('id')},
+                                    function(data) {
+                                        if(data.FAIL == true){
+
+                                        }
+                                        if(data.FAIL == false){
+                                            $('#ballot_complete{{plat.pk}}').html(data.complete_perc);
+                                        }
+                             }, "json"); 
+
+                        }
+                    }
+                });         
+            });
+    </script>
+            <ul class="recent_activity_holder">         
+                <li id="bookmark_system{{plat.pk}}" class="platform_system">
+                <b>Recently Voted {{plat|title}}</b>   
+
+                    {% pp_get_votes user=user object=object %}
+
+                        <ul id="votes{{plat.pk}}" class="recent_activity">
+                        {% for vote in pp_consensus.votes %}
+
+                            {% if vote.parent.content_type == plat.content_type %}
+
+                                {% pp_is_in_platform object_pk=vote.parent.object_pk platform=oa_platform.platform %}
+
+                                    {% if not oa_platform.is_in %}
+                                        
+                                        <li id="{{vote.parent.object_pk}}" class="{{plat.pk}}">
+                                            <a href="{{vote.parent.content_object.get_absolute_url}}">
+                                                <p>
+                                                    <span>{{vote.parent.content_object|slice:':30'}}</span><br>
+                                                    <small>{% pp_time_difference_str then=vote.submit_date %}{{pp_tag.dt}}{% endpp_time_difference_str %}</small>
+                                                </p>
+                                            </a>
+                                        </li>
+
+                                    {% endif %}
+
+                                {% endpp_is_in_platform %}
+
+                            {% endif %}
+
+                        {% endfor %}
+                        </ul>
+
+                    {% endpp_get_votes %}
+            </li>
+            <li id="bookmark_system{{plat.pk}}" class="platform_system">
+            <b>My {{plat|title}} Platform</b> 
+            <ul id="platform{{plat.pk}}"  class="recent_activity">
+
+                    {% for plank in oa_platform.planks %}
+
+                        <li id="{{plank.pk}}" class="{{plat.pk}}">
+                            <a href="{{plank.get_absolute_url}}">
+                                <p>
+                                    <span>{{plank.summary}}</span><br>
+                                </p>
+                            </a>
+                        </li>
+
+                    {#<li id="{{plank}}"><a href="#">{{plank}}</a></li>#}
+
+                    {% endfor %}
+
+                {% endoa_get_platform %}
+
+                </ul>
+            </li>
+        </div>
+
+           {% else %}
+
+                    {% if not pp_topic.in_group and user.is_authenticated%}
+
+                        <h2> You must join this group to submit candidate platforms. </h2>
+                    
+                    {% else %}
+
+                        <h2> Log in and join {{object|title}} to build your candidate platform. </h2>
+
+                    {% endif %}
+
+            {% endif %}
+
+
+
+        {% endoa_ingroup %}
+
+
+
+
+    {% empty %}
+
+    <h2> There are no platform elections initiated for this group. </h2>
+    </ul>  
+    </div>
+    {% endfor %}
+
+{% endoa_get_platform_dimensions %}
+
+
+
+{% endblock %}

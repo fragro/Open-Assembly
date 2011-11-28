@@ -1,0 +1,31 @@
+<div class="listing">
+            <div class="interest">
+                <span class="category">Group</span>
+                <span class="points"> {{ pp_topic.object.children }}</span>
+                <span class="word">ideas</span>
+            </div>
+            <div class="summary"> <b><a href="{{pp_topic.object.get_absolute_url}}">{{ pp_topic.object.summary|title }}</a> </b> {% if pp_topic.object.more_info %} - <a href="/{{pp_topic.object.more_info}}.html">more info</a>{% endif %} <span id="addgroup{{pp_topic.object.pk}}"></span>
+
+                <div>
+                <p>
+                    <span class="re">{{pp_topic.object.description|safe}}</span>
+                </p>
+                <p>
+                    {% pp_get_topic_list topic=pp_topic.object %}
+                        {% if pp_topic.count > 0 %}
+                        <b>SubGroups:</b>
+                        <ul>
+                                    {% if pp_topic.topic_list %}
+
+                                        {% for topic in pp_topic.topic_list %}
+                                            <li>{{topic.summary}}</li>
+                                        {% endfor %}
+                                        </ul>
+
+                                    {% endif %}
+                        {% endif %}
+                    {% endpp_get_topic_list %}               
+             </div>
+            </div>
+            <img>
+        </div>

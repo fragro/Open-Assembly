@@ -1,0 +1,13 @@
+ {% pp_mygroups user=user %}
+
+        {% for group in mygroups %}                                        
+        <li id="{{group.topic.summary}}" class="blue">
+            <a href="{{group.topic.get_absolute_url}}">
+                <p>
+                    <span>{{group.topic.summary}}</span>
+                </p>
+            </a>
+        </li>
+       {% endfor %}
+
+{% endpp_mygroups %}

@@ -1,0 +1,27 @@
+
+{% load platformtags %}
+{% load pp_url %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+    <h2>Create a Poll</h2>
+        {% if object %}
+        <h3>For {{object.summary|title}}</h3>
+        {% endif %}
+    <p>
+    Welcome Citizen Facilitator,
+
+    You have chosen to create a new poll.
+
+    </p>
+
+    {%  %}
+               
+    {% else %}
+
+    <h2>BAD USER, BAD! NO! BAD USER!</h2>
+
+    {% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'index.html' %}
+
+{% load pp_url %}
+{% load topictags %}
+{% load blobtags %}
+{% load consensustags %}
+{% load argumenttags %}
+
+{% block title %}
+{% if request.object %}Open Assembly | Beta | {{ request.object.username|title }}{% endif %}
+{% endblock title %}
+{% block extraheadtitle %}
+
+{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Content -->
+                    <div id="content">
+                        
+                        <div class="profile_overview">
+                            <img class="avatar" src="/static/img/avatar_180x160.jpg" alt="frago">
+                            <h2>frago</h2>
+                            <table class="user_data" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td class="left"><b>Member Since:</b></td>
+                                        <td>1/1/2011</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><b>Reputation:</b></td>
+                                        <td>+12</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><b>Followers:</b></td>
+                                        <td>12</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><b>Following:</b></td>
+                                        <td>20</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><b>Issues:</b></td>
+                                        <td><a href="#">82</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="graphs">
+                                <b>Daily Activity Monitor:</b>
+                                <ul class="graph_switcher">
+                                    <li class="prev"><a href="#"><img src="/static/img/arrow_left.jpg" alt="Previous"></a></li>
+                                    <li class="next"><a href="#"><img src="/static/img/arrow_right.jpg" alt="Next"></a></li>
+                                </ul>
+                                <div class="graph_viewer">
+                                    <img src="/static/img/bar_graph1.jpg" alt="Daily Activity Monitor">
+                                    <img src="/static/img/bar_graph2.jpg" alt="Daily Reputation Monitor" style="display:none;">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end .profile_overview -->
+                        
+                        <div class="profile_activity">
+                            
+                            <b>Activity over the past 120 days</b>
+                            
+                            <table class="user_activity" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td class="left">
+                                            <span class="icon">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue. Duis tristique fermentum pulvinar. Proin eget elit nec orci aliquam molestie eget sed mauris."</a></p>
+                                        </td>
+                                        <td>
+                                            <span class="icon">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue."</a></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <span class="icon orange_bg">Created</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet!"</a></p>
+                                        </td>
+                                        <td>
+                                            <span class="icon">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue."</a></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <span class="icon">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue. Proin eget elit nec orci aliquam molestie eget sed mauris."</a></p>
+                                        </td>
+                                        <td>
+                                            <span class="icon orange_bg">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue. Proin eget elit nec orci aliquam molestie eget sed mauris."</a></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <span class="icon">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue. Duis tristique fermentum pulvinar. Proin eget elit nec orci aliquam molestie eget sed mauris."</a></p>
+                                        </td>
+                                        <td>
+                                            <span class="icon">Comment</span>
+                                            <p><a href="#">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at felis augue."</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        <!-- end .profile_activity -->
+                        
+                        <div class="profile_follows">
+                            
+                            <table class="profile_followers" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td class="left" colspan="2"><b>Followers</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left" colspan="2"><small><a href="#">(view all)</a></small></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <table class="profile_following" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td class="left" colspan="2"><b>Following</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                        <td><a href="/profile/doc_naught1"><img src="/static/img/avatar_20x18.jpg" alt="doc_naught1"></a> <a href="/profile/doc_naught1"><span>doc_naught1</span></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left" colspan="2"><small><a href="#">(view all)</a></small></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        <!-- end .profile_follows -->
+                        
+                    </div>
+                    <!-- end #content -->
+
+{% endblock %}

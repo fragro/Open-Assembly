@@ -1,0 +1,40 @@
+
+.platform_system {
+    background:#e5e5e5;
+    border:1px solid #ddd;
+    border-radius:5px;
+    padding:10px;
+    display:inline-block;
+}
+.platform_system ul {
+    background:#333;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:5px;
+    width:200px;
+}
+.platform_system ul:last-child {
+    margin-bottom:0
+}
+.platform_system li {
+    list-style:none;
+}
+.platform_system li a {
+    color:#fff;
+    display:block;
+    padding:5px;
+    border-bottom:1px solid #777;
+    text-decoration:none;
+}
+.platform_system i {
+    float:right;
+}
+.platform_system i:hover {
+    cursor: pointer; cursor: hand
+}
+.platform_system li a:hover {
+    background:#444;
+}
+.platform_system li:last-child a {
+    border-bottom:0;
+}

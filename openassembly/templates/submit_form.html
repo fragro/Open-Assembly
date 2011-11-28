@@ -1,0 +1,59 @@
+{% load blobtags %}
+
+
+{% if dimension != 'edit' %}
+    {% pp_get_forumdimension dimension=dimension %}
+    <i>{{pp_blob.forumdimension.help_text}}
+    {% endpp_get_forumdimension %}
+{% endif %}
+
+    {% pp_blob_form POST=request.POST user=user dimension=dimension parent=object sub=pp_blob.sub %}
+
+        {% if pp_blob.form_complete %}
+
+        <h1>Content Successfully Submitted</h1>
+
+        <h3><a href="{{pp_blob.path}}">Check it out here</a></h3>
+
+        {% else %}
+
+        {{pp_blob.errors}}
+
+                {{ pp_blob.form.media }}
+                <form id='pp_blob_form' method="post" action="">
+                <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
+                    {% if pp_blob.parent_summary %}
+                        <h2>Parent: {{object }}<h2/>
+                    {% endif %}
+                
+                        {% for field in pp_blob.form %}
+                        {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
+
+                        {% else %}
+                        <p>
+                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>: {% if field.errors %}{% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}{% else %}<br>{% endif %}{{ field }}<br>
+                        </p>
+                        {% endif %}
+                        {% endfor %}
+
+
+                    {% csrf_token %}
+                    <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blob_form"></span>
+
+                </form> 
+
+                <script>
+
+                    $("#id_parent").chosen();
+                 
+                     $("form#pp_blob_form").submit(function(e){
+                        $("#submit_pp_blob_form").html("<b>Submitting...</b>")
+                        addObject(e);
+                        $('html').slideto({'highlight': false});                    
+                    });
+                </script>
+
+        {% endif %}
+
+
+    {% endpp_blob_form %}

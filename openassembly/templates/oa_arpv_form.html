@@ -1,0 +1,116 @@
+
+{% load pp_url %}
+{% load usertags %}
+{% load verificationtags %}
+{% load sourcetags %}
+
+{% if user.is_authenticated %}
+
+	{% if request.user.is_staff  %}
+		<span><a class="button" href="/index.html#arpv_task">ARPV Task</a>
+		{% oa_get_task_count %}
+			{{oa_ver.count}} Tasks
+		{% endoa_get_task_count %}
+		</span>
+	{% endif %}
+
+	<h2>Upload a Photo of 2 Users to Verify!</h2>
+
+	{% oa_get_arpvs user=user %}
+
+	{% oa_ver_form POST=request.POST user=user%}
+		<!--<div id = "login">-->
+	   <div class="error"> {{ oa_ver.errors }}</div>
+		
+		<form id="oa_arpv_form" method="post" action="">	  
+	        {{oa_ver.form.form_id}}
+
+            {{csrf_string|safe}}
+
+		    <p>First User:<br> 
+
+		    {% oa_get_users %}
+		    <select name="user1" data-placeholder="Choose a User..." id="id_user1" style="width:350px;" class="chzn-select">
+			    <option value="" ></option>
+			    {% for user in oa_ver.users %}
+     				<option value="{{user.pk}}" >{{user.username}}</option>
+				{% endfor %}
+			  </select>
+		    {% endoa_get_users %}
+
+			</p>
+
+			<p>Second User:<br>
+
+		    {% oa_get_users %}
+		    <select name="user2" data-placeholder="Choose a User..." id="id_user2" style="width:350px;" class="chzn-select">
+			    <option value="" ></option>
+			    {% for user in oa_ver.users %}
+     				<option value="{{user.pk}}" >{{user.username}}</option>
+				{% endfor %}
+			  </select>
+		    {% endoa_get_users %}
+			</p>
+
+		    <h2>Unused Photos</h2>
+		    <p>{% for value, text in oa_ver.form.photo.field.choices %}
+		    		{% pp_get_source type='img' object_pk=value %}
+			    		{% if pp_source.src.url != None %}	
+							{% if not value in oa_ver.photo_ids %}
+								<div class="arpv_img_small">
+									<img src="{{pp_source.src.url}}=s140-c">
+									<label for="id_photo_{{forloop.counter0}}">
+									<div style="margin-left:65px;">
+										<input id="id_photo_{{forloop.counter0}}" type="radio" name="photo" value="{{value}}">
+									</div>
+									</label>
+								</div>
+							{% endif %}
+						{% endif %}
+					{% endpp_get_source %}
+				{% endfor %}
+			</p>
+
+			<div style="width:100%;float:left;">
+	        <p><input type="submit" class ="small button green" value="Submit"/><span id="submit_oa_arpv_form"></span></p>
+	        </form>
+
+	        <p>
+		        {% pp_get_contenttype_id object=user %}
+		        <a id="avatar" href="{% url pirate_sources.views.upload_handler user.id pp_source.ctype_pk %}">Upload New Photos</a>
+
+		        {% endpp_get_contenttype_id %}
+		    </p>
+		    </div>
+		    <div style="width:100%;float:left;">
+		    <h2>Photos Used for Anonymous Random Photo Verification</h2>
+		    {% for arpv in oa_ver.arpvs %}
+				<div class="arpv_img_small">
+				<img src="{{arpv.photo.url}}=s140-c">
+				({{arpv.user1.username}}, {{arpv.user2.username}})
+				</div>
+
+			{% empty %}
+				<h3> No Photos Uploaded to be Verified Yet </h3>
+		    {% endfor %}
+		    </div>
+		</div>
+
+
+<script>
+
+  $("form#oa_arpv_form").submit(function(e){
+        $("#submit_oa_arpv_form").html("<b>Submitting...</b>")
+        addObject(e);
+    });
+
+</script>  
+
+
+	{% endoa_ver_form %}
+
+	{% endoa_get_arpvs %}
+
+{% endif %}
+
+<script type="text/javascript"> $(".chzn-select").chosen(); </script>

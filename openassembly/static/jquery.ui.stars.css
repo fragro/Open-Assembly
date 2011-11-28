@@ -1,0 +1,118 @@
+/*!
+ * jQuery UI Stars v3.0.1
+ * http://plugins.jquery.com/project/Star_Rating_widget
+ *
+ * Copyright (c) 2010 Marek "Orkan" Zajac (orkans@gmail.com)
+ * Dual licensed under the MIT and GPL licenses.
+ * http://docs.jquery.com/License
+ *
+ * $Rev: 164 $
+ * $Date:: 2010-05-01 #$
+ * $Build: 35 (2010-05-01)
+ *
+ */
+.ui-stars-star,
+.ui-stars-cancel,
+.ui-stars-star-fill,
+.ui-spectrum-circle {
+  float: left;
+  display: block;
+  overflow: hidden;
+  text-indent: -999em;
+  cursor: pointer;
+}
+.ui-stars-star a,
+.ui-stars-cancel a {
+  width: 16px;
+  height: 15px;
+  display: block;
+  background: url(/static/jquery.ui.stars_16.gif) no-repeat 0 0;
+}
+
+.ui-stars-star-fill a {
+  width: 16px;
+  height: 15px;
+  display: block;
+  background: url(/static/jquery.ui.stars_fill_16.gif) no-repeat 0 0;
+}
+
+.ui-spectrum-circle a{
+  width: 16px;
+  height: 15px;
+  display: block;
+  background: url(/static/jquery.ui.spectrum_16.gif) no-repeat 0 0;
+}
+
+.ui-stars-star-fill a {
+  background-position: 0 0px;
+}
+.ui-stars-star-fill0 a {
+  background-position: 0 0;
+}
+.ui-stars-star-fill1 a {
+  background-position: 0 -16px;
+}
+.ui-stars-star-fill2 a {
+  background-position: 0 -32px;
+}
+.ui-stars-star-fill3 a {
+  background-position: 0 -48px;
+}
+.ui-stars-star-fill4 a {
+  background-position: 0 -64px;
+}
+
+.ui-spectrum-circle a {
+  background-position: 0 -176px;
+}
+.ui-spectrum-circle0 a {
+  background-position: 0 0;
+}
+.ui-spectrum-circle1 a {
+  background-position: 0 -16px;
+}
+.ui-spectrum-circle2 a {
+  background-position: 0 -32px;
+}
+.ui-spectrum-circle3 a {
+  background-position: 0 -48px;
+}
+.ui-spectrum-circle4 a {
+  background-position: 0 -64px;
+}
+.ui-spectrum-circle5 a {
+  background-position: 0 -80px;
+}
+.ui-spectrum-circle6 a {
+  background-position: 0 -96px;
+}
+.ui-spectrum-circle7 a {
+  background-position: 0 -112px;
+}
+.ui-spectrum-circle8 a {
+  background-position: 0 -128px;
+}
+.ui-spectrum-circle9 a {
+  background-position: 0 -144px;
+}
+.ui-spectrum-circle10 a {
+  background-position: 0 -160px;
+}
+
+.ui-stars-star a {
+  background-position: 0 -32px;
+}
+.ui-stars-star-on a {
+  background-position: 0 -48px;
+}
+.ui-stars-star-hover a {
+  background-position: 0 -64px;
+}
+.ui-stars-cancel-hover a {
+  background-position: 0 -16px;
+}
+.ui-stars-star-disabled,
+.ui-stars-star-disabled a,
+.ui-stars-cancel-disabled a {
+  cursor: default !important;
+}

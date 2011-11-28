@@ -1,0 +1,13 @@
+{% load topictags %}
+{% oa_ingroup object=object user=user %}
+    {% if pp_topic.in_group %}
+ 		<a href="javascript:;" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> -Remove From MyGroups</a>
+    {% else %}
+        {% oa_get_group_settings object=object %}
+        	{% if pp_topic.settings.open_group %}
+				<a href="javascript:;" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');"> +Add to MyGroups</a>
+			{% endif %}
+        {% endoa_get_group_settings %}
+    {% endif %}
+{% endoa_ingroup %}
+

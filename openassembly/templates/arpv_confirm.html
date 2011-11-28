@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% load verificationtags %}
+{% block title %}{% endblock %}
+{% block browser_bar %}
+
+{% endblock %}
+
+{% block content%}
+
+<div class="email_reset">
+{% if request.user == request.object.user1 or request.user == request.object.user2 %}
+	<img src="{{request.object.photo.url}}=s240-c"><br>
+
+	<h2>Are you in this Photo?</h2>
+	{% oa_ver_confirm_form user=request.user POST=request.POST arpv=request.object %}
+
+		{{oa_ver.errors}}
+
+		<form method="post" action="">	  
+
+		      <input type="hidden" name="form_id" value="oa_arpv_task_form" id="id_form_id"/>
+
+	          {% csrf_token %}
+
+	          <h2>{{oa_ver.form.as_p}}</h2>
+	          <br>
+
+	           <p><input type="submit" class ="small button green" value="Submit"/></p>
+
+		</form>
+
+	{% endoa_ver_confirm_form %}
+
+{% else %}
+
+<h2>What do you think you are doing here?</h2>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

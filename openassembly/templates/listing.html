@@ -1,0 +1,80 @@
+{% load pp_url %}
+{% load topictags %}
+{% load consensustags %}
+{% load argumenttags %}
+{% load commenttags %}
+{% load tag_helpers %}
+{% load sourcetags %}
+{% load blobtags %}
+{% load markup %}
+{% if object.content_object.summary != None %}
+
+<div class="listing">
+    <div class="interest">
+        <span class="category">{{object.content_object.get_verbose_name|title }}</span>
+        {% if request.dimension = 'c' %}
+            <span class="points"><a href="{{object.get_absolute_url}}">{{ object.controversy|floatformat:0 }}</a></span>
+            <span class="word">controversy</span>
+        {% else %}
+            <span class="points"> <a href="{{object.get_absolute_url}}">{{ object.interest|floatformat:0 }}</a></span>
+            <span class="word">interest</span>
+            <span id="votes{{object.pk}}" class="votes">
+                
+            </span>
+        {% endif %}
+    </div>
+    <div class="summary">
+
+        {% pp_get_sources object=object.content_object type='img' %}
+            {% if pp_source.cur_img %}
+                <img src="{{pp_source.cur_img.url}}=s70-c" alt="{{object.content_object.summary}}">
+            {% endif %}
+        {% endpp_get_sources %}
+
+        <a href="{% pp_url object=object.content_object template='detail.html' %}"><b>{{object.content_object.summary }}</b></a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ object.content_object.user.username }}</a> - {{object.content_object.created_dt|date:"(d/m/Y"}} at {{object.content_object.created_dt|date:"h:sA)"}}</span><br>
+            
+            {% pp_if_forum_blob object=object.content_object.parent %}
+                {% if pp_blob.is_blob %}
+                    <span class="re"><a href="{% pp_url template='detail.html' object=object.content_object.parent %}">{{object.content_object.parent.summary}}</a></span>
+                {% else %}<span class="re"><a href="{% pp_url template='issues.html' start=0 end=20 object=object.content_object.parent dimension='hn' %}">{{object.content_object.parent.summary}}</a></span>
+                {% endif %}
+            {% endpp_if_forum_blob %}
+              <div>
+                <p>
+                {{object.content_object.description|slice:":95" }}...
+                </p>
+              </div>
+        <div class="info">
+        {% if object.content_object.child != None %}
+        {{object.content_object.children}} {{object.content_object.child|title}}{{object.content_object.children|pluralize}} and 
+        {% endif %}
+        {% pp_comment_count object=object.content_object.id %}
+            {{ pp_comment.count }} Comment{{ pp_comment.count|pluralize}} and 
+        {% endpp_comment_count %}
+        {% pp_get_argument_count object=object.content_object %}
+            {{pp_argumentation.count}} Argument{{pp_argumentation.count|pluralize}}
+        {% endpp_get_argument_count %}
+        </div>
+        {% pp_get_tags_for_object object=object %}
+            {% if pp_tag.tags|length > 0 %}
+                <ul class="tags">
+                      <li><b>Tags:</b></li>
+                        {% for tag in pp_tag.tags %}
+                            <li><a href="{% pp_url template='issues.html' object=tag start=0 end=20 dimension='hn' %}">{{tag.name}}</a></li>
+                        {% endfor %}
+                       </ul>
+            {% endif %}
+       {% endpp_get_tags_for_object %}
+        <ul class="solutions">
+            {% pp_get_blob_list object=object.content_object dimension="h" %}
+                {% if object.content_object.children > 0 %}
+                    <li><b>{{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</b></li>
+                        {% for child in pp_blob.blob_list %}
+                            <li><a href="{% pp_url template='detail.html' object=child %}">{{child.summary}}</a></li>
+                        {% endfor %}
+                {% endif %}
+           {% endpp_get_blob_list %}
+        </ul>
+    </div>
+</div>
+{% endif %}

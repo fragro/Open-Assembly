@@ -1,0 +1,36 @@
+{% load commenttags %}
+{% load sourcetags %}
+
+      {% pp_comment_form POST=request.POST user=user edit=object  %}
+            <form id="pp_edit_form{{object.pk}}" method="post" action="">
+                <div id="errors" class="errors">{{ pp_comment.errors }}</div>
+                        <input type="hidden" name="form_id" value="pp_edit_form" id="id_form_id"/>
+
+                        <input type="hidden" name="object_pk" value="{{object.pk}}" id="object_pk"/>
+                        {% pp_get_contenttype_id object=object %}
+
+                        <input type="hidden" name="content_type" value="{{pp_source.ctype_pk}}" id="content_type"/>
+                        {% endpp_get_contenttype_id %}
+
+                        {{ pp_comment.form.text }}
+                        {{ pp_comment.form.parent}}
+                        {{pp_comment.form.form_id}}
+                        {{csrf_string|safe}}
+                    {% if user.is_authenticated and user.is_active %}                                                            
+                    <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_edit_form{{object.pk}}"></span>
+            </form>
+                    {% else %} 
+                        <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                            {% endif %}
+            <script>
+
+              $("form#pp_edit_form{{object.pk}}").submit(function(e){
+                    $("#submit_pp_edit_form{{object.pk}}").html("<b>Submitting...</b>")
+                    addObject(e);
+                });
+
+            </script>
+        
+            <span id="pp_edit_form{{object.pk}}_side_effect" style="display:none;">[{{pp_comment.object_pk}}, {{pp_comment.content_type}}]</span>
+
+        {% endpp_comment_form %}

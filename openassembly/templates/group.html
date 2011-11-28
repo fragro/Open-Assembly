@@ -1,0 +1,95 @@
+{% load sourcetags %}
+{% load cani %}
+{% load groups %}
+
+    <div id="group">
+
+    {% include 'facilitator.html' %}
+
+
+    {% cani object=object user=user %}
+        {% if pp_permissions.permission %}
+ 
+          {% pp_get_contenttype_id object=object %}
+            <a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
+          {% endpp_get_contenttype_id %}
+
+        {% else %}
+
+            <a href="{{object.get_absolute_url}}">
+
+        {% endif %}
+
+    {% endcani %}  
+
+        {% pp_get_sources object=object type='img' %}
+            {% if pp_source.cur_img %}
+                <img src="{{pp_source.cur_img.url}}=s690" alt="{{object.content_object.summary}}">
+            {% else %}
+
+                {% cani object=object user=user %}
+                    {% if pp_permissions.permission %}
+                        <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
+                    {% endif %}
+                {% endcani %}
+
+            {% endif %}
+        {% endpp_get_sources %}
+    </a>
+        
+        <div id="container">
+            
+            <div id="current_poll" class="poll">
+                
+            </div>
+
+            
+            <div class="platforms">
+                <ul class="checkboxes">
+                    <li> {{object.group_members}} Members</li>
+                    <li> {{object.children}} Ideas</li>
+                    <li><span id="addgroup"></span></li>
+                 </ul>
+                {% if dimension == 'hn' %}
+                <div class="platform">
+                    <h2>Group Description</h2>
+                    <p>
+                        {{object.description|safe}}
+                    </p>
+                </div>
+                {% endif %}
+                {% if dimension == 'p' %}
+                <div class="platform">
+                    <p>
+                        {{object.description|safe}}
+                    </p>
+                </div>
+                {% endif %}
+                <div class="platform">
+                    {% oa_mygroup_users object=object %}
+
+                        <h2>{{pp_topic.count}} Members</h2>
+                        <p>
+                            {% for mygroup in pp_topic.groups %}
+                                {% include 'group_user.html' %}
+                            {% endfor %}
+                        </p>
+                    {% endoa_mygroup_users %}       
+                </div>
+                <div class="platform">
+                    {% has_permissions object=object name='facilitator-permission' %}
+
+                        <h2>{{pp_permissions.count}} Facilitators</h2>
+                        <p>
+                            {% for mygroup in pp_permissions.permissions %}
+                                {% include 'group_user.html' %}
+                            {% endfor %}
+                        </p>
+                    {% endhas_permissions %}       
+                </div>
+
+            </div>
+            
+        </div>
+        
+    </div>

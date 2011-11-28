@@ -1,0 +1,55 @@
+
+{% load pp_url %}
+{% load topictags %}
+{% load blobtags %}
+{% load consensustags %}
+{% load argumenttags %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+<!-- Content -->
+
+{% pp_get_topic_list topic=object %}
+
+            {% if pp_topic.topic_list %}
+
+                {% for topic in pp_topic.topic_list %}
+
+                <div class="listing">
+                            <div class="interest">
+                            </div>
+                            <div class="summary"> <b><a href="{% pp_url template='issues.html' object=topic dimension='hn' start=0 end=20 %}">{{ topic.summary|title }}</a> </b> {% if topic.more_info %} - <a href="/{{topic.more_info}}.html">more info</a>{% endif %}
+                                <div>
+                                <p>
+                                    <span class="re">{{topic.description|safe}}</span>
+                                </p>
+                                </div>
+                            </div>
+                            <img>
+                        </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+{% endpp_get_topic_list %}                        
+                        
+        <!-- Pagination -->
+        <ul class="pagination">
+
+        {% if pp_blob.count > 20 %}
+            {% for s,e,n in request.rangelist %}
+               {% if not s > pp_blob.count %}
+                <li><a href="{% pp_url template='issues.html' dimension=request.dimension object=request.object start=s end=e %}">{{n}}</a></li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </ul>
+        
+        
+    </div>
+    <!-- end #content -->
+    {% endblock %}

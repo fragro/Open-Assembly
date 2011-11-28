@@ -1,0 +1,16 @@
+<div class="comment">
+    {% pp_get_avatar user=object.user %}
+    <a href="{% pp_url template='user_profile.html' object=object.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{object.user.username}}"></a>
+    {% endpp_get_avatar %}
+    <div>
+        <a href="{% pp_url template='user_profile.html' object=object.user %}" class="author">{{object.user.username}}</a> <span class="meta">{{object.created_dt|date:"(d/m/Y"}} at {{object.created_dt|date:"h:sA)"}}</span>
+        <p>{{object.summary}}</p>
+        <ul class="comment_links">
+            <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+            {% pp_comment_count object=object.id %}
+            <li class="non_link">{{pp_comment.count}} Comments</li>
+            {% endpp_comment_count %}
+            <li><a href="{% pp_url template='detail.html' object=object %}">See More and Vote</a></li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,405 @@
+{% load pp_url %}
+{% load topictags %}
+{% load logintags %}
+{% load reputationtags %}
+{% load notificationtags %}
+{% load markitup_tags %}
+{% load consensustags %}
+{% load badgetags %}
+{% load topictags %}
+{% load blobtags %}
+{% load verificationtags %}
+{% load json_filters %}
+{% load platformtags %}
+{% load tag_helpers %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>
+        {% block title %}
+        {% if request.object %}
+            Open Assembly | Beta | {{request.object.summary|title}}{{request.object.username}}
+        {% else %}   
+            Open Assembly
+        {% endif %}
+        {% endblock %}
+
+        </title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+        <meta property="og:title" content="Open Assembly"/>
+        <meta property="og:locale" content="og:locale:alternate"/>
+        
+        <meta property="og:image" content="http://www.openassembly.org/static/img/open_assembly_logo_facebook.png"/>
+        <meta property="og:site_name" content="OpenAssembly"/>
+        <meta property="og:description"
+              content="OpenAssembly allows users to make decentralized
+                        decisions online without having to worry about
+                        trolls and sockpuppets manipulating the vote. "/>
+
+        <link rel="stylesheet" type="text/css" href="/static/style9.9.7.css">
+        <link rel="stylesheet" type="text/css" href="/static/bookmark2.css">
+        <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
+
+        <script type="text/javascript" src="/static/js/jquery-1.5.1.min.js"></script>
+        <script type="text/javascript" src="/static/js/openassembly9.9.js"></script>
+        <script type="text/javascript" src="/static/js/etherpad.js"></script>
+
+        <script type="text/javascript" src="/static/jquery.ba-hashchange.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.slideto.js"></script>
+
+        <script type="text/javascript" src="/static/js/jquery.cycle.lite.js"></script>
+        <script type="text/javascript" src="/static/js/motionpack.js"></script>
+
+        <script type="text/javascript" src="/static/simplebox/js/jquery.simplebox.js"></script>
+        <script type="text/javascript" src="/static/js/jquery-ui-1.8.11.custom.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.ui.stars.js"></script>
+    
+        <link rel="stylesheet" type="text/css" href="/static/chosen.css">
+        <script type="text/javascript" src="/static/chosen.jquery.min.js"></script>
+
+        {% block css %}
+
+        {% endblock %}
+
+        {% block js %}
+
+        {% endblock %}
+
+    <script type="text/javascript">
+
+
+        $(function(){
+         
+        // Bind the event.
+        $(window).hashchange( function(){
+        // Alerts every time the hash changes!
+            d = {};
+            d['hash'] = location.hash
+            d['empty'] = ($('#content').is(':empty'))
+            $.get("/load_page/", d,
+              function(data) {
+                  if(data.empty_content){$('#content').html('');}
+                  if(data.FAIL != true){
+                        for(item in data.output){
+                            if(data.output[item].type == 'prepend'){
+                              $(data.output[item].div).prepend(data.output[item].html); 
+                            } 
+                            if(data.output[item].type == 'append'){
+                                $(data.output[item].div).append(data.output[item].html); 
+                            } 
+                            if(data.output[item].type == 'html'){
+                                $(data.output[item].div).html(data.output[item].html); 
+                            }
+                        }
+                      //$("#content").append(data.POST);
+                      
+                      //location.hash = data.url
+                  }
+
+                  if(data.scroll_to != null){
+                    $(data.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
+                  }
+                  else{
+                    //$('html').slideto({'slide_duration': "fast", 'highlight': false});
+                  }
+
+             }, "json");            
+                //alert( location.hash );
+        }) 
+            // Trigger the event (useful on page load).
+            $(window).hashchange();  
+        });
+
+        $(document).ready(function(){
+
+            $('.spinner')
+            .hide()  // hide it initially
+            .ajaxStart(function() {
+                $(this).show();
+            })
+            .ajaxStop(function() {
+                $(this).hide();
+            });
+                   
+        });
+
+        {% if request.scroll_to %}
+            {% if request.META.PATH_INFO == '/detail.html' %}
+                $(document).ready(function() {
+                    $("#{{request.scroll_to_div}}").slideto({'highlight_color':'#d6e3ec','div_offset':1000});
+                });  
+            {% else %}
+                $(document).ready(function() {
+                    $("#{{request.scroll_to_div}}").slideto({'highlight_color':'#d6e3ec'});
+                });
+            {% endif %}
+
+        {% endif %}
+
+        {% if request.object %}
+            {% pp_consensus_get object=request.object.id %}
+                {% if pp_consensus.consensus %}
+                      {% pp_rating_js object=request.object %}
+
+                       {{pp_consensus.rating_js|safe}} 
+
+                      {% endpp_rating_js %}
+
+                      {% pp_spectrum_js object=request.object %}
+
+                       {{pp_consensus.spectrum_js|safe}}
+
+                      {% endpp_spectrum_js %}
+
+                {% endif %}
+            {% endpp_consensus_get %}
+        {% endif %}
+
+        {% if request.simplebox == 's' %}
+            $().ready(function() {
+                $("#registration_simplebox").simplebox();
+            });
+        {% endif %}
+
+        {% if request.simplebox == 'c' %}
+            $().ready(function() {
+                $("#confirm_simplebox").simplebox();
+            });
+        {% endif %}
+    {% comment %}
+      {% if request.simplebox %}
+
+          google.load("maps", "3",  {callback: initialize, other_params:"sensor=false"});
+
+          function initialize() {
+            // Initialize default values
+            //var zoom = 3;
+            //var latlng = new google.maps.LatLng(37.4419, -100.1419);
+            var location = "";
+
+            // If ClientLocation was filled in by the loader, use that info instead
+            if (google.loader.ClientLocation) {
+              //zoom = 13;
+              //latlng = new google.maps.LatLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude);
+              location = "from <b>" + getFormattedLocation() + "</b>";
+              set_loc_by_ip(google.loader.ClientLocation.address.city,google.loader.ClientLocation.address.region.toUpperCase(),google.loader.ClientLocation.address.country_code);
+            }
+
+            //var myOptions = {
+            //  zoom: zoom,
+            //  center: latlng,
+            //  mapTypeId: google.maps.MapTypeId.ROADMAP
+            //}
+
+            //var map = new google.maps.Map(document.getElementById("map"), myOptions);
+            document.getElementById("location").innerHTML = location;
+          }
+
+          function getFormattedLocation() {
+            if (google.loader.ClientLocation.address.country_code == "US" &&
+              google.loader.ClientLocation.address.region) {
+              return google.loader.ClientLocation.address.city + ", " 
+                  + google.loader.ClientLocation.address.region.toUpperCase();
+            } else {
+              return  google.loader.ClientLocation.address.city + ", "
+                  + google.loader.ClientLocation.address.country_code;
+            }
+          }
+      {% endif %}
+      {% endcomment %}
+
+      </script> 
+
+    {% block extra-head %}{% endblock %}
+
+
+    <script type="text/javascript">
+
+        function ScrollToElement(theElement)
+        {
+
+          var selectedPosX = 0;
+          var selectedPosY = 0;
+                      
+          while(theElement != null){
+            selectedPosX += theElement.offsetLeft;
+            selectedPosY += theElement.offsetTop;
+            theElement = theElement.offsetParent;
+          }
+                                		      
+         window.scrollTo(selectedPosX,selectedPosY);
+
+        };
+             
+        $(document).ready(function(){
+            $('#id_search').click(function(){
+                if (this.value == this.defaultValue) {
+                    this.value = '';
+                }
+            });
+            $('#id_search').blur(function(){
+                if (this.value == '') {
+                    this.value = this.defaultValue;
+                }
+            });
+        });
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-21219475-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+        </script>
+        <!--[if IE 6]>
+        <script type="text/javascript" src="js/DD_belatedPNG_0.0.8a-min.js"></script>
+        <script type="text/javascript">
+            DD_belatedPNG.fix('#logo img, #header .center, #topnav a');
+        </script>
+        <![endif]--> 
+
+    </head>
+    <body>
+        <div id="wrap">
+            
+            <div id="header">
+                <div class="center">
+                    <div class="top">
+                        <!-- Logo -->
+                        <a href="/index.html#landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a><span><div id="header_title" class="header_title"></div></span>
+                        <!-- Nav -->
+                        <ul id="topnav">
+                           
+                        </ul>
+                    </div>
+                    
+                    <div class="bottom">
+                        <!-- Sort -->
+                        <ul id="sort">
+                            {% if request.META.PATH_INFO|slice:'1:' == 'issues.html' %}
+
+                            {% endif %}
+                            
+                        </ul>
+
+                        <!-- Search -->
+                        <div id="id_search">
+
+                                {% pp_search_form user=request.user POST=request.POST %}
+                                    <form method="post" action="" class="searchbox">
+                                 {% csrf_token %}
+                                 <span class="light_gray">Search:</span> {{ pp_blob.form.search }}
+                                      {#<input type="submit" value="Search posts"/>#}
+                                    </form>
+                                {% endpp_search_form %}
+                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end #header -->
+            
+            <div id="container">
+                <div class="center">
+                    <!-- Content -->
+                        {% autoescape on %}
+                            <div id="content">{% block content %}{% endblock %}</div>
+                        {% endautoescape %}
+                    <!-- end #content -->
+                    
+                    <!-- Sidebar -->
+                    <div id="sidebar">
+
+                        <span style="float:left;"class="spinner"><img src="/static/img/spinner.gif" alt="" /></span>
+                        <span style="float:right;width:14px;margin-right:12.5px;" class="spinner"><img src="/static/oa_agent/oa_agent_wut_36.png" alt="" /></span>
+
+                        <div id="create_content">
+
+                        </div>
+
+                        
+
+
+                        <div class="quick_profile">  
+                        {% if request.user.is_authenticated %}                
+                            {% pp_get_avatar user=request.user %}
+                            <a href="{% pp_url template='user_profile.html' object=request.user %}"><img class="avatar" src="{{pp_profile.thumbnail}}" alt="{{request.user.username}}"></a>
+                            {% endpp_get_avatar %}
+                            {% pp_get_reputation user=request.user %}
+                            <small>(+{{pp_reputation.reputation}})</small>
+                            {% endpp_get_reputation %}
+                            <a href="/logout/" class="logout">Logout</a>
+                        {% endif %}
+
+
+                        {% if request.user.is_authenticated %}                
+                            <a class="user" href="{% pp_url template='user_profile.html' object=request.user %}" >{{request.user.username}}</a></ul>
+                            {% else %}
+
+
+                            <div class="intro">
+                            <h2>Open Assembly is <br>Open Source Democracy</h2>
+                            <p>
+                            <b>A Voting Platform for the Internet</b><br> Secured Against Manipulation
+                            </p>
+                            <p>
+                            <b>Activist Driven Open Source</b><br> Feature Development For the People
+                            </p>
+                            <p><b>Occupy The Internet</b></p>
+                            <p><a href="/index.html#faq">Learn More</a></p>
+
+                            </div>
+                    
+                            {% endif %}
+
+                            <div id="pp_messages" class="messages">
+
+                            </div>
+
+                        </div>
+                        {% if user.is_authenticated %}
+                        <div class="badges">
+
+                            <ul>
+                                {% pp_get_badges user=request.user %}
+                                    <li><a href="/index.html#badges"><img src="/static/img/badges.jpg" alt="Bell"> {{pp_badge.total}} Badge{{pp_badge.total|pluralize}}</a></li>
+                                {% endpp_get_badges %}
+                                {% oa_get_verifications user=request.user %}
+                                    <li><a href="/index.html#arpv"><img src="/static/img/badge_gold_star.jpg" alt="Bell"> {{oa_ver.count}} Verification{{oa_ver.count|pluralize}}</a></li>
+                                {% endoa_get_verifications %}
+
+
+                            </ul>
+                        </div>
+                                <ul id="mygroup" class="recent_activity">
+                                    <span><b>MyGroups</b></span>
+                                     {% pp_mygroups user=user %}
+                                        {% for group in pp_topic.mygroups %}  
+                                            {% include 'mygroup.html' %}
+                                        {% endfor %}
+                                    {% endpp_mygroups %}
+                                </ul>
+
+                        {% endif %}
+
+                    </div>
+                    <!-- end #sidebar -->
+                    
+                </div>
+            </div>
+            <!-- end #container -->
+            
+            <div id="footer">
+                <div class="center">
+                    <ul>
+                        <li>Let's apply the open source model to our democracy</li>
+                    </ul>
+                </div>
+            </div>
+    </body>
+</html>

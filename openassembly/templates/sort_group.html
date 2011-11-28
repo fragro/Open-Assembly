@@ -1,0 +1,8 @@
+{% load blobtags %}
+{% load pp_url %}
+
+
+<li class="light_gray">Sort By:</li>
+<li class="first"><a STYLE="text-decoration:none" href="{% pp_url template='topics.html' dimension='c' start=0 end=20 object=object  sort_type=sort_type %}">{% if dimension == 'c' %}<b>Ideas</b>{% else %}Ideas{% endif %}</a></li>
+<li class="last"><a STYLE="text-decoration:none" href="{% pp_url template='topics.html' dimension='n' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'n' %}<b>New</b>{% else %}New{% endif %}</a></li>
+<li><a STYLE="text-decoration:none" href="{% pp_url template='topics.html' dimension='h' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'h' %}<b>Members</b>{% else %}Members{% endif %}</a></li>

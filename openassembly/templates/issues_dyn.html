@@ -1,0 +1,33 @@
+
+
+            {% pp_get_blob_list request=request dimension=request.dimension object=request.object start=request.start end=request.end %}
+                {{pp_blob.cached}}
+                {{pp_blob.html|safe}}
+                {% comment %}
+                {% for iss_obj in pp_blob.blob_list %}
+
+                        {% if iss_obj.content_object.summary != None %}
+                    
+                            {% include 'listing.html' %}
+
+                        {% else %}
+                            {% if request.user.is_staff %}
+                                {{iss_obj.id}}
+                            {% endif %}
+                        
+                        {% endif %}
+
+                        {% empty %}
+
+                            <h1>There doesn't seem to be anything here yet.</h1>
+
+                {% endfor %}
+                {% endcomment %}
+
+                        
+                        
+        <!-- Pagination -->
+        <span id="rangelist">
+            {% include "rangelist.html" %}
+        </span>
+           {% endpp_get_blob_list %}

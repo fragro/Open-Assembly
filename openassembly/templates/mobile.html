@@ -1,0 +1,8 @@
+{% load topictags %}
+
+<p>MOBILE VERSION IN PROGRESS
+SUPPORT OPEN SOURCE DEMOCRACY</p>
+
+    {% pp_get_topic topicname='Occupy The Internet' %}
+        <li><a  href="{% pp_url template='issues.html' object=pp_topic.topic start=0 end=20 dimension='hn' %}">Click here to continue at your own risk</a></li>
+    {% endpp_get_topic %}

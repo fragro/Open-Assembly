@@ -1,0 +1,56 @@
+{% load tag_helpers %}
+{% load sourcetags %}
+
+ <script>
+
+  $("form#submitform4").submit(function(e){
+        addObject(e);
+    });
+
+</script>
+
+<div class="inner">Add Comment | Add Pros | Add Cons | <b>Add Sources or Tags</b>{% if object.child %} | Add {{ object.child|title }}{% endif %}</div>
+  <div class="addtags">
+  {% pp_tag_form POST=request.POST path=request.path object=pp_consensus.consensus user=user %}
+      <div class="inner"><b>Add Tags</b></div>
+         {% for err in pp_tag.errors %}
+          <div class="errors"> {{err|safe}}<br></div>
+         {% endfor %}
+          <form id="submitform4" method="post" action="">
+              {{pp_tag.form.form_id}}
+              {{csrf_string|safe}}
+              {{ pp_tag.form.tag}}
+          <input type="submit" class="button" value="Submit Tag">
+          </form>
+  {% endpp_tag_form %}
+  </div>
+  {% pp_tag_recommendations object=pp_consensus.consensus %}
+  <div class="recommendations" id="recommendations">
+  <div class="inner"><b>Click to Add Recommended Tags:</b></div>
+        {% for count, name, font_size, mod, al in pp_tag.taglist %}
+
+              <font size="{{font_size}}" >{% if user.is_authenticated and user.is_active %}<a href='javascript:;' onClick="add_tag('{{name}}','{{pp_consensus.consensus.id}}','{{mod}}', '{{al}}');">{% else %}<a href="{% pp_url template='register.html' %}">{% endif %}{{name|replace_w_space}}</a></font>{% if not forloop.last %},{% endif %}
+
+        {% endfor %}
+  </div>
+  {% endpp_tag_recommendations %} 
+  <div class="addsources">
+      <div class="inner"><b>Add Sources</b></div>
+           {% pp_urlsource_form POST=request.POST object=object user=user %}
+                 {{ pp_source.form.errors }}
+                  <form id="submitform" method="post" action="">
+                      {{ pp_source.urlform.url}}
+                      {{ pp_source.urlform.form_id}}
+                      {{csrf_string|safe}}
+                    <input type="submit" class="button" value="Submit URL">
+                  </form>
+              {% endpp_urlsource_form %}
+
+
+  </div>
+  <div class="addsources">
+          {% pp_get_contenttype_id object=object %}
+      <b><a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">Add Image</a></b>
+          {% endpp_get_contenttype_id %}
+
+   </div>

@@ -1,0 +1,38 @@
+
+    <div id="oa_platform_form">
+    {% oa_platform_form POST=request.POST user=user object=object dimension=dimension %}
+        <form id="oa_platform_form" method="post" action="">
+            <div id="errors" class="errors">{{ oa_platform.errors }}</div>
+                    {{ oa_platform.form.form_id}}
+                    <h2>Platform Deadlines:</h2>
+                    <h3>Time when the platform candidates will be generated:</h3>
+                    {{oa_platform.form.deadline_dt}}<br>
+                    <h3>Time when the platform candidates must be ranked in the election:</h3> 
+                    {{oa_platform.form.vote_deadline_dt}}<br>
+                    <h2>Number of Planks in the Platform:</h2>
+                    <h3>How many items should there be in the candidate platforms? Do you need a simple and focused
+                    platform choose a small number of planks, for instance 2-4. If you need a comprehensive platform then choose more, for instance 5-10.</h3>
+                    {{oa_platform.form.num_planks}}
+
+
+                    {{csrf_string|safe}}
+                {% if user.is_authenticated and user.is_active %}                                                            
+                <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_oa_platform_form"></span>
+        </form>
+                {% else %} 
+                    <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                {% endif %}
+        <script>
+
+          $("form#oa_platform_form").submit(function(e){
+                $("#submit_oa_platform_form").html("<b>Submitting...</b>")
+                addObject(e);
+            });
+
+        </script>
+
+        <span id="oa_platform_form_side_effect" style="display:none;">[{{oa_platform.object_pk}}, {{oa_platform.content_type}}]</span>
+
+        {% endoa_platform_form %}
+
+    </div>

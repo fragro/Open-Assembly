@@ -1,0 +1,46 @@
+{% load badgetags %}
+
+{% block content %}
+
+    <div class="badges">
+
+        <h2>Badges</h2>
+        <p>
+        OpenAssembly features badges to reward users for content creation and interaction.
+        </p>
+
+        <h2>You Have</h2>
+            {% pp_get_badges user=request.user %}
+                <ul>
+                {% for badge in pp_badge.badges %}
+
+                    <li><a href="/index.html#badges/_cbadge{{badge.dimension.id}}"><img src="/static/img/{{badge.dimension.badge_type.name}}.jpg" alt="{{badge.dimension.verbose_name}}">{{badge.dimension.name}}</a></li>
+
+                {% empty %}
+                    No badges yet!
+                {% endfor %}
+                </ul>
+        
+            {% endpp_get_badges %}
+    </div>
+
+    <div class="badges">
+
+    <h2>All Badges</h2>
+
+    {% pp_badge_dimensions %}
+
+        {% for badge in pp_badge.badges %}
+            <div style="width:100%;float:left;">
+            <ul>
+                <li><a href="/index.html#badges/_cbadge{{badge.id}}"><img src="/static/img/{{badge.badge_type.name}}.jpg" alt="{{badge.verbose_name}}">{{badge.name}}</a></li>
+            </ul>
+            <p id="badge{{badge.id}}">{{badge.help_text}}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% endpp_badge_dimensions %}
+
+
+{% endblock %}

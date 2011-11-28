@@ -1,0 +1,58 @@
+{% load blobtags %}
+{% load consensustags %}
+
+{% block content %}
+
+search:{{search}}
+
+{% pp_get_search_items search_key=search %}
+    
+    {% if request.user.is_staff %}
+
+        {{ pp_blob.failed }}
+
+    {% endif %}
+
+    {% if pp_blob.num_results == 0 and pp_blob.num_topics == 0 %}
+
+    <h2>No Results Found</h2>
+
+    {% else %}
+
+    <h2>Search For "{{search}}"</h2>
+    <h3>{{pp_blob.num_topics}} Groups and {{pp_blob.num_results}} Ideas</h3>
+
+        {% for object_pk in pp_blob.topics.query %}
+
+            {% pp_get_topic object_pk=object_pk.pk %}
+            
+                {% include 'topic_search.html' %}
+
+            {% endpp_get_topic %}
+
+        {% endfor %}
+    
+
+    {% for key,objs in pp_blob.results.items %}
+
+        {% for obj_pk in objs.query %}
+
+            {% pp_get_object model=key object_pk=obj_pk.pk %}
+
+                    {% pp_consensus_get object=pp_blob.content_object.pk %}
+
+                        {% include 'listing_search.html' %}
+
+                {% endpp_consensus_get %}
+
+            {% endpp_get_object %}
+        
+        {% endfor %}
+
+    {% endfor %}
+
+    {% endif %}
+
+{% endpp_get_search_items %}
+
+{% endblock %}

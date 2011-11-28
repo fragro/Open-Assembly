@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+{% load blobtags %}
+{% block title %}OpenAssembly | Success {% endblock %}
+
+{% block extra-head %}
+    <link rel="stylesheet" type="text/css" href="/static/jquery.countdown.css">
+	<script type="text/javascript" src="/static/jquery.countdown.min.js"></script>
+
+
+<script type="text/javascript"> 
+$(function () {
+	$('#defaultCountdown').countdown({until: +60, onTick: highlightLast5}); 
+     
+function highlightLast5(periods) { 
+    if ($.countdown.periodsToSeconds(periods) == 5) { 
+        $(this).addClass('highlight'); 
+    } 
+}
+ 
+});
+</script> 
+
+{% endblock %}
+
+{% block content %}
+
+<h1>Great Success!</h1>   
+
+{% if request.user.is_authenticated and request.user.is_staff %}
+<div style="style=width:50%;float:right;">
+<h2>Countdown til Update</h2>
+<div id="defaultCountdown"></div> 
+</div>
+
+<br>
+<a class="button" href="/tasks/nuke_memcache/">NUKE MEMCACHE!</a>
+<br>
+<br>
+
+Codes:{{error}}
+
+{% pp_check_codes %}
+    {{pp_blob.codes}}
+<br><br>
+    {{pp_blob.cache}}
+{% endpp_check_codes %}
+
+{% endif %}
+
+{% endblock %}

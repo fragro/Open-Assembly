@@ -1,0 +1,75 @@
+{% load pp_url %}
+{% load tag_helpers %}
+{% load profiletags %}
+{% load markup %}
+
+    {% if object.is_deleted or object == None %}
+
+
+        {% if salted %}
+        <ul id="comment{{object.pk}}" class="comment">
+        {% endif %}
+
+        {% pp_get_avatar user=object.user %}
+            <span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
+        {% endpp_get_avatar %}
+        
+        <li>
+        
+        <span class="author"> none </span> 
+            <span class="meta">
+                inf time
+            </span>
+        <span id="comment_text{{object.pk}}">
+        <p>
+        DELETED
+        </p>
+        </span>
+        <span id="comment_links{{object.pk}}">
+
+        </span>
+
+        {% if salted %}
+        </ul>
+        {% endif %}
+
+
+    {% else %}
+
+            {% if salted %}
+            <ul id="comment{{object.pk}}" class="comment">
+            {% endif %}
+
+            {% pp_get_avatar user=object.user %}
+                <a href="{% pp_url template='user_profile.html' object=object.user%}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{object.user.username}}"></a>
+            {% endpp_get_avatar %}
+            
+            <li>
+            
+            <a href="{% pp_url template='user_profile.html' object=object.user%}" class="author"> {{object.user.username}}</a> 
+                <span class="meta">
+                    {% pp_time_difference_str then=object.submit_date %}
+                        {{pp_tag.dt}}
+                    {% endpp_time_difference_str %}
+                </span>
+            <span id="comment_text{{object.pk}}">
+            <p>
+            {{object.text|markdown}}
+            </p>
+            </span>
+            <span id="comment_links{{object.pk}}">
+
+            {% if salted %}
+
+                {% include 'comment_salt.html' %}
+
+            {% endif %}
+
+            </span>
+
+            {% if salted %}
+            </ul>
+            {% endif %}
+
+
+    {% endif %}

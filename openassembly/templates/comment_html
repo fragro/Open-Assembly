@@ -1,0 +1,21 @@
+    html = "<a href='/user_profile.html" + "?_t=" + str(content_type.pk) + "&_o=" + str(comment_obj.user.pk) + "'" + ' class="avatar"><img src="' + ts + '" alt="' + str(user.username) + '"></a>'
+    html += "<li id='comment" + str(comment_obj.id) + "'>"
+    html += "<a href='/user_profile.html" + "?_t=" + str(content_type.pk) + "&_o=" + str(comment_obj.user.pk) + "'" + ' class="author">' + str(comment_obj.user.username) + '</a> <span class="meta">' + generate_time_string(comment_obj.submit_date, datetime.datetime.now()) +  '</span><p>'
+    text = markdown(comment_obj.text, safe_mode=True)
+    html += smart_str(text, encoding='utf-8', strings_only=False, errors='strict') + '</p>'
+
+    if user.is_authenticated():
+        html += '<ul class="comment_links">' + '<li>' + "<a href='javascript:;' onmousedown=" + "'toggleSlide(" + '"add_reply' + str(comment_obj.id) + '"' + ");'>reply</a>" + '</li>' + '<li>' + "<a href='/" + path +" &_c=comment" + str(comment_obj.id) + "'>permalink</a>" + '</li>'
+    else:
+        html += '<ul class="comment_links">' + '<li>' + "<a href='/" + path + "&_i=s'>reply</a>" + '</li>' + '<li>' + "<a href='/" + path + "&_c=comment" + str(comment_obj.id) + "'>permalink</a>" + '</li>'
+    if comment_obj.user == user:
+        html += '<li>' + "<a href='javascript:;' onmousedown=" + "'toggleSlide(" + '"edit_reply' + str(comment_obj.id) + '"' + ");'>edit</a>" + '</li>'
+    html += '</ul>'
+    html += '<p>'
+    if user.is_authenticated():
+        html += "<div class='reply_comment' id='add_reply" + str(comment_obj.id) + "' style='display:none; overflow:hidden; height:290px;width:100%;'><form id='add_reply_form" + str(comment_obj.id) +"' method='post' action=''><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='" + str(request.COOKIES.get('csrftoken')) + "' /><input id='reply_to_object' type='hidden' name='reply_to_object' value='" + str(comment_obj.id)+ "'/></div>" + str(form.as_p()) + "<input type='submit' class='button' value='Submit'></form></div>"
+    if comment_obj.user == user:
+        editform = CommentForm(instance=comment_obj)
+        html += "<div class='reply_comment' id='edit_reply" + str(comment_obj.id) + "' style='display:none; overflow:hidden; height:290px;width:100%;'><form id='add_reply_form" + str(comment_obj.id) +"' method='post' action=''><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='" + str(request.COOKIES.get('csrftoken')) + "' /><input id='edit_object' type='hidden' name='edit_object' value='" + str(comment_obj.id)+ "'/>" + '<input type="hidden" name="form_id" value="pp_comment_form' +  str(comment_obj.id) + '" id="id_form_id"/>' + "</div>" + str(editform.as_p()) + "<input type='submit' class='button' value='Submit'></form></div>"
+    html += '</p>'
+    html += "</li>"

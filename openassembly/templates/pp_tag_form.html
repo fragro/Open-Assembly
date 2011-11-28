@@ -1,0 +1,49 @@
+{% load tag_helpers %}
+{% load consensustags %}
+
+ <script>
+
+  $("form#submitform4").submit(function(e){
+        addObject(e);
+    });
+
+</script>
+
+{% pp_consensus_get object=object.pk user=user %}
+
+  <div class="addtags">
+  {% pp_tag_form POST=request.POST path=request.path object=pp_consensus.consensus user=user %}
+      <div class="inner"><b>Add Tags</b></div>
+          <div id="errors" class="errors">{{ pp_tag.errors }}</div>
+
+          <form id="pp_tag_form" method="post" action="">
+              {{pp_tag.form.form_id}}
+              {{csrf_string|safe}}
+              {{ pp_tag.form.tag}}
+          <input type="submit" class="button" value="Submit Tag"><span style="color:grey;" id="submit_pp_tag_form"></span>
+          </form>
+
+          <span id="pp_tag_form_side_effect" style="display:none;">[{{object.pk}}, {{pp_consensus.content_type.pk}}]</span>
+
+<script>
+
+  $("form#pp_tag_form").submit(function(e){
+        $("#submit_pp_tag_form").html("<b>Submitting...</b>")
+        addObject(e);
+    });
+
+</script>  
+
+  {% endpp_tag_form %}
+  </div>
+  {% pp_tag_recommendations object=pp_consensus.consensus %}
+  <div class="recommendations" id="recommendations">
+  <div class="inner"><b>Click to Add Recommended Tags:</b></div>
+        {% for count, name, font_size, mod, al in pp_tag.taglist %}
+
+              <font size="{{font_size}}" >{% if user.is_authenticated and user.is_active %}<a href='javascript:;' onClick="add_tag('{{name}}','{{pp_consensus.consensus.id}}','{{mod}}', '{{al}}');">{% else %}<a href="{% pp_url template='register.html' %}">{% endif %}{{name|replace_w_space}}</a></font>{% if not forloop.last %},{% endif %}
+
+        {% endfor %}
+  </div>
+  {% endpp_tag_recommendations %} 
+{% endpp_consensus_get %}

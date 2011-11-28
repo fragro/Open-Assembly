@@ -1,0 +1,27 @@
+ {% load argumenttags %}
+
+   {% pp_argument_form object=object POST=request.POST user=user dimension='n' %}
+        
+        <div id="errors" class="errors"> {{pp_argumentation.errors}}</div>
+
+        <form id="pp_argument_form_nay" method="post" action="">
+            {{pp_argumentation.form.form_id}}
+            {{csrf_string|safe}}
+            <div style="float:left;margin-right:10%;"><b>Summary</b>:</div>{{ pp_argumentation.form.summary}}
+            <p>
+            <div style="float:left;margin-right:10%;"><b>Details of Argument</b>:</div>{{pp_argumentation.form.description}}
+            </p>
+        <input type="submit" class="red button" value="Submit"><span style="color:grey;" id="submit_pp_argument_form_nay"></span>
+        </form>  
+        
+        <script>
+
+          $("form#pp_argument_form_nay").submit(function(e){
+                $("#submit_pp_argument_form_nay").html("<b>Submitting...</b>")
+                addObject(e);
+            });
+
+        </script>   
+
+        <span id="pp_argument_form_nay_side_effect" style="display:none;">[{{pp_argumentation.object_pk}}, {{pp_argumentation.content_type}}]</span>                                                
+    {% endpp_argument_form %}

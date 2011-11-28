@@ -1,0 +1,573 @@
+{% extends 'index.html' %}
+
+{% load pp_url %}
+{% load argumenttags %}
+{% load messagetags %}
+{% load profiletags %}
+{% load topictags %}
+{% load reputationtags %}
+{% load notificationtags %}
+{% load markup %}
+{% load badgetags %}
+{% load subscriptiontags %}
+{% load sourcetags %}
+{% load filetransfers %}
+{% load tag_helpers %}
+{% load commenttags %}
+{% load blobtags %}
+
+{% block extra-head %}
+  <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
+
+  <script type="text/javascript" src="/static/js/jquery.cycle.lite.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.ui.stars.js"></script>
+
+  <script type="text/javascript">
+
+    $(document).ready(function(){
+        $('.new_comment').cycle({ 
+            fx: 'fade', 
+            speed: 'fast', 
+            timeout: 0, 
+            next: '.next', 
+            prev: '.prev',
+        });
+     });
+
+    </script>
+
+{% endblock %}
+
+{% block title %}
+
+{{request.object.summary|title}} | {{request.object.get_verbose_name|title}}
+
+{% endblock %}
+
+
+{% block content %}
+                   {% pp_consensus_get object=request.object.pk user=request.user %}
+                       <div class="listing">
+                            <div class="interest">
+                                <span class="category">{{pp_consensus.consensus.content_type|title}}</span>
+                                <span class="points">
+                                    {% if pp_consensus.interest == 0 %}
+                                        -
+                                    {% else %}
+                                        {{pp_consensus.interest|floatformat:0 }}
+                                    {% endif %}
+                                </span>
+                                <span class="word">interest</span>
+                            </div>
+                            <div class="overview">
+                                <a href="{% pp_url object=request.object template='detail.html' %}"><b>{{request.object.summary}}</b></a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=request.object.user %}">{{request.object.user.username}}</a> - {{request.object.created_dt|date:"m/d/Y h:sA"}}</span>          
+
+        {% ifequal request.object.user request.user %}
+            <a href="{% pp_url template='submit.html' object=request.object dimension='edit' %}">edit</a>
+        {% endifequal %}
+
+<br>
+                                {% pp_if_forum_blob object=request.object.parent %}
+                                    {% if pp_blob.is_blob %}
+                                        <span class="re"><a href="{% pp_url template='detail.html' object=request.object.parent %}">{{request.object.parent.summary}}</a></span>
+                                    {% else %}<span class="re"><a href="{% pp_url template='issues.html' object=request.object.parent dimension='hn' %}">{{request.object.parent.summary}}</a></span>
+                                    {% endif %}
+                                {% endpp_if_forum_blob %}
+                                    <p>
+                                    <!-- For the film genome project -->
+                                    {% if request.object.video %}
+
+                                    {% pp_get_iframe_video object=request.object %}
+
+                                    <div id="video" class="viewer" style="width: 600px; height: 380px;"><iframe frameborder="0" id="videoWindow" scrolling="no" style="width: 600px; height: 380px; z-index: 5;" src="{{request.object.video.filename}}_iframe.html"></iframe></div>
+
+                                    <script src="/static/html5_video_voting/javascripts/embed.js"></script>
+                                    <script>
+
+	                                    $('#video').poptastic({
+		                                    'video_id' : {{request.object.video.video_id}},
+		                                    'autoplay' : false,
+		                                    'width'    : 600,
+		                                    'height'   : 340,
+	                                    });
+	                                    $('#links a').click(function (e) {
+		                                    e.preventDefault;
+		                                    $('.viewer').hide();
+		                                    var selected = $(this).attr('class');
+		                                    $('#links a').removeClass('current');
+		                                    $('#' + selected).show();
+		                                    $(this).addClass('current');
+	                                    });
+                                    </script>
+
+                                    <h2>Press spacebar to vote on your favorite scenes</h2>
+
+                                    {% endpp_get_iframe_video %}
+
+                                    {% endif %}
+                                    </p>
+                                    <p>
+                                        {{request.object.description|markdown }}
+                                    </p>
+
+                                    {% pp_get_tags object=pp_consensus.consensus %}
+
+                                        {% if pp_tag.tags|length > 0 %}
+
+                                            <ul class="tags" id="tags">
+                                                <li><b>Tags:</b></li>
+                                                    
+                                             {% for name, t_id, c_type_id, count in pp_tag.tags %}
+
+                                                <li><a href="/issues.html?_t={{c_type_id}}&_o={{t_id}}&_d=hn">{{name|replace_w_space}}({{count}})</a></li>
+                                            {% endfor %}
+
+                                            </ul>
+
+                                        {% endif %}
+
+                                    {% endpp_get_tags %} 
+
+                                {% if request.object.location %}
+                                <ul class="tags">
+                                    <li class="title"><b>Location:</b></li>
+                                    <li>{{request.object.location}}</li>
+                                </ul><br>
+                                {% endif %}
+                                {% pp_get_sources object=request.object type='img' %}
+                                    {% if pp_source.count > 0 %}
+                                        <div class="imagetitle">Images:</div>
+                                        <ul class="images" id="images">
+                                               {% for img in pp_source.sources %}
+                                                    <li><a href="{{img.url}}"><img src="{{img.url}}=s70-c"></a></li>
+                                               {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endpp_get_sources %}
+                                <ul class="sources">
+                                    {% pp_get_sources object=request.object type='url'%}
+                                    {% if pp_source.sources %}
+                                       <li class="title">Sources:</li>
+                                        {% for urlsource in pp_source.sources %}
+                                            <li>
+                                                {% ifequal request.user request.object.user %}
+                                                    <a href="{{urlsource.url}}">{{urlsource.url}}</a> <a href="/sourcedelete/{{urlsource.id}}/" style="color:red;">x</a>
+                                                {% else %}
+                                                    <a href="{{urlsource.url}}">{{urlsource.url}}</a> 
+                                                {% endifequal %}
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% endpp_get_sources %}
+                                </ul>                                
+                            
+                 <!--Flags are offline for the moment -->
+                 {% comment %}
+                    <ul class="sources">
+                        <li class="title">Flags:</li>
+                        {% pp_get_flags object=request.object user=request.user %}
+                            {% for flag, upimg, downimg in pp_flag.flags %}
+                        <li><div style="width:45%;">{{flag.votes}}-{{flag.flag_type}}<a><img src='/static/voteimgs/vote_down_{{downimg}}.gif'></a><a><img src='/static/voteimgs/vote_up_{{upimg}}.gif'></a></div></li>
+                            {% endfor %}
+
+                        {% endpp_get_flags %}
+                    </ul>   
+                 {% endcomment %}
+                            <table cellspacing="0" class="rating">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <b><abbr title="How much do you agree with this submission? (1 - Hell no!, 10 - Hell yes!)">Agreement: <span id="stars-cap-spec"></span></div></abbr></b><br>
+
+                                            {% pp_spectrum_form object=request.object user=request.user %}
+
+
+                                            <form method="post" action="">
+
+                                                <div id="stars-wrapper-spec{{request.object.id}}">
+
+                                                {{pp_consensus.form.spectrum}}
+                                                {{pp_consensus.form.form_id}}
+                                                </div>
+                                                {% csrf_token %}
+
+                                            {# input type="submit" class='button green' value="Rating"> #}
+
+                                            </form>
+                                            {% endpp_spectrum_form %}
+                                            
+                                        </td>
+                                        <td>
+                                            <b><abbr title="How informative was this article? (1 - Learned this in kindergarten, 10 - All of Wikipedia at once)">Informative: <span id="stars-cap-rate"></span></abbr></b><br>
+                                            {% pp_rating_form object=request.object user=request.user %}
+
+                                            <form method="post" action="">
+
+                                                <div id="stars-wrapper-rate{{request.object.id}}">
+                                                
+                                                {{ pp_consensus.form.rating}}
+                                                {{pp_consensus.form.form_id}}
+                                                </div>
+                                                
+                                                {% csrf_token %}
+
+                                            {# input type="submit" class='button green' value="Rating"> #}
+
+                                            </form>
+                                            {% endpp_rating_form %}
+                                        </td>
+                                        <td>
+                                         {% comment %}
+                                            <b><abbr title="Add other Flags to this submission to call out hyperbole, logical fallacies, or other erroneous issues.">Flag</abbr>:</b><br>
+                                            {% if user.is_authenticated and user.is_active %}
+
+                                            {% pp_flag_form object=request.object POST=request.POST user=request.user PATH_INFO=request.META.PATH_INFO QUERY_STRING=request.META.QUERY_STRING %}
+
+                                            <form method="post" action="">
+
+                                                {{ pp_flag.form.flag}}
+                                                {{pp_flag.form.form_id}}
+                                                {% csrf_token %}
+
+                                            <input type="submit" class='button grey' value="Flag"> 
+                                            </form>
+                                            {% endpp_flag_form %}
+
+                                            {% endif %}
+                                            {% endcomment %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>  
+
+                            <div class="forms">
+                                <ul class="graph_switcher">
+            
+                                {% if request.user.is_authenticated and request.user.is_active  %}<li class="prev"><a href="#"><img src="/static/img/arrow_left.jpg" alt="Previous"></a></li>{% else %}<li class="prev_disabled"><a href="{% pp_url template=request.META.PATH_INFO|slice:'1:' extraargs=request.META.QUERY_STRING simplebox='True' %}"><img src="/static/img/arrow_left.jpg" alt="Previous"></a></li>{% endif %}
+                                
+                                {% if request.user.is_authenticated and request.user.is_active %}<li class="next"><a href="#"><img src="/static/img/arrow_right.jpg" alt="Next"> </a></li>{% else %}<li class="next_disabled"><a href="{% pp_url template=request.META.PATH_INFO|slice:'1:' extraargs=request.META.QUERY_STRING simplebox='True' %}"><img src="/static/img/arrow_right.jpg" alt="Next"> </a></li>{% endif %}
+                                <li class="last"><i>(Scroll Through Interactions)</i></li>
+                                
+                                </ul>
+                                <div class="new_comment">
+                                    <div>
+                                    <div class="inner"><b>Add Comment</b> | Add Pros | Add Cons | Add Context{% if request.object.child %} | Add {{ request.object.child|title }}{% endif %}</div>
+                                    {% pp_comment_form POST=request.POST path=request.path user=request.user object=request.object%}
+                                        <form method="post" action="">
+                                            <div class="errors">{{ pp_comment.form.errors }}</div>
+                                                    <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
+                                                    {{ pp_comment.form.text }}
+                                                    {{ pp_comment.form.parent}}
+                                                    {{pp_comment.form.form_id}}
+                                                    {% csrf_token %}
+                                                {% if request.user.is_authenticated and request.user.is_active %}                                                            
+                                                <input type="submit" class='button' value="Submit">
+                                        </form>
+                                                {% else %} 
+                                                    <a class='button' href="{% pp_url template=request.META.PATH_INFO|slice:'1:' extraargs=request.META.QUERY_STRING simplebox='True' %}">Submit</a>
+                                                {% endif %}
+                                        {% endpp_comment_form %}
+                                    </div>
+                                    <div>
+                                    <div class="inner">Add Comment | <b>Add Pros</b> | Add Cons | Add Context{% if request.object.child %} | Add {{ request.object.child|title }}{% endif %}</div>
+                                       {% pp_argument_form object=request.object POST=request.POST user=request.user dimension='y' %}
+                                            {{pp_argumentation.errors}}
+                                            {% for err in pp_argumentation.errors %}
+                                            <div class="errors"> {{err|safe}}<br></div>
+                                           {% endfor %}
+                                            <form method="post" action="">
+                                                {{pp_argumentation.form.form_id}}
+                                                {% csrf_token %}
+                                                <div style="float:left;"><b>Title</b>:{{ pp_argumentation.form.summary}}</div>
+                                                <p>
+                                                {{pp_argumentation.form.description}}
+                                                </p>
+                                            <input type="submit" class="green button" value="Submit">
+                                            </form>                                            
+                                        {% endpp_argument_form %}                                       
+                                    </div> 
+                                    <div>
+                                    <div class="inner">Add Comment | Add Pros | <b>Add Cons</b> | Add Context{% if request.object.child %} | Add {{ request.object.child|title }}{% endif %}</div>
+                                       {% pp_argument_form object=request.object POST=request.POST user=request.user dimension='n' %}
+                                            {{pp_argumentation.errors}}
+                                            {% for err in pp_argumentation.errors %}
+                                            <div class="errors"> {{err|safe}}<br></div>
+                                           {% endfor %}
+                                            <form method="post" action="">
+                                                {{pp_argumentation.form.form_id}}
+                                                {% csrf_token %}
+                                                <div style="float:left;"><b>Title</b>:{{ pp_argumentation.form.summary}}</div>
+                                                <p>
+                                                {{pp_argumentation.form.description}}
+                                                </p>
+                                            <input type="submit" class="red button" value="Submit">
+                                            </form>                                            
+                                        {% endpp_argument_form %}
+                                    </div>
+                                    <div>
+                                    <div class="inner">Add Comment | Add Pros | Add Cons | <b>Add Context</b>{% if request.object.child %} | Add {{ request.object.child|title }}{% endif %}</div>
+                                    <div class="addtags">
+                                    {% pp_tag_form POST=request.POST path=request.path object=pp_consensus.consensus user=request.user %}
+                                        <div class="inner"><b>Add Tags</b></div>
+                                           {% for err in pp_tag.errors %}
+                                            <div class="errors"> {{err|safe}}<br></div>
+                                           {% endfor %}
+                                            <form method="post" action="">
+                                                {{pp_tag.form.form_id}}
+                                                {% csrf_token %}
+                                                {{ pp_tag.form.tag}}
+                                            <input type="submit" class="button" value="Submit Tag">
+                                            </form>
+                                    {% endpp_tag_form %}
+                                    </div>
+                                    {% pp_tag_recommendations object=pp_consensus.consensus %}
+                                    <div class="recommendations" id="recommendations">
+                                    <div class="inner"><b>Click to Add Recommended Tags:</b></div>
+                                          {% for count, name, font_size, mod, al in pp_tag.taglist %}
+
+                                                <font size="{{font_size}}" >{% if request.user.is_authenticated and request.user.is_active %}<a href='javascript:;' onClick="add_tag('{{name}}','{{pp_consensus.consensus.id}}','{{mod}}', '{{al}}');">{% else %}<a href="{% pp_url template=request.META.PATH_INFO|slice:'1:' extraargs=request.META.QUERY_STRING simplebox='True' %}">{% endif %}{{name|replace_w_space}}</a></font>{% if not forloop.last %},{% endif %}
+                                
+                                          {% endfor %}
+                                    </div>
+                                    {% endpp_tag_recommendations %} 
+                                    <div class="addsources">
+                                        <div class="inner"><b>Add Sources</b></div>
+                                             {% pp_urlsource_form POST=request.POST object=request.object user=request.user %}
+                                                   {{ pp_source.form.errors }}
+                                                    <form method="post" action="">
+                                                        {{ pp_source.urlform.url}}
+                                                      	{{ pp_source.urlform.form_id}}
+                                                        {% csrf_token %}
+                                                      <input type="submit" class="button" value="Submit URL">
+                                                    </form>
+                                                {% endpp_urlsource_form %}
+
+
+                                    </div>
+                                    <div class="addsources">
+                                            {% pp_get_contenttype_id object=request.object %}
+                                        <b><a href="{% url pirate_sources.views.upload_handler request.object.pk pp_source.ctype_pk %}">Add Image</a></b>
+                                            {% endpp_get_contenttype_id %}
+
+                                     </div>
+                                   </div>
+                                   {% if request.object.child %}
+                                        <div>
+                                        <div class="inner">Add Comment | Add Pros | Add Cons | Add Context | <b>Add {{ request.object.child|title }}</b></div>
+                                            {% pp_blob_form POST=request.POST user=request.user dimension=request.object.get_child_blob_key parent=request.object %}
+                                            <form method="post" action="">
+                                            <div style='display:none'><input type='hidden' name='form_id' value={{pp_blob.form.form_id}} /></div>
+                                            
+                                                    {% for field in pp_blob.form %}
+                                                    {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
+
+                                                    {% else %}
+                                                    <p>
+                                                    <div style="float:left;"><b>{{field.label_tag}}</b>:{{ field }}{% if field.errors %}{% for err in field.errors %}<b style="color:red;">{{ err }}</b>{% endfor %}{% else %}{% endif %}</div>
+                                                    </p>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                {% csrf_token %}
+                                                <p style="float:left;"><input type="submit" class="button" value="Submit" /></p>
+
+                                            </form> 
+                                            {% endpp_blob_form %}
+
+
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="socialhooks">
+                                {% pp_get_url object=request.object safe='True' dimension=request.dimension url=request.path|cut:"/" %}
+                                    <div class="title"><b>Sharing is Caring:</b></div> 
+                                        <div class="addthis_toolbox addthis_32x32_style addthis_default_style">
+                                            <a class="addthis_button_facebook"></a>
+                                            <a class="addthis_button_twitter"></a>
+                                            <a class="addthis_button_email"></a>
+                                            <a class="addthis_button_google"></a>
+                                            <a class="addthis_button_compact"></a>
+                                            <a class="addthis_counter addthis_bubble_style"></a>
+                                        </div>
+                                    </div>
+                                {% endpp_get_url %}
+                            </div>
+                        {% endpp_consensus_get %}
+                        <!-- Social Hooks -->
+
+
+
+                        
+                        <!-- Comments -->
+
+<div class= "content_children">
+<h2>
+
+{% if request.object.child %}
+{% if request.scroll_to_div == 'children' or request.scroll_to_div == None and request.object.child != None %}<b>{% endif %}
+<a href="{% pp_url template='detail.html' object=request.object scroll_to='children' %}">{{request.object.children}} {{ request.object.child|title }}{{request.object.children|pluralize}}</a>
+{% if request.scroll_to_div == 'children' or request.scroll_to_div == None and request.object.child != None %}</b>{% endif %} | 
+{% endif %}
+
+
+{% pp_comment_count object=request.object.id %}
+
+ {% if request.scroll_to_div == 'clist' or request.object.child == None and request.scroll_to_div == None or request.scroll_to_div|slice:":7" == 'comment' %}<b>{% endif %}
+                                      <a href="{% pp_url template='detail.html' object=request.object scroll_to='clist' %}">{{pp_comment.count}} Comments</a> {% if request.scroll_to_div == 'clist' or request.object.child == None and request.scroll_to_div == None or request.scroll_to_div|slice:":7" == 'comment' %}</b>{% endif %} | 
+
+{% endpp_comment_count %}
+
+
+{% pp_get_argument_count object=request.object arg_type='yea' %}
+{% if request.scroll_to_div == 'pros' %}<b>{% endif %}
+<a href="{% pp_url template='detail.html' object=request.object scroll_to='pros' %}">{{pp_argumentation.count}} Pros</a>{% if request.scroll_to_div == 'pros' %}</b>{% endif %} | 
+
+{% endpp_get_argument_count %}
+
+{% pp_get_argument_count object=request.object arg_type='nay' %}
+{% if request.scroll_to_div == 'cons' %}<b>{% endif %}
+<a href="{% pp_url template='detail.html' object=request.object scroll_to='cons' %}">{{pp_argumentation.count}} Cons</a>{% if request.scroll_to_div == 'clist' %}</b>{% endif %} </h2>
+
+{% endpp_get_argument_count %}
+
+                            {% if request.scroll_to_div == 'children' or request.scroll_to_div == None and request.object.child != None %}
+
+                             <div id="children"></div>
+                               <div class="comments">
+
+                                    {% pp_blob_getchildren object=request.object %}
+
+                                        {% for arg in pp_blob.children %}
+
+                                            {% pp_consensus_get object=arg.pk %}
+
+                                            <div class="comment">
+                                                {% pp_get_avatar user=arg.user %}
+                                                <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{arg.user.username}}"></a>
+                                                {% endpp_get_avatar %}
+                                                <div>
+                                                    <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="author">{{arg.user.username}}</a> <span class="meta">{{arg.created_dt|date:"(d/m/Y"}} at {{arg.created_dt|date:"h:sA)"}}</span>
+                                                    <p><b>{{arg.summary}}</b></p>
+                                                        <ul class="comment_links">
+                                                            <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+                                                            {% pp_comment_count object=arg.id %}
+                                                            <li class="non_link">{{pp_comment.count}} Comments</li>
+                                                            {% endpp_comment_count %}
+                                                            {% pp_get_argument_count object=arg %}
+                                                            <li class="non_link">{{pp_deliberation.count}} Arguments</li>
+                                                            {% endpp_get_argument_count %}
+                                                            <li><a href="{% pp_url template='detail.html' object=arg %}">See More and Vote</li>
+                                                        </ul>
+                                                </div>
+                                            </div>
+                                            {% endpp_consensus_get %}
+                                        {% endfor %}
+
+                                {% endpp_blob_getchildren %}
+                             
+                                 </div>
+                            {% endif %}
+
+                            {% if request.scroll_to_div == 'clist' or request.scroll_to_div == None and request.object.child == None or request.scroll_to_div|slice:":7" == 'comment' %}
+                            <div id="clist"></div>
+                            <div class="comments">
+                                {% pp_comment_list_get user=request.user object=request.object.id request=request %}
+
+                                   {% comment %}  {% endcomment %}
+
+                                    {{ pp_comment.comments|safe }}
+
+                                {% endpp_comment_list_get %}
+                            </div>
+                            {% endif %}
+                            {% if request.scroll_to_div == 'pros' %}
+                            <div id="pros"></div>
+                             <div class="comments">
+
+                                {% pp_get_argument_list object=request.object arg_type="yea" %}
+
+                                    {% for arg in pp_argumentation.argument_list %}
+                                        {% pp_consensus_get object=arg.id user=request.user %}
+                                        <div class="comment">
+                                        {% pp_get_avatar user=arg.user %}
+                                        <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{arg.user.username}}"></a>
+                                        {% endpp_get_avatar %}
+                                        <div>
+                                            <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="author">{{arg.user.username}}</a> <span class="meta">{{arg.created_dt|date:"(d/m/Y"}} at {{arg.created_dt|date:"h:sA)"}}</span>
+                                            <p>{{arg.summary}}</p>
+                                            <ul class="comment_links">
+                                                <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+                                                {% pp_comment_count object=arg.id %}
+                                                <li class="non_link">{{pp_comment.count}} Comments</li>
+                                                {% endpp_comment_count %}
+                                                <li><a href="{% pp_url template='detail.html' object=arg %}">See More and Vote</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                        {% endpp_consensus_get %}
+                                {% endfor %}
+                             
+                              </div>
+
+                                {% endpp_get_argument_list %}
+
+
+                            {% endif %}
+
+                            {% if request.scroll_to_div == 'cons' %}
+                            <div id="cons"></div>
+                             <div class="comments">
+
+                                {% pp_get_argument_list object=request.object arg_type="nay" %}
+
+                                    {% for arg in pp_argumentation.argument_list %}
+                                        {% pp_consensus_get object=arg.id user=request.user %}
+                                        <div class="comment">
+                                        {% pp_get_avatar user=arg.user %}
+                                        <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{arg.user.username}}"></a>
+                                        {% endpp_get_avatar %}
+                                        <div>
+                                            <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="author">{{arg.user.username}}</a> <span class="meta">{{arg.created_dt|date:"(d/m/Y"}} at {{arg.created_dt|date:"h:sA)"}}</span>
+                                            <p>{{arg.summary}}</p>
+                                            <ul class="comment_links">
+                                                <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+                                                {% pp_comment_count object=arg.id %}
+                                                <li class="non_link">{{pp_comment.count}} Comments</li>
+                                                {% endpp_comment_count %}
+                                                {% pp_get_argument_count object=arg %}
+                                                <li class="non_link">{{pp_deliberation.count}} Counter Arguments</li>
+                                                {% endpp_get_argument_count %}
+                                                <li><a href="{% pp_url template='detail.html' object=arg %}">See More and Vote</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                        {% endpp_consensus_get %}
+                                {% endfor %}
+                             
+                                 </div>
+                                {% endpp_get_argument_list %}
+                            {% endif %}
+
+                        </div>
+                                
+                           
+                        </div>
+
+
+                        {% comment %}
+                        <!-- Pagination -->
+                        <ul class="pagination">
+                            <li><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">Next</a></li>
+                        </ul>
+                        {% endcomment %}
+                        
+                    </div>
+                    <!-- end #content -->
+
+{% endblock %}

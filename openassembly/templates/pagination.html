@@ -1,0 +1,11 @@
+        <!-- Pagination -->
+        <ul class="pagination">
+
+        {% if pp_blob.count > 20 %}
+            {% for s,e,n in request.rangelist %}
+               {% if not s >= pp_blob.count %}
+                <li><a href="{% pp_url template='issues.html' dimension=request.dimension object=request.object start=s end=e %}">{% if request.start == s %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </ul>

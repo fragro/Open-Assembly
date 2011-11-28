@@ -1,0 +1,65 @@
+{% block content %}
+{% comment %}
+{#<li><a href="{% pp_url template='oa_platform.html' object=object %}">Generate Platform</a>#}
+{#<li><a href="{% pp_url template='oa_poll.html' object=object %}">Generate Poll</a>#}
+<li><a href="{% pp_url template='oa_referral.html' object=object %}">Invite Users</a>
+<li><a href="{% pp_url template='oa_facilitators.html' object=object %}">Add Facilitators</a>
+<li><a onmousedown="toggleSlide('setting_controls');" href="javascript:;"><i>Settings</i></a></li>
+{% endcomment %}
+
+<div id="accordion">
+
+	<h2 class="acc_trigger"><a href="#">Settings</a></h2>
+	<div class="acc_container">
+	    <div class="block">
+	    		<div id="settings">
+				{% include 'oa_group_settings_form.html' %}
+				</div>
+	    </div>
+	</div>
+	<h2 class="acc_trigger"><a href="#">Invite Members</a></h2>
+	<div class="acc_container">
+	    <div class="block">
+	     		<div id="oa_referral">
+
+				{% include 'oa_referral_form.html' %}
+				</div>
+	    </div>
+	</div>
+	<h2 class="acc_trigger"><a href="#">Add Facilitators</a></h2>
+	<div class="acc_container">
+	    <div class="block">
+	    		<div id="add_facilitators">
+					{% include 'oa_facilitators_form.html' %}
+				</div>
+	    </div>
+	</div>
+	<h2 class="acc_trigger"><a href="#">Create Working Group</a></h2>
+	<div class="acc_container">
+	    <div class="block">
+	     		<div id="pp_topic_form">
+				{% include 'pp_topic_form.html' %}
+				</div>
+	    </div>
+	</div>
+
+</div>
+
+  <script>
+  $(document).ready(function() {
+   	//Set default open/close settings
+	$('.acc_container').hide(); //Hide/close all containers
+	$('.acc_trigger:first').addClass('active').next().show(); //Add "active" class to first trigger, then show/open the immediate next container
+	//On Click
+	$('.acc_trigger').click(function(){
+		if( $(this).next().is(':hidden') ) { //If immediate next container is closed...
+			$('.acc_trigger').removeClass('active').next().slideUp(); //Remove all "active" state and slide up the immediate next container
+			$(this).toggleClass('active').next().slideDown(); //Add "active" state to clicked trigger and slide down the immediate next container
+		}
+		return false; //Prevent the browser jump to the link anchor
+	});
+  });
+  </script>
+
+
+{% endblock %}

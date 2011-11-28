@@ -1,0 +1,76 @@
+{% load pp_url %}
+{% load blobtags %}
+{% load argumenttags %}
+{% load messagetags %}
+
+{% block extra-head %}
+
+
+{% endblock %}
+
+{% block content%}
+
+    {% if user.is_authenticated %}
+        
+        {% if dimension == 'edit' %}
+
+            <h2>Editing {{object.get_verbose_name|title}} submitted on {{object.created_dt|date:"(d/m/Y"}})</h2>
+
+                {% include 'pp_blobedit_form.html' %}
+
+        {% else %}
+            
+                {% pp_get_blob_subcontext dimension=dimension %}
+
+                    {% pp_show_blobchoices object=object dimension=pp_blob.dimension user=user%}
+                        <form>
+                        <h1>Choose Type of Content:</h1>
+                        {% for category, choices in pp_blob.choices %}
+                            <select name="ctype" data-placeholder="Choose Content Type" id="id_ctype" style="width:350px;" class="chzn-select">
+                                <option value="" ></option>
+                            {% for name, link, dim in choices %}
+                                    <option {% if dim == dimension %}selected="selected"{% endif %} value="{{dim}}" >{{name}}</option>
+                            {% endfor %}
+                            </select>
+                        </form>
+                        {% endfor %}
+
+                        {% if dimension %}
+
+                            <span id="pp_blob_form">
+
+                                {% include 'submit_form.html' %}
+                            
+                            </span>
+
+                        {% endif %}
+
+                    {% endpp_show_blobchoices %}
+
+                {% endpp_get_blob_subcontext %}
+               
+        {% endif %}
+
+    {% else %}
+
+    <h2><a href="{% pp_url template='register.html' %}" >Hey, you should be logged in to submit content!</a></h2>
+
+    {% endif %}
+
+<script type="text/javascript">
+
+    $("#id_ctype").chosen().change(function() {
+            //first add the help information to the right of the chosen bar
+            $.get("/change_hash_dim/", { hash: location.hash, dim: $('#id_ctype option:selected').val() },
+              function(data) {
+                    if(data.FAIL != true){
+                        location.hash = data.new_hash
+                    }
+             }, "json");  
+            //alert($('#id_ctype option:selected').html());
+            //then populate the page with the necessary form
+         });
+ </script>
+
+{% endblock content %}
+

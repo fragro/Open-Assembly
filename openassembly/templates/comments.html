@@ -1,0 +1,151 @@
+{% load commenttags %}
+
+
+<h2>
+
+{% if object.child %}
+{% if request.scroll_to_div == 'children' or request.scroll_to_div == None and object.child != None %}<b>{% endif %}
+<a href="{% pp_url template='detail.html' object=object scroll_to='children' %}">{{object.children}} {{ object.child|title }}{{object.children|pluralize}}</a>
+{% if request.scroll_to_div == 'children' or request.scroll_to_div == None and object.child != None %}</b>{% endif %} | 
+{% endif %}
+
+
+{% pp_comment_count object=object.id %}
+
+ {% if request.scroll_to_div == 'clist' or object.child == None and request.scroll_to_div == None or request.scroll_to_div|slice:":7" == 'comment' %}<b>{% endif %}
+                                      <a href="{% pp_url template='detail.html' object=object scroll_to='clist' %}">{{pp_comment.count}} Comments</a> {% if request.scroll_to_div == 'clist' or object.child == None and request.scroll_to_div == None or request.scroll_to_div|slice:":7" == 'comment' %}</b>{% endif %} | 
+
+{% endpp_comment_count %}
+
+
+{% pp_get_argument_count object=object arg_type='yea' %}
+{% if request.scroll_to_div == 'pros' %}<b>{% endif %}
+<a href="{% pp_url template='detail.html' object=object scroll_to='pros' %}">{{pp_argumentation.count}} Pros</a>{% if request.scroll_to_div == 'pros' %}</b>{% endif %} | 
+
+{% endpp_get_argument_count %}
+
+{% pp_get_argument_count object=object arg_type='nay' %}
+{% if request.scroll_to_div == 'cons' %}<b>{% endif %}
+<a href="{% pp_url template='detail.html' object=object scroll_to='cons' %}">{{pp_argumentation.count}} Cons</a>{% if request.scroll_to_div == 'clist' %}</b>{% endif %} </h2>
+
+{% endpp_get_argument_count %}
+
+                            {% if request.scroll_to_div == 'children' or request.scroll_to_div == None and object.child != None %}
+
+                             <div id="children"></div>
+                               <div class="comments">
+
+                                    {% pp_blob_getchildren object=object %}
+
+                                        {% for arg in pp_blob.children %}
+
+                                            {% pp_consensus_get object=arg.pk %}
+
+                                            <div class="comment">
+                                                {% pp_get_avatar user=arg.user %}
+                                                <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{arg.user.username}}"></a>
+                                                {% endpp_get_avatar %}
+                                                <div>
+                                                    <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="author">{{arg.user.username}}</a> <span class="meta">{{arg.created_dt|date:"(d/m/Y"}} at {{arg.created_dt|date:"h:sA)"}}</span>
+                                                    <p><b>{{arg.summary}}</b></p>
+                                                        <ul class="comment_links">
+                                                            <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+                                                            {% pp_comment_count object=arg.id %}
+                                                            <li class="non_link">{{pp_comment.count}} Comments</li>
+                                                            {% endpp_comment_count %}
+                                                            {% pp_get_argument_count object=arg %}
+                                                            <li class="non_link">{{pp_deliberation.count}} Arguments</li>
+                                                            {% endpp_get_argument_count %}
+                                                            <li><a href="{% pp_url template='detail.html' object=arg %}">See More and Vote</li>
+                                                        </ul>
+                                                </div>
+                                            </div>
+                                            {% endpp_consensus_get %}
+                                        {% endfor %}
+
+                                {% endpp_blob_getchildren %}
+                             
+                                 </div>
+                            {% endif %}
+
+                            {% if request.scroll_to_div == 'clist' or request.scroll_to_div == None and object.child == None or request.scroll_to_div|slice:":7" == 'comment' %}
+                            <div id="clist"></div>
+                            <div class="comments">
+                                {% pp_comment_list_get user=user object=object.id request=request %}
+
+                                   {% comment %}  {% endcomment %}
+
+                                    {{ pp_comment.comments|safe }}
+
+                                {% endpp_comment_list_get %}
+                            </div>
+                            {% endif %}
+                            {% if request.scroll_to_div == 'pros' %}
+                            <div id="pros"></div>
+                             <div class="comments">
+
+                                {% pp_get_argument_list object=object arg_type="yea" %}
+
+                                    {% for arg in pp_argumentation.argument_list %}
+                                        {% pp_consensus_get object=arg.id user=user %}
+                                        <div class="comment">
+                                        {% pp_get_avatar user=arg.user %}
+                                        <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{arg.user.username}}"></a>
+                                        {% endpp_get_avatar %}
+                                        <div>
+                                            <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="author">{{arg.user.username}}</a> <span class="meta">{{arg.created_dt|date:"(d/m/Y"}} at {{arg.created_dt|date:"h:sA)"}}</span>
+                                            <p>{{arg.summary}}</p>
+                                            <ul class="comment_links">
+                                                <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+                                                {% pp_comment_count object=arg.id %}
+                                                <li class="non_link">{{pp_comment.count}} Comments</li>
+                                                {% endpp_comment_count %}
+                                                <li><a href="{% pp_url template='detail.html' object=arg %}">See More and Vote</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                        {% endpp_consensus_get %}
+                                {% endfor %}
+                             
+                              </div>
+
+                                {% endpp_get_argument_list %}
+
+
+                            {% endif %}
+
+                            {% if request.scroll_to_div == 'cons' %}
+                            <div id="cons"></div>
+                             <div class="comments">
+
+                                {% pp_get_argument_list object=object arg_type="nay" %}
+
+                                    {% for arg in pp_argumentation.argument_list %}
+                                        {% pp_consensus_get object=arg.id user=user %}
+                                        <div class="comment">
+                                        {% pp_get_avatar user=arg.user %}
+                                        <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{arg.user.username}}"></a>
+                                        {% endpp_get_avatar %}
+                                        <div>
+                                            <a href="{% pp_url template='user_profile.html' object=arg.user %}" class="author">{{arg.user.username}}</a> <span class="meta">{{arg.created_dt|date:"(d/m/Y"}} at {{arg.created_dt|date:"h:sA)"}}</span>
+                                            <p>{{arg.summary}}</p>
+                                            <ul class="comment_links">
+                                                <li class="non_link">{{pp_consensus.interest|floatformat:0}} Interest</li>
+                                                {% pp_comment_count object=arg.id %}
+                                                <li class="non_link">{{pp_comment.count}} Comments</li>
+                                                {% endpp_comment_count %}
+                                                {% pp_get_argument_count object=arg %}
+                                                <li class="non_link">{{pp_deliberation.count}} Counter Arguments</li>
+                                                {% endpp_get_argument_count %}
+                                                <li><a href="{% pp_url template='detail.html' object=arg %}">See More and Vote</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                        {% endpp_consensus_get %}
+                                {% endfor %}
+                             
+                                 </div>
+                                {% endpp_get_argument_list %}
+                            {% endif %}
+
+                        </div>

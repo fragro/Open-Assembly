@@ -1,0 +1,42 @@
+ {% load sourcetags %}
+
+  <script>
+
+  $("form#submitform5").submit(function(e){
+        addObject(e);
+    });
+
+</script>
+
+          {% pp_get_contenttype_id object=object %}
+
+ <div class="addsources">
+      <div class="inner"><b>Add Sources</b></div>
+           {% pp_urlsource_form POST=request.POST object=object user=user %}
+            <div id="errors" class="errors">{{ pp_source.errors }}</div>
+                  <form id="pp_urlsource_form" method="post" action="">
+                      {{ pp_source.urlform.url}}
+                      {{ pp_source.urlform.form_id}}
+                      {{csrf_string|safe}}
+                    <input type="submit" class="button" value="Submit URL"><span style="color:grey;" id="submit_pp_urlsource_form"></span>
+                  </form>
+
+                  <span id="pp_urlsource_form_side_effect" style="display:none;">[{{object.pk}}, {{pp_source.ctype_pk}}]</span>
+
+  
+<script>
+
+  $("form#pp_urlsource_form").submit(function(e){
+        $("#submit_pp_urlsource_form").html("<b>Submitting...</b>")
+        addObject(e);
+    });
+
+</script>  
+              {% endpp_urlsource_form %}
+
+  </div>
+  <div class="addsources">
+      <b><a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">Click Here to Add an Image</a></b>
+          {% endpp_get_contenttype_id %}
+
+   </div>

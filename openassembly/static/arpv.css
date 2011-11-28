@@ -1,0 +1,11 @@
+.arpv_img_large {
+	width:240px;
+	float:left;
+	padding:1px;
+}
+
+.arpv_img_small {
+	width:140px;
+	float:left;
+	padding:1px;
+}

@@ -1,0 +1,36 @@
+{% load blobtags %}
+{% load pp_url %}
+
+
+<li class="light_gray">Sort By:</li>
+<li class="first"><a STYLE="text-decoration:none" href="{% pp_url template='issues.html' dimension='hn' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'hn' %}<b>Rising</b>{% else %}Rising{% endif %}</a></li>
+<li><a STYLE="text-decoration:none" href="{% pp_url template='issues.html' dimension='c' start=0 end=20 object=object  sort_type=sort_type %}">{% if dimension == 'c' %}<b>Controversial</b>{% else %}Controversial{% endif %}</a></li>
+<li class="last"><a STYLE="text-decoration:none" href="{% pp_url template='issues.html' dimension='n' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'n' %}<b>New</b>{% else %}New{% endif %}</a></li>
+<li><a STYLE="text-decoration:none" href="{% pp_url template='issues.html' dimension='h' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'h' %}<b>Best</b>{% else %}Best{% endif %}</a></li>
+
+<li>
+
+    {% pp_get_contenttypes dimension=sort_type object=object%}
+        <select name="ctype" data-placeholder="All Content" id="id_ctype_sort" style="width:200px;" class="chzn-select">
+        <option value="" ></option>
+	        {% for dim, name in pp_blob.content_types %}
+	          <option {% if dim == sort_type %}selected="selected"{% endif %} value="{{dim}}" >{{name|title}}</option>
+	        {% endfor %}
+            </select>
+    {% endpp_get_contenttypes %}
+
+</li>
+
+ <script type="text/javascript">
+
+    $("#id_ctype_sort").chosen().change(function() {
+            //first add the help information to the right of the chosen bar
+            $.get("/change_hash_ctype/", { hash: location.hash, dim: $('#id_ctype_sort option:selected').val() },
+              function(data) {
+              	location.hash = data.new_hash;
+   	         }, "json");  
+            //alert($('#id_ctype option:selected').html());
+            //then populate the page with the necessary form
+         });
+ </script>
+

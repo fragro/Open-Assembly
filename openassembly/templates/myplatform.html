@@ -1,0 +1,96 @@
+
+{% load platformtags %}
+{% load consensustags %}
+
+{% block extra-head %}
+
+<link rel="stylesheet" type="text/css" href="/static/jquery.countdown.css">
+<script type="text/javascript" src="/static/jquery.countdown.min.js"></script>
+
+
+<script type="text/javascript"> 
+$(function () {
+	$('#defaultCountdown').countdown({until: new Date(2011, 9, 23)}); 
+ 
+});
+</script> 
+
+{% endblock %}
+
+{% block content %}
+
+{% oa_get_platform_dimensions %}
+
+	<div class="landing">
+
+	<h2>The Platform of The People</h2>
+	<p>
+	To unite the General Assemblies protesting corporate greed across the country we need 
+	a coherent message. With Open Assembly we can develop a platform or manifesto in the spirit of direct democracy.
+	We can maintain our decentralized strength, and rally together behind a common message.
+	</p>
+	<h3>How do I create my platform?</h3>
+
+	<ul>
+	<li>Browse through the policies others
+	have posted and vote for the ones you like</li>
+	<li>If you think the community has missed something, 
+	research your policy and submit it with the "Create Content"</li>
+	<li>Drag Policy you have voted on into the <b>My Policy Platform</b> on the right side</li>
+	</ul>
+	<p>	
+	After you have declared 10 policies in your platform you can stay active by voting on other's content. Even if you
+	haven't declared that content in your platform, your votes are very important to determine the best candidates.
+	</p>
+	<p>
+
+	</p>
+
+	<h3>How do we build a community platform?</h3>
+
+	<p>
+	Once the community has generated their platforms, we identify a set of candidate platforms that satisfy verified users the most and occur together the most. This means that you can either define a concentrated platform, a a diverse platform and Open Assembly will take your preferences into account. After considering the candidate platforms you can rank them as you prefer. We use the <a href="http://en.wikipedia.org/wiki/Schulze_method">Schulze Method</a>, an advanced and highly accurate voting method used around the world. The most preferred platform will emerge victorious.
+	</p>
+	</div>
+
+	<div style="margin-left:5%;">
+		<h2>Countdown Until Generation of the Candidates for the 1st Platform</h2>
+	</div>
+	<div style="margin-top:20px;margin-left:25%;width:50%;float:left;">
+	<div id="defaultCountdown"></div> 
+	</div>
+
+
+	<div style="margin-top:25px;width:100%;float:left;">
+
+			{% for plat in oa_platform.platform_dimensions %}
+
+			{% if request.user.is_authenticated %}
+				<!-- Load list of objects I've voted highly on and expose add_to_platform -->
+				{% oa_get_platform user=request.user content_type=plat.content_type get_consensus='true' %}
+
+					<h2>My {{plat.content_type|title}} Platform ({{oa_platform.planks|length}}/{{plat.num_planks}})</h2>
+
+					{% for object in oa_platform.planks %}
+
+			                {% if object.content_object.summary != None %}
+			            
+			                    {% include 'listing.html' %}
+
+			                {% endif %}
+
+			                {% empty %}
+			                	<div class"landing">
+			                    <h3>You don't have any Policy items in your Platform. Go vote and add to your platform!</h3>
+			                    </div>
+			        {% endfor %}
+
+				{% endoa_get_platform %}
+
+			{% endif %}
+
+			{% endfor %}
+
+		{% endoa_get_platform_dimensions %}
+
+{% endblock %}

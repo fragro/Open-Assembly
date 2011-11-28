@@ -1,0 +1,52 @@
+{% load blobtags %}
+
+
+            {% pp_blob_form POST=request.POST edit='True' user=user dimension=object.get_blob_key object=object sub=pp_blob.sub %}
+
+            {% if pp_blob.form_complete %}
+
+                <h1>Content Successfully Edited</h1>
+
+                <h3><a href="{{pp_blob.path}}">Check it out here</a></h3>
+
+            {% else %}
+
+            {{pp_blob.errors}}
+
+                {{ pp_blob.form.media }}
+                <form id='pp_blobedit_form' method="post" action="">
+                <div style='display:none'><input type='hidden' name='form_id' value='pp_blobedit_form' /></div>
+                    {% if pp_blob.parent_summary %}
+                        <h2>Parent: {{object }}<h2/>
+                    {% endif %}
+                
+                        {% for field in pp_blob.form %}
+                        {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
+
+                        {% else %}
+                        <p>
+                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>: {% if field.errors %}{% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}{% else %}<br>{% endif %}{{ field }}<br>
+                        </p>
+                        {% endif %}
+                        {% endfor %}
+
+
+                    {% csrf_token %}
+                    <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blobedit_form"></span>
+
+                </form> 
+
+                <script>
+                 
+                     $("form#pp_blobedit_form").submit(function(e){
+                        $("#submit_pp_blobedit_form").html("<b>Submitting...</b>")
+                        addObject(e);
+                        $('html').slideto({'highlight': false});                    
+                    });
+                </script>
+
+                {% endif %}
+
+
+
+            {% endpp_blob_form %}

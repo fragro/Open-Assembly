@@ -1,0 +1,16 @@
+<html>
+<head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var data = ["Boston Celtics", "Chicago Bulls", "Miami Heat", "Orlando Magic", "Atlanta Hawks", "Philadelphia Sixers", "New York Knicks", "Indiana Pacers", "Charlotte Bobcats", "Milwaukee Bucks", "Detroit Pistons", "New Jersey Nets", "Toronto Raptors", "Washington Wizards", "Cleveland Cavaliers"];
+            $("#seed_one").autocomplete(data);
+        });
+    </script>
+</head>
+
+<body>
+    <input id="seed_one" type="text" name="seed_one"/>
+</body>
+</html>

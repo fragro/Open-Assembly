@@ -1,0 +1,30 @@
+{% load verificationtags %}
+
+ {% oa_facilitators_form POST=request.POST object=object %}
+    <form id="oa_facilitators_form" method="post" action="">
+
+                {{ oa_ver.form.as_p }}
+
+                {{csrf_string|safe}}
+            {% if user.is_authenticated and user.is_active %}                                                            
+            <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_oa_facilitators_form">
+                
+                {% for err in oa_ver.errors %}
+                    {{err}}<br>
+                {% endfor %}
+            </span>
+    </form>
+            {% else %} 
+                <a class='button' href="{% pp_url template='register.html' %}">Submit</a> {{oa_ver.done}}
+            {% endif %}
+        <script>
+
+          $("form#oa_facilitators_form").submit(function(e){
+                $("#submit_oa_facilitators_form").html("<b>Submitting...</b>");
+                addObject(e);
+            });
+
+        </script>
+
+    {% endoa_facilitators_form %}
+

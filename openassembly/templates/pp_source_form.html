@@ -1,0 +1,30 @@
+ {% load sourcetags %}
+
+  <script>
+
+  $("form#submitform5").submit(function(e){
+        addObject(e);
+    });
+
+</script>
+
+ <div class="addsources">
+      <div class="inner"><b>Add Sources</b></div>
+           {% pp_setting_form POST=request.POST object=object user=user %}
+                 {{ pp_source.form.errors }}
+                  <form id="submitform5" method="post" action="">
+                      {{ pp_source.urlform.url}}
+                      {{ pp_source.urlform.form_id}}
+                      {{csrf_string|safe}}
+                    <input type="submit" class="button" value="Submit URL">
+                  </form>
+              {% endpp_urlsource_form %}
+
+
+  </div>
+  <div class="addsources">
+          {% pp_get_contenttype_id object=object %}
+      <b><a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">Add Image</a></b>
+          {% endpp_get_contenttype_id %}
+
+   </div>

@@ -1,0 +1,42 @@
+{% load topictags %}
+<!--topic source -->
+
+<div class="listing">
+            <div class="interest">
+                <span class="category">Group</span>
+
+                {% if dimension == 'c' or dimension == 'n' %}
+                    <span class="points"> <a href="{{object.get_absolute_url}}">{{ object.children }}</a></span>
+                    <span class="word">ideas</span>
+                {% else %}
+                    <span class="points"> <a href="{{object.get_absolute_url}}">{{ object.group_members}}</a></span>
+                    <span class="word">members</span>
+                {% endif %}
+            </div>
+            <div class="summary"> <b><a href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> </b> {% if object.more_info %} - <a href="{{object.more_info}}">more info</a>{% endif %}
+
+                <span id="addgroup{{object.pk}}"></span>
+
+                <div>
+                <p>
+                    <span class="re">{{object.description|safe}}</span>
+                </p>
+                <p>
+                    {% pp_get_topic_list topic=object %}
+                        {% if pp_topic.count > 0 %}
+                        <b>SubGroups:</b>
+                        <ul>
+                                    {% if pp_topic.topic_list %}
+
+                                        {% for topic in pp_topic.topic_list %}
+                                            <li>{{topic.summary}}</li>
+                                        {% endfor %}
+                                        </ul>
+
+                                    {% endif %}
+                        {% endif %}
+                    {% endpp_get_topic_list %}               
+             </div>
+        </div>
+    <img>
+</div>

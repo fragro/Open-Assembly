@@ -1,0 +1,9 @@
+{% pp_consensus_get object=iss_obj.content_object.pk user=request.user %}
+
+    <div class="ui-spectrum-circle ui-spectrum-circle{{ pp_consensus.user_updown|add:'-1' }}"><a title="">{{pp_consensus.user_updown}}</a></div>
+        {% if not pp_consensus.user_rating == None %}
+            <div class="ui-stars-star-fill ui-stars-star-fill{{ pp_consensus.user_rating|add:'-1' }}"><a title="">{{pp_consensus.user_rating}}</a></div>
+        {% else %}
+            <div class="ui-stars-star"><a title="">{{ pp_consensus.user_rating }}</a></div>
+         {% endif %}                                                                 
+{% endpp_consensus_get %}

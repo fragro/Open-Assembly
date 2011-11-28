@@ -1,0 +1,465 @@
+{% load pp_url %}
+{% load argumenttags %}
+{% load messagetags %}
+{% load profiletags %}
+{% load topictags %}
+{% load reputationtags %}
+{% load notificationtags %}
+{% load markup %}
+{% load badgetags %}
+{% load subscriptiontags %}
+{% load sourcetags %}
+{% load filetransfers %}
+
+{% block js %}
+
+    <script type="text/javascript" src="/static/js/jquery.cycle.lite.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.graph_viewer').cycle({ 
+                fx: 'fade', 
+                speed: 'fast', 
+                timeout: 0, 
+                next: '.next', 
+                prev: '.prev',
+                after: function() {
+                    $('.graphs b').html(this.alt);
+                }
+            });
+
+            var tooltip = $('<div></div>')
+                  .text('Click to change your avatar!')
+                  .css({
+                        position: 'absolute',
+                        display: 'none',
+                        border: '1px solid black',
+                        background: 'white',
+                        color: 'black'
+                  });
+            $('a').mouseenter(function(){
+                  tooltip
+                        .css({
+                              top: $(this).position().top,
+                              left: $(this).position().left
+                        })
+                        .fadeIn('slow');
+            })
+            .mouseleave(function(){
+                  tooltip.fadeOut('slow');
+            });
+        });
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Content -->
+                    
+                    <div class="profile_overview">
+
+                        {% pp_get_avatar user=request.object %}
+
+                            {% pp_get_contenttype_id object=request.object %}
+
+                                {% if request.user = request.object and request.user.is_authenticated %}
+                                <a id="avatar" href="{% url pirate_sources.views.upload_handler request.user.id pp_source.ctype_pk %}">
+                                <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{request.object.username}}"></a>
+                                {% else %}
+                                <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{request.object.username}}">
+                                {% endif %}
+
+                            {% endpp_get_contenttype_id %}
+
+                        {% endpp_get_avatar %}
+
+                        <h2>{{request.object.username}}</h2> 
+                        <table class="user_data" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td class="left"><b>Member Since:</b></td>
+                                    <td>{{request.object.date_joined|date:"d/m/y"}}</td>
+                                </tr>
+                                <tr>
+                                     {% pp_get_reputation user=request.object %}
+                                    <td class="left"><b>Reputation:</b></td>
+                                    <td>+{{pp_reputation.reputation}}</td>
+                                     {% endpp_get_reputation %}
+                                </tr>
+                                <tr>
+                                    {% pp_subscriber_count user=request.object %}                
+                                    <td class="left"><b>Followers:</b></td>
+                                    <td>{{pp_subscription.count}}</td>
+                                    {% endpp_subscriber_count %}
+                                </tr>
+                                <tr>
+                                    {% pp_subscribee_count user=request.object %}                
+                                    <td class="left"><b>Following:</b></td>
+                                    <td>{{pp_subscription.count}}</td>
+                                    {% endpp_subscribee_count %}                
+                                </tr>
+                                <tr>
+                                    <td class="left"><b>Issues:</b></td>
+                                    <td><a href="#">82</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="graphs">
+                            <b>Daily Activity Monitor:</b>
+                            <ul class="graph_switcher">
+        
+                            <li class="prev"><a href="#"><img src="/static/img/arrow_left.jpg" alt="Previous"></a></li>
+                            <li class="next"><a href="#"><img src="/static/img/arrow_right.jpg" alt="Next"></a></li>
+                            
+                            </ul>
+                            <div class="graph_viewer">
+
+                            <img src="/static/img/bar_graph1.jpg" alt="Daily Activity Monitor">
+                            <img src="/static/img/bar_graph2.jpg" alt="Daily Reputation Monitor" style="display:none;">
+
+                            {% comment %}
+                            {% pp_get_reputation_events_graph user=request.object y=10 x=40 type='activity'%}
+                                {{pp_reputation.html|safe}}
+                            {% endpp_get_reputation_events_graph %}
+                            {% pp_get_reputation_events_graph user=request.object y=10 x=30 type='rating'%}
+                               <span style="display:none;">{{pp_reputation.html|safe}}  </span>
+                            {% endpp_get_reputation_events_graph %}
+                            {% endcomment %}
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end .profile_overview -->
+
+
+                    {% if request.user != request.object %} 
+
+                    <!--Interactions between users -->
+                        <div class="profile_overview">
+                           <a class="button" href="{% pp_url template='submit.html' dimension='mes' object=request.object %}">Send Message</a> 
+
+                         {% pp_has_subscription subscriber=request.user subscribee=request.object %}
+                                {% if not pp_subscription.has_subscription %}
+                                    <a class="button" href="{% url ajaxapi.views.add_support request.object.id %}">Follow</a> 
+                                {% else %}
+                                    <a class="button" href="{% url ajaxapi.views.remove_support request.object.id %}">Stop Following</a> 
+                                {% endif %}
+                        {% endpp_has_subscription %}
+
+                        </div>
+                        {% endif %}
+
+
+                    {% if not dimension %}
+
+                    <div class="profile_activity">
+
+                        {% if request.user == request.object and user.is_authenticated %}
+
+                        <b>Messages</b>
+
+                        <table class="user_activity" cellspacing="0">
+                            <tbody> 
+                            {% pp_get_messages user=request.user %}
+                                {% for note in pp_messages.unread %}
+                                    {% cycle "<tr>" "" %}
+                                        {% cycle "<td class='left'>" "<td>" %}
+                                           <span class="icon orange_bg"><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a></span> 
+                                                <p><a href="{% pp_url object=note template='submit.html' dimension='mes' %}">{{note.description|title }}<br></a></p>
+                                                {% cycle "" "</tr>" %}
+                                {% endfor %}   
+                                
+                                {% for note in pp_messages.read %}
+                                    {% cycle "<tr>" "" %}
+                                        {% cycle "<td class='left'>" "<td>" %}
+                                           <span class="icon"><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a></span> 
+                                           <p><a href="{% pp_url object=note template='submit.html' dimension='mes' %}">{{note.description|title }}<br></a></p>
+                                        </td>
+                                    {% cycle "" "</tr>" %}
+                                {% endfor %}      
+                            {% endpp_get_messages %} 
+                            <tr>
+                                <td class="left" colspan="2"><small><a href="#">(view all)</a></small></td>
+                            </tr>
+                            </tbody>
+                        </table>     
+                    </div>
+                    <div class="profile_activity">   
+
+                        <b>Notifications</b>
+
+                        <table class="user_activity" cellspacing="0">
+                            <tbody>
+                             {% pp_notification_list_get start=0 end=10 user=request.user get_new='True' %}
+                                {% for note in pp_messages.unreadnotifications %}
+                                    {% cycle "<tr>" "" %}
+                                        {% cycle "<td class='left'>" "<td>" %}
+                                        {% pp_time_difference_str then=note.submit_date short='True' %}
+                                           <span class="icon orange_bg">{{ pp_tag.dt }}</span> 
+                                        {% endpp_time_difference_str %}
+                                                <p><a href="{{note.link}}">{{note.text|title }}<br></a></p>
+                                                {% cycle "" "</tr>" %}
+                                {% endfor %}   
+                                
+                                {% for note in pp_messages.notifications %}
+                                    {% cycle "<tr>" "" %}
+                                        {% cycle "<td class='left'>" "<td>" %}
+                                            {% pp_time_difference_str then=note.submit_date %}
+                                               <span class="icon">{{ pp_tag.dt }}</span> 
+                                            {% endpp_time_difference_str %}        
+                                           <p><a href="{{note.link}}">{{note.text|title }}<br></a></p>
+                                        </td>
+                                    {% cycle "" "</tr>" %}
+                                {% endfor %}      
+                            {% endpp_notification_list_get %} 
+                            <tr>
+                                <td class="left" colspan="2"><small><a href="#">(view all)</a></small></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                </div>
+                <div class="profile_activity">             
+                        
+                        <b>{% if request.user == request.object %}My {% endif %}Recent Activity</b>
+                        
+                        <table class="user_activity" cellspacing="0">
+                            {% pp_get_reputation_events start=0 end=20 user=request.object start=0 end=8 %}
+                            <tbody>
+                            {% for note in pp_reputation.reputation_events %}
+                                {% cycle "<tr>" "" %}
+                                    {% cycle "<td class='left'>" "<td>" %}
+                                        {% if note.related_object.user == request.object %}
+                                            <span class="icon orange_bg">{{note.dimension|title}}</span>
+                                        {% else %}
+                                            <span class="icon">{{note.dimension|title}}</span>
+                                        {% endif %}
+                                        <p><a href="{{note.get_absolute_url}}">
+                                            {% if note.related_object.content_object.summary %}                                                
+                                                {{note.related_object.content_object.summary}}
+                                            {% else %}
+                                                {{note.related_object}}
+                                            {% endif %}
+                                        <br></a></p>
+                                    </td>
+                                {% cycle "" "</tr>" %}
+                            {% endfor %} 
+                            <tr>
+                                <td class="left" colspan="2"><small><a href="{% pp_url template='user_profile.html' dimension='activity' object=request.object start=0 end=20 %}">(view all)</a></small></td>
+                            </tr>   
+                            </tbody>
+                        </table>
+                        {% endpp_get_reputation_events %}
+
+                        {% endif %}
+            
+                    </div>
+
+                    <div class="profile_activity">
+
+                        {% if request.user == request.object and user.is_authenticated %}
+
+                        <b>My Badges</b>
+
+                        {% else %} 
+
+                        <b>{{request.object.username}}'s Badges</b>
+
+                        {% endif %}
+
+                        <table class="badges" cellspacing="0">
+                            <tbody> 
+                               {% pp_get_badges user=request.object %}
+                                    <p id="badge">
+                                        <ul>
+                                    {% for badge in pp_badge.badges %}
+
+                                      {% cycle "<tr>" "" %}
+                                        {% cycle "<td class='left'>" "<td>" %}
+                                            {% if badge.dimension.badge_type == None %}
+                                <span><a href="/badges.html?_c=badge{{badge.dimension.id}}"><img src="/static/img/bronze.jpg" alt="{{badge.dimension.verbose_name}}">{{badge.dimension.name}}</a></span>
+                                            {% else %}
+                                <span><a href="/badges.html?_c=badge{{badge.dimension.id}}"><img src="/static/img/{{badge.dimension.badge_type.name}}.jpg" alt="{{badge.dimension.verbose_name}}">{{badge.dimension.name}}</a></span>
+                                            {% endif %}
+                                                {% cycle "" "</tr>" %}
+                                    {% empty %}
+
+                                        No badges yet!
+                                    {% endfor %}
+                                {% endpp_get_badges %}
+
+                            </tbody>
+                        </table>     
+                    </div>
+                    <!-- end .profile_activity -->
+                    
+                    <div class="profile_follows">
+                        
+                        <table class="profile_followers" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td class="left" colspan="2"><b>Followers</b></td>
+                                </tr>
+                             {% pp_get_subscribers_for_user user=request.object start=0 end=8 %}
+                                   
+                                    {% for i in pp_subscription.subscribers %}
+                                        {% pp_get_avatar user=i.subscriber %}
+                                            {% cycle "<tr>" "" %}
+                                                <td {% cycle 'class="left"' '' %}><a href="{% pp_url template='user_profile.html' object=i.subscriber %}"><img src="{{pp_profile.thumbnail_small}}" alt="{{i.subscriber.username}}"></a> <a href="{% pp_url template='user_profile.html' object=i.subscriber %}"><span>{{i.subscriber.username}}</span></a></td>
+                                            {% cycle "" "</tr>" %}
+                                        {% endpp_get_avatar %}
+                                    {% endfor %}
+                                    {% endpp_get_subscribers_for_user %}
+                         
+                                <tr>
+                                    <td class="left" colspan="2"><small><a href="{% pp_url template='user_profile.html' dimension='followers' start=0 end=20 object=request.object %}">(view all)</a></small></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <table class="profile_following" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td class="left" colspan="2"><b>Following</b></td>
+                                </tr>
+
+                            {% pp_get_subscribees_for_user user=request.object start=0 end=8 %}
+                                    {% for i in pp_subscription.subscribees %}
+                                    {% cycle "<tr>" "" %}
+                                        {% pp_get_avatar user=i.subscribee %}
+                                <td {% cycle 'class="left"' '' %}><a href="{% pp_url template='user_profile.html' object=i.subscribee %}"><img src="{{pp_profile.thumbnail_small}}" alt="{{i.subscribee.username}}"></a> <a href="{% pp_url template='user_profile.html' object=i.subscribee %}"><span>{{i.subscribee.username}}</span></a></td>
+                                        {% endpp_get_avatar %}
+                                    {% cycle "" "</tr>" %}
+                                    {% endfor %}
+                                {% endpp_get_subscribees_for_user %}
+                                <tr>
+                                    <td class="left" colspan="2"><small><a href="{% pp_url template='user_profile.html' dimension='followees' start=0 end=20 object=request.object %}">(view all)</a></small></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                    <!-- end .profile_follows -->
+
+                    {% else %}
+                    <!-- Here is where we paginate followers/followees/notifications/etc based on the request.dimension  -->
+
+                        {% if request.dimension == 'followers' %}
+                            {% pp_get_subscribers_for_user user=request.object start=request.start end=request.end %}
+                            <div class="profile_follows">
+                                
+                                <table class="profile_followers" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="left" colspan="2"><b>Followers</b></td>
+                                        </tr>
+                                            {% for i in pp_subscription.subscribers %}
+                                                {% pp_get_avatar user=i.subscriber %}
+                                                    {% cycle "<tr>" "" "" "" "" "" "" "" %}
+                                                        <td {% cycle 'class="left"' '' '' '' '' '' '' '' %}><a href="{% pp_url template='user_profile.html' object=i.subscriber %}"><img src="{{pp_profile.thumbnail}}" alt="{{i.subscriber.username}}"></a> <a href="{% pp_url template='user_profile.html' object=i.subscriber %}"><span>{{i.subscriber.username|slice:':10'}}{% if i.subscriber.username|length > 10%}...{% endif %}</span></a></td>
+                                                    {% cycle "" "" "" "" "" "" "" "</tr>" %}
+                                                {% endpp_get_avatar %}
+                                            {% endfor %}
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+
+                            <ul class="pagination">
+
+                                    {% if pp_subscription.count > 20 %}
+                                        {% for s,e,n in request.rangelist %}
+                                           {% if not s > pp_subscription.count %}
+                                            <li><a href="{% pp_url template='user_profile.html' dimension=request.dimension object=request.object start=s end=e %}">{{n}}</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    </ul>
+                            {% endpp_get_subscribers_for_user %}
+
+                        {% endif %}
+
+                        {% if request.dimension == 'followees' %}
+                            {% pp_get_subscribees_for_user user=request.object start=request.start end=request.end %}
+                            <div class="profile_follows">
+                                
+                                <table class="profile_followers" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="left" colspan="2"><b>Following</b></td>
+                                        </tr>
+                                            {% for i in pp_subscription.subscribees %}
+                                                {% pp_get_avatar user=i.subscribee %}
+                                                    {% cycle "<tr>" "" "" "" "" "" "" "" %}
+                                                        <td {% cycle 'class="left"' '' '' '' '' '' '' '' %}><a href="{% pp_url template='user_profile.html' object=i.subscriber %}"><img src="{{pp_profile.thumbnail}}" alt="{{i.subscriber.username}}"></a> <a href="{% pp_url template='user_profile.html' object=i.subscriber %}"><span>{{i.subscribee.username|slice:':10'}}{% if i.subscribee.username|length > 10%}...{% endif %}</span></a></td>
+                                                    {% cycle "" "" "" "" "" "" "" "</tr>" %}
+                                                {% endpp_get_avatar %}
+                                            {% endfor %}
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+
+                            <ul class="pagination">
+
+                                    {% if pp_subscription.count > 20 %}
+                                        {% for s,e,n in request.rangelist %}
+                                           {% if not s > pp_subscription.count %}
+                                            <li><a href="{% pp_url template='user_profile.html' dimension=request.dimension object=request.object start=s end=e %}">{{n}}</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    </ul>
+                            {% endpp_get_subscribees_for_user %}
+
+                        {% endif %}
+
+
+                        {% if request.dimension == 'activity' %}
+
+                        <div class="profile_activity">
+                            <b>Recent Activity</b>
+                            
+                            <table class="user_activity" cellspacing="0">
+                                {% pp_get_reputation_events user=request.object start=request.start end=request.end %}
+                                <tbody>
+                                {% for note in pp_reputation.reputation_events %}
+                                    {% cycle "<tr>" "" %}
+                                        {% cycle "<td class='left'>" "<td>" %}
+                                            {% if note.related_object.user == request.object %}
+                                                <span class="icon orange_bg">{{note.dimension|title}}</span>
+                                            {% else %}
+                                                <span class="icon">{{note.dimension|title}}</span>
+                                            {% endif %}
+                                            <p><a href="{{note.related_object.get_absolute_url}}">
+                                                {% if note.related_object.content_object.summary %}                                                
+                                                    {{note.related_object.content_object.summary}}
+                                                {% else %}
+                                                    {{note.related_object}}
+                                                {% endif %}
+                                            <br></a></p>
+                                        </td>
+                                    {% cycle "" "</tr>" %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <ul class="pagination">
+
+                            {% if pp_reputation.count > 20 %}
+                                {% for s,e,n in request.rangelist %}
+                                   {% if not s > pp_reputation.count %}
+                                    <li><a href="{% pp_url template='user_profile.html' dimension=request.dimension object=request.object start=s end=e %}">{{n}}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul>
+                        {% endpp_get_reputation_events %}
+                        </div>
+
+                        {% endif %}
+
+                    {% endif %}
+                    
+
+{% endblock %}

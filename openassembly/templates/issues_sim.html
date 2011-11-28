@@ -1,0 +1,19 @@
+
+{% for iss_obj in blob_list %}
+
+        {% if iss_obj.content_object.summary != None %}
+    
+            {% include 'listing.html' %}
+
+        {% else %}
+            {% if request.user.is_staff %}
+                {{iss_obj.id}}
+            {% endif %}
+        
+        {% endif %}
+
+        {% empty %}
+
+            <h1>There doesn't seem to be anything here yet.</h1>
+
+{% endfor %}

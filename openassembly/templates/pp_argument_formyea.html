@@ -1,0 +1,16 @@
+<div class="inner">Add Comment | <b>Add Pros</b> | Add Cons | Add Context{% if object.child %} | Add {{ object.child|title }}{% endif %}</div>
+   {% pp_argument_form object=object POST=request.POST user=user dimension='y' %}
+        {{pp_argumentation.errors}}
+        {% for err in pp_argumentation.errors %}
+        <div class="errors"> {{err|safe}}<br></div>
+       {% endfor %}
+        <form method="post" action="">
+            {{pp_argumentation.form.form_id}}
+            {{csrf_string|safe}}
+            <div style="float:left;"><b>Title</b>:{{ pp_argumentation.form.summary}}</div>
+            <p>
+            {{pp_argumentation.form.description}}
+            </p>
+        <input type="submit" class="green button" value="Submit">
+        </form>                                            
+    {% endpp_argument_form %}               

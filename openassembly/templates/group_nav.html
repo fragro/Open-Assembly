@@ -1,0 +1,18 @@
+{% load blobtags %}
+{% load pp_url %}
+{% load cani %}
+{% load platformtags %}
+
+{% comment %}
+<li class="light_gray">Tools:</li>    
+<li class="first"><a href="{% pp_url template='issues.html' object=object start=0 end=20 dimension='hn' %}">Forum</a></li>
+{#<li><a href="{% pp_url template='polls.html' object=object %}">Polls</a></li>#}
+	{% oa_get_platform_dimensions object=object complete=0 %}
+	<li><a href="{% pp_url template='platform.html' object=object %}">Platform Elections ({{oa_platform.count}})</a></li>
+	{% endoa_get_platform_dimensions %}
+
+<li><a href="{% pp_url template='topics.html' object=object start=0 end=20 dimension='c' %}">Working Groups</a></li>
+{% if object.more_info %}<li><a href="{{object.more_info}}">Website</a></li>{% endif %}
+{% endcomment %}
+
+{% cani object=object user=user %}{% if pp_permissions.permission %}<li class="last"><a onmousedown="toggleSlide('moderator_controls');" href="javascript:;"><i>Facilitator +</i></a></li>{% endif %}{% endcani %}

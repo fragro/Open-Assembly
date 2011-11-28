@@ -1,0 +1,24 @@
+    {{ pp_blob.form.media }}
+	<form method="post" action="">
+    <div style='display:none'><input type='hidden' name='form_id' value={{pp_blob.form.form_id}} /></div>
+    {% if pp_blob.parent_summary %}
+        <h2>Parent: {{request.object }}<h2/>
+
+    {% endif %}
+    
+            {% for field in pp_blob.form %}
+            {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
+
+            {% else %}
+            <p>
+                <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>: {% if field.errors %}{% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}{% else %}<br>{% endif %}{{ field }}<br>
+            </p>
+            {% endif %}
+            {% endfor %}
+
+
+		{% csrf_token %}
+        <input type="submit" class="button green" value="Submit" />
+
+	</form> 
+

@@ -1,0 +1,50 @@
+{% load consensustags %}
+{% load sourcetags %}
+
+{% pp_consensus_get object=object.pk %}
+
+    {% pp_get_tags object=pp_consensus.consensus %}
+
+            {% if pp_tag.tags|length > 0 %}
+
+                <ul class="tags" id="tags">
+                    <li><b>Tags:</b></li>
+                        
+                 {% for name, t_id, c_type_id, count in pp_tag.tags %}
+
+                    <li><a href="/index.html#list/_t{{c_type_id}}/_o{{t_id}}/_dhn">{{name|replace_w_space}}({{count}})</a></li>
+                {% endfor %}
+
+                </ul>
+
+            {% endif %}
+
+        {% endpp_get_tags %} 
+
+    {% pp_get_sources object=object type='img' %}
+        {% if pp_source.count > 0 %}
+            <div class="imagetitle">Images:</div>
+            <ul class="images" id="images">
+                   {% for img in pp_source.sources %}
+                        <li><a href="{{img.url}}" target="_blank"><img src="{{img.url}}=s70-c"></a></li>
+                   {% endfor %}
+            </ul>
+        {% endif %}
+    {% endpp_get_sources %}
+    <ul class="tags">
+        {% pp_get_sources object=object type='url'%}
+        {% if pp_source.sources %}
+           <li class="title"><b>Sources:</b></li>
+            {% for urlsource in pp_source.sources %}
+                <li>
+                    {% ifequal user object.user %}
+                        <a href="{{urlsource.url}}" target="_blank">{{urlsource.url}}</a> <a href="/sourcedelete/{{urlsource.id}}/{{pp_consensus.consensus.pk}}/" style="color:red;">x</a>
+                    {% else %}
+                        <a href="{{urlsource.url}}" target="_blank">{{urlsource.url}}</a> 
+                    {% endifequal %}
+                </li>
+            {% endfor %}
+        {% endif %}
+        {% endpp_get_sources %}
+
+{% endpp_consensus_get %}

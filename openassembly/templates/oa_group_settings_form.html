@@ -1,0 +1,20 @@
+ {% load topictags %}
+
+  <script>
+
+  $("form#submitform5").submit(function(e){
+        addObject(e);
+    });
+
+</script>
+
+{% pp_getcreate_setting topic=object %}
+   {% pp_setting_form POST=request.POST object=pp_topic.settings %}
+         {{ pp_source.form.errors }}
+          <form id="submitform5" method="post" action="">
+              {{pp_topic.form.as_p}}
+            <input type="submit" class="button" value="Submit">
+          </form>
+      {% endpp_setting_form %}
+{% endpp_getcreate_setting %}
+

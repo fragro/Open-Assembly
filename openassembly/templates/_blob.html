@@ -1,0 +1,88 @@
+{% load pp_url %}
+{% load topictags %}
+{% load consensustags %}
+{% load argumenttags %}
+{% load commenttags %}
+{% load tag_helpers %}
+{% load markup %}
+
+
+        {% if iss_obj.content_object %}  
+
+        <div class="issue">
+		    <div class="issueback">                
+                <div class="bullet_i">
+                <img src="/static/images/{{iss_obj.content_object.get_blob_key}}_icon.png">
+			    <h1> {{ iss_obj.interest|floatformat:0 }}
+			    </h1>
+                </div>
+                {% comment %}
+                {% else %}
+                {% if request.dimension == "c" %}
+                <div class="bullet_c">
+                <img src="/static/images/{{iss_obj.content_object.get_blob_key}}_icon.png">
+                <h1> {{ iss_obj.controversy|floatformat:0 }}
+			    </h1>
+                </div>
+                {% endif %}{% endif %}
+                {% endcomment %}
+			  <!--  <div class="bullet_daylight"></div>
+			    <div class="bullet_verdict"></div> -->
+
+                        
+                    <div class="issueinformation">
+                    <div class="issheader">
+            <a href="{% pp_url template='detail.html' object=iss_obj.content_object %}"> {{iss_obj.content_object.summary}} </a></div></div>
+                                    
+											    <div class="iss_col1">
+                                            
+                                            {% pp_comment_count object=iss_obj.content_object.id %}
+                                                         
+                               {{iss_obj.content_object.get_verbose_name }} 
+
+{% if iss_obj.content_object.parent != request.object %} | <a href="{% pp_url template='issues.html' object=iss_obj.content_object.parent dimension=request.dimension %}">{{ iss_obj.content_object.parent.summary }}</a> {% endif %}  by <a href="{% pp_url template='user_profile.html' dimension='i' object=iss_obj.content_object.user %}">{{ iss_obj.content_object.user.username }}</a>     
+<br>
+{{ pp_comment.count }} comment{{ pp_comment.count|pluralize}} {% if iss_obj.content_object.child %} | <a href="{% pp_url template='issues.html' dimension='hot' object=iss_obj.content_object %}">{{iss_obj.content_object.children}} {{iss_obj.content_object.child}}{{iss_obj.content_object.children|pluralize}}</a> {% endif %} {{iss_obj.content_object.created_dt|date:"(d/m/Y h:sA)"}} 
+   
+                                                 {% endpp_comment_count %}
+
+
+{% oa_get_actiontaken object=iss_obj.content_object %}
+
+    {% if oa_verification.has_action_taken %}
+
+    <a href="{{oa_verification.url}}" class="small button green"><img style="margin-bottom:-1%;border:0;" src="/static/images/check_icon.png">{% if oa_verification.verb %}{{oa_verification.verb|title}}{% else %}Action Taken{% endif %}</a> 
+
+    {% endif %}
+
+{% endoa_get_actiontaken %}
+									                         </div>                                            
+
+											    
+                                                  <div class="isstags">
+                                            Tags:
+                                            {% pp_get_tags_for_object object=iss_obj %}
+			                                                {% for tag in pp_tag.tags %}
+                                            <a href="{% pp_url template='issues.html' object=tag dimension='hot' %}">{{tag.name}}</a>{% if not forloop.last %},{% endif%}
+                                                            {% empty %}
+                                                               N/A
+                                                            {% endfor %}
+                                                    {% endpp_get_tags_for_object %}
+            							          </div>
+                                                  <div class="voted">
+                                                  {% pp_consensus_get object=iss_obj.content_object.pk user=request.user %}
+                                                    <div class="ui-spectrum-circle ui-spectrum-circle{{ pp_consensus.user_updown|add:'-1' }}"><a title="">{{pp_consensus.user_updown}}</a></div>
+                                                    {% if not pp_consensus.user_rating == None %}
+                                             <img src="/static/images/star_{{pp_consensus.user_rating}}.gif">
+                                             
+                                                     {% else %}
+                                             <div class="ui-stars-star"><a title="">{{ pp_consensus.user_rating }}</a></div>
+                                                     {% endif %}                                                                 
+                                                    {% endpp_consensus_get %}
+                                                  </div>
+                                        
+                                            
+					                </div>
+				            </div>
+
+{% endif %}

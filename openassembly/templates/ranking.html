@@ -1,0 +1,63 @@
+<script>
+
+$(document).ready(function(){
+        
+        $('#bookmark_system ul').sortable({
+            tolerance: 'pointer',
+            opacity: .5,
+            connectWith: '#bookmark_system ul',
+            receive: function(event, ui) {
+                if ($(ui.sender).attr('id') == 'votes') {
+                    var ReceiverId = $(this).closest('#trash').attr('id');
+                    if (ReceiverId != 'trash'){
+                        add_platform($(ui.item).attr('class'), $(ui.item).attr('id'));
+                    }
+                    if (ReceiverId == 'trash'){
+                        $(ui.item).fadeOut('slow', function() {
+                        // Animation complete.
+                        });                        }
+                }
+                if ($(ui.sender).attr('id') == 'platform') {
+                    remove_platform($(ui.item).attr('class'), $(ui.item).attr('id'));
+                    var ReceiverId = $(this).closest('#trash').attr('id');
+                    if (ReceiverId == 'trash'){
+                        $(ui.item).fadeOut('slow', function() {
+                        // Animation complete.
+                        });
+                    }
+                }
+            }
+        });         
+    });
+
+</script>
+
+    {% oa_get_platform_dimensions %}
+
+    {% for plat in oa_platform.platform_dimensions %}
+
+        {% oa_get_platform user=request.user content_type=plat.content_type %}
+
+        <div id="bookmark_system" class="recent_activity">
+        <b>My {{plat|title}} Platform</b> 
+        <ul id="platform">
+
+                {% for plank in oa_platform.planks %}
+
+                    <li id="{{plank.pk}}" class="{{plat.content_type.pk}}">
+                        <a href="{{plank.get_absolute_url}}">
+                            <p>
+                                <span>{{plank.summary}}</span><br>
+                            </p>
+                        </a>
+                    </li>
+
+                {#<li id="{{plank}}"><a href="#">{{plank}}</a></li>#}
+
+                {% endfor %}
+
+            {% endoa_get_platform %}
+
+    {% endfor %}
+
+    {% endoa_get_platform_dimensions %}

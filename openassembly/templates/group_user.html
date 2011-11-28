@@ -1,0 +1,9 @@
+<div class="group_user">
+
+{% pp_get_avatar user=mygroup.user %}
+    <a href="{% pp_url template='user_profile.html' object=mygroup.user %}"><img class="avatar" src="{{pp_profile.thumbnail_small}}" alt="{{mygroup.user.username}}"></a>
+    {% endpp_get_avatar %}
+
+    <a class="user" href="{% pp_url template='user_profile.html' object=mygroup.user %}" >{{mygroup.user.username}}</a>
+
+</div>

@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+{% load pp_url %}
+{% load logintags %}
+
+{% block content %}
+
+        <div class="faq">
+        <div class="comic">
+
+        <h1>Tulsa Film Genome Project</h1>
+
+        <h2>What's a Film Genome Project?</h2>
+            <p> <img style="float:right;" src="/static/img/tfgp1.jpg"></p>
+            <p>
+                A film genome project is designed to <b>collaboratively capture a snapshot of your city</b> through photos and film. Rather than simply the vision of a single film maker, this project captures the vision of all collaborators and voters through our democratic evolutionary editing process. This project is the first of its kind, no other collaborative film project has harnessed the power of evolution. The process is simple:
+                <ul>
+                <li> You submit ideas and/or video</li> 
+                <li> You vote on your favorite scenes </li>
+                <li> OpenAssembly <a href="http://en.wikipedia.org/wiki/Genetic_algorithm">evolutionarily edits</a> the film using your votes!</li>
+                </ul>
+
+            </p>
+        <h2> How does this evolution occur? </h2> 
+        <p>
+        <p><img style="float:left;" src="/static/img/tfgp2.jpg"></p>
+        <p>
+            With the videos you submit and the ones we create based on your ideas, users vote for their favorite sequences and collaboratively decide how the film will be produced. With these votes in hand as weapons, the films enter a deathmatch arena. Only the strong will survive.
+        </p>
+        </p>
+
+        <p> 
+        <p><img style="float:right;" src="/static/img/tfgp3.jpg"></p>
+        Only the best videos will survive your voting. The lucky few that survived the initial voting are then paired off and sent off on romantic dinner dates. These couples will mate and create the next generation of films, ready to battle within the arena! Each new generation is stronger, happier, and more productive.
+
+        </p>
+
+        <p>
+        <p><img style="float:left;" src="/static/img/tfgp4.jpg"></p>
+        <p>This vicious cycle of arena combat and forced mating will occur for thousands of generations, until a great leader emerges victorious. The final film will truly exemplify the city of Tulsa!
+        <h2 style="text-align:center;">There Can Only Be One</h2><a style="margin-left:22%;" class="button" href="{% pp_url template=request.META.PATH_INFO|slice:'1:' extraargs=request.META.QUERY_STRING simplebox='True' %}">Join Us</a></p>
+
+
+        </p>
+
+        </div></div>
+{% endblock %}
+

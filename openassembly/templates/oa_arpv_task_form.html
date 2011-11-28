@@ -1,0 +1,52 @@
+{% load verificationtags %}
+
+{% oa_get_task user=user %} <!-- precaching the task here, boss -->
+
+	{% if oa_ver.task %}
+
+		{% oa_ver_task user=user POST=request.POST task=oa_ver.task%}
+
+			{% if oa_ver.form_complete %}
+
+			<!--hackish way, since this is only admins for now -->
+			<h1> Thanks for the Verification, Hit F5 to do Another Task </h2>
+
+			{% else %}
+
+				{{oa_ver.errors}}
+
+				<div class="arpv_img_large"><img src="{{oa_ver.task.pv1.photo.url}}=s240-c"></div><div class="arpv_img_large"><img src="{{oa_ver.task.pv2.photo.url}}=s240-c"></div><br>
+
+				<h2>Is there a single person in both photos?</h2>
+
+				<form method="post" action="" id="oa_arpv_task_form">
+				
+					    {{oa_ver.form.form_id}}
+		  
+	            		{{csrf_string|safe}}
+
+				          <h2>{{oa_ver.form.choose}}</h2>
+				          <br>
+
+		           <p><input type="submit" class ="small button green" value="Submit"/><span id="submit_oa_arpv_task_form"></span></p>
+
+				</form>
+			
+			{% endif %}
+
+		{% endoa_ver_task %}
+
+	{% else %}
+		<h2>Task Unavailable</h2>
+	{% endif %}
+
+{% endoa_get_task %}
+
+<script>
+
+  $("form#oa_arpv_task_form").submit(function(e){
+        $("#submit_oa_arpv_task_form").html("<b>Submitting...</b>")
+        addObject(e);
+    });
+
+</script>  
