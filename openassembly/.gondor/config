@@ -1,6 +1,6 @@
 [gondor]
 site_key = SBVCH59OXLH
-vcs = hg
+vcs = git
 
 [app]
 ; This path is relative to your project root (the directory .gondor is in)

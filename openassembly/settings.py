@@ -1,4 +1,4 @@
-from djangoappengine.settings_base import *
+#from djangoappengine.settings_base import *
 
 FACEBOOK_API_KEY = ''
 FACEBOOK_APP_ID = ''
@@ -12,8 +12,8 @@ TWITTER_AUTHORIZATION_URL = ''
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
-DATABASES['native'] = DATABASES['default']
-DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
+#DATABASES['native'] = DATABASES['default']
+#DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
 
 AUTOLOAD_SITECONF = 'indexes'
 
@@ -126,3 +126,8 @@ PISTON_DISPLAY_ERRORS = True
 
 OPENASSEMBLY_AGENT = 'http://localhost:8888/jsonrpc'
 OPENASSEMBLY_KEY = "frank"
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
