@@ -1,1 +1,0 @@
-../lib/PyEtherpadLite/src/py_etherpad.py
