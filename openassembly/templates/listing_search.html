@@ -24,7 +24,7 @@
 
         {% pp_get_sources object=pp_consensus.consensus.content_object type='img' %}
             {% if pp_source.cur_img %}
-                <img src="{{pp_source.cur_img.url}}=s70-c" alt="{{pp_consensus.consensus.content_object.summary}}">
+                <img src="{{pp_source.cur_img.url}}" alt="{{pp_consensus.consensus.content_object.summary}}">
             {% endif %}
         {% endpp_get_sources %}
 

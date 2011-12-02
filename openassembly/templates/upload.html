@@ -28,7 +28,7 @@
           {% for upload in uploads %}
              <div style="width:20%;float:left;">
                   {% url pirate_sources.views.download_handler pk=upload.pk as fallback_url %}
-                  <img src="{{upload.url}}=s70-c"><br>
+                  <img src="{{upload.thumbnail.url}}"><br>
                   {% if upload.private %}<i>Private</i>{% endif %}({{ upload.file.size|filesizeformat }})<br>
 
                   <a href="{% firstof upload.file|public_download_url fallback_url %}">Download</a> | 

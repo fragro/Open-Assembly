@@ -3,12 +3,22 @@
 
 {% if object %}
 
-    <li><a  href="{% pp_url template='issues.html' object=object start=0 end=20 dimension='hn' %}">Forum</a></li>
+	{% pp_get_topic object=object %}   
+		{% if pp_topic.parent != None %}
 
-    <li><a href="{% pp_url template='topics.html' object=object dimension='c' start=0 end=20 %}">Groups</a></li>
+		    <li><a  href="{% pp_url template='issues.html' object=object start=0 end=20 dimension='hn' %}">Forum</a></li>
 
-   <li><a href="{% pp_url template='group.html' object=object dimension='c' start=0 end=20 %}">Info</a></li>
+		    <li><a href="{% pp_url template='topics.html' object=object dimension='c' start=0 end=20 %}">Groups</a></li>
 
+		   <li><a href="{% pp_url template='group.html' object=object dimension='c' start=0 end=20 %}">Info</a></li>
+
+
+		{% else %}
+
+
+		{% endif %}
+
+	{% endpp_get_topic %}
 
 
 {% else %}
@@ -21,5 +31,5 @@
 {% endif %}
 
 {% if not user.is_authenticated %}                
-    <li><a href="{% pp_url template='register.html' %}">My Account</a></li>
+    <li><a href="{% pp_url template='register.html' %}">Register</a></li>
 {% endif %}
