@@ -103,12 +103,12 @@ class Rating(models.Model):
 class Consensus(models.Model):
     #Generic conesensus object that acts as parent for all agree/disagree/votes
 
-    parent_pk = models.IntegerField(blank=True, null=True)
+    parent_pk = models.CharField(max_length=40, blank=True, null=True)
     submit_date = models.DateTimeField(_('date/time submitted'), auto_now_add=True)
     content_type = models.ForeignKey(ContentType,
                                       verbose_name=_('content type'),
                                       related_name="content_type_set_for_%(class)s")
-    object_pk = models.IntegerField(_('object ID'))
+    object_pk = models.CharField(_('object ID'), max_length=100)
     content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     #number of children
     votes = models.IntegerField(default=0)
@@ -197,7 +197,7 @@ class Phase(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return str(self.conensus) + " " + str(self.complete)
+        return str(self.consensus) + " " + str(self.complete)
 
 
 #This is the basic voting object utilized with Reddit-like consensus
@@ -205,13 +205,13 @@ class UpDownVote(models.Model):
     # Content-object field
     parent = models.ForeignKey(Consensus,
             verbose_name=_('parent'))
-    parent_pk = models.IntegerField(blank=True, null=True)
+    parent_pk = models.CharField(max_length=100, blank=True, null=True)
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
     user = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
     vote_type = models.IntegerField()
     #For simplicity upvote == 1, downvote == -1, neut == 0
-    object_pk = models.IntegerField(_('Object_PK'), blank=True, null=True)
+    object_pk = models.CharField(_('Object_PK'), max_length=100, blank=True, null=True)
 
     class Meta:
         unique_together = (('parent', 'user'),)
@@ -318,12 +318,12 @@ class RatingVote(models.Model):
     """
     parent   = models.ForeignKey(Consensus,
             verbose_name=_('parent'))
-    parent_pk = models.IntegerField(blank=True, null=True)
+    parent_pk = models.CharField(max_length=100, blank=True, null=True)
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
     user        = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
     vote_pos = models.IntegerField() #should add up to 1
-    object_pk = models.IntegerField(_('Object_PK'))
+    object_pk = models.CharField(_('Object_PK'), max_length=100)
     
     class Meta:
         unique_together = (('object_pk', 'user'),)
@@ -358,4 +358,5 @@ admin.site.register(WeightedVote)
 admin.site.register(RatingVote)
 admin.site.register(Spectrum)
 admin.site.register(Rating)
-
+admin.site.register(Phase)
+admin.site.register(PhaseLink)
