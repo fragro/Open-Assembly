@@ -2,7 +2,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import add_to_builtins
 import datetime
 from pirate_forum.models import View, create_view
-from google.appengine.ext import deferred
 
 TYPE_KEY = "_t"
 OBJ_KEY = "_o"
@@ -41,7 +40,6 @@ class UrlMiddleware(object):
         simplebox = request.GET.get(SIMPLEBOX_KEY)
         search = request.GET.get(SEARCH_KEY)
 
-
         if search is not None:
             request.search = search
 
@@ -79,7 +77,8 @@ class UrlMiddleware(object):
             request.scroll_to_div = scroll_to
 
         if obj_id is not None:
-            deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), obj_id, _countdown=10)
+            pass
+            #deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), obj_id, _countdown=10)
         """
         ##TODO:
         ##THIS SHOULD BE REWRITTEN TO ONLY TAKE INTO ACCOUNT WHAT WE WANT TO SAVE
@@ -137,6 +136,8 @@ class UrlMiddleware(object):
         if request_path != '/favicon.ico' and request_path[0:7] != '/submit' and request_path not in ['update_video_votes','add_video_vote','/starvote/', '/logout/', '/spectrumvote/','/'] and request_path[0:6] not in ['/reset','/uploa'] and request.path[0:9] != '/password':
             request.session['currently_visiting'] = request_path
         """
+
+
 class AddToBuiltinsMiddleware(object):
     def process_request(self, request):
         # This adds all tags registered separately through native_tags to the builtins

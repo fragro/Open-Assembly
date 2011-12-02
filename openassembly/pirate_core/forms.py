@@ -1,7 +1,6 @@
 import hashlib
 
 from django.utils.translation import ugettext_lazy as _
-from google.appengine.api import images
 
 from exceptions import ValueError, TypeError
 from django import forms
@@ -226,13 +225,7 @@ class ComboFormFactory(object):
 # it relies on unavailable PIL APIs. Here's my own version that works.
 
 def image_bytes_are_valid(image_bytes):
-    try:
-        test_image = images.Image(image_bytes)
-        # Unfortunately the only way to validate image bytes on AppEngine is to
-        # perform a transform. Lame.
-        ignored_output = test_image.execute_transforms(images.PNG)
-    except images.Error:
-        return False
+
     return True
 
 class AppEngineImageField(forms.FileField):

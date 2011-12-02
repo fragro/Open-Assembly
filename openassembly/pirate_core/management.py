@@ -2,13 +2,8 @@
     pirate_messages.models.create_notification users signals to create 
     flexible notifications from django-notifications
 """
-from django.contrib.sites.models import Site
 from django.conf import settings
 from django.db.models import signals
-
-
-current_site, is_new = Site.objects.get_or_create(id=settings.SITE_ID)
-current_site.save()
 
 
 if False:
