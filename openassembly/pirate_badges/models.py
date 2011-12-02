@@ -39,7 +39,7 @@ class Badge(models.Model):
     user = models.ForeignKey(User)
     created_dt = models.DateTimeField(auto_now_add=True)
     dimension = models.ForeignKey(BadgeDimension)
-    badge_type_id = models.IntegerField(_('Badge Type Id'), blank=True, null=True)
+    badge_type_id = models.CharField(_('Badge Type Id'), max_length=40, blank=True, null=True)
     
             
     def __unicode__(self):
