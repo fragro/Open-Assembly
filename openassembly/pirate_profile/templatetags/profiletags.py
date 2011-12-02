@@ -8,7 +8,6 @@ from tagging.models import Tag, TaggedItem
 from pirate_profile.models import Profile
 from pirate_core.helpers import clean_html
 from pirate_sources.models import IMGSource
-from google.appengine.api import images
 
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
 
@@ -131,10 +130,10 @@ def pp_get_avatar(context, nodelist, *args, **kwargs):
     user = kwargs.get('user', None)
     
     try: 
-        img = IMGSource.objects.get(object_pk=user.pk,current=True)
-        url = img.url + '=s180-c'
-        thumbnail = img.url + '=s70-c'
-        thumbnail_small = img.url + '=s20-c'
+        img = IMGSource.objects.get(object_pk=user.pk, current=True)
+        url = img.thumbnail_large.url
+        thumbnail = img.thumbnail.url
+        thumbnail_small = img.thumbnail_small.url
         has_avatar = True
     except:
         url = '/static/img/avatar_180x160.jpg' 
