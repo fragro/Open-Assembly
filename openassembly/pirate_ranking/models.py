@@ -18,10 +18,10 @@ class Ranking(models.Model):
     content_type = models.ForeignKey(ContentType,
                                       verbose_name=_('content type'),
                                       related_name="content_type_set_for_%(class)s")
-    object_pk = models.IntegerField(_('object ID'))
+    object_pk = models.CharField(_('object ID'), max_length=100)
     content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
 
-    consensus_pk = models.IntegerField(_('consensus_object ID'))
+    consensus_pk = models.CharField(_('consensus_object ID'), max_length=100)
     dimension = models.CharField(max_length=25)
     score = models.FloatField()
 
@@ -132,6 +132,7 @@ def get_ranked_list(parent, start, end, dimension, ctype_list):
             issue_list = TaggedItem.objects.get_union_by_model(Consensus, parent)
         elif parent:
             #try to filter by topic
+            pass
             issue_list = issue_list.filter(parent_pk=parent.pk)
         if ctype_list is not None:
             try:
@@ -143,7 +144,7 @@ def get_ranked_list(parent, start, end, dimension, ctype_list):
                 #invalid ctype_list key
 
         issue_list = issue_list.exclude(content_type=ctype)
-
+        #issue_list = Consensus.objects.all()
         tot_items = issue_list.count()
         next_issue_list = list(issue_list)
 
