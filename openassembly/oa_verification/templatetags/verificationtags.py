@@ -25,7 +25,6 @@ from oa_verification.models import arpv, PhotoVerificationTask, PhotoUserVerific
 from oa_verification.forms import arpvForm, ReferralForm
 from pirate_core.widgets import HorizRadioRenderer
 from collections import defaultdict
-from google.appengine.ext import deferred
 
 from customtags.decorators import block_decorator
 register = template.Library()
@@ -393,8 +392,8 @@ def oa_ver_confirm_form(context, nodelist, *args, **kwargs):
                     val.user2Confirm = True
                 val.save()
                 if val.user1Confirm and val.user2Confirm:
-                    deferred.defer(create_task, val, val.user1, _countdown=60)
-                    deferred.defer(create_task, val, val.user2, _countdown=60)
+                    create_task(val, val.user1)
+                    create_task(val, val.user2)
                 raise HttpRedirectException(HttpResponseRedirect('arpv_thanks.html'))
             elif choice == '0':
                 raise HttpRedirectException(HttpResponseRedirect('arpv_flag.html'))
