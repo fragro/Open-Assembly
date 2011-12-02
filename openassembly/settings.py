@@ -1,5 +1,6 @@
 #from djangoappengine.settings_base import *
 import os
+import json
 
 FACEBOOK_API_KEY = ''
 FACEBOOK_APP_ID = ''
@@ -13,16 +14,25 @@ TWITTER_AUTHORIZATION_URL = ''
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
+with open(os.path.expanduser('~/environment.json')) as f:
+    env = json.load(f)
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (('Frank', 'fragro@gmail.com'),)
+
+MANAGERS = ADMINS
+
 DATABASES = {
     'default': {
-    'ENGINE': 'django_mongodb_engine', # Add 'postgresql', 'mysql', 'sqlite3' etc.
-    'NAME': 'newdb', # Or path to database file if using sqlite3.
-    'USER': '', # Not used with sqlite3.
-    'PASSWORD': '', # Not used with sqlite3.
-    #'HOST': 'localhost', # Set to empty string for localhost. Not used with sqlite3.
-    #'PORT': '27017', # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django_mongodb_engine',
+        'NAME': 'admin',
+        'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
+        'SUPPORTS_TRANSACTIONS': False,
     }
 }
+
 
 AUTOLOAD_SITECONF = 'indexes'
 
@@ -100,8 +110,6 @@ JQUERY_URL = '/static/jquery-1.4.2.min.js'
 
 DOMAIN_NAME = 'www.openassembly.org'
 
-ADMINS = (('Frank', 'fragro@gmail.com'),)
-
 SERVER_EMAIL = 'fragro@gmail.com'
 
 DEFAULT_FROM_EMAIL = 'fragro@gmail.com'
@@ -109,8 +117,6 @@ DEFAULT_FROM_EMAIL = 'fragro@gmail.com'
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
 ROOT_URLCONF = 'urls'
-
-import os
 
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
@@ -155,6 +161,3 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
     }
 }
-
-
-DEBUG = True
