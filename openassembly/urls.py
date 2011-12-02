@@ -1,4 +1,5 @@
 import dselector
+import settings
 
 from django.views.generic.simple import direct_to_template
 from django.views.generic.create_update import delete_object
@@ -89,11 +90,11 @@ urlpatterns += parser.patterns('',
 )
 
 urlpatterns += patterns('pirate_sources.views',
-    (r'^upload/(?P<obj_pk>.+)/(?P<ctype_pk>\d+)/$', 'upload_handler'),
+    (r'^upload/(?P<obj_pk>[0-9A-Za-z_\-]+)/(?P<ctype_pk>[0-9A-Za-z_\-]+)/$', 'upload_handler'),
     (r'^upload/$', 'upload_handler'),
-    (r'^download/(?P<pk>.+)$', 'download_handler'),
-    (r'^delete/(?P<pk>.+)(?P<ctype_pk>\d+)/$', 'delete_handler'),
-    (r'^change/(?P<obj_pk>.+)/(?P<new_pk>.+)/(?P<ctype_pk>.+)/$', 'change_avatar'),
+    (r'^download/(?P<pk>[0-9A-Za-z_\-]+)$', 'download_handler'),
+    (r'^delete/(?P<pk>[0-9A-Za-z_\-]+)/(?P<ctype_pk>[0-9A-Za-z_\-]+)/$', 'delete_handler'),
+    (r'^change/(?P<obj_pk>[0-9A-Za-z_\-]+)/(?P<new_pk>[0-9A-Za-z_\-]+)/(?P<ctype_pk>[0-9A-Za-z_\-]+)/$', 'change_avatar'),
 )
 urlpatterns += patterns('ajaxapi.views',
     (r'^add_support/(?P<pk>.+)$', 'add_support'),
@@ -105,3 +106,11 @@ urlpatterns += patterns('',
    # all my other url mappings
    (r'^api/', include('api.urls')),
 )
+
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.STATIC_ROOT,
+        }),
+   )

@@ -1,4 +1,5 @@
 #from djangoappengine.settings_base import *
+import os
 
 FACEBOOK_API_KEY = ''
 FACEBOOK_APP_ID = ''
@@ -12,12 +13,18 @@ TWITTER_AUTHORIZATION_URL = ''
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
-#DATABASES['native'] = DATABASES['default']
-#DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
+DATABASES = {
+    'default': {
+    'ENGINE': 'django_mongodb_engine', # Add 'postgresql', 'mysql', 'sqlite3' etc.
+    'NAME': 'newdb', # Or path to database file if using sqlite3.
+    'USER': '', # Not used with sqlite3.
+    'PASSWORD': '', # Not used with sqlite3.
+    #'HOST': 'localhost', # Set to empty string for localhost. Not used with sqlite3.
+    #'PORT': '27017', # Set to empty string for default. Not used with sqlite3.
+    }
+}
 
 AUTOLOAD_SITECONF = 'indexes'
-
-SITE_ID = 12345123
 
 INSTALLED_APPS = (
     'dbindexer',
@@ -50,18 +57,20 @@ INSTALLED_APPS = (
     'pirate_actions',
     'pirate_topics',
     'markitup',
-    'djangoappengine',
     'oa_verification',
     'oa_filmgenome',
     'notification',
     'search',
     'oa_suggest',
     'oa_platform',
-    'oa_cache'
+    'oa_cache',
+    'django_mongodb_engine'
 )
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/static/'
+MEDIA_URL = '/'
+
+STATIC_ROOT = os.getcwd() + '/static/'
 
 MARKITUP_MEDIA_URL = '/static/'
 MARKITUP_FILTER = ('markdown.markdown', {'safe_mode': True, 'previewParserPath': '/markitup/preview/'})
@@ -89,10 +98,6 @@ import os
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
 FAIL_SILENTLY = True
-
-GAE_SETTINGS_MODULES = (
-    'gae_comments_settings',
-)
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -127,7 +132,12 @@ PISTON_DISPLAY_ERRORS = True
 OPENASSEMBLY_AGENT = 'http://localhost:8888/jsonrpc'
 OPENASSEMBLY_KEY = "frank"
 
-try:
-    from local_settings import *
-except ImportError:
-    pass
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
+
+DEBUG = True
