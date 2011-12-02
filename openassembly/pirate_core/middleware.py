@@ -16,9 +16,13 @@ CTYPE_KEY = "_l"
 
 
 def human_readable_dim(d):
-    if d == 'h': return 'Hot'
-    elif d == 'c': return 'Controversial'
-    elif d == 'n': return 'New'
+    if d == 'h':
+        return 'Hot'
+    elif d == 'c':
+        return 'Controversial'
+    elif d == 'n':
+        return 'New'
+
 
 class UrlMiddleware(object):
     """
