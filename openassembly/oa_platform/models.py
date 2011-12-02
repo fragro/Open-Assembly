@@ -5,7 +5,6 @@ from djangotoolbox.fields import ListField
 from django.utils.translation import ugettext as _
 from django.contrib import admin
 from pirate_signals.models import update_agent
-from google.appengine.ext import deferred
 from settings import OPENASSEMBLY_AGENT, DOMAIN_NAME, OPENASSEMBLY_KEY
 from Proxy import Proxy
 from django.contrib.contenttypes import generic
@@ -23,7 +22,7 @@ class PlatformDimension(models.Model):
     content_type_obj = models.ForeignKey(ContentType,
                                       verbose_name=_('content type'),
                                       related_name="content_type_platform_dim_for_%(class)s", null=True, blank=True)
-    object_pk = models.IntegerField(_('object ID'), null=True, blank=True)
+    object_pk = models.CharField(_('object ID'), max_length=100, null=True, blank=True)
     content_object = generic.GenericForeignKey(ct_field="content_type_obj", fk_field="object_pk")
     complete = models.BooleanField(default=False)
 
@@ -65,7 +64,7 @@ def update(**kwargs):
     #                       ["pirate_issues","problem","12345946"]
     updatetype = kwargs.get('type', None)
     params = kwargs.get('params', None)
-    deferred.defer(deferupdate, updatetype, params, _countdown=60)
+    #deferred.defer(deferupdate, updatetype, params, _countdown=60)
 
 update_agent.connect(update)
 
