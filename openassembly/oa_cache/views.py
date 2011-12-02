@@ -1,9 +1,8 @@
-from google.appengine.api import memcache
+from django.core.cache import cache as memcache
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 import simplejson
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
-from google.appengine.ext import deferred
 from oa_cache.models import ListCache, ModelCache, UserSaltCache, interpret_hash, SideEffectCache
 from pirate_forum.models import create_view, get_rangelist
 from django.template import RequestContext
@@ -70,13 +69,13 @@ for more information on SideEffectCache
                             user = obj
                         else:
                             user = obj.user
-                        deferred.defer(usc.model_cache.render, {'object': obj, 'user': user}, True)
+                        #deferred.defer(usc.model_cache.render, {'object': obj, 'user': user}, True)
 
                     rendered_list.append({'scroll_to': True, 'div': div, 'type': s.jquery_cmd, 'html':
                                         s.render(RequestContext(request, {'salted': True, 'object': obj, 'user': request.user}))})
             data['output'] = rendered_list
             data['FAIL'] = False
-            deferred.defer(get_cache_or_render, request.user, key, False, True, None)
+            #deferred.defer(get_cache_or_render, request.user, key, False, True, None)
 
         else:
             #if the side effect is null
@@ -127,7 +126,7 @@ as a reference for the template, div, and other necessary inforamtion.
                     rendered_list.append({'obj_pk': obj_id, 'usc_pk': usc.pk, 'toggle': usc.is_toggle, 'div': div_id, 'type': usc.jquery_cmd, 'html': html})
 
             #NOW we must update all the corresponding lists affected by this in the background: args, comments, etc.
-            deferred.defer(commit_update, None, key)
+            #deferred.defer(commit_update, None, key)
         return rendered_list, paramdict
 
 
@@ -168,7 +167,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     else:
         render = True
 
-    #allows hardlinking to slugs
+    #allows hardlinking to slugs: TEMP
     if rendertype == 'community':
         t = Topic.objects.get(slug=dimension)
         obj_id = t.pk
@@ -182,7 +181,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     #model specific code: if this is an item or user render that obj first
     try:
         m = ModelCache.objects.get(content_type=rendertype, main=True)
-        u = UserSaltCache.objects.filter(model_cache=m)
+        u = UserSaltCache.objects.filter(model_cache=m.pk)
     except:
         m = None
         u = []
@@ -208,6 +207,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         csrf_t = "<div style='display:none'><input type='hidden' value='" + str(csrf_val) + "' name='csrfmiddlewaretoken'></div>"
     else:
         csrf_t = ''
+
     #list specific code:loads after model so detailed content is loaded first
     #if we aren't renderind the main content, we only want to render the list associated with scrolling
     ###Warning: this breaks if you try to display two lists on one page
@@ -216,14 +216,16 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     if not dimension or lists.count() == 0:
         lists = ListCache.objects.filter(content_type=rendertype, default=True)
     for l in lists:
-        rendered_list.append({'div': l.div_id, 'html': '', 'type': 'html'})
-        m = l.model_cache
+        rendered_list.append({'div': l.div_id, 'html': str(l.model_cache), 'type': 'html'})
+        m_pk = l.model_cache
+        m = ModelCache.objects.get(pk=m_pk)
         #if we aren't forcerendering, try to get rendered_list from memcache
         renders = None
         if not forcerender:
             #renders[0] -> rendered_list | renders[1] -> cached_list | renders[2] -> tot_items
             renders = memcache.get(key + str(l.pk))
         if renders is None or forcerender:
+            rendered_list.append({'div': l.div_id, 'html': str(rendertype) + ' ' + str(dimension) + ' ' + str(l.get_or_create_list(key, paramdict, forcerender=forcerender)), 'type': 'append'})
             renders = []
             #get list of objects to be rendered
             cached_list, tot_items = l.get_or_create_list(key, paramdict, forcerender=forcerender)
@@ -240,13 +242,13 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         #add usersaltcache if there is request data
         if request is not None:
             #Get Dybamic inputs not linked to a user
-            lu = UserSaltCache.objects.filter(model_cache=m, opposite=False, load_last=False)
+            lu = UserSaltCache.objects.filter(model_cache=m.pk, opposite=False, load_last=False)
             for usc in lu:
                 rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                                     usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
                                     'object': obj, 'user': user, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
 
-            sp = UserSaltCache.objects.filter(model_cache=m, object_specific=True)
+            sp = UserSaltCache.objects.filter(model_cache=m.pk, object_specific=True)
             for li in cached_list:
                 #user requested this, not auto-update. generate user specific html
                 for usc in sp:
@@ -272,7 +274,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
                                 'object': obj, 'user': user, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
         #USER SALT CACHCES WITH DYNAMIC RESPONSES ARE DONE
         if tot_items is not None:
-            r = UserSaltCache.objects.filter(model_cache=m, template="rangelist.html")
+            r = UserSaltCache.objects.filter(model_cache=m.pk, template="rangelist.html")
             for usc in r:
                 rangelist = get_rangelist(paramdict.get('START_KEY', 0), paramdict.get('END_KEY', 20), tot_items)
                 html = usc.render(RequestContext(request, {'rangelist': rangelist,
@@ -289,14 +291,18 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         rendered_list = [{'div': '#content', 'html': val, 'type': 'html'}]
     #render all the user salt caches associated with this listindex.html#topics/_s0/_e20/_dh
     #i.e. the Sort By: is a user salt cache
-    lu = UserSaltCache.objects.filter(opposite=True).exclude(model_cache=m)
+    lu = UserSaltCache.objects.filter(opposite=True)
+    if m is not None:
+        #exclude if model is available
+        lu = lu.exclude(model_cache=m.pk)
     for usc in lu:
             rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': usc.render({'object': obj, 'user': user})})
-    r = UserSaltCache.objects.filter(model_cache=m, load_last=True)
-    for usc in r:
-        html = usc.render(RequestContext(request, {
-                'dimension': dimension, 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
-        rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': html})
+    if m is not None:
+        r = UserSaltCache.objects.filter(model_cache=m.pk, load_last=True)
+        for usc in r:
+            html = usc.render(RequestContext(request, {
+                    'dimension': dimension, 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
+            rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': html})
 
     return {'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to}
 
@@ -330,7 +336,8 @@ def update_ranks(request):
         return HttpResponseRedirect(goto)
     else:
         for key, arg_dict in codes.items():
-                deferred.defer(commit_update, None, key, _countdown=60)
+                #deferred.defer(commit_update, None, key, _countdown=60)
+                pass
         goto = '/200.html'
         return HttpResponseRedirect(goto)
 
@@ -364,13 +371,13 @@ decreased the latency of the system.
                 #new user, head to landing page
                 hashed = 'landing'
         if hashed != '':
-            props = get_cache_or_render(request.user, hashed, empty, request=request)
+            props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
             if props['render']:
                 #if the c
                 props['rendered_list'].insert(0, {'div': '#content', 'type': 'html', 'html': ''})
             for d in props['rendered_list']:
                 data['output'].append(d)
-            deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), props['paramdict'].get('OBJ_ID', None), _countdown=10)
+            #deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), props['paramdict'].get('OBJ_ID', None), _countdown=10)
             data['FAIL'] = False
             if 'SCROLL_KEY' in props['paramdict']:
                 data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']

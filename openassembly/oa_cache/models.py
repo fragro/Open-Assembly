@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
-from google.appengine.api import memcache
+from django.core.cache import cache as memcache
 from pirate_ranking.models import get_ranked_list
 from pirate_comments.models import get_comments
 from pirate_deliberation.models import get_argument_list
@@ -94,7 +94,7 @@ it is a ListCache, or a detailed content item/user if otherwise.
                     ret_html += '<ul id="' + self.template.replace('.html', '') + str(obj.pk) + '" class="' + self.template.replace('.html', '') + '">' + val + "</ul>"
         return ret_html
 
-    def render(self, context, forcerender=False):
+    def render(self, context, forcerender=True):
         #gets from cache or renders an atomic object given template
         if self.is_recursive == False:
             try:
@@ -115,13 +115,13 @@ it is a ListCache, or a detailed content item/user if otherwise.
 
 
 class ListCache(models.Model):
-    model_cache = models.ForeignKey(ModelCache, null=True, blank=True)
+    model_cache = models.CharField(max_length=100, null=True, blank=True)
     template = models.CharField(max_length=200)
     div_id = models.CharField(max_length=200)
     content_type = models.CharField(max_length=200)
     default = models.BooleanField(default=False)
 
-    def get_or_create_list(self, key, paramdict, forcerender=False):
+    def get_or_create_list(self, key, paramdict, forcerender=True):
         #returns list of rendered objs
         cache = memcache.get(key)
         if cache is not None and not forcerender == True:
@@ -182,10 +182,10 @@ class ListCache(models.Model):
                 newkey, rendertype, paramdict = interpret_hash(key)
                 if codes is not None:
                     codes[key] = paramdict
-                    memcache.replace("rank_update_codes", codes)
+                    memcache.set("rank_update_codes", codes)
                 else:
                     codes = {}
-                    memcache.add("rank_update_codes", codes, 60)
+                    memcache.set("rank_update_codes", codes)
                 #save newly rendered list
             memcache.set(key, (cached_list, tot_items))
         return cached_list, tot_items
@@ -197,13 +197,13 @@ class ListCache(models.Model):
 class UserSaltCache(models.Model):
     """User salt renders based on object and user,
 only rendered when the corresponding model_cache is rendered"""
-    model_cache = models.ForeignKey(ModelCache, blank=True, null=True)
+    model_cache = models.CharField('Object_ID', max_length=100, blank=True, null=True)
     template = models.CharField(max_length=200)
     div_id = models.CharField(max_length=200)
     jquery_cmd = models.CharField(max_length=200)
     is_recursive = models.BooleanField(default=False)
     #if this is a toggled DIV, when re-rendered we want to toggle again
-    is_toggle = models.BooleanField(default=True)
+    is_toggle = models.BooleanField(default=False)
     #is this object DIV specific or required an object pk appended
     #set to TRUE if you want it OA_CACHE to append an object pk
     object_specific = models.BooleanField(default=False)
@@ -234,7 +234,7 @@ only rendered when the corresponding model_cache is rendered"""
                 ret_html.append((render_to_string(self.template, context), obj.pk))
         return ret_html
 
-    def render(self, context, forcerender=False):
+    def render(self, context, forcerender=True):
         if not self.is_recursive:
             if self.cache:
                 key = str(context['object'].pk) + ' - ' + str(context['dimension']) + ' - ' + str(context['sort_type'])
@@ -257,7 +257,7 @@ only rendered when the corresponding model_cache is rendered"""
 class SideEffectCache(models.Model):
     """User salt renders based on object and user,
 only rendered when the corresponding model_cache is rendered"""
-    user_salt_cache = models.ForeignKey(UserSaltCache)
+    user_salt_cache = models.CharField('Object_ID', max_length=100)
     template = models.CharField(max_length=200)
     div_id = models.CharField(max_length=200)
     jquery_cmd = models.CharField(max_length=200)
