@@ -189,7 +189,7 @@ class ReputationEvent(models.Model):
     related_object = generic.GenericForeignKey('content_type', 'object_id')
 
     content_type = models.ForeignKey(ContentType, null=True)
-    object_id = models.PositiveIntegerField(null=True)
+    object_id = models.CharField(max_length=100, blank=True, null=True)
 
     created_dt = models.DateTimeField(auto_now_add=True)
 
