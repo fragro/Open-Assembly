@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) or Chrome Frame -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>SimpleBox - When All You Need Is A Simple Box</title>
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		
+		<link  href="http://fonts.googleapis.com/css?family=Cabin+Sketch:bold" rel="stylesheet" type="text/css" >
+		<link href="css/screen.css" rel="stylesheet" type="text/css" />
+	</head>
+
+	<body>
+		<h1 id="logo">SimpleBox<sup>TM ;)</sup></h1>
+		<div id="container">
+			<p>There is a bunch of Lightbox style jQuery plugins, from the <a href="http://leandrovieira.com/projects/jquery/lightbox/">original Lightbox</a> to some of the new alternatives such as <a href="http://fancybox.net/">FancyBox</a>. So why another jQuery plugin? Well, at around than 1kb minified, SimpleBox is extremely light and provides you with a nice little dialog for your confirmation messages, simple image previews and just about anything where a full LightBox is just overkill.</p>
+			<p>Using SimpleBox is extremely simple, include the JS file, one image, and a couple of lines of CSS and you are good to go.</p>
+			<p>To make SimpleBox more accessible, SimpleBox binds to the 'c' access key as welll as the escape key to close a SimpleBox.</p>
+			
+			<h2>Some Demo's Would Be Nice</h2>
+			
+			<ul id="demos">
+				<li><a href="#form" id="simpleform" class="demo_button">SimpleBox With Form</a></li>
+				<li><a href="#confirmation" id="confirmation" class="demo_button">SimpleBox As Confirmation Dialog</a></li>
+				<li><a href="#poemviewer" id="poemviewer" class="demo_button">SimpleBox With Text Content</a></li>
+			</ul>
+			
+			<h2>Usage</h2>
+			<p>To kick of SimpleBox, all you need is $("#containerid").simplebox();</p>
+			<p>Using SimpleBox as a confirmation dialog and want to close it on an action? Simply call, ("#containerid").simplebox('close');</p>
+			
+			<h2>Give Me The Code Already</h2>
+			<p>You can <a href="https://github.com/ossreleasefeed/SimpleBox">grab the code, fork me and contribute directly on Github.</a>.</p>
+			
+			<div id="footer">
+				<p><a href="http://expansive-derivation.ossreleasefeed.com/">Schalk Neethling (ossreleasefeed:espressive)</a></p>
+			</div>
+		</div>
+		<a href="http://github.com/ossreleasefeed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+		
+		<form name="simplebox" id="simplebox" method="post" action="">
+        	<h1>Please Complete The Form Below</h1>
+            <fieldset>            	
+                <legend>DataList</legend>
+                <div class="element_container">
+	                <label for="firstname">First Name:</label>
+	                <input type="text" name="firstname" id="firstname" />
+                </div>
+                
+                <div class="element_container">
+	                <label for="lastname">Last Name:</label>
+	                <input type="text" name="lastname" id="lastname" />
+                </div>
+                
+                <div class="element_container">
+	                <label for="landline">Landline:</label>
+	                <input type="text" name="landline" id="landline" />
+                </div>
+                
+                <div class="element_container">
+	                <label for="cellnumber">Cell Number:</label>
+	                <input type="text" name="cellnumber" id="cellnumber" />
+                </div>
+            </fieldset>
+        </form>
+        
+        <div id="dialog">
+        	<p>Are you sure you want to close this dialog?</p>
+        	<p><input type="button" id="close_dialog" value="Confirm" /></p>
+        </div>
+        
+        <div id="poem">
+        	<h1>Sonnet - To Science</h1>
+        	<h2>by Edgar Allen Poe</h2>
+        	<p>Science! true daughter of Old Time thou art! Who alterest all things with thy peering eyes. Why preyest thou thus upon the poet's heart, Vulture, whose wings are dull realities? How should he love thee? or how deem thee wise, Who wouldst not leave him in his wandering To seek for treasure in the jewelled skies, Albeit he soared with an undaunted wing? Hast thou not dragged Diana from her car? And driven the Hamadryad from the wood To seek a shelter in some happier star? Hast thou not torn the Naiad from her flood, The Elfin from the green grass, and from me The summer dream beneath the tamarind tree?</p>
+        </div>
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+        <script src="js/jquery.simplebox.js"></script>
+        <script>
+        	$().ready(function() {
+        		$("#simpleform").click(function(event) {
+        			event.preventDefault();
+        			$("#simplebox").simplebox();
+        		});
+        		
+        		$("#poemviewer").click(function(event) {
+        			event.preventDefault();
+        			$("#poem").simplebox();
+        		});
+        		
+        		$("#confirmation").click(function(event) {
+        			event.preventDefault();
+        			$("#dialog").simplebox();
+        		});
+        		
+        		$("#close_dialog").click(function() {
+        			event.preventDefault();
+        			$("#dialog").simplebox('close');
+        		});
+        	});
+        </script>
+	</body>
+</html>

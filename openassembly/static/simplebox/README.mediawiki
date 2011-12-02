@@ -1,0 +1,13 @@
+== SimpleBox ==
+
+SimpleBox is extremely light and provides you with a nice little dialog for your confirmation messages, simple image previews and just about anything where a full LightBox is just overkill.
+
+Using SimpleBox is extremely simple, include the JS file, one image, and a couple of lines of CSS and you are good to go.
+
+To make SimpleBox more accessible, SimpleBox binds to the 'c' access key as welll as the escape key to close a SimpleBox.
+
+=== Usage ===
+
+To open the dialog: $("#containerid").simplebox();
+
+To close the dialog: $("#containerid").simplebox('close');
