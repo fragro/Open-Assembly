@@ -268,7 +268,7 @@ class IMGSourceForm(forms.ModelForm):
 
     class Meta:
         model = IMGSource
-        exclude = ('user', 'title', 'url', 'current', 'thumb', 'thumb2', 'content_type', 'object_pk')
+        exclude = ('user', 'title', 'url', 'current', 'thumbnail', 'thumbnail_small', 'thumbnail_large', 'content_type', 'object_pk')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_imgsource_form")
 

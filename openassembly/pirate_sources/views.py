@@ -5,19 +5,21 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.contenttypes.models import ContentType
 import datetime
 from django.contrib.auth.models import User
-from google.appengine.api import images
+
+from django.core.files.base import ContentFile
 
 from pirate_sources.templatetags.sourcetags import IMGSourceForm
 from pirate_sources.models import IMGSource
 
 from filetransfers.api import prepare_upload, serve_file
 
+
 def change_avatar(request, obj_pk=None, new_pk=None, ctype_pk=None):
     view_url = reverse('pirate_sources.views.upload_handler', args=[obj_pk, ctype_pk])
     try:
-        oldimg = IMGSource.objects.get(object_pk=obj_pk,current=True)
+        oldimg = IMGSource.objects.get(object_pk=obj_pk, current=True)
         oldimg.current = False
-        oldimg.save() 
+        oldimg.save()
     except:
         pass
     if obj_pk != new_pk:
@@ -25,6 +27,7 @@ def change_avatar(request, obj_pk=None, new_pk=None, ctype_pk=None):
         newimg.current = True
         newimg.save()
         return HttpResponseRedirect(view_url)
+
 
 def upload_handler(request, obj_pk=None, ctype_pk=None):
     view_url = reverse('pirate_sources.views.upload_handler', args=[obj_pk, ctype_pk])
@@ -37,11 +40,15 @@ def upload_handler(request, obj_pk=None, ctype_pk=None):
                 img.object_pk = obj_pk
                 img.content_type = ContentType.objects.get(pk=ctype_pk)
                 img.submit_date = datetime.datetime.now()
-                photo_key = str(img.file.file.blobstore_info.key())
-                url = images.get_serving_url(photo_key)
+
+                #file_content = ContentFile(request.FILES['file'].read())
+                #img.file.save(str(img.object_pk) + '_' + str(img.content_type), file_content)
+                img.make(request.FILES['file'], img.file.name)
+                #photo_key = str(img.file.file.blobstore_info.key())
+                url = img.file.path
                 if img.private != True:
                     try:
-                        oldimg = IMGSource.objects.get(object_pk=obj_pk,current=True)
+                        oldimg = IMGSource.objects.get(object_pk=obj_pk, current=True)
                         oldimg.current = False
                         oldimg.save()
                     except:
@@ -52,23 +59,23 @@ def upload_handler(request, obj_pk=None, ctype_pk=None):
             else:
                 view_url += '?error=Not a valid image'
             return HttpResponseRedirect(view_url)
-        except Exception,e:
+        except Exception, e:
             import logging
             logger = logging.getLogger(__name__)
-            logger.error('caught %s in image upload',e)
-            raise e
+            logger.error('caught %s in image upload', e)
+            #raise e
 
     upload_url, upload_data = prepare_upload(request, view_url)
     form = IMGSourceForm()
-    
+
     uploads = IMGSource.objects.filter(object_pk=obj_pk)
-    
+
     ctypemod = ContentType.objects.get(pk=ctype_pk)
     m = ctypemod.model_class()
     obj = m.objects.get(pk=obj_pk)
-    return direct_to_template(request,'upload.html',
+    return direct_to_template(request, 'upload.html',
         {'form': form, 'upload_url': upload_url, 'upload_data': upload_data, 'object': obj,
-         'uploads': uploads, 'obj_pk':obj_pk, 'ctype_pk':ctype_pk, 'error': request.GET.get('error')})
+         'uploads': uploads, 'obj_pk': obj_pk, 'ctype_pk': ctype_pk, 'error': request.GET.get('error')})
 
 def download_handler(request, pk):
     upload = get_object_or_404(IMGSource, pk=pk)
