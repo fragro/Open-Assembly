@@ -17,4 +17,4 @@ python-openid
 simplejson
 hg+http://bitbucket.org/carljm/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
-git+http://github.com/shelfworthy/minidetector.git#egg=minidetector
+svn+http://minidetector.googlecode.com/svn/trunk#egg=minidetector
