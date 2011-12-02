@@ -106,6 +106,7 @@ def change_hash_dim(request):
         return HttpResponse(simplejson.dumps(results),
                             mimetype='application/json')
 
+
 def change_hash_ctype(request):
     if not request.user.is_authenticated() or not request.user.is_active:
         return HttpResponse(simplejson.dumps({'FAIL': True}),
@@ -270,7 +271,7 @@ def add_video_vote(request):
         duration = request.POST.get('data[vote][duration]')
         v_id = request.POST.get('data[vote][video_id]')
         bars = request.POST.get('bars')
-        
+
         #check to see if this user has already voted in this bucket
         time_interval = (float(duration) / float(bars))
         old_votes = VideoVote.objects.filter(user=request.user, video_id=v_id)
@@ -278,13 +279,14 @@ def add_video_vote(request):
             if (time > v.time - time_interval and time < v.time) or (time < v.time + time_interval and time > v.time):
                 return HttpResponse(simplejson.dumps({'FAIL':True,'ERR1':False,'ERR2':True}),
                             mimetype='application/json')
-        
-        
+
+
         new_vote = VideoVote(user=request.user, time=time, duration=duration, video_id=v_id)
         new_vote.save()
-        
+
         return HttpResponse(simplejson.dumps({'FAIL':False}),
                             mimetype='application/json')
+
 
 def update_video_votes(request):
     if request.method == 'POST':
@@ -416,7 +418,7 @@ def flagvote(request):
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
             return HttpResponse(simplejson.dumps(results),
                                 mimetype='application/json')
-            
+
 #sets location in REQUEST dict to access google maps API
 def set_loc_by_ip(request):     
     request.session['city']  = str(request.POST[u'city'])
@@ -490,7 +492,7 @@ def starvote(request):
                                 
     if request.method == 'POST':
         
-        pk = int(request.POST[u'pk'])
+        pk = request.POST[u'pk']
         vote_str = int(request.POST[u'vote'])
 
         consensus = Consensus.objects.get(object_pk=pk)
@@ -604,7 +606,7 @@ def spectrumvote(request):
                                 
     if request.method == 'POST':
         
-        pk = int(request.POST[u'pk'])
+        pk = request.POST[u'pk']
         vote_str = int(request.POST[u'vote'])
 
         consensus = Consensus.objects.get(object_pk=pk)
