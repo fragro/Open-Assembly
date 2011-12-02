@@ -12,8 +12,7 @@ import datetime
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
-from google.appengine.api import memcache
-from google.appengine.ext import deferred
+from django.core.cache import cache as memcache
 
 from pirate_ranking.models import get_ranked_list
 from pirate_sources.models import URLSource
@@ -434,9 +433,10 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             decision_dt = 0
                             phase_change = 0
                             #create phase object
-                            ph = Phase.objects.get_or_create(consensus=cons, curphase=PhaseLink.objects.get(prevphase=None),
-                                                                creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
-                                                                phase_change_dt=phase_change, complete=False, active=True)
+                            pl = PhaseLink.objects.get(phasename="Question")
+                            ph = Phase.objects.get_or_create(consensus=cons, curphase=pl,
+                                                                creation_dt=datetime.datetime.now(), decision_dt=datetime.datetime.now(),
+                                                                phase_change_dt=datetime.datetime.now(), complete=False, active=True)
 
                         aso_rep_event.send(sender=user, event_score=1, user=user, initiator=user, dimension=ReputationDimension.objects.get(name=blob.get_verbose_name()), related_object=cons)
                         update_agent.send(sender=blob, type="content", params=[ContentType.objects.get_for_model(blob.__class__).app_label, verbose_name.lower(), blob.pk])
@@ -444,7 +444,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         check_badges(user, model, user)
 
                         #update the dimensiontracker, used for sorting by content type
-                        deferred.defer(defer_dimensiontracker_update, parent, dimension)
+                        #deferred.defer(defer_dimensiontracker_update, parent, dimension)
 
                         #if is_new: #if this is a new issue/consensus, send signal for reputation
                         #relationship_event.send(sender=issue,obj=issue,parent=issue.topic)
@@ -464,7 +464,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
         else:
             blob_form, model, verbose_name = get_form(dimension)
-            form = ComboFormFactory(TopicForm(initial={'parent': Topic.objects.get(is_featured=True).pk}), blob_form()).ComboForm()
+            form = ComboFormFactory(TopicForm(), blob_form()).ComboForm()
 
         namespace['form'] = form
         namespace['POST'] = POST, parent
@@ -490,29 +490,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @block
@@ -559,6 +536,7 @@ def pp_blob_getchildren(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
+
 
 @block
 def pp_get_contenttypes(context, nodelist, *args, **kwargs):
@@ -640,6 +618,7 @@ def pp_show_blobchoices(context, nodelist, *args, **kwargs):
 
     return output
 
+
 @block
 def pp_search_form(context, nodelist, *args, **kwargs):
 
@@ -664,6 +643,7 @@ def pp_search_form(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
+
 
 @block
 def pp_get_object(context, nodelist, *args, **kwargs):

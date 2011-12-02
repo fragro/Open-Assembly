@@ -83,7 +83,7 @@ class ForumDimension(models.Model):
 
 
 class DimensionTracker(models.Model):
-    object_pk = models.IntegerField()
+    object_pk = models.CharField(max_length=100)
     dimension = models.ForeignKey(ForumDimension)
     children = models.IntegerField(default=0)
 
@@ -98,7 +98,7 @@ class ForumBlob(models.Model):
     parent_type = models.ForeignKey(ContentType, verbose_name=_('parent content type'),
                                             related_name="%(app_label)s_%(class)s_parent",
                                             blank=True, null=True)
-    parent_pk = models.IntegerField(_('Parent PK'), blank=True, null=True)
+    parent_pk = models.CharField(_('Parent PK'), max_length=100, blank=True, null=True)
     parent = generic.GenericForeignKey(ct_field="parent_type", fk_field="parent_pk")
     parent_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     child = models.ForeignKey(ContentType, verbose_name=_('child content type'),
