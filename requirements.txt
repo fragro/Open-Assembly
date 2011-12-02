@@ -14,6 +14,7 @@ hg+http://bitbucket.org/wkornewald/django-filetransfers#egg=filetransfers
 oauth2
 httplib2
 python-openid
+simplejson
 hg+http://bitbucket.org/carljm/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
 git+http://github.com/shelfworthy/minidetector.git#egg=minidetector
