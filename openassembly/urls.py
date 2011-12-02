@@ -23,14 +23,6 @@ try:
 except:
     pass
 
-import object_tools
-
-object_tools.autodiscover()
-
-urlpatterns = patterns('',
-    (r'^object-tools/', include(object_tools.tools.urls)),
-)
-
 from dbindexer import autodiscover
 autodiscover()
 
