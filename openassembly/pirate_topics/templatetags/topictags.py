@@ -241,7 +241,10 @@ def oa_get_group_settings(context, nodelist, *args, **kwargs):
 
     obj = kwargs.get('object', None)
 
-    s, is_new = GroupSettings.objects.get_or_create(topic=obj)
+    if obj is not None:
+        s, is_new = GroupSettings.objects.get_or_create(topic=obj)
+    else:
+        s = None
 
     namespace['settings'] = s
 
