@@ -28,7 +28,7 @@ class Permission(models.Model):
     content_type = models.ForeignKey(ContentType,
                                       verbose_name=_('content type'),
                                       related_name="content_type_permission_for_%(class)s")
-    object_pk = models.IntegerField(_('object ID'))
+    object_pk = models.CharField(_('object ID'), max_length=100)
     content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     component_membership_required = models.BooleanField(default=False)
     permissions_group = models.ForeignKey(PermissionsGroup)
