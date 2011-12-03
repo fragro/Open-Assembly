@@ -1,1 +1,0 @@
-../../../lib/etherpad-lite-jquery-plugin/js/etherpad.js
