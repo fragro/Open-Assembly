@@ -80,7 +80,7 @@ INSTALLED_APPS = (
 ###DOTCLOUD SPECIFIC SETTINGS
 
 STATICFILES_DIRS = (
-    "/home/dotcloud/current/openassembly/static/"
+    "/home/dotcloud/current/openassembly/static/",
 )
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
