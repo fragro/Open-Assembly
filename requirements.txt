@@ -15,5 +15,6 @@ oauth2
 httplib2
 python-openid
 simplejson
+django-piston
 hg+http://bitbucket.org/carljm/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
