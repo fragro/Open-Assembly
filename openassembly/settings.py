@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'pirate_core',
     'pirate_issues',
     'pirate_deliberation',
-    'pirate_permissions',
+    #'pirate_permissions',
     'pirate_ranking',
     'pirate_consensus',
     'pirate_reputation',
