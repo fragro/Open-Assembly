@@ -33,7 +33,6 @@ DATABASES = {
     }
 }
 
-
 AUTOLOAD_SITECONF = 'indexes'
 
 INSTALLED_APPS = (
@@ -78,6 +77,12 @@ INSTALLED_APPS = (
     'django_mongodb_engine'
 )
 
+###DOTCLOUD SPECIFIC SETTINGS
+
+STATICFILES_DIRS = (
+    "/home/dotcloud/current/openassembly/static/"
+)
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = '/home/dotcloud/data/media/'
@@ -103,6 +108,7 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 MARKITUP_MEDIA_URL = '/static/'
+
 MARKITUP_FILTER = ('markdown.markdown', {'safe_mode': True, 'previewParserPath': '/markitup/preview/'})
 MARKITUP_SET = 'markitup/sets/markdown'
 MARKITUP_SKIN = 'markitup/skins/simple'
