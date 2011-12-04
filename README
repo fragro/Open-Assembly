@@ -6,7 +6,7 @@ SETUP VIRTUALENV, ENTER OA ENV
 
 $ pip install -r requirements.txt
 
-$ python manage.py syncdb (will fail the first time, run twice. BUG)
+$ python manage.py syncdb (will fail the first time, run twice. TODO: Fix This Bug)
 
 $ python manage.py collectstatic
 
