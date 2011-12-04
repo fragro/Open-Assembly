@@ -4,12 +4,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-from django import forms
 
-try:
-    from PIL import Image
-except ImportError:
-    import Image
+import PIL
+
 from StringIO import StringIO
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -49,7 +46,7 @@ class IMGSource(models.Model):
     private = models.BooleanField(default=False)
 
     def make(self, image, thumb_field_name):
-        im = Image.open(StringIO(''.join(image.chunks())))
+        im = PIL.Image.open(StringIO(''.join(image.chunks())))
 
         thumb_small = self.rescale(im, 20, 18)
         thumb_small_io = StringIO()
@@ -79,14 +76,12 @@ class IMGSource(models.Model):
 
     def rescale(self, data, width, height, force=True):
         """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-        import Image as pil
-
         max_width = width
         max_height = height
 
         img = data
         if not force:
-            img.thumbnail((max_width, max_height), pil.ANTIALIAS)
+            img.thumbnail((max_width, max_height), PIL.Image.ANTIALIAS)
         else:
             src_width, src_height = img.size
             src_ratio = float(src_width) / float(src_height)
@@ -104,7 +99,7 @@ class IMGSource(models.Model):
                 x_offset = 0
                 y_offset = float(src_height - crop_height) / 3
             img = img.crop((x_offset, y_offset, x_offset + int(crop_width), y_offset + int(crop_height)))
-            img = img.resize((dst_width, dst_height), pil.ANTIALIAS)
+            img = img.resize((dst_width, dst_height), PIL.Image.ANTIALIAS)
 
         return img
 
