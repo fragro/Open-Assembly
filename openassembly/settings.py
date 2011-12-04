@@ -13,25 +13,54 @@ TWITTER_ACCESS_TOKEN_URL = ''
 TWITTER_AUTHORIZATION_URL = ''
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
+try:
+    ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
+    with open(os.path.expanduser('~/environment.json')) as f:
+        env = json.load(f)
 
-with open(os.path.expanduser('~/environment.json')) as f:
-    env = json.load(f)
+    DEBUG = True
+    TEMPLATE_DEBUG = DEBUG
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django_mongodb_engine',
+            'NAME': 'admin',
+            'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
+            'SUPPORTS_TRANSACTIONS': False,
+        }
+    }
+
+    STATICFILES_DIRS = (
+        "/home/dotcloud/current/openassembly/static/",
+    )
+    MEDIA_ROOT = '/home/dotcloud/data/media/'
+    STATIC_ROOT = '/home/dotcloud/data/static/'
+    MEDIA_URL = '/media/'
+except:
+
+    DEBUG = True
+    TEMPLATE_DEBUG = DEBUG
+
+    ADMINS = (('Frank', 'fragro@gmail.com'),)
+
+    MANAGERS = ADMINS
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django_mongodb_engine',
+            'NAME': 'admin'
+        }
+    }
+    STATICFILES_DIRS = (
+        "static/",
+    )
+    STATIC_ROOT = 'static_dev_serve/static/'
+    MEDIA_ROOT = 'static_dev_serve/media/'
+    MEDIA_URL = '/media/'
 
 ADMINS = (('Frank', 'fragro@gmail.com'),)
 
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django_mongodb_engine',
-        'NAME': 'admin',
-        'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
-        'SUPPORTS_TRANSACTIONS': False,
-    }
-}
 
 AUTOLOAD_SITECONF = 'indexes'
 
@@ -77,34 +106,8 @@ INSTALLED_APPS = (
     'django_mongodb_engine'
 )
 
-###DOTCLOUD SPECIFIC SETTINGS
-
-STATICFILES_DIRS = (
-    "/home/dotcloud/current/openassembly/static/",
-)
-
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/dotcloud/data/media/'
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
-
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/home/dotcloud/data/static/'
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-# Examples: "http://foo.com/static/admin/", "/static/admin/".
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 MARKITUP_MEDIA_URL = '/static/'
