@@ -80,8 +80,7 @@
             d['empty'] = ($('#content').is(':empty'));
             $.get("/load_page/", d,
               function(OAdata) {
-                  alert('test1');
-                  if(data.empty_content){$('#content').html('');}
+                  if(OAdata.empty_content){$('#content').html('');}
                   if(OAdata.FAIL != true){
                         for(var item in OAdata.output){
                             if(OAdata.output[item].type == 'prepend'){
