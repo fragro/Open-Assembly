@@ -91,7 +91,8 @@
                                 $(OAdata.output[item].div).append(OAdata.output[item].html); 
                             } 
                             if(OAdata.output[item].type == 'html'){
-                                $(OAdata.output[item].div).html(OAdata.output[item].html); 
+                                $(OAdata.output[item].div).innerHTML=''; 
+                                $(OAdata.output[item].div).append(OAdata.output[item].html); 
                             }
                         }
                         alert('test3');
