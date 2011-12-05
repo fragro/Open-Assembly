@@ -81,7 +81,7 @@
             $.get("/load_page/", d,
               function(OAdata) {
                   alert('test1');
-                  if(OAdata.FAIL != true){
+                  if(OAdata['FAIL'] != true){
                         alert('test2');
                         for(item in OAdata.output){
                             if(OAdata.output[item].type == 'prepend'){
