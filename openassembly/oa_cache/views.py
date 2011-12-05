@@ -42,8 +42,10 @@ for more information on SideEffectCache
         se = request.GET.get('side_effect')
         parent_pk = request.GET.get('obj_pk')
         key = request.GET.get('key')[1:]
-        jsonval = simplejson.loads(se)
-
+        try:
+            jsonval = simplejson.loads(se)
+        except:
+            None
         #if there is side effect information
         if jsonval != None:
             obj_id, ctype_id = simplejson.loads(se)
@@ -56,7 +58,7 @@ for more information on SideEffectCache
                 rendered_list.append({'scroll_to': False, 'div': '', 'type': 'redirect', 'html': path})
             #Now render side effects if they haven't been rendered by the change in context
             else:
-                sideeffects = SideEffectCache.objects.filter(user_salt_cache=usc)
+                sideeffects = SideEffectCache.objects.filter(user_salt_cache=usc.pk)
                 for s in sideeffects:
                     if s.object_specific:
                         div = s.div_id + str(parent_pk)
@@ -78,6 +80,7 @@ for more information on SideEffectCache
         else:
             #if the side effect is null
             data['FAIL'] = True
+            data['message'] = "Malformed JSON from UserSaltCache Form"
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
             return HttpResponse(simplejson.dumps(data),
                                 mimetype='application/json')
