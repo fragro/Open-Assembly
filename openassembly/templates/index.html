@@ -83,7 +83,7 @@
                   alert('test1');
                   if(OAdata['FAIL'] != true){
                         alert('test2');
-                        for(item in OAdata.output){
+                        for(item in OAdata['output']){
                             
                         }
                         alert('test3');
@@ -94,9 +94,6 @@
 
                   if(OAdata.scroll_to != null){
                     $(OAdata.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
-                  }
-                  else{
-                    //$('html').slideto({'slide_duration': "fast", 'highlight': false});
                   }
                   alert('test4');
 
