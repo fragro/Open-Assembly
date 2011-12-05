@@ -32,7 +32,7 @@
 
 
 {% pp_get_contenttype_id object=object %}
-    <span id="pp_delete_form{{pp_comment.object_pk}}_side_effect" style="display:none;">[{{pp_comment.object_pk}}, {{pp_comment.content_type}}]</span>          
+    <span id="pp_delete_form{{pp_comment.object_pk}}_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>          
 {% endpp_get_contenttype_id %}
 
 
