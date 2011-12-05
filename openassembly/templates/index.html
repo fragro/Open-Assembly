@@ -76,10 +76,11 @@
         $(window).hashchange( function(){
         // Alerts every time the hash changes!
             d = {};
-            d['hash'] = location.hash
-            d['empty'] = ($('#content').is(':empty'))
+            d['hash'] = location.hash;
+            d['empty'] = ($('#content').is(':empty'));
             $.get("/load_page/", d,
               function(OAdata) {
+                  alert('test1');
                   //if(data.empty_content){$('#content').innerHTML='';}
                   if(OAdata.FAIL != true){
                         for(item in OAdata.output){
