@@ -94,6 +94,7 @@
                                 $(OAdata.output[item].div).html(OAdata.output[item].html); 
                             }
                         }
+                        alert('test3');
                       //$("#content").append(data.POST);
                       
                       //location.hash = data.url
@@ -105,6 +106,7 @@
                   else{
                     //$('html').slideto({'slide_duration': "fast", 'highlight': false});
                   }
+                  alert('test4');
 
              }, "json");            
                 //alert( location.hash );
@@ -115,11 +117,11 @@
 
         $(document).ready(function(){
 
-            $('.spinner')
+            $('.spinner');
             .hide()  // hide it initially
             .ajaxStart(function() {
                 $(this).show();
-            })
+            });
             .ajaxStop(function() {
                 $(this).hide();
             });
