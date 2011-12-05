@@ -22,7 +22,8 @@ from django.contrib.contenttypes.models import ContentType
 from pirate_core import HttpRedirectException, namespace_get
 from pirate_consensus.models import UpDownVote, Consensus, Phase, PhaseLink
 from pirate_reputation.models import ReputationDimension
-from pirate_forum.models import ForumBlob
+from pirate_forum.models import ForumBlob, Question
+from pirate_forum.forms import BlobForm
 from pirate_core.forms import ComboFormFactory
 from pirate_topics.models import Topic
 from pirate_topics.forms import TopicForm
@@ -42,7 +43,7 @@ get_namespace = namespace_get('pp_blob')
 def get_form(t):
     #grabs the appropriate form for the text input corresponding to type from TYPE_CHOICES
     fd = ForumDimension.objects.get(key=t)
-    return fd.get_form(), fd.get_model(), fd.name
+    return BlobForm, Question, fd.name
 
 
 def get_models():
@@ -362,6 +363,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
             if ContentType.objects.get_for_model(parent) == ContentType.objects.get_for_model(User):
                 parent = None
         blob_form, model, verbose_name = get_form(dimension)
+        fd = ForumDimension.objects.get(key=dimension)
         #get appropriate form
 
         if POST and user is not None:
@@ -381,6 +383,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         parent.save()
                     except:
                         blob = form.save(commit=False)
+                        blob.forumdimension = fd
                         blob.user = user
                         blob.parent_pk = parent.pk
                         blob.parent_type = ContentType.objects.get_for_model(parent)
@@ -602,8 +605,6 @@ def pp_show_blobchoices(context, nodelist, *args, **kwargs):
     fds = ForumDimension.objects.filter(is_content=True)
     cats = []
     for fd in fds:
-        blob_form, model, verbose_name = get_form(fd.key)
-
         if fd.is_admin and user.is_staff or not fd.is_admin:
             #TODO: IMPLEMENT REAL CONTENTTYPE BASED PERMISSIONS
             if not fd.is_child:
@@ -704,23 +705,6 @@ def pp_get_search_items(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
-
-
-class BlobForm(forms.Form):
-    '''
-    This form is used to allow creation and modification of issue objects.  
-    It extends FormMixin in order to provide a create() class method, which
-    is used to process POST, path, and object variables in a consistant way,
-    and in order to automatically provide the form with a form_id.
-    '''
-
-    #need to grab user from authenticatio
-    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_blob_form")
-
-    summary = forms.CharField(label="Summary", max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'})) 
-    description = forms.CharField(widget=forms.Textarea)
 
 
 class SearchForm(forms.Form):
