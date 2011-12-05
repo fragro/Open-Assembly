@@ -117,10 +117,10 @@
 
         $(document).ready(function(){
 
-            $('.spinner').hide();  // hide it initially
+            $('.spinner').hide()
             .ajaxStart(function() {
                 $(this).show();
-            });
+            })
             .ajaxStop(function() {
                 $(this).hide();
             });
