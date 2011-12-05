@@ -83,7 +83,18 @@
                   alert('test1');
                   if(OAdata['FAIL'] != true){
                         alert('test2');
-
+                        for(var item in OAdata.output){
+                            if(OAdata.output[item].type == 'prepend'){
+                              $(OAdata.output[item].div).prepend(OAdata.output[item].html); 
+                            } 
+                            if(OAdata.output[item].type == 'append'){
+                                $(OAdata.output[item].div).append(OAdata.output[item].html); 
+                            } 
+                            if(OAdata.output[item].type == 'html'){
+                                $(OAdata.output[item].div).innerHTML=''; 
+                                $(OAdata.output[item].div).append(OAdata.output[item].html); 
+                            }
+                        }
                         alert('test3');
                       //$("#content").append(data.POST);
                       
