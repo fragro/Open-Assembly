@@ -107,15 +107,13 @@ class ForumBlob(models.Model):
     children = models.IntegerField(default=0, blank=True, null=True)
     created_dt = models.DateTimeField(_('Date Published'), auto_now_add=True)
     modified_dt = models.DateTimeField(_('Date Modified'), blank=True, null=True)
-    deadline_dt = models.DateTimeField(_('Date Deadline'), blank=True, null=True)
+    #deadline_dt = models.DateTimeField(_('Date Deadline'), blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
+    forumdimension = models.ForeignKey(ForumDimension, blank=True, null=True)
     #classification_model = models.ForeignKey(ClassModel)
-    location = models.CharField(max_length=100, blank=True, null=True)
+    #location = models.CharField(max_length=100, blank=True, null=True)
     permission_req = models.ForeignKey(Permission, blank=True, null=True)
-    pad = models.BooleanField(default=False, verbose_name="Include EtherPad (this allows users to collaboratively edit)")
-
-    class Meta:
-        abstract = True
+    #pad = models.BooleanField(default=False, verbose_name="Include EtherPad (this allows users to collaboratively edit)")
 
     def __unicode__(self):
         return self.summary
@@ -127,6 +125,27 @@ class ForumBlob(models.Model):
         content_type = ContentType.objects.get_for_model(self.__class__)
         path = "/index.html#item" + "/_t" + str(content_type.pk) + "/_o" + str(self.pk)
         return path
+
+    class Meta:
+        abstract = True
+
+    def get_blob_key(self):
+        return self.forumdimension.key
+
+
+class Question(ForumBlob):
+
+    class Meta:
+        verbose_name = _('question')
+
+    def __unicode__(self):
+        return self.summary
+
+    def get_verbose_name(self):
+        return self._meta.verbose_name
+
+    def taggable(self):
+        return True
 
 
 class View(models.Model):
@@ -153,8 +172,14 @@ def create_view(username, addr, obj_id):
             v.num = 1
         v.save()
 
+    '''
+    This form is used to allow creation and modification of issue objects.
+    It extends FormMixin in order to provide a create() class method, which
+    is used to process POST, path, and object variables in a consistant way,
+    and in order to automatically provide the form with a form_id.
+    '''
+
 
 admin.site.register(View)
 admin.site.register(ForumDimension)
 admin.site.register(DimensionTracker)
-

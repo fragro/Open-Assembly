@@ -1,20 +1,32 @@
 from django import forms
 import datetime
 
-class BlobForm(forms.Form):
-    '''
-    This form is used to allow creation and modification of issue objects.  
-    It extends FormMixin in order to provide a create() class method, which
-    is used to process POST, path, and object variables in a consistant way,
-    and in order to automatically provide the form with a form_id.
-    '''
+from django.contrib.contenttypes.models import ContentType
+from pirate_forum.models import Question
 
-    summary = forms.CharField( max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}),initial="") 
-    description = forms.CharField(widget=forms.Textarea,initial="")   
-    location = forms.CharField(label="text", max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}),required=False,initial="")
-    deadline_date = forms.DateField(required=False,initial="")
-    deadline_time = forms.TimeField(required=False,initial="")
+from pirate_core.fields import JqSplitDateTimeField
+from pirate_core.widgets import JqSplitDateTimeWidget
+
+
+class BlobForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        newo = super(BlobForm, self).save(commit=commit)
+        if newo.created_dt == None:
+            newo.created_dt = datetime.datetime.now()
+        newo.modified_dt = datetime.datetime.now()
+        return newo
+
+    class Meta:
+        model = Question
+        exclude = ('parent', 'parent_pk', 'parent_type',
+            'user', 'child', 'children', 'permission_req',
+            'created_dt', 'modified_dt', 'forumdimension')
+
+    summary = forms.CharField(max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}), initial="")
+    description = forms.CharField(widget=forms.Textarea(
+                attrs={'cols': '60', 'rows': '10'}), initial="")
+    end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+    decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))

@@ -47,6 +47,11 @@ import datetime
 #ForumDimension.objects.register(key='boy', name= "Boycott", help_text='Boycotts are an excellent way to fight the corporate abuse of power. Please include reasoning for boycott and the target.',
 #								app_label='pirate_actions', model_class_name='Boycott', form_class_name='BoycottForm')
 
+
+ForumDimension.objects.register(key='pol', name="Policy", help_text='Need to develop an internal policy proposal?.',
+								app_label='pirate_forum', model_class_name='Question', form_class_name='BlobForm')
+
+
 #######GET OR CREATE OA_CACHE
 
 def main():
@@ -76,12 +81,12 @@ def main():
 		exist.delete()
 	for topic in Topic.objects.all():
 		for fd in ForumDimension.objects.all():
-			issue_list = Consensus.objects.all()
-			issue_list = issue_list.filter(parent_pk=topic.pk)
-			type_class = ContentType.objects.get(app_label=str(fd.app_label), model=str(fd.model_class_name).lower())
-			issue_list = issue_list.filter(content_type=type_class)
+			#issue_list = Consensus.objects.all()
+			#issue_list = issue_list.filter(parent_pk=topic.pk)
+			#type_class = ContentType.objects.get(app_label=str(fd.app_label), model=str(fd.model_class_name).lower())
+			#issue_list = issue_list.filter(content_type=type_class)
 			d, is_new = DimensionTracker.objects.get_or_create(object_pk=topic.pk,dimension=fd)
-			d.children = issue_list.count()
+			#d.children = issue_list.count()
 			d.save()
 
 
