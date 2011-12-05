@@ -42,15 +42,13 @@ for more information on SideEffectCache
         se = request.GET.get('side_effect')
         parent_pk = request.GET.get('obj_pk')
         key = request.GET.get('key')[1:]
-        try:
-            jsonval = simplejson.loads(se)
-        except:
-            jsonval = None
+        jsonval = simplejson.loads(se)
+
         #if there is side effect information
         if jsonval != None:
             obj_id, ctype_id = simplejson.loads(se)
-            obj = get_object_or_none(int(ctype_id), int(obj_id))
-            usc = UserSaltCache.objects.get(pk=int(usc_pk))
+            obj = get_object_or_none(ctype_id, obj_id)
+            usc = UserSaltCache.objects.get(pk=usc_pk)
             #First, check to see if we need to switch context
             #EDGE-CASE: if user is viewing comments and submits argument
             if usc.redirect:
