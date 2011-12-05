@@ -208,16 +208,19 @@ small {
     padding:5px;
 
 }
+.btn_new_issue b {
+    color:white;   
+}
 .btn_new_issue {
     background:#a0b2c0;
-    color:#fff;
+    color:white;
     text-decoration:none;
-    width:140px;
+    width:120px;
     height:40px;
+    display:block;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px; 
-    display:block;
     text-align:center;
     line-height:40px;
     -webkit-transition: all .1s ease-in-out;
