@@ -27,6 +27,9 @@
 
     <li><a href="{% pp_url template='faq.html' %}">FAQ</a></li>
 
+    {% if not object %}
+	<li><a href="{% pp_url template='create_group.html' %}">Create Group</a></li>
+	{% endif %}
 
 {% endif %}
 

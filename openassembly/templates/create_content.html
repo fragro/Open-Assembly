@@ -1,7 +1,8 @@
 {% if user.is_authenticated %}       
     {% pp_get_topic object=object %}         
-        <a href="{% pp_url template='submit.html' object=pp_topic.parent %}" class="btn_new_issue">Create Content</a>
+        <a href="{% pp_url template='submit.html' object=pp_topic.parent %}" class="btn_new_issue"><b>Ask Question</b></a>
     {% endpp_get_topic %}
+
 
 {% else %}
 <a href="{% pp_url template='register.html' %}" class="btn_new_issue">Login/Register</a>

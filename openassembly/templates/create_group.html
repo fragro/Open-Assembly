@@ -1,36 +1,8 @@
-
-{% load topictags %}
-{% load pp_url %}
-
-{% block content %}
-
-    {% pp_topic_form POST=request.POST user=user object=object %}
-        <form id="pp_topic_form" method="post" action="">
-            <div id="errors" class="errors">{{ pp_topic.errors }}</div>
-                    {{ pp_topic.form.form_id}}
-                    
-                    Name of Group:<br>{{ pp_topic.form.summary}}<br>
-                    Purpose of Group:<br>{{ pp_topic.form.description}}<br>
-                    Link to Site if Applicable:<br>{{ pp_topic.form.more_info}}<br>
-
-                    {{csrf_string|safe}}
-                {% if user.is_authenticated and user.is_active %}                                                            
-                <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_topic_form"></span>
-        </form>
-                {% else %} 
-                    <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
-                {% endif %}
-        <script>
-
-          $("form#pp_topic_form").submit(function(e){
-                $("#submit_pp_topic_form").html("<b>Submitting...</b>")
-                addObject(e);
-            });
-
-        </script>
-
-        <span id="pp_topic_form_side_effect" style="display:none;">[{{pp_topic.object_pk}}, {{pp_topic.content_type}}]</span>
-
-        {% endpp_topic_form %}
-
-{% endblock %}
+<h2 class="acc_trigger"><a href="#">Create Working Group</a></h2>
+<div class="acc_container">
+    <div class="block">
+     		<div id="pp_topic_form">
+			{% include 'pp_topic_form.html' %}
+			</div>
+    </div>
+</div>

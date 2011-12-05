@@ -19,12 +19,11 @@
             <a href="{{object.get_absolute_url}}">
 
         {% endif %}
-
     {% endcani %}  
-
         {% pp_get_sources object=object type='img' %}
+
             {% if pp_source.cur_img %}
-                <img src="{{pp_source.cur_img.url}}=s690" alt="{{object.content_object.summary}}">
+                <img src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
             {% else %}
 
                 {% cani object=object user=user %}

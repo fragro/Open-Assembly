@@ -322,8 +322,6 @@
 
                         </div>
 
-                        
-
 
                         <div class="quick_profile">  
                         {% if request.user.is_authenticated %}                
@@ -376,6 +374,9 @@
 
                             </ul>
                         </div>
+
+                        <div style="display:block;">
+
                                 <ul id="mygroup" class="recent_activity">
                                     <span><b>MyGroups</b></span>
                                      {% pp_mygroups user=user %}
@@ -385,9 +386,13 @@
                                     {% endpp_mygroups %}
                                 </ul>
 
+                        </div>
+
                         {% endif %}
+                    
 
                     </div>
+
                     <!-- end #sidebar -->
                     
                 </div>

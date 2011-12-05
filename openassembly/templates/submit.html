@@ -24,9 +24,10 @@
 
                     {% pp_show_blobchoices object=object dimension=pp_blob.dimension user=user%}
                         <form>
-                        <h1>Choose Type of Content:</h1>
+                        <h1>Ask a Question</h1>
+                        <h2>What type of Answer do you want?</h2>
                         {% for category, choices in pp_blob.choices %}
-                            <select name="ctype" data-placeholder="Choose Content Type" id="id_ctype" style="width:350px;" class="chzn-select">
+                            <select name="ctype" data-placeholder="What Type of Answer do you Want?" id="id_ctype" style="width:350px;" class="chzn-select">
                                 <option value="" ></option>
                             {% for name, link, dim in choices %}
                                     <option {% if dim == dimension %}selected="selected"{% endif %} value="{{dim}}" >{{name}}</option>
