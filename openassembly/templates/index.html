@@ -80,7 +80,7 @@
             d['empty'] = ($('#content').is(':empty'))
             $.get("/load_page/", d,
               function(data) {
-                  if(data.empty_content){$('#content').html('');}
+                  if(data.empty_content){$('#content').remove();}
                   if(data.FAIL != true){
                         for(item in data.output){
                             if(data.output[item].type == 'prepend'){
@@ -90,7 +90,8 @@
                                 $(data.output[item].div).append(data.output[item].html); 
                             } 
                             if(data.output[item].type == 'html'){
-                                $(data.output[item].div).html(data.output[item].html); 
+                                $(data.output[item].div).remove();
+                                $(data.output[item].div).append(data.output[item].html); 
                             }
                         }
                       //$("#content").append(data.POST);
