@@ -20,29 +20,30 @@ block = block_decorator(register)
 
 get_namespace = namespace_get('pp_argumentation')
 
+
 @block
 def pp_get_argument_count(context, nodelist, *args, **kwargs):
 
     context.push()
     namespace = get_namespace(context)
-    
+
     obj = kwargs.pop('object', None)
     arg_type = kwargs.pop('arg_type', None)
 
     arg_list = Argument.objects.all()
 
     if isinstance(arg_type, unicode):
-         arg_type, created = Stance.objects.get_or_create(arg=arg_type)
+        arg_type, created = Stance.objects.get_or_create(arg=arg_type)
     if obj:
         arg_list = arg_list.filter(parent_pk=obj.id)
     if arg_type:
         arg_list = arg_list.filter(stance=arg_type)
-        
-    namespace['count'] = len(arg_list)
+    namespace['count'] = arg_list.count()
 
     output = nodelist.render(context)
     context.pop()
     return output
+
 
 @block
 def pp_get_arg_types(context, nodelist, *args, **kwargs):
