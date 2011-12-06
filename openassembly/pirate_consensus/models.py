@@ -188,7 +188,6 @@ class Phase(models.Model):
     """
     Handles the phases of voting, saves the necessary time information
     """
-    consensus = models.ForeignKey(Consensus, related_name="consensus of phase")
     curphase = models.ForeignKey(PhaseLink)
     creation_dt = models.DateTimeField()
     decision_dt = models.DateTimeField()

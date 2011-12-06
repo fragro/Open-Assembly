@@ -7,6 +7,8 @@ from pirate_forum.models import Question
 from pirate_core.fields import JqSplitDateTimeField
 from pirate_core.widgets import JqSplitDateTimeWidget
 
+from markitup.widgets import MarkItUpWidget
+
 
 class BlobForm(forms.ModelForm):
 
@@ -26,7 +28,7 @@ class BlobForm(forms.ModelForm):
     summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
                 attrs={'size': '50', 'class': 'inputText'}), initial="")
-    description = forms.CharField(widget=forms.Textarea(
-                attrs={'cols': '60', 'rows': '10'}), initial="")
+    description = forms.CharField(widget=MarkItUpWidget(
+                attrs={'cols': '30', 'rows': '10'}), initial="")
     end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
     decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))

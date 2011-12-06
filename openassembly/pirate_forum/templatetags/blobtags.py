@@ -437,9 +437,11 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             phase_change = 0
                             #create phase object
                             pl = PhaseLink.objects.get(phasename="Question")
-                            ph = Phase.objects.get_or_create(consensus=cons, curphase=pl,
+                            ph = Phase.objects.get_or_create(curphase=pl,
                                                                 creation_dt=datetime.datetime.now(), decision_dt=datetime.datetime.now(),
                                                                 phase_change_dt=datetime.datetime.now(), complete=False, active=True)
+                            cons.phase = ph
+                            cons.save()
 
                         aso_rep_event.send(sender=user, event_score=1, user=user, initiator=user, dimension=ReputationDimension.objects.get(name=blob.get_verbose_name()), related_object=cons)
                         update_agent.send(sender=blob, type="content", params=[ContentType.objects.get_for_model(blob.__class__).app_label, verbose_name.lower(), blob.pk])

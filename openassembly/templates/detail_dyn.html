@@ -256,6 +256,17 @@
                                    </div>
                             {% endif %}
 
+                            {{pp_consensus.consensus.phase}}
+
+    <script type="text/javascript"> 
+    $(function () {
+        $('#defaultCountdown').countdown({until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}})}); 
+    });
+    </script> 
+
+                            <div id="defaultCountdown"></div> 
+                            </div>
+
 
                             <div class="forms">
                                
