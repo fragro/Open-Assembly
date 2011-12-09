@@ -48,7 +48,7 @@ def pp_get_argument_count(context, nodelist, *args, **kwargs):
 @block
 def pp_get_arg_types(context, nodelist, *args, **kwargs):
     """This block tag grabs all available Stances.
-    
+
     Can be used in the following manner:
     {% pp_get_arg_types %}
        Do stuff with {{ pp_blob.arg_type_list }}
@@ -56,7 +56,7 @@ def pp_get_arg_types(context, nodelist, *args, **kwargs):
 
     context.push()
     namespace = get_namespace(context)
-    
+
     arg_type_list = Stance.objects.all()
     namespace['arg_type_list'] = arg_type_list
 

@@ -52,7 +52,7 @@ from markitup.widgets import MarkItUpWidget
 
 
 class NayArgumentForm(forms.ModelForm, FormMixin):
-    
+
     def save(self, commit=True):
         newo = super(NayArgumentForm, self).save(commit=commit)
         if newo.created_dt == None:
@@ -64,18 +64,17 @@ class NayArgumentForm(forms.ModelForm, FormMixin):
 
     class Meta:
         model = Argument
-        exclude = ('parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt' , 'modified_dt', 'deadline_dt', 'location', 'stance' )
-               
+        exclude = ('parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt', 'modified_dt', 'deadline_dt', 'location', 'stance' )
+
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_argument_form_nay")
-    summary = forms.CharField( max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}),label="Summary of Argument") 
-    description = forms.CharField(widget=forms.Textarea(attrs={'size':'100'}), label="Description")
-    
+    summary = forms.CharField(max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}), label="Summary of Argument")
+    nay_description = forms.CharField(widget=forms.Textarea(attrs={'size': '100'}), label="Description")
 
 
 class YeaArgumentForm(forms.ModelForm, FormMixin):
-    
+
     def save(self, commit=True):
         newo = super(YeaArgumentForm, self).save(commit=commit)
         if newo.created_dt == None:
@@ -93,7 +92,7 @@ class YeaArgumentForm(forms.ModelForm, FormMixin):
     summary = forms.CharField( max_length=100,
               widget=forms.TextInput( 
                 attrs={'size':'50', 'class':'inputText'}),label="Summary of Argument") 
-    description = forms.CharField(widget=forms.Textarea(attrs={'size':'100'}), label="Description")
+    yea_description = forms.CharField(widget=forms.Textarea(attrs={'size': '100'}), label="Description")
 
 
 def get_argument_list(parent, start, end, dimension, ctype_list):

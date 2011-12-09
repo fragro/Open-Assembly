@@ -167,9 +167,8 @@ class ListCache(models.Model):
                 dimension = "nay"
                 update = False
             elif self.template == 'children':
-                func = get_children
-                dimension = "children"
-                update = False
+                func = get_ranked_list
+                update = True
             elif self.template == 'topics':
                 func = get_topics
                 update = True

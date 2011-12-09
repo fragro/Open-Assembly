@@ -138,8 +138,8 @@ def remove_group(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        user_pk = int(request.POST[u'user'])
-        topic_pk = int(request.POST[u'topic'])
+        user_pk = request.POST[u'user']
+        topic_pk = request.POST[u'topic']
 
         user = User.objects.get(pk=user_pk)
         topic = Topic.objects.get(pk=topic_pk)
@@ -166,8 +166,8 @@ def add_group(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        user_pk = int(request.POST[u'user'])
-        topic_pk = int(request.POST[u'topic'])
+        user_pk = request.POST[u'user']
+        topic_pk = request.POST[u'topic']
 
         user = User.objects.get(pk=user_pk)
         topic = Topic.objects.get(pk=topic_pk)
@@ -195,8 +195,8 @@ def add_platform(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        ctype = int(request.POST[u'ctype'])
-        object_pk = int(request.POST[u'object_pk'])
+        ctype = request.POST[u'ctype']
+        object_pk = request.POST[u'object_pk']
 
         pd = PlatformDimension.objects.get(pk=ctype)
 
@@ -224,8 +224,8 @@ def remove_platform(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        ctype = int(request.POST[u'ctype'])
-        object_pk = int(request.POST[u'object_pk'])
+        ctype = request.POST[u'ctype']
+        object_pk = request.POST[u'object_pk']
 
         pd = PlatformDimension.objects.get(pk=ctype)
 
@@ -261,7 +261,8 @@ def confirm(request, key):
 def add_video_vote(request):
     if not request.user.is_authenticated()  or not request.user.is_active:
         #needs to popup registration dialog instead
-        return HttpResponse(simplejson.dumps({'FAIL': True, 'ERR1':True,'ERR2':False}), #need a better non-auth error here, interferes with view
+        return HttpResponse(simplejson.dumps({'FAIL': True, 'ERR1': True, 'ERR2': False}),
+         #need a better non-auth error here, interferes with view
                                 mimetype='application/json')
 
     if request.method == 'POST':
@@ -277,7 +278,7 @@ def add_video_vote(request):
         old_votes = VideoVote.objects.filter(user=request.user, video_id=v_id)
         for v in old_votes:
             if (time > v.time - time_interval and time < v.time) or (time < v.time + time_interval and time > v.time):
-                return HttpResponse(simplejson.dumps({'FAIL':True,'ERR1':False,'ERR2':True}),
+                return HttpResponse(simplejson.dumps({'FAIL': True, 'ERR1': False, 'ERR2': True}),
                             mimetype='application/json')
 
 
@@ -304,12 +305,14 @@ def update_video_votes(request):
         return HttpResponse(simplejson.dumps(str(barlist)),
                             mimetype='application/json')
 
+
 #DELETE FUNCTIONS
-def delete_source(request,object_id, consensus_id):
+def delete_source(request, object_id, consensus_id):
     obj = get_object_or_404(URLSource, id=object_id)
     obj.delete()
     con = Consensus.objects.get(pk=consensus_id)
     return redirect(con.content_object.get_absolute_url())
+
 
 #DELETE OBJ
 #removes object from the database. There are orphan votes and comments still around.
@@ -347,16 +350,18 @@ def delete_object(request):
         for i in uvote:
             aso_rep_delete.send(sender=request.user, event_score=1, user=i.user,
                                 initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
-                                related_object=i,is_vote=True) # register reputation for voting
-            user_cons.register_vote(i,'delete',old_vote=None)
+                                related_object=i, is_vote=True)
+                                # register reputation for voting
+            user_cons.register_vote(i, 'delete', old_vote=None)
             i.delete()
 
         vote = RatingVote.objects.filter(parent=cons)
         for r in vote:
             aso_rep_delete.send(sender=request.user, event_score=1, user=r.user,
                                 initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
-                                related_object=r,is_vote=True) # register reputation for voting
-            user_cons.register_vote(r,'delete',old_vote=None)
+                                related_object=r, is_vote=True)
+                                # register reputation for voting
+            user_cons.register_vote(r, 'delete', old_vote=None)
             r.delete()
         cons.delete()
         update_ranks(request)
@@ -369,7 +374,8 @@ def delete_object(request):
 def flagvote(request):
     if not request.user.is_authenticated()  or not request.user.is_active:
         #needs to popup registration dialog instead
-        return HttpResponse(simplejson.dumps({'FAIL': True}), #need a better non-auth error here, interferes with view
+        return HttpResponse(simplejson.dumps({'FAIL': True}),
+            #need a better non-auth error here, interferes with view
                                 mimetype='application/json')
 
     if request.method == 'POST':
@@ -450,8 +456,8 @@ def add_tag(request):
         results = {'linktaglist': get_link_tag_list(request.user,obj,get_links=True),'taglist':get_recommended_tag_list(obj, get_links=True),'FAIL':False}
         return HttpResponse(simplejson.dumps(results),
                     mimetype='application/json')
-                    
-                    
+
+
 def del_tag(request):
     if not request.user.is_authenticated()  or not request.user.is_active:
         #needs to popup registration dialog instead
@@ -463,25 +469,56 @@ def del_tag(request):
         tag = str(request.POST[u'tag'])
         c_type = str(request.POST['c_type'])
         app_type = str(request.POST['app_type'])
-        
+
         model_type = ContentType.objects.get(app_label=app_type, model=c_type)
         obj = model_type.get_object_for_this_type(pk=obj_id)
-        
+
         tagobj = Tag.objects.get(name=tag)
-        taggedobj = TaggedItem.objects.get(tag_name=tag,object_id=obj.pk)
-        delete_relationship_event.send(sender=tagobj,obj=tagobj,parent=obj,initiator=request.user)
+        taggedobj = TaggedItem.objects.get(tag_name=tag, object_id=obj.pk)
+        delete_relationship_event.send(sender=tagobj, obj=tagobj, parent=obj, initiator=request.user)
         taggedobj.delete()
-        results = {'linktaglist': get_link_tag_list(request.user,obj,get_links=True),'taglist':get_recommended_tag_list(obj,get_links=True),'FAIL':False}
+        results = {'linktaglist': get_link_tag_list(request.user, obj, get_links=True), 'taglist': get_recommended_tag_list(obj, get_links=True), 'FAIL': False}
         return HttpResponse(simplejson.dumps(results),
                     mimetype='application/json')
-            
-def starvote(request):
+
+
+def spectrumvote(request):
     '''
-    This is the POST function that is the django part of the Ajax/Javascript 
-    asynchronous voting function. The function receives a request from a 
+    This is the POST function that is the django part of the Ajax/Javascript
+    asynchronous voting function. The function receives a request from a
     consensus object, and creates/deletes a UpDownVote object as requested from
     the Javascript that calls this function.
-    
+
+    Returns: JSON object containing an updated count to modify vote totals in UI,
+    and a image filename to modify graphical elements of the UI.
+    '''
+
+    if not request.user.is_authenticated()  or not request.user.is_active:
+        #needs to popup registration dialog instead
+        return HttpResponse(simplejson.dumps({'FAIL': True}),
+        #need a better non-auth error here, interferes with view
+                                mimetype='application/json')
+
+    if request.method == 'POST':
+
+        pk = request.POST[u'pk']
+        vote_str = int(request.POST[u'vote'])
+
+        vote(request, pk, vote_str, UpDownVote, 'subjective')
+
+        results = {'FAIL': False, 'vote_str': vote_str}
+        if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
+            return HttpResponse(simplejson.dumps(results),
+                                mimetype='application/json')
+
+
+def starvote(request):
+    '''
+    This is the POST function that is the django part of the Ajax/Javascript
+    asynchronous voting function. The function receives a request from a
+    consensus object, and creates/deletes a UpDownVote object as requested from
+    the Javascript that calls this function.
+
     Returns: JSON object containing an updated count to modify vote totals in UI,
     and a image filename to modify graphical elements of the UI.
     '''
@@ -489,165 +526,67 @@ def starvote(request):
     if not request.user.is_authenticated()  or not request.user.is_active:
         return HttpResponse(simplejson.dumps({'FAIL': True}),
                                 mimetype='application/json')
-                                
+
     if request.method == 'POST':
-        
+
         pk = request.POST[u'pk']
         vote_str = int(request.POST[u'vote'])
 
-        consensus = Consensus.objects.get(object_pk=pk)
-        cnt = ContentType.objects.get_for_model(User)
-        user_cons, is_new = Consensus.objects.get_or_create(content_type=cnt,
-                                    object_pk=request.user.pk,
-                                    parent_pk=request.user.pk,
-                                    vote_type=cnt)
-        if is_new:
-            user_cons.intiate_vote_distributions()
+        vote(request, pk, vote_str, RatingVote, 'objective')
 
-        if vote_str == -99:
-            st = RatingVote.objects.get(user=request.user, object_pk=pk)
-            aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user, initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),related_object=st,is_vote=True) # register reputation for voting
-            user_cons.register_vote(st,'delete',old_vote=None)
-            update_agent.send(sender=user_cons, type="vote", params=['objective', st.pk])
-            st.delete()
-        else:
-            try: #TODO: there is an error happening here!
-                old = RatingVote.objects.get(user=request.user, object_pk=pk)
-                if old.vote_pos != vote_str:
-                    old_vote_pos = old.vote_pos
-                    old.vote_pos = vote_str
-                    old.save()
-                    user_cons.register_vote(old,'change',old_vote=old_vote_pos)
-                    vote_created_callback(sender=request.user, parent=consensus,vote_type=vote_str)
-                    
-            except:
-                st = RatingVote(user=request.user, parent=consensus, vote_pos=vote_str, object_pk=pk, parent_pk=consensus.parent_pk)
-                st.save(),
-                check_badges(consensus.content_object.user, RatingVote, pk)
-                aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user, initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),related_object=st, is_vote=True) # register reputation for voting
-                vote_created_callback(sender=request.user, parent=consensus,vote_type=vote_str)
-                user_cons.register_vote(st,'register')
-                update_agent.send(sender=user_cons, type="vote", params=['objective', st.pk])
-
-        results = {'FAIL':False, 'vote_str':vote_str }
-        if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
-            return HttpResponse(simplejson.dumps(results),
-                                mimetype='application/json')
-
-def vote(request):
-    '''
-    This is the POST function that is the django part of the Ajax/Javascript 
-    asynchronous voting function. The function receives a request from a 
-    consensus object, and creates/deletes a UpDownVote object as requested from
-    the Javascript that calls this function.
-    
-    Returns: JSON object containing an updated count to modify vote totals in UI,
-    and a image filename to modify graphical elements of the UI.
-    '''
-
-    vote_dict = {'up': 1,'down': -1,'neut': 0}
-    if not request.user.is_authenticated()  or not request.user.is_active:
-        #needs to popup registration dialog instead
-        return HttpResponse(simplejson.dumps({'FAIL':True}), #need a better non-auth error here, interferes with view
-                                mimetype='application/json')
-                                
-    if request.method == 'POST':
-        c = None
-        pk = int(request.POST[u'pk'])
-        vote_str = request.POST[u'vote']
-        img_size = request.POST[u'img_size']
-        consensus = Consensus.objects.get(object_pk=pk)
-        upd = UpDownVote.objects.filter(parent=consensus,user=request.user)
-        newu = upd.count()
-        vote_type = vote_dict[vote_str]
-        if newu == 0: #if user has never voted on this consensus object, create new vote    
-            new_vote = UpDownVote(vote_type=vote_type,parent=consensus,submit_date=datetime.datetime.now(),user=request.user)
-            new_vote.save()
-            #c = UpDownVote.objects.filter(vote_type=vote_type,parent=consensus).count()
-            imgsrc = "/static/voteimgs/" + vote_str + "_arrow_acti" + img_size + ".png"
-            #create reputation event for this vote_dict
-        
-            user = consensus.content_object.user
-            aso_rep_event.send(sender=request.user, event_score=1, user=user, initiator=request.user, dimension=ReputationDimension.objects.get('Voting'),related_object=new_vote)
-            vote_created_callback(sender=request.user, parent=consensus,vote_type=vote_type)
-            
-        else: #if this user has already voted
-            vote_id = int(upd[0].vote_type)
-            if vote_type == vote_id: #if user clicked on same vote, delete old vote
-                user = consensus.content_object.user
-                aso_rep_delete.send(sender=request.user, event_score=1, user=user, initiator=request.user, dimension=ReputationDimension.objects.get('Voting'),related_object=upd[0])
-                upd[0].delete()
-                #c = UpDownVote.objects.filter(vote_type=vote_id,parent=consensus).count()
-            #else: #else do nothing.
-                #c = UpDownVote.objects.filter(vote_type=vote_type,parent=consensus).count()
-            imgsrc = "/static/voteimgs/" + vote_str  + "_arrow_flat" + img_size + ".png"
-        results = {'count':str(c),'imgsrc':imgsrc,'FAIL':False }
-        if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
-            return HttpResponse(simplejson.dumps(results),
-                                mimetype='application/json')
-                                
-
-
-def spectrumvote(request):
-    '''
-    This is the POST function that is the django part of the Ajax/Javascript 
-    asynchronous voting function. The function receives a request from a 
-    consensus object, and creates/deletes a UpDownVote object as requested from
-    the Javascript that calls this function.
-    
-    Returns: JSON object containing an updated count to modify vote totals in UI,
-    and a image filename to modify graphical elements of the UI.
-    '''
-
-    if not request.user.is_authenticated()  or not request.user.is_active:
-        #needs to popup registration dialog instead
-        return HttpResponse(simplejson.dumps({'FAIL':True}), #need a better non-auth error here, interferes with view
-                                mimetype='application/json')
-                                
-    if request.method == 'POST':
-        
-        pk = request.POST[u'pk']
-        vote_str = int(request.POST[u'vote'])
-
-        consensus = Consensus.objects.get(object_pk=pk)
-        cnt = ContentType.objects.get_for_model(User)
-        user_cons, is_new = Consensus.objects.get_or_create(content_type=cnt, 
-                                    object_pk=request.user.pk,
-                                    parent_pk=request.user.pk,
-                                    vote_type=cnt)
-        if is_new:
-            user_cons.intiate_vote_distributions()
-        if vote_str == -99:
-            try:
-                st = UpDownVote.objects.get(user=request.user, object_pk=pk)
-                aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user, initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),related_object=st, is_vote=True)
-                user_cons.register_vote(st,'delete')
-                update_agent.send(sender=user_cons, type="vote", params=['subjective', st.pk])
-                st.delete()
-            except:
-                raise ValueError('Tried to cancel a vote that doesnt exist')
-        else:
-            try:
-                old = UpDownVote.objects.get(user=request.user, object_pk=pk)
-                if old.vote_type != vote_str:
-                    old_vote_pos = old.vote_type
-                    old.vote_type = vote_str
-                    old.save()
-                    user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
-                    vote_created_callback(sender=request.user, parent=consensus, vote_type=vote_str)
-
-            except Exception, e:
-                st = UpDownVote(user=request.user, parent=consensus, vote_type=vote_str, object_pk=pk, parent_pk=consensus.parent_pk)
-                st.save()
-                check_badges(consensus.content_object.user, UpDownVote, pk)
-                aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user, initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),related_object=st, is_vote=True) # register reputation for voting
-                vote_created_callback(sender=request.user, parent=consensus, vote_type=vote_str) 
-                user_cons.register_vote(st, 'register')  
-                update_agent.send(sender=user_cons, type="vote", params=['subjective', st.pk])
         results = {'FAIL': False, 'vote_str': vote_str}
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
             return HttpResponse(simplejson.dumps(results),
                                 mimetype='application/json')
+
+
+def vote(request, pk, vote, votemodel, vote_type_str):
+    consensus = Consensus.objects.get(object_pk=pk)
+    cnt = ContentType.objects.get_for_model(User)
+    user_cons, is_new = Consensus.objects.get_or_create(content_type=cnt,
+                                object_pk=consensus.content_object.user.pk,
+                                parent_pk=consensus.content_object.user.pk,
+                                vote_type=cnt)
+    if is_new:
+        user_cons.intiate_vote_distributions()
+        user_cons.spectrum.get_list()
+
+    if vote == -99:
+        st = RatingVote.objects.get(user=request.user, object_pk=pk)
+        aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user,
+                            initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
+                            related_object=st, is_vote=True)
+        # register reputation for voting
+        user_cons.register_vote(st, 'delete', old_vote=st.vote)
+        consensus.register_vote(st, 'delete', old_vote=st.vote)
+
+        update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])
+        st.delete()
+    else:
+        try:
+            #TODO: there is an error happening here!
+            old = votemodel.objects.get(user=request.user, object_pk=pk)
+            if old.vote != vote:
+                old_vote_pos = old.vote
+                old.vote = vote
+                old.save()
+                user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
+                vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
+                consensus.register_vote(old, 'change', old_vote=old_vote_pos)
+
+        except:
+            st, is_new = votemodel.objects.get_or_create(user=request.user, parent=consensus, vote=vote, object_pk=pk, parent_pk=consensus.parent_pk)
+            st.save()
+            print st.pk
+            check_badges(consensus.content_object.user, votemodel, pk)
+            aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user,
+                                initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
+                                related_object=st, is_vote=True)
+            # register reputation for voting
+            vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
+            user_cons.register_vote(st, 'register')
+            consensus.register_vote(st, 'register')
+            update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])
 
 
 ##########DEPRECATED!!!#############################

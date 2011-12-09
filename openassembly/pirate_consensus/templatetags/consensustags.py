@@ -7,9 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 
 from pirate_core.views import HttpRedirectException, namespace_get
-from pirate_consensus.models import  UpDownVote, Consensus,  RankedVote, WeightedVote, RatingVote
+from pirate_consensus.models import  UpDownVote, Consensus,  RankedVote, WeightedVote, RatingVote, SpectrumHolder
 
 from pirate_core.widgets import HorizRadioRenderer
+
+from chartit import DataPool, Chart
 
 from customtags.decorators import block_decorator
 register = template.Library()
@@ -37,6 +39,20 @@ SPECTRUM_CHOICES = (
     (11, "Extremely Agree"),
 )
 
+SPECTRUM_COLORS = {
+    1: "#e11010",
+    2: "#e13310",
+    3: "#e15610",
+    4: "#e17810",
+    5: "#e19b10",
+    6: "#e1be10",
+    7: "#e1e110",
+    8: "#bee110",
+    9: "#9be110",
+    10: "#78e110",
+    11: "#56e110",
+}
+
 get_namespace = namespace_get('pp_consensus')
 
 
@@ -49,9 +65,10 @@ def pp_get_votes(context, nodelist, *args, **kwargs):
     user = kwargs.pop('user', None)
     obj = kwargs.pop('object', None)
 
-    votes = UpDownVote.objects.filter(parent_pk=obj.pk).filter(user=user).order_by('vote_type')
+    votes = UpDownVote.objects.filter(object_pk=obj.pk).filter(user=user).order_by('vote')
 
     namespace['votes'] = votes
+    namespace['count'] = votes.count()
     output = nodelist.render(context)
     context.pop()
 
@@ -87,11 +104,11 @@ def pp_consensus_get(context, nodelist, *args, **kwargs):
         #user specific rendering of vote info
         #if available include it, else set to None
         try:
-            updown = UpDownVote.objects.get(user=user, parent=namespace['consensus']).vote_type
+            updown = UpDownVote.objects.get(user=user, parent=namespace['consensus']).vote
         except:
             updown = None
         try:
-            rate = RatingVote.objects.get(user=user, parent=namespace['consensus']).vote_pos
+            rate = RatingVote.objects.get(user=user, parent=namespace['consensus']).vote
         except:
             rate = None
         namespace['user_updown'] = updown
@@ -183,12 +200,12 @@ def pp_rating_form(context, nodelist, *args, **kwargs):
         form = RatingForm(POST)
         if form.is_valid():
             rating = form.cleaned_data['rating']
-            consensus = Consensus.objects.get(object_pk=objpk)
-            st = RatingVote(user=user, parent=consensus, vote_pos=rating)  
+            consensus = Consensus.objects.get(object_pk= obj.pk)
+            st = RatingVote(user=user, parent=consensus, vote=rating)
     else:   
         try: 
-            prev_rating = RatingVote.objects.get(user=user,object_pk=obj.pk)
-            form = RatingForm(initial={'rating':prev_rating.vote_pos})
+            prev_rating = RatingVote.objects.get(user=user, object_pk=obj.pk)
+            form = RatingForm(initial={'rating': prev_rating.vote})
         except: form = RatingForm()
         
     namespace['form'] = form
@@ -224,13 +241,14 @@ def pp_spectrum_form(context, nodelist, *args, **kwargs):
         form = SpectrumForm(POST)
         if form.is_valid():
             rating = form.cleaned_data['spectrum']
-            consensus = Consensus.objects.get(object_pk=objpk)
-            st = RatingVote(user=user, parent=consensus, vote_pos=rating)  
-    else:   
-        try: 
-            prev_rating = UpDownVote.objects.get(user=user,object_pk=obj.pk)
-            form = SpectrumForm(initial={'spectrum':prev_rating.vote_type})
-        except: form = SpectrumForm()
+            consensus = Consensus.objects.get(object_pk=obj.pk)
+            #st = RatingVote(user=user, parent=consensus, vote=rating)
+    else:
+        try:
+            prev_rating = UpDownVote.objects.get(user=user, object_pk=obj.pk)
+            form = SpectrumForm(initial={'spectrum': prev_rating.vote})
+        except:
+            form = SpectrumForm()
         
     namespace['form'] = form
 
@@ -297,11 +315,34 @@ def pp_spectrum_js(context, nodelist, *args, **kwargs):
         """
     else: RET = ""
     namespace['spectrum_js'] = RET
-        
+
     output = nodelist.render(context)
     context.pop()
 
     return output
+
+
+@block
+def pp_consensus_chart(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+
+    obj = kwargs.get('object', None)
+    #prepare data for highchart
+    if obj.spectrum is not None:
+        dchart = {'type': 'pie', 'name': 'Temperature Check'}
+        data = []
+        for i in SpectrumHolder.objects.filter(spectrum_pk=obj.spectrum.pk):
+            data.append({'name': str(int(i.vote) - 6), 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
+        dchart['data'] = data
+        namespace['chart_data'] = str([dchart])
+        namespace['chart'] = True
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
 
 #: render a <link> tag required to be added to the template at the appropriate locations.
 @block

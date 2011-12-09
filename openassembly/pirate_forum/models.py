@@ -10,6 +10,14 @@ from django.utils.translation import ugettext as _
 from djangotoolbox.fields import ListField
 from django.db.models import get_model, get_app
 
+from django import forms
+import datetime
+
+from pirate_core.fields import JqSplitDateTimeField
+from pirate_core.widgets import JqSplitDateTimeWidget
+
+from markitup.widgets import MarkItUpWidget
+
 
 def get_rangelist(start, end, count):
     """Retrieves a rangelist for pagination
@@ -147,6 +155,30 @@ class Question(ForumBlob):
     def taggable(self):
         return True
 
+    def get_child_blob_key(self):
+        return 'nom'
+
+
+class Nomination(ForumBlob):
+
+    class Meta:
+        verbose_name = _('nominate')
+
+    def __unicode__(self):
+        return self.summary
+
+    def get_verbose_name(self):
+        return self._meta.verbose_name
+
+    def taggable(self):
+        return True
+    
+    def is_child(self):
+        return True
+
+    def get_blob_key(self):
+        return 'nom'
+
 
 class View(models.Model):
     object_pk = models.IntegerField()
@@ -180,6 +212,55 @@ def create_view(username, addr, obj_id):
     '''
 
 
+class BlobForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        newo = super(BlobForm, self).save(commit=commit)
+        if newo.created_dt == None:
+            newo.created_dt = datetime.datetime.now()
+            ctype = ContentType.objects.get_for_model(Nomination)
+            newo.child = ctype
+            newo.children = 0
+        newo.modified_dt = datetime.datetime.now()
+        return newo
+
+    class Meta:
+        model = Question
+        exclude = ('parent', 'parent_pk', 'parent_type',
+            'user', 'child', 'children', 'permission_req',
+            'created_dt', 'modified_dt', 'forumdimension')
+
+    summary = forms.CharField(max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}), initial="")
+    description = forms.CharField(widget=MarkItUpWidget(
+                attrs={'cols': '20', 'rows': '10'}), initial="")
+    end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+    decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+
+
+class NominationForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        newo = super(NominationForm, self).save(commit=commit)
+        if newo.created_dt == None:
+            newo.created_dt = datetime.datetime.now()
+        newo.modified_dt = datetime.datetime.now()
+        return newo
+
+    class Meta:
+        model = Nomination
+        exclude = ('parent', 'parent_pk', 'parent_type',
+            'user', 'child', 'children', 'permission_req',
+            'created_dt', 'modified_dt', 'forumdimension')
+
+    summary = forms.CharField(max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}), initial="")
+    description = forms.CharField(widget=forms.Textarea(), initial="")
+
 admin.site.register(View)
 admin.site.register(ForumDimension)
 admin.site.register(DimensionTracker)
+admin.site.register(Question)
+admin.site.register(Nomination)

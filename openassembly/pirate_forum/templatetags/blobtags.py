@@ -43,7 +43,7 @@ get_namespace = namespace_get('pp_blob')
 def get_form(t):
     #grabs the appropriate form for the text input corresponding to type from TYPE_CHOICES
     fd = ForumDimension.objects.get(key=t)
-    return BlobForm, Question, fd.name
+    return fd.get_form(), fd.get_model(), fd.name
 
 
 def get_models():
@@ -377,16 +377,24 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
             for form in comboform._forms:
                 if form.is_valid():
                     #if this is a TopicForm, we must extract the parent
-                    try:
+                    if 'parent' in form.cleaned_data:
                         parent = form.cleaned_data['parent']
-                        parent.children += 1
-                        parent.save()
-                    except:
+                    else:
+                        #blob form
+                        if parent is not None:
+                            parent.children += 1
+                            parent.save()
                         blob = form.save(commit=False)
                         blob.forumdimension = fd
                         blob.user = user
                         blob.parent_pk = parent.pk
                         blob.parent_type = ContentType.objects.get_for_model(parent)
+
+                        try:
+                            phase_change_dt = form.cleaned_data['end_of_nomination_phase']
+                            decision_dt = form.cleaned_data['decision_time']
+                        except:
+                            pass
 
                         if sub is not None:
                             for form_key, value in sub.items():
@@ -433,15 +441,16 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                     parent_pk=blob.parent_pk)
 
                         if is_new:
-                            decision_dt = 0
-                            phase_change = 0
-                            #create phase object
-                            pl = PhaseLink.objects.get(phasename="Question")
-                            ph = Phase.objects.get_or_create(curphase=pl,
-                                                                creation_dt=datetime.datetime.now(), decision_dt=datetime.datetime.now(),
-                                                                phase_change_dt=datetime.datetime.now(), complete=False, active=True)
-                            cons.phase = ph
-                            cons.save()
+                            cons.intiate_vote_distributions()
+                            if not fd.is_child:
+
+                                #create phase object
+                                pl = PhaseLink.objects.get(phasename="Question")
+                                ph, is_new = Phase.objects.get_or_create(curphase=pl,
+                                                                    creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
+                                                                    phase_change_dt=phase_change_dt, complete=False, active=True)
+                                cons.phase = ph
+                                cons.save()
 
                         aso_rep_event.send(sender=user, event_score=1, user=user, initiator=user, dimension=ReputationDimension.objects.get(name=blob.get_verbose_name()), related_object=cons)
                         update_agent.send(sender=blob, type="content", params=[ContentType.objects.get_for_model(blob.__class__).app_label, verbose_name.lower(), blob.pk])

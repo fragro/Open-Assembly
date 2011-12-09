@@ -20,43 +20,77 @@ from pirate_signals.models import vote_created
 """
 
 
-class Spectrum(models.Model):
-    #holds spectrum values for calculation of ranking, spectrum is not weighted
-    spectrum1 = models.IntegerField(default=0)
-    spectrum2 = models.IntegerField(default=0)
-    spectrum3 = models.IntegerField(default=0)
-    spectrum4 = models.IntegerField(default=0)
-    spectrum5 = models.IntegerField(default=0)
-    spectrum6 = models.IntegerField(default=0)
-    spectrum7 = models.IntegerField(default=0)
-    spectrum8 = models.IntegerField(default=0)
-    spectrum9 = models.IntegerField(default=0)
-    spectrum10 = models.IntegerField(default=0)
-    spectrum11 = models.IntegerField(default=0)
-    
+class SpectrumHolder(models.Model):
+#mostly designed for chartit
+    value = models.IntegerField(default=0)
+    spectrum_pk = models.CharField(max_length=40)
+    vote = models.CharField(max_length=5)
+
     def __unicode__(self):
-        return str(self.id)
+        return str(self.value)
         #cons = Consensus.objects.get(spectrum=self)
         #return "%s:%s" % (str(cons.content_type), str(cons.object_pk))
-    
+
+
+class Spectrum(models.Model):
+    #holds spectrum values for calculation of ranking, spectrum is not weighted
+    spectrum1 = models.ForeignKey(SpectrumHolder, related_name="spectrum1", blank=True, null=True)
+    spectrum2 = models.ForeignKey(SpectrumHolder, related_name="spectrum2", blank=True, null=True)
+    spectrum3 = models.ForeignKey(SpectrumHolder, related_name="spectrum3", blank=True, null=True)
+    spectrum4 = models.ForeignKey(SpectrumHolder, related_name="spectrum4", blank=True, null=True)
+    spectrum5 = models.ForeignKey(SpectrumHolder, related_name="spectrum5", blank=True, null=True)
+    spectrum6 = models.ForeignKey(SpectrumHolder, related_name="spectrum6", blank=True, null=True)
+    spectrum7 = models.ForeignKey(SpectrumHolder, related_name="spectrum7", blank=True, null=True)
+    spectrum8 = models.ForeignKey(SpectrumHolder, related_name="spectrum8", blank=True, null=True)
+    spectrum9 = models.ForeignKey(SpectrumHolder, related_name="spectrum9", blank=True, null=True)
+    spectrum10 = models.ForeignKey(SpectrumHolder, related_name="spectru10", blank=True, null=True)
+    spectrum11 = models.ForeignKey(SpectrumHolder, related_name="spectrum11", blank=True, null=True)
+
+    def __unicode__(self):
+        return str(self.pk)
+        #cons = Consensus.objects.get(spectrum=self)
+        #return "%s:%s" % (str(cons.content_type), str(cons.object_pk))
+
     def save_vote(self, vote):
-        setattr(self, 'spectrum' + str(vote), getattr(self,'spectrum' + str(vote))+1)
+        spec = getattr(self, 'spectrum' + str(vote))
+        try:
+            spec.value += 1
+            spec.save()
+            setattr(self, 'spectrum' + str(vote), spec)
+            self.save()
+        except:
+            specval = SpectrumHolder(value=1, spectrum_pk=self.pk, vote=str(vote))
+            specval.save()
+            setattr(self, 'spectrum' + str(vote), specval)
+            self.save()
+
+    def del_vote(self, vote):
+        spec = getattr(self, 'spectrum' + str(vote))
+        spec.value -= 1
+        spec.save()
+        setattr(self, 'spectrum' + str(vote), spec)
         self.save()
 
-    def del_vote(self,vote):
-        setattr(self, 'spectrum' + str(vote), getattr(self,'spectrum' + str(vote))-1)
-        #TODO: save rating_w and increment rating_n
-        self.save()
-        
-    def change_vote(self,vote,old_vote):
-        setattr(self, 'spectrum' + str(old_vote), getattr(self,'spectrum' + str(old_vote))-1)
-        setattr(self, 'spectrum' + str(vote), getattr(self,'spectrum' + str(vote))+1)
-        #TODO: save rating_w and increment rating_n
-        self.save()
-        
+    def change_vote(self, vote, old_vote):
+        self.del_vote(old_vote)
+        self.save_vote(vote)
+
     def get_list(self):
-        return [(i-6, getattr(self,'spectrum' + str(i))) for i in range(1,12)]
-    
+        l = []
+        for i in range(1, 12):
+            sp = getattr(self, 'spectrum' + str(i))
+            if sp is None:
+                sp = SpectrumHolder(value=0, spectrum_pk=self.pk, vote=str(i))
+                sp.save()
+                setattr(self, 'spectrum' + str(i), sp)
+                self.save()
+                val = sp.value
+            else:
+                val = 0
+            l.append((i - 6, val))
+        return l
+
+
 class Rating(models.Model):
     #ratings
     rating1 = models.IntegerField(default=0)
@@ -139,37 +173,29 @@ class Consensus(models.Model):
         uvote = ContentType.objects.get_for_model(UpDownVote)
         rvote = ContentType.objects.get_for_model(RatingVote)
         if vtype == uvote:
-            if self.spectrum == None:
-                sp = Spectrum()
-                self.spectrum = sp
-                sp.save()
-                self.save()
             if dtype == 'register':
-                self.spectrum.save_vote(vote.vote_type)
+                self.spectrum.save_vote(vote.vote)
             elif dtype == 'delete':
-                self.spectrum.del_vote(vote.vote_type)
+                self.spectrum.del_vote(vote.vote)
             elif dtype == 'change':
-                self.spectrum.change_vote(vote.vote_type, old_vote)
+                self.spectrum.change_vote(vote.vote, old_vote)
 
         elif vtype == rvote:
-            if self.rating == None:
-                rt = Rating()
-                self.rating = rt
-                rt.save()
-                self.save()
             if dtype == 'register':
-                self.rating.save_vote(vote.vote_pos)
+                self.rating.save_vote(vote.vote)
             elif dtype == 'delete':
-                self.rating.del_vote(vote.vote_pos)
+                self.rating.del_vote(vote.vote)
             elif dtype == 'change':
-                self.rating.change_vote(vote.vote_pos, old_vote)
+                self.rating.change_vote(vote.vote, old_vote)
+        else:
+            raise ValueError('No matching vote type')
 
     def intiate_vote_distributions(self):
         spec = Spectrum()
-        rate = Rating()
         spec.save()
-        rate.save()
         self.spectrum = spec
+        rate = Rating()
+        rate.save()
         self.rating = rate
         self.save()
 
@@ -196,7 +222,7 @@ class Phase(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return str(self.consensus) + " " + str(self.complete)
+        return str(self.complete)
 
 
 #This is the basic voting object utilized with Reddit-like consensus
@@ -208,36 +234,23 @@ class UpDownVote(models.Model):
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
     user = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
-    vote_type = models.IntegerField()
-    #For simplicity upvote == 1, downvote == -1, neut == 0
+    vote = models.IntegerField()
     object_pk = models.CharField(_('Object_PK'), max_length=100, blank=True, null=True)
 
     class Meta:
-        unique_together = (('parent', 'user'),)
         verbose_name = _('Up/Down Vote')
         verbose_name_plural = _('Up/Down Votes')
 
     def __unicode__(self):
-        return " on %s" % (self.parent.content_object)
+        return " on %s" % (self.pk)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         if self.submit_date is None:
             self.submit_date = datetime.datetime.now()
             self.parent.votes += 1
+            self.parent.save()
             #update consensus object vote count
-        super(UpDownVote, self).save(force_insert, force_update)
-
-        spec = self.parent.spectrum
-        if spec != None:
-            spec.save_vote(self.vote_type)
-        else:
-            spec = Spectrum()
-            spec.save()
-
-            self.parent.spectrum = spec
-            spec.save_vote(self.vote_type)
-
-        self.parent.save()
+        super(UpDownVote, self).save(*args, **kwargs)
 
 
 class VideoVote(models.Model):
@@ -251,103 +264,100 @@ class VideoVote(models.Model):
     video_id = models.IntegerField()
     time = models.FloatField()
     duration = models.FloatField()
-    
-    
+
     def __unicode__(self):
         return "user:%s - video_id:%s - time:%s" % (self.user, self.video_id, self.time)
-        
+
 
 class RankedVote(models.Model):
     """Facilitates ranked voting methods such as the Schulz voting algorithm.
         The correctness of the ranking can be checked via the template tags,
         or via the javascript interface. Incorrect rankings should not be allowed.
     """
-    parent   = models.ForeignKey(Consensus,
+    parent = models.ForeignKey(Consensus,
             verbose_name=_('parent'))
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
-    user        = models.ForeignKey(User, verbose_name=_('user'),
+    user = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
-    vote_rank = models.IntegerField() 
-    
+    vote_rank = models.IntegerField()
+
     class Meta:
         unique_together = (('parent', 'user'),)
         verbose_name = _('ranked vote')
         verbose_name_plural = _('ranked votes')
-    
+
     def __unicode__(self):
         return "%s: %s" % (self.user, self.vote_rank)
-    
+
     def save(self, force_insert=False, force_update=False):
         if self.submit_date is None:
             self.submit_date = datetime.datetime.now()
         super(UpDownVote, self).save(force_insert, force_update)
-        self.parent.votes += 1 #update consensus object vote count
+        self.parent.votes += 1
+        #update consensus object vote count
         self.parent.save()
-        
+
+
 class WeightedVote(models.Model):
     """Facilitates all classes of weighted voting algorithms
         All weights must add up to max. Otherwise vote is not valid.
     """
-    parent   = models.ForeignKey(Consensus,
+    parent = models.ForeignKey(Consensus,
             verbose_name=_('parent'))
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
-    user        = models.ForeignKey(User, verbose_name=_('user'),
+    user = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
-    vote_weight = models.FloatField() #should add up to 1
-    
+    vote_weight = models.FloatField()
+    #should add up to 1
+
     class Meta:
         unique_together = (('parent', 'user'),)
         verbose_name = _('weighted vote')
         verbose_name_plural = _('weighted votes')
-    
+
     def __unicode__(self):
         return "%s: %s" % (self.user, self.vote_weight)
-    
+
     def save(self, force_insert=False, force_update=False):
         if self.submit_date is None:
             self.submit_date = datetime.datetime.now()
+            self.parent.votes += 1
+            #update consensus object vote count
+            self.parent.save()
         super(UpDownVote, self).save(force_insert, force_update)
-        self.parent.votes += 1 #update consensus object vote count
-        self.parent.save()
+
 
 class RatingVote(models.Model):
     """
-    Star Vote used for ranking items in a range from [0:N] where N is the number 
+    Star Vote used for ranking items in a range from [0:N] where N is the number
     of stars specified via the ajax/javascript star rating functionality.
     """
-    parent   = models.ForeignKey(Consensus,
+    parent = models.ForeignKey(Consensus,
             verbose_name=_('parent'))
     parent_pk = models.CharField(max_length=100, blank=True, null=True)
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
-    user        = models.ForeignKey(User, verbose_name=_('user'),
+    user = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
-    vote_pos = models.IntegerField() #should add up to 1
+    vote = models.IntegerField()
+    #should add up to 1
     object_pk = models.CharField(_('Object_PK'), max_length=100)
-    
+
     class Meta:
-        unique_together = (('object_pk', 'user'),)
         verbose_name = _('star rating')
         verbose_name_plural = _('star ratings')
-    
+
     def __unicode__(self):
         return " on %s" % (self.parent.content_object)
-    
-    def save(self, force_insert=False, force_update=False):
+
+    def save(self, *args, **kwargs):
         if self.submit_date is None:
             self.submit_date = datetime.datetime.now()
-        super(RatingVote, self).save(force_insert, force_update)
-        self.parent.ratings += 1 #update consensus object vote count
-        rate = self.parent.rating
-        if rate != None:
-            rate.save_vote(self.vote_pos)
-        else:
-            rating = Rating()
-            rating.save()
-            self.parent.rating = rating
-        
-        self.parent.save()
-    
-        
+            self.parent.ratings += 1
+            #update consensus object vote count
+            self.parent.save()
+        super(RatingVote, self).save(*args, **kwargs)
+
+
 ###SIGNALS
 admin.site.register(Consensus)
 admin.site.register(UpDownVote)
