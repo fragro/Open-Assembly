@@ -100,7 +100,6 @@ INSTALLED_APPS = (
     'oa_filmgenome',
     'notification',
     'search',
-    'chartit',
     'oa_suggest',
     'oa_platform',
     'oa_cache',
