@@ -1,0 +1,39 @@
+<!--Requires a consensus object -->
+
+ {% pp_consensus_chart object=pp_consensus.consensus %}
+            <script>
+            var chart1; // globally available
+            $(document).ready(function() {
+                  chart1 = new Highcharts.Chart({
+                     chart: {
+                        renderTo: 'user_activity_chart',
+                        type: 'pie',
+                     },
+                     title: {
+                        text: 'Reputation'
+                     },
+                     yAxis: {
+                        title: {
+                           text: 'Consensus'
+                        }
+                     },
+                     plotOptions: {
+                        pie: {
+                           allowPointSelect: true,
+                           cursor: 'pointer',
+                           dataLabels: {
+                              enabled: false
+                           },
+                        }
+                     },
+                    credits: {
+                        enabled: false
+                    },
+                  series:{{pp_consensus.chart_data|safe}}
+                  });
+               });
+               </script>
+
+               
+            <div id='user_activity_chart'> Chart will be rendered here </div>
+ {% endpp_consensus_chart %}

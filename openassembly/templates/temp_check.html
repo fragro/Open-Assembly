@@ -1,0 +1,39 @@
+<!--Requires a consensus object -->
+
+ {% pp_consensus_chart object=pp_consensus.consensus %}
+         {% if pp_consensus.chart != None %}
+         <script>
+         var chart1; // globally available
+         $(document).ready(function() {
+               chart1 = new Highcharts.Chart({
+                  chart: {
+                     renderTo: 'chart',
+                     type: 'pie',
+                  },
+                  title: {
+                     text: 'Temperature Check'
+                  },
+                  yAxis: {
+                     title: {
+                        text: 'Consensus'
+                     }
+                  },
+                  plotOptions: {
+                     pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                           enabled: false
+                        },
+                     }
+                  },
+                 credits: {
+                     enabled: false
+                 },
+                  series: {{pp_consensus.chart_data|safe}},
+               });
+            });
+            </script>
+             <div id='chart'> Chart will be rendered here </div>
+         {% endif %}
+ {% endpp_consensus_chart %}
