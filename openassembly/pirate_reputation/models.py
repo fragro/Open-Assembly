@@ -227,45 +227,53 @@ def register_reputation_event(event_score, user, **kwargs):
     dimension = kwargs.get('dimension',  None)
     initiator = kwargs.get('initiator', None)
     related_object = kwargs.get('related_object', None)
-    
-    is_vote=kwargs.get('is_vote',False)
-    Reputation.objects.transitive_vote(related_object,user,'register')
-    
+
+    is_vote = kwargs.get('is_vote', False)
+    if is_vote:
+        Reputation.objects.transitive_vote(related_object, user, 'register')
+
     Reputation.objects.register_event(event_score, user, dimension, initiator=initiator, related_object=related_object)
-    
+
+
 def delete_reputation_event(event_score, user, **kwargs):
     #first check **kwargs for non-mandatory arguments
-    dimension= kwargs.get('dimension', None)
-    initiator=kwargs.get('initiator',None)
-    related_object = kwargs.get('related_object',None)
+    dimension = kwargs.get('dimension', None)
+    initiator = kwargs.get('initiator', None)
+    related_object = kwargs.get('related_object', None)
     obj_id = related_object.pk
     content_type = ContentType.objects.get_for_model(related_object)
-    
+
     is_vote = kwargs.get('is_vote', False)
-    Reputation.objects.transitive_vote(related_object,user,'delete')
+    if is_vote:
+        Reputation.objects.transitive_vote(related_object, user, 'delete')
 
     try:
-        rep = ReputationEvent.objects.get(user=user, dimension=dimension, initiator=initiator, object_id=obj_id,content_type=content_type)
+        rep = ReputationEvent.objects.get(user=user, dimension=dimension, initiator=initiator, object_id=obj_id,
+                                        content_type=content_type)
         rep.delete()
         rep_obj = Reputation.objects.get(user=user, dimension=dimension)
         rep_obj.score -= event_score
         rep_obj.save()
-    except: pass #maybe this event never even existed in the case of error
+    except:
+        pass
+        #maybe this event never even existed in the case of error
+
 
 #primarily used to adjust votes for transitive purposes
 def change_reputation_event(event_score, user, **kwargs):
     #first check **kwargs for non-mandatory arguments
     dimension= kwargs.get('dimension', None)
-    initiator=kwargs.get('initiator',None)
-    related_object = kwargs.get('related_object',None)
+    initiator=kwargs.get('initiator', None)
+    related_object = kwargs.get('related_object', None)
     obj_id = related_object.pk
     content_type = ContentType.objects.get_for_model(related_object)
-    
-    is_vote=kwargs.get('is_vote',False)
-    old_vote=kwargs.get('old_vote',False)
-    Reputation.objects.transitive_vote(related_object,user,'change',old_vote)
 
-    
+    is_vote = kwargs.get('is_vote', False)
+    old_vote = kwargs.get('old_vote', False)
+    if is_vote:
+        Reputation.objects.transitive_vote(related_object, user,'change',old_vote)
+
+
 
 ####SIGNAL RELATED
 aso_rep_change.connect(change_reputation_event)  

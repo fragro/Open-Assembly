@@ -1511,3 +1511,24 @@ h2.active {background-position: left bottom;}
     color:#f6f6f7;
 }
 
+/* DEC 5 2011 */
+
+.countdown {
+    margin-left:70px;
+}
+
+#default_countdown, #countdown_container {
+    width:200px;
+    display:block;
+}
+
+#chart {
+    width:200px;
+    height:200px;
+}
+
+#user_activity_chart {
+    height:150px;
+    width:100px;
+    float:right;
+}

@@ -6,15 +6,20 @@
 
         <form id="pp_argument_form_yea" method="post" action="">
             {{pp_argumentation.form.form_id}}
+            {{ pp_argumentation.form.media }}
             {{csrf_string|safe}}
-            <div style="float:left;"><b>Summary</b>:</div><br><br>{{ pp_argumentation.form.summary}}
+            <div style="float:left;margin-right:10%;"><b>Summary</b>:</div>{{ pp_argumentation.form.summary}}
             <p>
-            <div style="float:left;"><b>Details of Argument</b>:</div><br><br>{{pp_argumentation.form.description}}
-            </p>
+            <div style="float:left;margin-right:10%;"><b>Details of Argument</b>:</div><br>{{pp_argumentation.form.description}} 
         <input type="submit" class="green button" value="Submit"><span style="color:grey;" id="submit_pp_argument_form_yea"></span>
-        </form>           
+        </form>     
         
 <script>
+
+    $(document).ready(function()    {
+       $('#pp_argument_form_yea #id_description').markItUp(mySettings);
+    });
+
 
   $("form#pp_argument_form_yea").submit(function(e){
         $("#submit_pp_argument_form_yea").html("<b>Submitting...</b>")

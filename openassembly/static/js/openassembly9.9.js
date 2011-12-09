@@ -170,12 +170,38 @@ $.fn.serializeObject = function()
     return o;
 };
 
+function side_effect_func(data) {
+      for(var item in data.output){
+        if(data.output[item].type == 'redirect'){
+          js_redirect(data.output[item].html); 
+        } 
+        if(data.output[item].type == 'after'){
+            $(data.output[item].div).after(data.output[item].html); 
+        } 
+        if(data.output[item].type == 'before'){
+            $(data.output[item].div).before(data.output[item].html); 
+        } 
+        if(data.output[item].type == 'prepend'){
+            $(data.output[item].div).prepend(data.output[item].html); 
+        } 
+        if(data.output[item].type == 'append'){
+            $(data.output[item].div).append(data.output[item].html); 
+        } 
+        if(data.output[item].type == 'html'){
+            $(data.output[item].div).html(data.output[item].html); 
+        }
+        if(data.output[item].scroll_to === true){
+            $(data.output[item].div).slideto({'highlight_color':'#d6e3ec'});
+        }
+    }
+}
+
 function addObject(e){
     e.preventDefault();
     var form = $(e.target).serializeObject();
     $.post("/load_page/", {form: form, hash: location.hash},
         function(data) {
-                for(item in data.output){
+                for(var item in data.output){
                     if(data.output[item].type == 'prepend'){
                       $(data.output[item].div).prepend(data.output[item].html); 
                     } 
@@ -191,31 +217,7 @@ function addObject(e){
                     //now we need to gather side-effect data and render all side-effects
                     var se = $(data.output[item].div + '_side_effect').html();
                     $.get("/side_effect/", {key: location.hash, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
-                      function(data) {
-                          for(item in data.output){
-                              if(data.output[item].type == 'redirect'){
-                                js_redirect(data.output[item].html); 
-                            } 
-                            if(data.output[item].type == 'after'){
-                                $(data.output[item].div).after(data.output[item].html); 
-                            } 
-                            if(data.output[item].type == 'before'){
-                                $(data.output[item].div).before(data.output[item].html); 
-                            } 
-                            if(data.output[item].type == 'prepend'){
-                                $(data.output[item].div).prepend(data.output[item].html); 
-                            } 
-                            if(data.output[item].type == 'append'){
-                                $(data.output[item].div).append(data.output[item].html); 
-                            } 
-                            if(data.output[item].type == 'html'){
-                                $(data.output[item].div).html(data.output[item].html); 
-                            }
-                            if(data.output[item].scroll_to == true){
-                                $(data.output[item].div).slideto({'highlight_color':'#d6e3ec'});
-                            }
-                        }
-                      }, "json");
+                      side_effect_func(data), "json");
                 }
             //if(data.POST){}  
         }, "json");

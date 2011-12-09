@@ -56,11 +56,15 @@
         <script type="text/javascript" src="/static/js/jquery-ui-1.8.11.custom.min.js"></script>
         <script type="text/javascript" src="/static/js/jquery.ui.stars.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="/static/markitup/skins/markitup/style.css" />
+        <script type="text/javascript" src="/static/js/highcharts.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="/static/simple/style.css" />
         <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
         <script type='text/javascript' src='/static/markitup/jquery.markitup.js'></script>
         <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
-
+                
+        <link rel="stylesheet" type="text/css" href="/static/jquery.countdown.css">
+        <script type="text/javascript" src="/static/jquery.countdown.min.js"></script>
             
         <link rel="stylesheet" type="text/css" href="/static/chosen.css">
         <script type="text/javascript" src="/static/chosen.jquery.min.js"></script>
@@ -108,7 +112,7 @@
                     $(OAdata.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
                   }
                   else{
-                    //$('html').slideto({'slide_duration': "fast", 'highlight': false});
+                    $('html').slideto({'slide_duration': "fast", 'highlight': false});
                   }
 
              }, "json");            

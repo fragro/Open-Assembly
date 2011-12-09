@@ -74,6 +74,10 @@
                         {% endpp_get_avatar %}
 
                         <h2>{{object.username}}</h2> 
+
+                        {% pp_consensus_get object=object.pk %}
+                            {% include 'user_activity.html' %}
+                        {% endpp_consensus_get %}
                         <table class="user_data" cellspacing="0">
                             <tbody>
                                 <tr>
@@ -108,33 +112,30 @@
                                 {% endcomment %}
                             </tbody>
                         </table>
-                        <div class="graphs">
-                            <b>Daily Activity Monitor:</b>
-                            <ul class="graph_switcher">
-        
-                            <li class="prev"><a href="#"><img src="/static/img/arrow_left.jpg" alt="Previous"></a></li>
-                            <li class="next"><a href="#"><img src="/static/img/arrow_right.jpg" alt="Next"></a></li>
-                            
-                            </ul>
-                            <div class="graph_viewer">
 
-                            <img src="/static/img/bar_graph1.jpg" alt="Daily Activity Monitor">
-                            <img src="/static/img/bar_graph2.jpg" alt="Daily Reputation Monitor" style="display:none;">
+                        {% comment %}
+                            <div class="graphs">
+                                <ul class="graph_switcher">
+            
+                                <li class="prev"><a href="#"><img src="/static/img/arrow_left.jpg" alt="Previous"></a></li>
+                                <li class="next"><a href="#"><img src="/static/img/arrow_right.jpg" alt="Next"></a></li>
+                                
+                                </ul>
+                                <div class="graph_viewer">
+                                    
 
-                            {% comment %}
-                            {% pp_get_reputation_events_graph user=object y=10 x=40 type='activity'%}
-                                {{pp_reputation.html|safe}}
-                            {% endpp_get_reputation_events_graph %}
-                            {% pp_get_reputation_events_graph user=object y=10 x=30 type='rating'%}
-                               <span style="display:none;">{{pp_reputation.html|safe}}  </span>
-                            {% endpp_get_reputation_events_graph %}
-                            {% endcomment %}
+                                {% pp_get_reputation_events_graph user=object y=10 x=40 type='activity'%}
+                                    {{pp_reputation.html|safe}}
+                                {% endpp_get_reputation_events_graph %}
+                                {% pp_get_reputation_events_graph user=object y=10 x=30 type='rating'%}
+                                   <span style="display:none;">{{pp_reputation.html|safe}}  </span>
+                                {% endpp_get_reputation_events_graph %}
 
+                                </div>
                             </div>
-                        </div>
+                        {% endcomment %}
                     </div>
                     <!-- end .profile_overview -->
-
 
                     {% if user != object %} 
 

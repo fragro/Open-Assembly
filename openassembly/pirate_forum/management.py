@@ -48,6 +48,9 @@ import datetime
 #								app_label='pirate_actions', model_class_name='Boycott', form_class_name='BoycottForm')
 
 
+ForumDimension.objects.register(key='nom', name="Nomination", help_text='Nomination a Solution to a Question',
+								app_label='pirate_forum', model_class_name='Nomination', form_class_name='NominationForm', is_child=True)
+
 ForumDimension.objects.register(key='pol', name="Policy", help_text='Need to develop an internal policy proposal?.',
 								app_label='pirate_forum', model_class_name='Question', form_class_name='BlobForm')
 

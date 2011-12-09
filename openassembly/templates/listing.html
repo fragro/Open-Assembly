@@ -66,12 +66,15 @@
             {% endif %}
        {% endpp_get_tags_for_object %}
         <ul class="solutions">
-            {% pp_get_blob_list object=object.content_object dimension="h" %}
+            {% pp_get_blob_list object=object.content_object dimension="h" start=0 end=5 %}
                 {% if object.content_object.children > 0 %}
                     <li><b>{{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</b></li>
                         {% for child in pp_blob.blob_list %}
-                            <li><a href="{% pp_url template='detail.html' object=child %}">{{child.summary}}</a></li>
+                            <li>({{child.interest|floatformat:0 }}) <a href="{% pp_url template='detail.html' object=child %}">{{child.content_object.summary}}</a></li>
                         {% endfor %}
+                        {% if object.content_object.children > 5 %}
+                            <li>...</li>
+                        {% endif %}
                 {% endif %}
            {% endpp_get_blob_list %}
         </ul>

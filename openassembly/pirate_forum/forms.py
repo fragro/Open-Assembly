@@ -2,7 +2,7 @@ from django import forms
 import datetime
 
 from django.contrib.contenttypes.models import ContentType
-from pirate_forum.models import Question
+from pirate_forum.models import Question, Nomination
 
 from pirate_core.fields import JqSplitDateTimeField
 from pirate_core.widgets import JqSplitDateTimeWidget
@@ -16,6 +16,9 @@ class BlobForm(forms.ModelForm):
         newo = super(BlobForm, self).save(commit=commit)
         if newo.created_dt == None:
             newo.created_dt = datetime.datetime.now()
+            ctype = ContentType.objects.get_for_model(Nomination)
+            newo.child = ctype
+            newo.children = 0
         newo.modified_dt = datetime.datetime.now()
         return newo
 
@@ -29,6 +32,6 @@ class BlobForm(forms.ModelForm):
               widget=forms.TextInput(
                 attrs={'size': '50', 'class': 'inputText'}), initial="")
     description = forms.CharField(widget=MarkItUpWidget(
-                attrs={'cols': '30', 'rows': '10'}), initial="")
+                attrs={'cols': '20', 'rows': '10'}), initial="")
     end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
     decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))

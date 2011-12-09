@@ -22,9 +22,6 @@
                 {{ pp_blob.form.media }}
                 <form id='pp_blob_form' method="post" action="">
                 <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
-                    {% if pp_blob.parent_summary %}
-                        <h2>Parent: {{object }}<h2/>
-                    {% endif %}
                 
                         {% for field in pp_blob.form %}
                         {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}

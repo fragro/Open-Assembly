@@ -18,8 +18,6 @@
 
 {% block extra-head %}
 
-
-
   <script type="text/javascript">
 
     $(document).ready(function(){
@@ -243,30 +241,67 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <table cellspacing="0" class="rating">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {% pp_get_votes user=user object=object %}
+                                                {% if pp_consensus.count > 0 %}
+                                                    {% include 'temp_check.html' %}
+                                                {% endif %}
+                                            {% endpp_get_votes %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            {% pp_datetime_less_than time=pp_consensus.consensus.phase.phase_change_dt %}
+
+                                {% if pp_tag.past %}
+
+                                <script type="text/javascript"> 
+                                $(function () {
+                                    $('#default_countdown').countdown({format:'dHM', until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}})}); 
+                                });
+
+                                </script> 
+                                <div id="countdown_container">
+                                <h3>Time Until Voting</h3>
+                                </div>
+
+                            {% else %}
+
+                                <script type="text/javascript"> 
+                                $(function () {
+                                    $('#default_countdown').countdown({format:'dHM', until: new Date({{pp_consensus.consensus.phase.decision_dt.year}}, {{pp_consensus.consensus.phase.decision_dt.month}}-1, {{pp_consensus.consensus.phase.decision_dt.day}}, {{pp_consensus.consensus.phase.decision_dt.time.hour}}, {{pp_consensus.consensus.phase.decision_dt.time.minute}}, {{pp_consensus.consensus.phase.decision_dt.time.second}})}); 
+                                });
+
+                                </script> 
+                                <div id="countdown_container">
+                                <h3>Time Until Decision</h3>
+                                </div>
+
+                            {% endif %}
+
+                            {% endpp_datetime_less_than %}
+
+                            <div id="default_countdown"></div> 
+                            </div>
+
+
+
 
                             </div>
                             {% if object.children > 0 %}
-                                <h2>{{object.child}}</h2>
                                     <div class="children_details">
-                                    {% pp_get_blob_list object=object dimension="h" %}
+                                    {% pp_get_blob_list object=object dimension="n" %}
+                                                <h2>{{object.child}} (Count:{{pp_blob.count}})</h2>
                                                 {% for object in pp_blob.blob_list %}
-                                                    {% include 'argument.html' %}
+                                                    {% include 'listing.html' %}
                                                 {% endfor %}
                                    {% endpp_get_blob_list %}
                                    </div>
                             {% endif %}
-
-                            {{pp_consensus.consensus.phase}}
-
-    <script type="text/javascript"> 
-    $(function () {
-        $('#defaultCountdown').countdown({until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}})}); 
-    });
-    </script> 
-
-                            <div id="defaultCountdown"></div> 
-                            </div>
-
 
                             <div class="forms">
                                
@@ -328,7 +363,7 @@
                                         </div>
                                     </div>
                                  {% if object.child %}
-                                    <h2 class="acc_trigger"><a href="#">Add {{ object.child|title }}</a></h2>
+                                    <h2 class="acc_trigger"><a href="#">Nominate a {{object.forumdimension.name|title}} To Be Voted On</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
                                             <div id="pp_blob_child" class="reply_comment">

@@ -16,5 +16,6 @@ httplib2
 python-openid
 simplejson
 django-piston
-hg+http://bitbucket.org/carljm/django-markitup#egg=markitup
+pyorbited
+hg+http://bitbucket.org/nator/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search

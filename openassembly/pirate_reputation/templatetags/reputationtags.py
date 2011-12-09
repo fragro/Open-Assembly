@@ -67,12 +67,10 @@ def pp_get_reputation_events_graph(context, nodelist, *args, **kwargs):
         html, rate_list, mtrx, min_rate, max_rate, mean = grab_graph(reps, x, y, days, min_days)
         namespace['days'] = daylength
     elif graph_type == 'spectrum' or 'rating':
-        html, rate_list, mtrx, min_rate, max_rate, mean = dist_graph(x, y, user, graph_type)
+        rate_list, min_rate, max_rate, mean = dist_graph(x, y, user, graph_type)
 
     namespace['x'] = x
-    namespace['html'] = html
     namespace['rate_list'] = rate_list
-    namespace['graph'] = mtrx
     namespace['min'] = min_rate
     namespace['max'] = max_rate
     namespace['mean'] = int(round(mean))
@@ -163,12 +161,12 @@ def pp_get_reputation(context, nodelist, *args, **kwargs):
 #argument which is equal to 'spectrum' or 'rating' based on the opinion/quality
 def dist_graph(x,y,user,dtype):
     rate_list, max_rate, min_rate, mean = distribution_graph(x,user,dtype=dtype)
-    mtrx = build_graph(rate_list, max_rate, y)
-    num = x/11
-    px = '1px'
-    dayslots=1;mcheck=True
-    html = generate_graph_html(x,y,dayslots,mtrx,mcheck,True,'1px',dtype)
-    return html, rate_list, mtrx, min_rate, max_rate, mean
+    #mtrx = build_graph(rate_list, max_rate, y)
+    #num = x/11
+    #px = '1px'
+    #dayslots=1;mcheck=True
+    #html = generate_graph_html(x,y,dayslots,mtrx,mcheck,True,'1px',dtype)
+    return rate_list, min_rate, max_rate, mean
 
 
 #grabs an activity graph for the list of reputation events

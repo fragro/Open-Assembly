@@ -100,6 +100,7 @@ INSTALLED_APPS = (
     'oa_filmgenome',
     'notification',
     'search',
+    'chartit',
     'oa_suggest',
     'oa_platform',
     'oa_cache',
@@ -114,7 +115,7 @@ MARKITUP_MEDIA_URL = '/static/'
 
 MARKITUP_FILTER = ('markdown.markdown', {'safe_mode': True, 'previewParserPath': '/markitup/preview/'})
 MARKITUP_SET = 'markitup/sets/markdown'
-MARKITUP_SKIN = 'markitup/skins/simple'
+MARKITUP_SKIN = 'simple'
 
 JQUERY_URL = '/static/jquery-1.4.2.min.js'
 
