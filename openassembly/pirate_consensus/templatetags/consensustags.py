@@ -11,8 +11,6 @@ from pirate_consensus.models import  UpDownVote, Consensus,  RankedVote, Weighte
 
 from pirate_core.widgets import HorizRadioRenderer
 
-from chartit import DataPool, Chart
-
 from customtags.decorators import block_decorator
 register = template.Library()
 block = block_decorator(register)
