@@ -167,12 +167,8 @@
                             <table cellspacing="0" class="rating">
                                 <tbody>
                                     <tr>
-                                    <td>
-                                            {% pp_get_votes user=user object=object %}
-                                                {% if pp_consensus.count > 0 %}
-                                                    {% include 'temp_check.html' %}
-                                                {% endif %}
-                                            {% endpp_get_votes %}
+                                        <td>
+                                            {% include 'temp_check.html' %}
                                         </td>
                                         <td>
                                             <b>Vote Your<br>Agreement: <span id="stars-cap-spec"></span></div></b><br>

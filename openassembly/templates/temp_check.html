@@ -1,42 +1,51 @@
 <!--Requires a consensus object -->
+ 
+          {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
+                  {% if pp_consensus.chart != None %}
+                  <script>
+                  var chart1; // globally available
+                  $(document).ready(function() {
+                        chart1 = new Highcharts.Chart({
+                           chart: {
+                              renderTo: 'chart',
+                              type: 'pie',
+                           },
+                           title: {
+                              text: 'Temperature Check'
+                           },
+                           yAxis: {
+                              title: {
+                                 text: 'Consensus'
+                              }
+                           },
+                           plotOptions: {
+                              pie: {
+                                 allowPointSelect: true,
+                                 cursor: 'pointer',
+                                 dataLabels: {
+                                    enabled: false
+                                 },
+                              }
+                           },
+                          credits: {
+                              enabled: false
+                          },
+                           series: {{pp_consensus.chart_data|safe}},
+                        });
+                     });
+                     </script>
+                      <div id='chart'> Chart will be rendered here </div>
+                      <div class=:>
+                              <div><h2 style="margin-left:15px;">Avg. Quality Rating:</h2></div><div style="float:left;margin-top:10px;">
 
- {% pp_consensus_chart object=pp_consensus.consensus %}
-         {% if pp_consensus.chart != None %}
-         <script>
-         var chart1; // globally available
-         $(document).ready(function() {
-               chart1 = new Highcharts.Chart({
-                  chart: {
-                     renderTo: 'chart',
-                     type: 'pie',
-                  },
-                  title: {
-                     text: 'Temperature Check'
-                  },
-                  yAxis: {
-                     title: {
-                        text: 'Consensus'
-                     }
-                  },
-                  plotOptions: {
-                     pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                           enabled: false
-                        },
-                     }
-                  },
-                 credits: {
-                     enabled: false
-                 },
-                  series: {{pp_consensus.chart_data|safe}},
-               });
-            });
-            </script>
-             <div id='chart'> Chart will be rendered here </div>
-             <div class=:>
-                     <div><h2 style="margin-left:15px;">Avg. Quality Rating:</h2></div><div style="float:left;margin-top:10px;"><span class="startext">{{pp_consensus.mean_information}}</span><img src="/static/images/star_on_small.gif"></div>
-             </div>
-         {% endif %}
- {% endpp_consensus_chart %}
+                              <span class="startext">
+
+                              {% if pp_consensus.mean_information %}
+                                 {{pp_consensus.mean_information|floatformat:"1"}}
+                              {% else %} ?
+                              {% endif %}
+
+                              </span><img src="/static/images/star_on_small.gif"></div>
+                      </div>
+                  {% endif %}
+          {% endpp_consensus_chart %}
