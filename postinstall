@@ -1,5 +1,5 @@
 #!/bin/sh
 python waitfordb.py
-#python openassembly/manage.py syncdb --noinput
+python openassembly/manage.py syncdb --noinput
 mkdir -p /home/dotcloud/data/media /home/dotcloud/data/static
 python openassembly/manage.py collectstatic --noinput
