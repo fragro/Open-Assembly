@@ -12,6 +12,8 @@ from oa_verification.models import ActionTaken
 
 from pirate_topics.models import MyGroup
 
+from settings import DOMAIN_NAME
+
 from pirate_permissions.models import PermissionsGroup, Permission
 
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
@@ -255,7 +257,7 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
                     email_subject = 'OpenAssembly Referral'
                     if obj:
                         email_subject += " to Group " + str(obj)
-                    email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\nhttp://www.openassembly.org/register.html?_d=%s" % (
+                    email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\n" + DOMAIN_NAME + "register.html?_d=%s" % (
                         user.username,
                         ref.key)
                     send_mail(email_subject,

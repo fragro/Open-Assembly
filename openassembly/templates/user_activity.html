@@ -1,6 +1,7 @@
 <!--Requires a consensus object -->
 
  {% pp_consensus_chart object=pp_consensus.consensus %}
+      {% if pp_consensus.chart %}
             <script>
             var chart1; // globally available
             $(document).ready(function() {
@@ -34,6 +35,10 @@
                });
                </script>
 
+      
+
                
             <div id='user_activity_chart'> Chart will be rendered here </div>
+
+      {% endif %}
  {% endpp_consensus_chart %}

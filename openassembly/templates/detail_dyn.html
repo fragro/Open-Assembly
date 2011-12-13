@@ -63,15 +63,19 @@
                                 <span class="word">interest</span>
                             </div>
                             <div class="overview">
-                                <a href="{% pp_url object=object template='detail.html' %}"><b>{{object.summary}}</b></a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> - {{object.created_dt|date:"m/d/Y h:sA"}}</span>          
+                                <span class="summary">
+                                    <a href="{% pp_url object=object template='detail.html' %}"><b>{{object.summary}}</b></a>
+                                </span>
+
+                                <br>
+
+                                <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> - {{object.created_dt|date:"m/d/Y h:sA"}}</span>
 
 
-
-<br>
                                 {% pp_if_forum_blob object=object.parent %}
                                     {% if pp_blob.is_blob %}
-                                        <span class="re"><a href="{% pp_url template='detail.html' object=object.parent %}">{{object.parent.summary}}</a></span>
-                                    {% else %}<span class="re"><a href="{% pp_url template='issues.html' object=object.parent start=0 end=20 dimension='hn' %}">{{object.parent.summary}}</a></span>
+                                        <span class="re"><a href="{% pp_url template='detail.html' object=object.parent %}"> - {{object.parent.summary}}</a></span>
+                                    {% else %}<span class="re"><a href="{% pp_url template='issues.html' object=object.parent start=0 end=20 dimension='hn' %}"> - {{object.parent.summary}}</a></span>
                                     {% endif %}
                                 {% endpp_if_forum_blob %}
                                     <p>
@@ -170,8 +174,9 @@
                                         <td>
                                             {% include 'temp_check.html' %}
                                         </td>
-                                        <td>
-                                            <b>Vote Your<br>Agreement: <span id="stars-cap-spec"></span></div></b><br>
+                                        <td style="margin-top:11px;">
+                                            <h2>Vote</h2>
+                                            <b>Agreement: <span id="stars-cap-spec"></span></div></b><br>
 
                                             {% pp_spectrum_form object=object user=user %}
 
@@ -191,7 +196,7 @@
                                             
                                         </td>
                                         <td>
-                                            <b>Vote How<br>Informative: <span id="stars-cap-rate"></span></b><br>
+                                            <br><b>Informative: <span id="stars-cap-rate"></span></b><br>
                                             {% pp_rating_form object=object user=user %}
 
                                             <form method="post" action="">

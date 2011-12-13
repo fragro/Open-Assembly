@@ -494,6 +494,11 @@ small {
 .overview li {
     margin-left:10px;
 }
+.overview .summary b {
+    font-size:220%;
+    text-decoration:none;
+    font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
+}
 .listing .images {
     float:left;
     font-size:11px;
