@@ -72,8 +72,8 @@ def pp_generate_key(context, nodelist, *args, **kwargs):
                     new_profile.save()
                                                                                                            
                     email_subject = 'OpenAssembly account confirmation'
-                    email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n" + DOMAIN_NAME + "confirm/%s/" % (
-                        user.username,
+                    email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n%sconfirm/%s/" % (
+                        DOMAIN_NAME, user.username,
                         new_profile.activation_key)
                     send_mail(email_subject,
                               email_body,
@@ -170,8 +170,8 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                 new_profile.save()
 
                                 email_subject = 'OpenAssembly account confirmation'
-                                email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n" + DOMAIN_NAME + "confirm/%s/" % (
-                                    user.username,
+                                email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n%sconfirm/%s/" % (
+                                    DOMAIN_NAME, user.username,
                                     new_profile.activation_key)
                                 send_mail(email_subject,
                                           email_body,
