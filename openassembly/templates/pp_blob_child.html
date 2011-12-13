@@ -17,8 +17,8 @@
         <p style="float:left;"><input type="submit" class="button" value="Submit" /><span style="color:grey;" id="submit_pp_blob_child"></span></p>
 
     </form> 
-    {% pp_get_contenttype_id object=object %}
-    <span id="pp_blob_child_side_effect" style="display:none;">["{{object.pk}}", "{{pp_source.ctype_pk}}"]</span>
+    {% pp_get_contenttype_id object=pp_blob.object %}
+    <span id="pp_blob_child_side_effect" style="display:none;">["{{pp_blob.object.pk}}", "{{pp_source.ctype_pk}}"]</span>
     {% endpp_get_contenttype_id %}
 
 <script language="javascript">

@@ -167,6 +167,13 @@
                             <table cellspacing="0" class="rating">
                                 <tbody>
                                     <tr>
+                                    <td>
+                                            {% pp_get_votes user=user object=object %}
+                                                {% if pp_consensus.count > 0 %}
+                                                    {% include 'temp_check.html' %}
+                                                {% endif %}
+                                            {% endpp_get_votes %}
+                                        </td>
                                         <td>
                                             <b>Vote Your<br>Agreement: <span id="stars-cap-spec"></span></div></b><br>
 
@@ -238,19 +245,14 @@
                                             {% endif %}
                                         </td>
 
+
                                     </tr>
                                 </tbody>
                             </table>
                             <table cellspacing="0" class="rating">
                                 <tbody>
                                     <tr>
-                                        <td>
-                                            {% pp_get_votes user=user object=object %}
-                                                {% if pp_consensus.count > 0 %}
-                                                    {% include 'temp_check.html' %}
-                                                {% endif %}
-                                            {% endpp_get_votes %}
-                                        </td>
+                                        
                                     </tr>
                                 </tbody>
                             </table>
@@ -293,14 +295,16 @@
 
                             </div>
                             {% if object.children > 0 %}
-                                    <div class="children_details">
-                                    {% pp_get_blob_list object=object dimension="n" %}
-                                                <h2>{{object.child}} (Count:{{pp_blob.count}})</h2>
-                                                {% for object in pp_blob.blob_list %}
-                                                    {% include 'listing.html' %}
-                                                {% endfor %}
-                                   {% endpp_get_blob_list %}
+                                {% pp_get_blob_list object=object dimension="n" %}
+
+                                    <h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{pp_blob.count}})</h2>
+
+                                    <div id="children_details" class="children_details">
+                                        {% for object in pp_blob.blob_list %}
+                                            {% include 'listing.html' %}
+                                        {% endfor %}
                                    </div>
+                                {% endpp_get_blob_list %}
                             {% endif %}
 
                             <div class="forms">
