@@ -41,7 +41,7 @@ except:
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
 
-    ADMINS = (('Frank', 'fragro@gmail.com'),)
+    ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 
     MANAGERS = ADMINS
 
@@ -118,7 +118,7 @@ MARKITUP_SKIN = 'simple'
 
 JQUERY_URL = '/static/jquery-1.4.2.min.js'
 
-DOMAIN_NAME = 'www.openassembly.org'
+DOMAIN_NAME = 'http://openassembly-fragro.dotcloud.com/'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
