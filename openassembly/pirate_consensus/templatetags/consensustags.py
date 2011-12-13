@@ -355,7 +355,7 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
             namespace['mean_information'] = None
         output = nodelist.render(context)
         context.pop()
-    namespace['chart'] == False
+    namespace['chart'] = False
 
     return output
 
