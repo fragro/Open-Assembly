@@ -64,11 +64,11 @@ for more information on SideEffectCache
                         div = s.div_id + str(parent_pk)
                     else:
                         div = s.div_id
-                    if usc.model_cache is not None:
-                        if obj == None:
-                            user = obj
-                        else:
-                            user = obj.user
+                    #if usc.model_cache is not None:
+                    #    if obj == None:
+                    #        user = obj
+                    #    else:
+                    #        user = obj.user
                         #deferred.defer(usc.model_cache.render, {'object': obj, 'user': user}, True)
 
                     rendered_list.append({'scroll_to': True, 'div': div, 'type': s.jquery_cmd, 'html':
@@ -217,7 +217,6 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     if not dimension or lists.count() == 0:
         lists = ListCache.objects.filter(content_type=rendertype, default=True)
     for l in lists:
-        rendered_list.append({'div': l.div_id, 'html': str(l.model_cache), 'type': 'html'})
         m_pk = l.model_cache
         m = ModelCache.objects.get(pk=m_pk)
         #if we aren't forcerendering, try to get rendered_list from memcache
@@ -226,7 +225,6 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
             #renders[0] -> rendered_list | renders[1] -> cached_list | renders[2] -> tot_items
             renders = memcache.get(key + str(l.pk))
         if renders is None or forcerender:
-            rendered_list.append({'div': l.div_id, 'html': str(rendertype) + ' ' + str(dimension) + ' ' + str(l.get_or_create_list(key, paramdict, forcerender=forcerender)), 'type': 'append'})
             renders = []
             #get list of objects to be rendered
             cached_list, tot_items = l.get_or_create_list(key, paramdict, forcerender=forcerender)

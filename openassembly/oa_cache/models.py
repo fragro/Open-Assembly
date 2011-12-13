@@ -250,7 +250,7 @@ only rendered when the corresponding model_cache is rendered"""
             return obj
 
     def __unicode__(self):
-        return '%s %s' % (self.template, self.div_id)
+        return '%s %s %s' % (self.template, self.div_id, str(self.pk))
 
 
 class SideEffectCache(models.Model):
