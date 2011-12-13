@@ -283,7 +283,7 @@ def defer_dimensiontracker_update(parent, dimension):
             d.children = 1
             usc = UserSaltCache(div_id='#sort')
             for ranking_dim in ('hn', 'h', 'n', 'c'):
-                context = {'dimension': ranking_dim,'object': parent, 'sort_type': dimension}
+                context = {'dimension': ranking_dim, 'object': parent, 'sort_type': dimension}
                 usc.render(context, forcerender=True)
         else:
             d.children = d.children + 1
@@ -482,7 +482,10 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
         namespace['form'] = form
         namespace['POST'] = POST, parent
-        namespace['test'] = obj
+        try:
+            namespace['object'] = cons
+        except:
+            pass
 
         #check for optional fields
         has_optional = False
@@ -571,14 +574,14 @@ def pp_get_contenttypes(context, nodelist, *args, **kwargs):
     for fd in fds:
         try:
             d = DimensionTracker.objects.get(dimension=fd, object_pk=obj.pk)
-            if d.children > 0:   
+            if d.children > 0:
                 blob_form, model, verbose_name = get_form(fd.key)
 
                 if not fd.is_admin:
                     out.append((fd.key, verbose_name))
         except:
             pass
-            
+
     namespace['content_types'] = out
     output = nodelist.render(context)
     context.pop()
@@ -638,18 +641,20 @@ def pp_search_form(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     POST = kwargs.get('POST', None)
-    
+
     if POST:
         form = SearchForm(POST)
         results = {}
         if form.is_valid():
             search_key = form.cleaned_data['search']
             path = "/index.html#search_results/_r" + str(search_key)
-            namespace['path'] = path #provide context with extension path
+            namespace['path'] = path
+            #provide context with extension path
             raise HttpRedirectException(HttpResponseRedirect(path))
-    
-    else: form = SearchForm()
-    
+
+    else:
+        form = SearchForm()
+
     namespace['form'] = form
     output = nodelist.render(context)
     context.pop()
@@ -665,19 +670,20 @@ def pp_get_object(context, nodelist, *args, **kwargs):
 
     context.push()
     namespace = get_namespace(context)
-    
-    model = kwargs.get('model',None)
-    object_pk = kwargs.get('object_pk',None)
-    
-    content_type   = ContentType.objects.get(pk=int(model))
-    obj = content_type.get_object_for_this_type(pk=object_pk)
-    
+    model = kwargs.get('model', None)
+    object_pk = kwargs.get('object_pk', None)
+
+    try:
+        obj = model.get_object_for_this_type(pk=object_pk)
+    except:
+        obj = None
+
     namespace['content_object'] = obj
-    
+
     output = nodelist.render(context)
     context.pop()
 
-    return output 
+    return output
 
 
 @block

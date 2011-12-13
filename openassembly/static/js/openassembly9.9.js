@@ -1,25 +1,25 @@
 function spectrumvote(idk, pos){ 
 $.post("/spectrumvote/", {vote: pos, pk: idk},
   function(data) {
-      if(data.FAIL == true){         
+      if(data.FAIL === true){         
            $("#registration_simplebox").simplebox();
       }
     }, "json");
-};
+}
 
 function add_platform(ctype, object_pk){ 
 $.post("/add_platform/", {ctype:ctype, object_pk: object_pk},
   function(data) {
-      if(data.FAIL == true){         
+      if(data.FAIL === true){         
            $("#registration_simplebox").simplebox();
       }
     }, "json");
-};
+}
 
 function remove_platform(ctype, object_pk){ 
 $.post("/remove_platform/", {ctype:ctype, object_pk: object_pk},
   function(data) {
-      if(data.FAIL == true){         
+      if(data.FAIL === true){         
            $("#registration_simplebox").simplebox();
       }
     }, "json");
@@ -28,21 +28,21 @@ $.post("/remove_platform/", {ctype:ctype, object_pk: object_pk},
 function starvote(idk, pos){ 
 $.post("/starvote/", {vote: pos, pk: idk},
   function(data) {
-      if(data.FAIL == true){     
+      if(data.FAIL === true){     
            $("#registration_simplebox").simplebox();
       }
     }, "json");
-};
+}
 
 function flagvote(idk,user,value,flag_type, div_id, img_id){ 
 $.post("/flagvote/", {vote: value, pk: idk, user:user, flag_type:flag_type},
   function(data) {
-      if(data.FAIL != true){
+      if(data.FAIL !== true){
           changeImgSrc(data.imgsrc,img_id);
           changeText(data.count,div_id);
       }
  }, "json");
-};
+}
 
 function set_loc_by_ip(city,region,country){ 
 $.post("/set_loc_by_ip/", {city:city, region:region, country:country},
@@ -56,23 +56,23 @@ function changeText(text,div_id)
 {
  elem = document.getElementById(div_id);
  elem.innerHTML = text;
-};
+}
 
 function changeImgSrc(text,div_id)
 {
  elem = document.getElementById(div_id);
  elem.src = text;
-};
+}
 
 function js_redirect(location)
 {
-    window.location.replace( location );
-};
+    window.location = location;
+}
 
 function add_tag(tag, obj_id, c_type, app_type){ 
 $.post("/add_tag/", {tag: tag, obj: obj_id, c_type:c_type, app_type:app_type },
   function(data) {
-      if(data.FAIL != true){
+      if(data.FAIL !== true){
           $("#recommendations").fadeOut('fast');
           $("#tags").fadeOut('fast');
           changeText(data.taglist,'recommendations');
@@ -143,15 +143,15 @@ function ScrollToElement(theElement)
   var selectedPosX = 0;
   var selectedPosY = 0;
               
-  while(theElement != null){
+  while(theElement !== null){
     selectedPosX += theElement.offsetLeft;
     selectedPosY += theElement.offsetTop;
     theElement = theElement.offsetParent;
   }
-                        		      
+
  window.scrollTo(selectedPosX,selectedPosY);
 
-};
+}
 
 $.fn.serializeObject = function()
 {
@@ -169,32 +169,6 @@ $.fn.serializeObject = function()
     });
     return o;
 };
-
-function side_effect_func(data) {
-      for(var item in data.output){
-        if(data.output[item].type == 'redirect'){
-          js_redirect(data.output[item].html); 
-        } 
-        if(data.output[item].type == 'after'){
-            $(data.output[item].div).after(data.output[item].html); 
-        } 
-        if(data.output[item].type == 'before'){
-            $(data.output[item].div).before(data.output[item].html); 
-        } 
-        if(data.output[item].type == 'prepend'){
-            $(data.output[item].div).prepend(data.output[item].html); 
-        } 
-        if(data.output[item].type == 'append'){
-            $(data.output[item].div).append(data.output[item].html); 
-        } 
-        if(data.output[item].type == 'html'){
-            $(data.output[item].div).html(data.output[item].html); 
-        }
-        if(data.output[item].scroll_to === true){
-            $(data.output[item].div).slideto({'highlight_color':'#d6e3ec'});
-        }
-    }
-}
 
 function addObject(e){
     e.preventDefault();
@@ -217,8 +191,32 @@ function addObject(e){
                     //now we need to gather side-effect data and render all side-effects
                     var se = $(data.output[item].div + '_side_effect').html();
                     $.get("/side_effect/", {key: location.hash, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
-                      side_effect_func(data), "json");
+                      function(data2) {
+                          for(var item in data2.output){
+                            if(data2.output[item].type == 'redirect'){
+                              js_redirect(data2.output[item].html); 
+                            } 
+                            if(data2.output[item].type == 'after'){
+                                $(data2.output[item].div).after(data2.output[item].html); 
+                            } 
+                            if(data2.output[item].type == 'before'){
+                                $(data2.output[item].div).before(data2.output[item].html); 
+                            } 
+                            if(data2.output[item].type == 'prepend'){
+                                $(data2.output[item].div).prepend(data2.output[item].html); 
+                            } 
+                            if(data2.output[item].type == 'append'){
+                                $(data2.output[item].div).append(data2.output[item].html); 
+                            } 
+                            if(data2.output[item].type == 'html'){
+                                $(data2.output[item].div).html(data2.output[item].html); 
+                            }
+                            if(data2.output[item].scroll_to === true){
+                                $(data2.output[item].div).slideto({'highlight_color':'#d6e3ec'});
+                            }
+                        }
+                    }, "json");
                 }
             //if(data.POST){}  
         }, "json");
-    };
+  }
