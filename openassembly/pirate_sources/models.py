@@ -50,21 +50,21 @@ class IMGSource(models.Model):
 
         thumb_small = self.rescale(im, 20, 18)
         thumb_small_io = StringIO()
-        thumb_small.save(thumb_small_io, format='JPEG')
+        thumb_small.save(thumb_small_io, im.format)
         thumbnail_small = InMemoryUploadedFile(thumb_small_io, thumb_field_name, '%s_thumbsmall.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', thumb_small_io.len, None)
 
         thumb = self.rescale(im, 70, 60)
         thumb_io = StringIO()
-        thumb.save(thumb_io, format='JPEG')
+        thumb.save(thumb_io, im.format)
         thumbnail = InMemoryUploadedFile(thumb_io, thumb_field_name, '%s_thumb.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', thumb_io.len, None)
 
         thumb = self.rescale(im, 180, 160)
         thumb_io = StringIO()
-        thumb.save(thumb_io, format='JPEG')
+        thumb.save(thumb_io, im.format)
         thumbnail_large = InMemoryUploadedFile(thumb_io, thumb_field_name, '%s_thumblarge.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', thumb_io.len, None)
 
         im_io = StringIO()
-        im.save(im_io, format='JPEG')
+        im.save(im_io, im.format)
 
         image = InMemoryUploadedFile(im_io, thumb_field_name, '%s.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
 

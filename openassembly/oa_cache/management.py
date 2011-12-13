@@ -64,7 +64,7 @@ pptagcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache
 
 ppargnaycache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="pp_argument_form_nay.html", div_id="#pp_argument_form_nay", jquery_cmd="html", redirect=True)
 
-ppblobcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="pp_blob_child.html", div_id="#pp_blob_child", jquery_cmd="html", redirect=True)
+ppblobcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="pp_blob_child.html", div_id="#pp_blob_child", jquery_cmd="html")
 
 emptyusersaltcache, is_new = UserSaltCache.objects.get_or_create(model_cache=listcache, template="empty.html", div_id="#sort", jquery_cmd="html", opposite=True)
 
@@ -100,7 +100,7 @@ sdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppdelete
 
 pptopicsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptopiccache.pk, template="comment.html", div_id="#comment", jquery_cmd="html")
 
-ppblobchildcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="argument.html", div_id="#content_children", jquery_cmd="prepend")
+ppblobchildcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="listing.html", div_id="#children_details", jquery_cmd="prepend")
 
 pptagformsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptagcache.pk, template="urlsource.html", div_id="#urlsource", jquery_cmd="html")
 
