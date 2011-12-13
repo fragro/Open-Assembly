@@ -98,30 +98,30 @@ class Rating(models.Model):
     rating3 = models.IntegerField(default=0)
     rating4 = models.IntegerField(default=0)
     rating5 = models.IntegerField(default=0)
-    
+
     #average weights based on rating reputation of rating users
     rating_w1 = models.FloatField(default=0.0)
     rating_w2 = models.FloatField(default=0.0)
     rating_w3 = models.FloatField(default=0.0)
     rating_w4 = models.FloatField(default=0.0)
     rating_w5 = models.FloatField(default=0.0)
-    
+
     def __unicode__(self):
         return str(self.id)
         #cons = Consensus.objects.get(rating=self)
         #return "%s:%s" % (str(cons.content_type), str(cons.object_pk))
-    
-    def save_vote(self,vote):
+
+    def save_vote(self, vote):
         setattr(self, 'rating' + str(vote), getattr(self, 'rating' + str(vote)) + 1)
         #TODO: save rating_w and increment rating_n
         self.save()
-        
-    def del_vote(self,vote):
+
+    def del_vote(self, vote):
         setattr(self, 'rating' + str(vote), getattr(self, 'rating' + str(vote)) - 1)
         #TODO: save rating_w and increment rating_n
         self.save()
 
-    def change_vote(self,vote,old_vote):
+    def change_vote(self, vote, old_vote):
         setattr(self, 'rating' + str(old_vote), getattr(self, 'rating' + str(old_vote)) - 1)
         setattr(self, 'rating' + str(vote), getattr(self, 'rating' + str(vote)) + 1)
         #TODO: save rating_w and increment rating_n

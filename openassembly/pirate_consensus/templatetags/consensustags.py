@@ -323,6 +323,10 @@ def pp_spectrum_js(context, nodelist, *args, **kwargs):
 @block
 def pp_consensus_chart(context, nodelist, *args, **kwargs):
 
+    """
+        Does a Temp Check by grabbing the opinion data as well
+        as voting aggregates.
+    """
     context.push()
     namespace = get_namespace(context)
 
@@ -336,6 +340,16 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
         dchart['data'] = data
         namespace['chart_data'] = str([dchart])
         namespace['chart'] = True
+    rating_list = obj.rating.get_list()
+    tot = 0
+    val = 0
+    for i, weight, num in rating_list:
+        val += (i * num)
+        tot += num
+    if tot > 0:
+        namespace['mean_information'] = val / tot
+    else:
+        namespace['mean_information'] = 'N/A'
     output = nodelist.render(context)
     context.pop()
 
