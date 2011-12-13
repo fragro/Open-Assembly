@@ -331,10 +331,13 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     obj = kwargs.get('object', None)
+    votes = kwargs.get('votes', None)
+
     #prepare data for highchart
+    dchart = {'type': 'pie', 'name': 'Temperature Check'}
+    data = []
+
     if obj.spectrum is not None:
-        dchart = {'type': 'pie', 'name': 'Temperature Check'}
-        data = []
         for i in SpectrumHolder.objects.filter(spectrum_pk=obj.spectrum.pk):
             data.append({'name': str(int(i.vote) - 6), 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
         dchart['data'] = data
@@ -349,7 +352,7 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
     if tot > 0:
         namespace['mean_information'] = val / tot
     else:
-        namespace['mean_information'] = 'N/A'
+        namespace['mean_information'] = None
     output = nodelist.render(context)
     context.pop()
 

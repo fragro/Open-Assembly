@@ -4,7 +4,7 @@
     padding:0;
 }
 a {
-    color:#A0B2C0;
+    color:#486480;
     text-decoration:underline;
 }
 a:hover {
@@ -37,7 +37,7 @@ body {
     width:100%;
 }
 h1, h2, h3, h4, h5, h6 {
-    color:#A0B2C0;
+    color:#486480;
     font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
     font-weight:normal;
     word-spacing:.25em;
@@ -260,7 +260,7 @@ small {
 .quick_profile .logout {
     float:right;
     margin-top:-5px;
-    color:#a0b2c0;
+    color:#486480;
     font-size:11px;
     text-decoration:none;
 }
@@ -516,7 +516,7 @@ small {
     float:left;
 }
 .listing .tags a {
-    color:#A0B2C0;
+    color:#486480;
     text-decoration:none;
 }
 .listing .tags a:hover {
@@ -1531,4 +1531,10 @@ h2.active {background-position: left bottom;}
     height:150px;
     width:100px;
     float:right;
+}
+
+.startext {
+    margin-left:75px;
+    color:#f4d400;
+    font-size:250%;
 }
