@@ -448,9 +448,9 @@ small {
     overflow:hidden;
 }
 .listing .summary a b, .listing .summary b a {
-    font-size:120%;
-    color:black;
     text-decoration:none;
+    font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
+    font-size:120%;
 }
 .listing .summary .links {
     font-size:11px;
@@ -534,6 +534,7 @@ small {
     font-size:10px;
     font-style:italic;
 }
+
 .content_children_header a {
     text-decoration:none;
 }
@@ -1539,7 +1540,8 @@ h2.active {background-position: left bottom;}
 }
 
 .startext {
-    margin-left:75px;
+    width:30px;
+    padding-left:26%;
     color:#f4d400;
     font-size:250%;
 }

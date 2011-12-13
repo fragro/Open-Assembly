@@ -31,7 +31,9 @@
             {% endif %}
         {% endpp_get_sources %}
 
-        <a href="{% pp_url object=object.content_object template='detail.html' %}"><b>{{object.content_object.summary }}</b></a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ object.content_object.user.username }}</a> - {{object.content_object.created_dt|date:"(d/m/Y"}} at {{object.content_object.created_dt|date:"h:sA)"}}</span><br>
+        <a href="{% pp_url object=object.content_object template='detail.html' %}">
+            <b>{{object.content_object.summary }}</b>
+        </a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ object.content_object.user.username }}</a> - {{object.content_object.created_dt|date:"(d/m/Y"}} at {{object.content_object.created_dt|date:"h:sA)"}}</span><br>
             
             {% pp_if_forum_blob object=object.content_object.parent %}
                 {% if pp_blob.is_blob %}
