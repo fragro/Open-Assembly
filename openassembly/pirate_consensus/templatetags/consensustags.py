@@ -331,30 +331,31 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     obj = kwargs.get('object', None)
-    votes = kwargs.get('votes', None)
 
-    #prepare data for highchart
-    dchart = {'type': 'pie', 'name': 'Temperature Check'}
-    data = []
+    if obj is not None:
+        #prepare data for highchart
+        dchart = {'type': 'pie', 'name': 'Temperature Check'}
+        data = []
 
-    if obj.spectrum is not None:
-        for i in SpectrumHolder.objects.filter(spectrum_pk=obj.spectrum.pk):
-            data.append({'name': str(int(i.vote) - 6), 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
-        dchart['data'] = data
-        namespace['chart_data'] = str([dchart])
-        namespace['chart'] = True
-    rating_list = obj.rating.get_list()
-    tot = 0
-    val = 0
-    for i, weight, num in rating_list:
-        val += (i * num)
-        tot += num
-    if tot > 0:
-        namespace['mean_information'] = val / tot
-    else:
-        namespace['mean_information'] = None
-    output = nodelist.render(context)
-    context.pop()
+        if obj.spectrum is not None:
+            for i in SpectrumHolder.objects.filter(spectrum_pk=obj.spectrum.pk):
+                data.append({'name': str(int(i.vote) - 6), 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
+            dchart['data'] = data
+            namespace['chart_data'] = str([dchart])
+            namespace['chart'] = True
+        rating_list = obj.rating.get_list()
+        tot = 0
+        val = 0
+        for i, weight, num in rating_list:
+            val += (i * num)
+            tot += num
+        if tot > 0:
+            namespace['mean_information'] = val / tot
+        else:
+            namespace['mean_information'] = None
+        output = nodelist.render(context)
+        context.pop()
+    namespace['chart'] == False
 
     return output
 
