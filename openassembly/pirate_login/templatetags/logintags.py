@@ -12,6 +12,8 @@ from django.core.validators import validate_email
 
 from pirate_topics.models import MyGroup
 
+from settings import DOMAIN_NAME
+
 from oa_verification.models import Referral
 
 from pirate_login.models import Login, Register
@@ -70,7 +72,7 @@ def pp_generate_key(context, nodelist, *args, **kwargs):
                     new_profile.save()
                                                                                                            
                     email_subject = 'OpenAssembly account confirmation'
-                    email_body = "Hello, %s, and thanks for signing up for an openassembly.org account!\n\nTo activate your account, click this link within 48 hours:\n\nhttp://www.openassembly.org/confirm/%s/" % (
+                    email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n" + DOMAIN_NAME + "confirm/%s/" % (
                         user.username,
                         new_profile.activation_key)
                     send_mail(email_subject,
@@ -139,7 +141,6 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                         user = authenticate(username=new_user.name, password=new_user.password1)
 
                         if user is not None:
-                            login(request, user)
                             #if this is a referred user
                             if dimension is not None:
                                 #try:
@@ -150,6 +151,8 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                 ref.save()
                                 user.is_active = True
                                 user.save()
+                                login(request, user)
+
                                 if ref.topic is not None:
                                     mg = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                 raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
@@ -167,7 +170,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                 new_profile.save()
 
                                 email_subject = 'OpenAssembly account confirmation'
-                                email_body = "Hello, %s, and thanks for signing up for an openassembly.org account!\n\nTo activate your account, click this link within 48 hours:\n\nhttp://www.openassembly.org/confirm/%s/" % (
+                                email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n" + DOMAIN_NAME + "confirm/%s/" % (
                                     user.username,
                                     new_profile.activation_key)
                                 send_mail(email_subject,
