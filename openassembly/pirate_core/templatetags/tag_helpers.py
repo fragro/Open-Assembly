@@ -31,7 +31,7 @@ get_namespace = namespace_get('pp_tag')
 
 
 @block
-def pp_datetime_less_than(context, nodelist, *args, **kwargs): 
+def pp_datetime_less_than(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
 
@@ -279,8 +279,8 @@ def pp_has_tags(context, nodelist, *args, **kwargs):
 
     output = nodelist.render(context)
     context.pop()
-    return output  
-    
+    return output
+
 
 @block
 def pp_get_tags_for_object(context, nodelist, *args, **kwargs):
@@ -288,21 +288,23 @@ def pp_get_tags_for_object(context, nodelist, *args, **kwargs):
     This block tag can create or process forms to get tags.
     Usage is as follows:
     '''
-    
+
     context.push()
     namespace = get_namespace(context)
 
-    obj = kwargs.get('object',None)
-    
-    filters = {'pk':obj.pk}
-    try: tags = Tag.objects.cloud_for_model(obj,filters=filters)
-    except: tags = []
+    obj = kwargs.get('object', None)
+
+    filters = {'pk': obj.pk}
+    try:
+        tags = Tag.objects.cloud_for_model(obj, filters=filters)
+    except:
+        tags = []
 
     namespace['tags'] = tags
 
     output = nodelist.render(context)
     context.pop()
-    return output  
+    return output
 
 
 @block
@@ -311,21 +313,25 @@ def pp_get_tags(context, nodelist, *args, **kwargs):
     This block tag can create or process forms to get tags.
     Usage is as follows:
     '''
-    
+
     context.push()
     namespace = get_namespace(context)
-    obj = kwargs.get('object',None)
-    user = kwargs.get('user',None)
+    obj = kwargs.get('object', None)
+    user = kwargs.get('user', None)
 
-    if obj is not None: tags = get_link_tag_list(user,obj)
+    if obj is not None:
+        tags = get_link_tag_list(user, obj)
+    else:
+        tags = None
 
     namespace['tags'] = tags
     #namespace['tags'].extend(tags1)
     #namespace['tags'].extend(tags2)
     output = nodelist.render(context)
     context.pop()
-    return output  
-  
+    return output
+
+
 @block
 def pp_get_objects_for_tag(context, nodelist, *args, **kwargs):
     '''
@@ -333,7 +339,7 @@ def pp_get_objects_for_tag(context, nodelist, *args, **kwargs):
     Usage is as follows:
 
     '''
-    
+
     context.push()
     namespace = get_namespace(context)
 
