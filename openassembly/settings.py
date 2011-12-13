@@ -120,9 +120,11 @@ JQUERY_URL = '/static/jquery-1.4.2.min.js'
 
 DOMAIN_NAME = 'www.openassembly.org'
 
-SERVER_EMAIL = 'fragro@gmail.com'
-
-DEFAULT_FROM_EMAIL = 'fragro@gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
+EMAIL_HOST_PASSWORD = 'collective will of man'
+EMAIL_PORT = 587
 
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
