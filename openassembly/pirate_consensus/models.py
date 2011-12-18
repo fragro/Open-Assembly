@@ -222,7 +222,7 @@ class Phase(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return str(self.complete)
+        return str(self.curphase.phasename)
 
 
 #This is the basic voting object utilized with Reddit-like consensus

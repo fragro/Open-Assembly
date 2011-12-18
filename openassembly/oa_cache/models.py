@@ -14,11 +14,12 @@ from django.core.context_processors import csrf
 
 DIMS = {"_t": 'TYPE_KEY', "_o": "OBJ_KEY", "_s": "START_KEY",
             "_e": "END_KEY", "_d": "DIM_KEY", "_i": "S_KEY",
-            '_c': "SCROLL_KEY", "_r": "SEARCH_KEY", "_l": "CTYPE_KEY"}
+            '_c': "SCROLL_KEY", "_r": "SEARCH_KEY", "_l": "CTYPE_KEY", "_p": "PHASE_KEY"}
 
 OPP_DIMS = {'TYPE_KEY': "_t", "OBJ_KEY": "_o", "START_KEY": "_s",
             "END_KEY": "_e", "DIM_KEY": "_d", "S_KEY": "_i",
-            "SCROLL_KEY": '_c', "SEARCH_KEY": "_r", "CTYPE_KEY": "_l"}
+            "SCROLL_KEY": '_c', "SEARCH_KEY": "_r", "CTYPE_KEY": "_l",  "PHASE_KEY": "_p"}
+
 
 def initiate_update(obj_pk, content_pk):
     """
@@ -111,7 +112,7 @@ it is a ListCache, or a detailed content item/user if otherwise.
         return obj
 
     def __unicode__(self):
-        return '%s %s %s' % (self.template, self.div_id, self.content_type)
+        return '%s %s %s' % (self.template, self.id, self.content_type)
 
 
 class ListCache(models.Model):
@@ -136,6 +137,7 @@ class ListCache(models.Model):
             end = paramdict.get('END_KEY', None)
             dimension = paramdict.get('DIM_KEY', None)
             ctype_list = paramdict.get('CTYPE_KEY', None)
+            phasekey = paramdict.get('PHASE_KEY', None)
 
             if ctype_id is not None and obj_id is not None:
                 content_type = ContentType.objects.get(pk=ctype_id)
@@ -172,9 +174,15 @@ class ListCache(models.Model):
             elif self.template == 'topics':
                 func = get_topics
                 update = True
+            else:
+                func = get_ranked_list
+                update = True
 
-            cached_list, tot_items = func(parent=parent, start=paramdict['START_KEY'],
-                                end=paramdict['END_KEY'], dimension=dimension, ctype_list=ctype_list)
+            kwr = {'parent': parent, 'start': paramdict['START_KEY'],
+                                'end': paramdict['END_KEY'], 'dimension': dimension, 'ctype_list': ctype_list}
+            if phasekey is not None:
+                kwr['phase'] = phasekey
+            cached_list, tot_items = func(**kwr)
             if update:
                 codes = memcache.get("rank_update_codes")
                 #stores all the encoded pages for tasks/update_ranks

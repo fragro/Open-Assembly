@@ -1129,11 +1129,12 @@ select {
 #topnav .first {
     margin-left:0;
 }
-#topnav a {
+#topnav a, #topnav .object a{
     display:block;
-    padding:10px 20px;
-    background:rgba(0,0,0,.2);
+    padding:5px 10px;
+    margin-top:5px;
     text-align:center;
+    background:rgba(0,0,0,.2);
     color:#fff;
     text-decoration:none;
     text-shadow:0 1px 0 rgba(0,0,0,.2);
@@ -1143,6 +1144,9 @@ select {
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     -o-transition: all .2s ease-in-out;
+}
+#topnav .object a {
+    background:#464787;
 }
 #topnav a:hover {
     background:none;

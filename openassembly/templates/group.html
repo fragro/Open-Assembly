@@ -6,7 +6,6 @@
 
     {% include 'facilitator.html' %}
 
-
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
  
@@ -35,35 +34,37 @@
             {% endif %}
         {% endpp_get_sources %}
     </a>
+
+        <div style="float:right;">
+                <ul class="checkboxes">
+                    <li> <h2>{{object.group_members}} Members</h2></li>
+                    <li> <h2>{{object.children}} Ideas</h2></li>
+                    <li><span id="addgroup"></span></li>
+                 </ul>
+            
+
+        </div>
         
         <div id="container">
-            
-            <div id="current_poll" class="poll">
-                
-            </div>
 
             
             <div class="platforms">
-                <ul class="checkboxes">
-                    <li> {{object.group_members}} Members</li>
-                    <li> {{object.children}} Ideas</li>
-                    <li><span id="addgroup"></span></li>
-                 </ul>
-                {% if dimension == 'hn' %}
-                <div class="platform">
-                    <h2>Group Description</h2>
-                    <p>
-                        {{object.description|safe}}
-                    </p>
-                </div>
-                {% endif %}
-                {% if dimension == 'p' %}
-                <div class="platform">
-                    <p>
-                        {{object.description|safe}}
-                    </p>
-                </div>
-                {% endif %}
+
+
+                 <div id="questions">
+
+                {% pp_get_questions object=object dimension="n" phase="Question" %}
+
+                    <h2>Question{{pp_blob.count|pluralize}} ({{pp_blob.count}})</h2>
+
+                    <div id="children_details" class="children_details">
+                        {% for object in pp_blob.blob_list %}
+                            <a href="object.content_object.get_absolute_url"><h2>{{object.content_object.summary}}</h2></a>
+                        {% endfor %}
+                   </div>
+                {% endpp_get_questions %}
+
+            </div>
                 <div class="platform">
                     {% oa_mygroup_users object=object %}
 

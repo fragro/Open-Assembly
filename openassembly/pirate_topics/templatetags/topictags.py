@@ -44,11 +44,33 @@ def pp_get_topic_if_content(context, nodelist, *args, **kwargs):
 
 
 @block
+def pp_get_root(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+    root = kwargs.pop('object', None)
+
+    if root is not None:
+        parent = root.parent
+        while parent is not None:
+            if parent.summary == '__NULL__':
+                break
+            root = parent
+            parent = parent.parent
+
+    namespace['root'] = root
+
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
 def pp_get_topic(context, nodelist, *args, **kwargs):
 
     context.push()
     namespace = get_namespace(context)
-
     obj = kwargs.pop('object', None)
     object_pk = kwargs.pop('object_pk', None)
     topicname = kwargs.pop('topicname', None)

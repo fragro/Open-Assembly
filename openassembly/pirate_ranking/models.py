@@ -107,7 +107,7 @@ def calc_hot(dt, spectrum, rating):
     return score
 
 
-def get_ranked_list(parent, start, end, dimension, ctype_list):
+def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
 
     if isinstance(start, int) and isinstance(end, int):
         try:
@@ -142,7 +142,10 @@ def get_ranked_list(parent, start, end, dimension, ctype_list):
             except Exception, e:
                 raise ValueError(str(fd.app_label) + " , " + fd.model_class_name)
                 #invalid ctype_list key
-
+        if phase:
+            #phase = Phase.objects.get()
+            #issue_list = issue_list.filter(phase=)
+            pass
         issue_list = issue_list.exclude(content_type=ctype)
         #issue_list = Consensus.objects.all()
         tot_items = issue_list.count()
@@ -214,15 +217,8 @@ def vote_created_callback(sender, **kwargs):
         ### has created a vote before it should not be counted toward the reranking.
         ### This closes a process that allows users to maliciously inflate hot ranking
 
-        try:
-            spectrum = cons.spectrum.get_list()
-        except:
-            #add spectrum to consensus if first vote
-            sp = Spectrum()
-            cons.spectrum = sp
-            sp.save()
-            cons.save()
-            spectrum = cons.spectrum.get_list()
+        spectrum = cons.spectrum.get_list()
+
         try:
             rating = cons.rating.get_list()
         except:

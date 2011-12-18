@@ -109,6 +109,53 @@ def pp_get_blob_dim_readable(context, nodelist, *args, **kwargs):
 
 
 @block
+def pp_get_questions(context, nodelist, *args, **kwargs):
+    """Retrieves blob dimension in human readable format."""
+    context.push()
+    namespace = get_namespace(context)
+
+    phase = kwargs.pop('phase', None)
+    parent = kwargs.pop('object', None)
+    start = kwargs.pop('start', None)
+    end = kwargs.pop('end', None)
+    key = kwargs.pop('key', None)
+    dimension = kwargs.pop('dimension', None)
+
+    if isinstance(start, int) and isinstance(end, int):
+        try:
+            start, end = (int(start), int(end))
+        except:
+            raise ValueError("The argument 'start=' and 'end=' to the pp_get_blob_list tag must be "
+                                 "provided in the form of an int")
+    else:
+        start, end = (0, 20)
+
+    if dimension is None:
+        raise ValueError("The argument 'dimension=' to the pp_get_blob_list tag must be "
+                                 "provided in the form of an string")
+
+    if key is None:
+        if parent is None:
+            key = 'list/' + '/_s' + str(start) + '/_e' + str(end) + '/_d' + str(dimension)
+        else:
+            ctype = ContentType.objects.get_for_model(parent)
+            key = 'list/_t' + str(ctype.pk) + '/_o' + str(parent.pk) + '/_s' + str(start) + '/_e' + str(end) + '/_d' + str(dimension)
+        if phase is not None:
+            key += '/_p' + str(phase)
+    l = ListCache.objects.get(content_type='item', template=phase)
+
+    cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=False)
+
+    namespace['count'] = tot_items
+    namespace['blob_list'] = cached_list
+
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
 def pp_get_blob_subcontext(context, nodelist, *args, **kwargs):
     """
        This method receives a dimension and object, then parses that for the following
