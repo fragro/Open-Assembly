@@ -444,7 +444,7 @@ class TopicForm(forms.ModelForm):
 
     class Meta:
         model = Topic
-        exclude = ('parent', 'children', 'is_featured', 'slug', 'group_members')
+        exclude = ('parent', 'children', 'is_featured', 'slug', 'group_members', 'decisions', 'solutions')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
     summary = forms.CharField( max_length=100,
