@@ -49,17 +49,18 @@ def pp_get_root(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
     root = kwargs.pop('object', None)
+    try:
+        if root is not None:
+            parent = root.parent
+            while parent is not None:
+                if parent.summary == '__NULL__':
+                    break
+                root = parent
+                parent = parent.parent
 
-    if root is not None:
-        parent = root.parent
-        while parent is not None:
-            if parent.summary == '__NULL__':
-                break
-            root = parent
-            parent = parent.parent
-
-    namespace['root'] = root
-
+        namespace['root'] = root
+    except:
+        namespace['root'] = None
     output = nodelist.render(context)
     context.pop()
 

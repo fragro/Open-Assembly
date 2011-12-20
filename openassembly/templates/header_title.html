@@ -1,6 +1,6 @@
-<b> {% if object %}
+<b> / {% if object %}
 	    {% pp_get_root object=object %} 
-		 	/ <a href="{{pp_topic.root.get_absolute_url}}">{{pp_topic.root}}</a>
+		 	<a href="{{pp_topic.root.get_absolute_url}}">{{pp_topic.root}}</a>
 	    {% endpp_get_root %}
     {% endif %}
 </b>
