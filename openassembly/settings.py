@@ -141,11 +141,11 @@ DJANGO_BUILTIN_TAGS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tracking.middleware.VisitorTrackingMiddleware',
     'autoload.middleware.AutoloadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tracking.middleware.BannedIPMiddleware',
-    'tracking.middleware.VisitorTrackingMiddleware',
     'pirate_core.middleware.UrlMiddleware',
     'customtags.middleware.AddToBuiltinsMiddleware',
     'minidetector.middleware.MobileMiddleware',
