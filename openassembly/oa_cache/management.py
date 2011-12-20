@@ -26,7 +26,7 @@ detailcache, is_new = ModelCache.objects.get_or_create(template="detail_dyn.html
 
 #####LIST CACHES
 
-questionslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk, template="questions", div_id="#questions", content_type="item", default=False)
+questionslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk, template="Question", div_id="#questions", content_type="item", default=False)
 nominationsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk, template="nominations", div_id="#nominations", content_type="item", default=False)
 decisionsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk, template="decisions", div_id="#decisions", content_type="item", default=False)
 

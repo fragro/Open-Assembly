@@ -23,6 +23,8 @@ class Topic(models.Model):
     submit_date = models.DateTimeField('date published', auto_now_add=True)
     parent = models.ForeignKey('self', null=True, blank=True)
     children = models.IntegerField(_('Children'), default=0)
+    solutions = models.IntegerField(_('Solution'), default=0)
+    decisions = models.IntegerField(_('Solution'), default=0)
     more_info = models.CharField(max_length=200, blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     location = models.CharField(max_length=200, blank=True, null=True)

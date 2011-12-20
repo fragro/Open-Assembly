@@ -24,7 +24,6 @@
             {% if pp_source.cur_img %}
                 <img src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
             {% else %}
-
                 {% cani object=object user=user %}
                     {% if pp_permissions.permission %}
                         <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
@@ -34,16 +33,22 @@
             {% endif %}
         {% endpp_get_sources %}
     </a>
-
-        <div style="float:right;">
-                <ul class="checkboxes">
-                    <li> <h2>{{object.group_members}} Members</h2></li>
-                    <li> <h2>{{object.children}} Ideas</h2></li>
-                    <li><span id="addgroup"></span></li>
-                 </ul>
+    <ul class="group_info">
+        <li> <h2>{{object.group_members}} Members</h2></li>
+        {% oa_get_group_settings object=object %}
+            <li> <h2>{% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group</h2></li>
+            <li> <h2>{{ pp_topic.settings.percent_reporting|percent}} Reporting</h2></li>
+            <li> <h2>{{ pp_topic.settings.percent_reporting|percent}} Consensus</h2></li>
+        {% endoa_get_group_settings %}
+        <li><span id="addgroup"></span></li>
+     </ul>
+    <ul class="group_info">
+        <li> <h2>{{object.children}} Issues</h2></li>
+        <li> <h2>{{object.solutions}} Nominations</h2></li>
+        <li> <h2>{{object.decisions}} Decisions</h2></li>
+     </ul>
             
 
-        </div>
         
         <div id="container">
 
@@ -53,14 +58,16 @@
 
                  <div id="questions">
 
-                {% pp_get_questions object=object dimension="n" phase="Question" %}
-
-                    <h2>Question{{pp_blob.count|pluralize}} ({{pp_blob.count}})</h2>
+                {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Question" %}
 
                     <div id="children_details" class="children_details">
-                        {% for object in pp_blob.blob_list %}
-                            <a href="object.content_object.get_absolute_url"><h2>{{object.content_object.summary}}</h2></a>
-                        {% endfor %}
+                        {% if pp_blob.count > 0 %}
+                            <h2>Newest 3</h2>
+                            {% for object in pp_blob.blob_list %}
+                                {% include 'listing.html' %}
+                            {% endfor %}
+                        {% endif %}
+
                    </div>
                 {% endpp_get_questions %}
 

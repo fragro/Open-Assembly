@@ -71,13 +71,6 @@
 
                                 <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> - {{object.created_dt|date:"m/d/Y h:sA"}}</span>
 
-
-                                {% pp_if_forum_blob object=object.parent %}
-                                    {% if pp_blob.is_blob %}
-                                        <span class="re"><a href="{% pp_url template='detail.html' object=object.parent %}"> - {{object.parent.summary}}</a></span>
-                                    {% else %}<span class="re"><a href="{% pp_url template='issues.html' object=object.parent start=0 end=20 dimension='hn' %}"> - {{object.parent.summary}}</a></span>
-                                    {% endif %}
-                                {% endpp_if_forum_blob %}
                                     <p>
                                     <!-- For the film genome project -->
                                     {% if object.video %}
@@ -295,18 +288,20 @@
 
 
                             </div>
+                            <div id="children_details" class="children_details">
+
                             {% if object.children > 0 %}
                                 {% pp_get_blob_list object=object dimension="n" %}
 
                                     <h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{pp_blob.count}})</h2>
 
-                                    <div id="children_details" class="children_details">
                                         {% for object in pp_blob.blob_list %}
                                             {% include 'listing.html' %}
                                         {% endfor %}
-                                   </div>
                                 {% endpp_get_blob_list %}
                             {% endif %}
+                            </div>
+
 
                             <div class="forms">
                                

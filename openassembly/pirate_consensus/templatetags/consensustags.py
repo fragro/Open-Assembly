@@ -342,17 +342,19 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
                 data.append({'name': str(int(i.vote) - 6), 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
             dchart['data'] = data
             namespace['chart_data'] = str([dchart])
-            namespace['chart'] = True
-        rating_list = obj.rating.get_list()
-        tot = 0
-        val = 0
-        for i, weight, num in rating_list:
-            val += (i * num)
-            tot += num
-        if tot > 0:
-            namespace['mean_information'] = val / tot
-        else:
-            namespace['mean_information'] = None
+            if dchart['data'] != []:
+                namespace['chart'] = True
+        if obj.rating is not None:
+            rating_list = obj.rating.get_list()
+            tot = 0
+            val = 0
+            for i, weight, num in rating_list:
+                val += (i * num)
+                tot += num
+            if tot > 0:
+                namespace['mean_information'] = val / tot
+            else:
+                namespace['mean_information'] = None
     else:
         namespace['chart'] = False
     output = nodelist.render(context)

@@ -1,29 +1,23 @@
  {#<li class="first"><a href="/index.html#myplatform">Platform</a></li>#}
 
-	{% pp_get_topic object=object %}   
-		{% if pp_topic.parent != None %}
-		<span class="object">
-		    <li><a  href="{% pp_url template='issues.html' object=object start=0 end=20 dimension='hn' %}">Forum</a></li>
+		{% if object %}
+		    {% pp_get_root object=object %} 
+		    	{% if pp_topic.root %}
+					<span class="object">
+					    <li><a  href="{% pp_url template='issues.html' object=pp_topic.root start=0 end=20 dimension='hn' %}">Forum</a></li>
 
-		    <li><a href="{% pp_url template='topics.html' object=object dimension='c' start=0 end=20 %}">Working Groups</a></li>
+					    <li><a href="{% pp_url template='topics.html' object=pp_topic.root dimension='c' start=0 end=20 %}">Working Groups</a></li>
 
-		   <li><a href="{% pp_url template='group.html' object=object dimension='c' start=0 end=20 %}">Info</a></li>
-		  </span>
-
+					   <li><a href="{% pp_url template='group.html' object=pp_topic.root dimension='c' start=0 end=20 %}">Info</a></li>
+					  </span>
+				{% endif %}
+		  	{% endpp_get_root %}
 		{% else %}
 
-
 		{% endif %}
-
-	{% endpp_get_topic %}
 
     <li><a href="{% pp_url template='topics.html' dimension='c' start=0 end=20 %}">Movements</a></li>
 
     <li><a href="/index.html#arpv">Verify</a></li>
 
     <li><a href="{% pp_url template='faq.html' %}">Help</a></li>
-{% comment %}
-    {% if not object %}
-	<li><a href="{% pp_url template='create_group.html' %}">Create Group</a></li>
-	{% endif %}
-{% endcomment %}

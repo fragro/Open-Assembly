@@ -31,16 +31,10 @@
             {% endif %}
         {% endpp_get_sources %}
 
-        <a href="{% pp_url object=object.content_object template='detail.html' %}">
-            <b>{{object.content_object.summary }}</b>
-        </a> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ object.content_object.user.username }}</a> - {{object.content_object.created_dt|date:"(d/m/Y"}} at {{object.content_object.created_dt|date:"h:sA)"}}</span><br>
+        <b><a href="{% pp_url object=object.content_object template='detail.html' %}">
+            {{object.content_object.summary }}
+        </a></b> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ object.content_object.user.username }}</a> - {{object.content_object.created_dt|date:"(d/m/Y"}} at {{object.content_object.created_dt|date:"h:sA)"}}</span><br>
             
-            {% pp_if_forum_blob object=object.content_object.parent %}
-                {% if pp_blob.is_blob %}
-                    <span class="re"><a href="{% pp_url template='detail.html' object=object.content_object.parent %}">{{object.content_object.parent.summary}}</a></span>
-                {% else %}<span class="re"><a href="{% pp_url template='issues.html' start=0 end=20 object=object.content_object.parent dimension='hn' %}">{{object.content_object.parent.summary}}</a></span>
-                {% endif %}
-            {% endpp_if_forum_blob %}
               <div>
                 <p>
                 {{object.content_object.description|slice:":95" }}...

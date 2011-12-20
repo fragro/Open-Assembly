@@ -436,7 +436,10 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         blob.user = user
                         blob.parent_pk = parent.pk
                         blob.parent_type = ContentType.objects.get_for_model(parent)
-
+                        ctype = ContentType.objects.get_for_model(Topic)
+                        if blob.parent_type != ctype:
+                            parent.parent.solutions += 1
+                            parent.parent.save()
                         try:
                             phase_change_dt = form.cleaned_data['end_of_nomination_phase']
                             decision_dt = form.cleaned_data['decision_time']

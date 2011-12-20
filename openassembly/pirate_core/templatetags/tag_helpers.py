@@ -29,6 +29,15 @@ get_namespace = namespace_get('pp_tag')
 
     TODO: Change the namespace and all hooks to reflect that"""
 
+from django.template.defaultfilters import floatformat
+
+
+@register.filter
+def percent(value):
+    if value is None:
+        return None
+    return floatformat(value * 100.0, 0) + '%'
+
 
 @block
 def pp_datetime_less_than(context, nodelist, *args, **kwargs):

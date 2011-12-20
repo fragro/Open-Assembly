@@ -41,10 +41,6 @@ except:
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
 
-    ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
-
-    MANAGERS = ADMINS
-
     DATABASES = {
         'default': {
             'ENGINE': 'django_mongodb_engine',
@@ -58,8 +54,8 @@ except:
     MEDIA_ROOT = 'static_dev_serve/media/'
     MEDIA_URL = '/media/'
 
-ADMINS = (('Frank', 'fragro@gmail.com'),)
 
+ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
 
 AUTOLOAD_SITECONF = 'indexes'
@@ -101,6 +97,7 @@ INSTALLED_APPS = (
     'notification',
     'search',
     'oa_suggest',
+    'tracking',
     'oa_platform',
     'oa_cache',
     'django_mongodb_engine'
@@ -147,6 +144,8 @@ MIDDLEWARE_CLASSES = (
     'autoload.middleware.AutoloadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tracking.middleware.BannedIPMiddleware',
+    'tracking.middleware.VisitorTrackingMiddleware',
     'pirate_core.middleware.UrlMiddleware',
     'customtags.middleware.AddToBuiltinsMiddleware',
     'minidetector.middleware.MobileMiddleware',
@@ -167,9 +166,62 @@ PISTON_DISPLAY_ERRORS = True
 OPENASSEMBLY_AGENT = 'http://localhost:8888/jsonrpc'
 OPENASSEMBLY_KEY = "frank"
 
+#django-tracking
+GOOGLE_MAPS_KEY = "ABQIAAAA_UWxUEZV5juJ_qZyeqUmfhR6WxNX0A2p5POs-LGBfT-S1UKwcBQ4EA_X_VPz1c2n4T_U33rWG8OxaA"
+TRACKING_USE_GEOIP = True
+GEOIP_PATH = "static/GeoIP/"
+GEOIP_CACHE_TYPE = 1
+DEFAULT_TRACKING_TEMPLATE = 'map.html'
+
+#memcache
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
+    }
+}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'tracking.models': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'DEBUG',
+        }
     }
 }

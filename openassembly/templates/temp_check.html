@@ -1,7 +1,7 @@
 <!--Requires a consensus object -->
  
           {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
-                  {% if pp_consensus.chart != None %}
+               {% if pp_consensus.chart %}
                   <script>
                   var chart1; // globally available
                   $(document).ready(function() {
@@ -41,9 +41,9 @@
                               
 
                               {% if pp_consensus.mean_information %}
-                                 {{pp_consensus.mean_information|floatformat:"1"}}
-                                 <img src="/static/images/star_on_small.gif">
-                              {% else %} ?
+                                    <b>{{pp_consensus.mean_information|floatformat:"1"}}</b>
+                                    <img src="/static/images/star_on_small.gif">
+                                 {% else %} <b>----</b>
                               {% endif %}
 
                               </div>

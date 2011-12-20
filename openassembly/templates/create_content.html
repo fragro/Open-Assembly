@@ -1,8 +1,12 @@
-{% if user.is_authenticated %}       
-    {% pp_get_topic object=object %}         
-        <a href="{% pp_url template='submit.html' object=pp_topic.parent %}" class="btn_new_issue"><b>Ask Question</b></a>
-    {% endpp_get_topic %}
+{% load tracking_tags %}
 
+{% if user.is_authenticated %}       
+{% visitors_on_page as same_page %}
+<a href="#" class="btn_new_issue">
+    {{ same_page }} Viewing
+{% visitors_on_site as visitors %}
+	{{visitors}} Visiting
+</a>
 
 {% else %}
 <a href="{% pp_url template='register.html' %}" class="btn_new_issue">Login/Register</a>

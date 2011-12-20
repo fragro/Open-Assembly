@@ -41,11 +41,10 @@ for more information on SideEffectCache
         usc_pk = request.GET.get('usc_pk')
         se = request.GET.get('side_effect')
         parent_pk = request.GET.get('obj_pk')
-        key = request.GET.get('key')[1:]
         try:
             jsonval = simplejson.loads(se)
         except:
-            None
+            jsonval = None
         #if there is side effect information
         if jsonval != None:
             obj_id, ctype_id = simplejson.loads(se)
@@ -295,9 +294,9 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         #exclude if model is available
         lu = lu.exclude(model_cache=m.pk)
     for usc in lu:
-            rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': usc.render({'object': obj, 'user': user})})
+            rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
     if m is not None:
-        r = UserSaltCache.objects.filter(model_cache=m.pk, load_last=True)
+        r = UserSaltCache.objects.filter(model_cache=m.pk).filter(load_last=True)
         for usc in r:
             html = usc.render(RequestContext(request, {
                     'dimension': dimension, 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))

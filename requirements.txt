@@ -17,5 +17,6 @@ python-openid
 simplejson
 django-piston
 pyorbited
+django-tracking
 hg+http://bitbucket.org/nator/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search

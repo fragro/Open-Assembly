@@ -94,6 +94,12 @@ urlpatterns += patterns('ajaxapi.views',
     (r'^live_search/$', 'live_search'),
 )
 
+#tracking
+urlpatterns += patterns('',
+    (r'^tracking/', include('tracking.urls')),
+)
+
+#api links
 urlpatterns += patterns('',
    # all my other url mappings
    (r'^api/', include('api.urls')),

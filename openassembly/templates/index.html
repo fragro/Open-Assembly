@@ -388,7 +388,7 @@
                         <div style="display:block;">
 
                                 <ul id="mygroup" class="recent_activity">
-                                    <span><b>MyGroups</b></span>
+                                    <span><b>MyGroups - <a href="{% pp_url template='create_group.html' %}">Create New</a></b></span>
                                      {% pp_mygroups user=user %}
                                         {% for group in pp_topic.mygroups %}  
                                             {% include 'mygroup.html' %}

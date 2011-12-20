@@ -5,7 +5,6 @@
 }
 a {
     color:#486480;
-    text-decoration:underline;
 }
 a:hover {
     text-decoration:none;
@@ -343,7 +342,7 @@ small {
     list-style:none;
     margin-bottom:2px;
 }
-.recent_activity a {
+.recent_activity li a {
     text-decoration:none;
     color:#444;
     display:block;
@@ -359,6 +358,9 @@ small {
 }
 .recent_activity b {
     font-size:100%;
+}
+.recent_activity b a{
+    font-size:80%;
 }
 .recent_activity .icon {
     width:10px;
@@ -451,6 +453,7 @@ small {
     text-decoration:none;
     font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
     font-size:120%;
+    color:black;
 }
 .listing .summary .links {
     font-size:11px;
@@ -1358,18 +1361,11 @@ background:#f5f5f5;
     float:left;
     width:469px;
 }
-#group .checkboxes {
+#group .group_info {
+    margin-top:25px;
     overflow:hidden;
-    margin:0 0 10px 10px;
     float:right;
-}
-#group .checkboxes li {
-    float:left;
-    margin-right:10px;
-    list-style:none;
-}
-#group .checkboxes li:last-child {
-    margin-right:0;
+    width:30%;
 }
 #group .platform {
     clear:right;
@@ -1544,8 +1540,13 @@ h2.active {background-position: left bottom;}
 }
 
 .startext {
-    width:30px;
+    width:33px;
     padding-left:26%;
+}
+.startext b{
     color:#f4d400;
     font-size:250%;
+}
+.satrtext img {
+    float:left;
 }
