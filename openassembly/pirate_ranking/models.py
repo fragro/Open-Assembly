@@ -143,9 +143,7 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
                 raise ValueError(str(fd.app_label) + " , " + fd.model_class_name)
                 #invalid ctype_list key
         if phase:
-            #phase = Phase.objects.get()
-            #issue_list = issue_list.filter(phase=)
-            pass
+            issue_list = issue_list.filter(phasename=phase)
         issue_list = issue_list.exclude(content_type=ctype)
         #issue_list = Consensus.objects.all()
         tot_items = issue_list.count()
@@ -153,32 +151,30 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
 
         if dimension == "n":
             order_by = '-submit_date'
-            next_issue_list = sorted(next_issue_list, key=lambda x: x.submit_date, reverse=True)
+            next_issue_list = issue_list.order_by(order_by)
+            #next_issue_list = sorted(next_issue_list, key=lambda x: x.submit_date, reverse=True)
+        elif dimension == "r":
+            #must support random
+            order_by = '-random'
+            next_issue_list = issue_list.order_by(order_by)
+            #next_issue_list = sorted(next_issue_list, key=lambda x: x.submit_date, reverse=True)
         elif dimension == "h":
             order_by = '-interest'
-            next_issue_list = sorted(next_issue_list, key=lambda x: int(x.interest), reverse=True)
+            next_issue_list = issue_list.order_by(order_by)
+            #next_issue_list = sorted(next_issue_list, key=lambda x: int(x.interest), reverse=True)
         elif dimension == "c":
             order_by = '-controversy'
-            next_issue_list = sorted(next_issue_list, key=lambda x: int(x.controversy), reverse=True)
+            next_issue_list = issue_list.order_by(order_by)
+            #next_issue_list = sorted(next_issue_list, key=lambda x: int(x.controversy), reverse=True)
         elif dimension == "t":
             order_by = 'votes'
-            next_issue_list = sorted(next_issue_list, key=lambda x: int(x.votes), reverse=True)
+            next_issue_list = issue_list.order_by(order_by)
+            #next_issue_list = sorted(next_issue_list, key=lambda x: int(x.votes), reverse=True)
         elif dimension == "hn":
             dt = datetime.datetime.now()
             next_issue_list = sorted(next_issue_list, key=lambda x: (getattr(x, 'votes') * (96000.0 / (dt - (getattr(x, 'submit_date'))).seconds)) , reverse=True )
         else:
-            #DAMN YOU GOOGLEBOT!!!
-            if dimension == 'hot':
-                order_by = '-interest'
-                next_issue_list = sorted(next_issue_list, key=lambda x: int(x.interest), reverse=True )
-            elif dimension == 'cont':
-                order_by = '-controversy'
-                next_issue_list = sorted(next_issue_list, key=lambda x: int(x.controversy), reverse=True )
-            elif dimension == 'new':
-                order_by = '-submit_date'
-                next_issue_list = sorted(next_issue_list, key=lambda x: x.submit_date, reverse=True )
-            else:
-                raise ValueError("Illegal sorting dimension " + str(dimension))
+            raise ValueError("Illegal sorting dimension " + str(dimension))
 
         return_list = next_issue_list[int(start):int(end)]
 

@@ -264,9 +264,12 @@ def oa_get_group_settings(context, nodelist, *args, **kwargs):
 
     obj = kwargs.get('object', None)
 
-    if obj is not None:
-        s, is_new = GroupSettings.objects.get_or_create(topic=obj)
-    else:
+    try:
+        if obj is not None:
+            s, is_new = GroupSettings.objects.get_or_create(topic=obj)
+        else:
+            s = None
+    except:
         s = None
 
     namespace['settings'] = s
@@ -347,7 +350,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
     user = kwargs.get('user', None)
 
     if POST and POST.get("form_id") == "pp_topic_form" and user is not None:
-        form = TopicForm(POST) if topic is None else TopicForm(POST, instance=topic)
+        form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
             new_topic = form.save(commit=False)
             new_topic.is_featured = False
@@ -373,7 +376,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
         else:
             namespace['errors'] = form.errors
     else:
-        form = TopicForm() if topic is None else TopicForm(instance=topic)
+        form = TopicForm() if topic is None else EditTopicForm(instance=topic)
 
     namespace['form'] = form
     output = nodelist.render(context)
@@ -450,11 +453,43 @@ class TopicForm(forms.ModelForm):
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
     summary = forms.CharField( max_length=100,
               widget=forms.TextInput(
-                attrs={'size':'50', 'class':'inputText'}),label="Name of the Group")
+                attrs={'size':'50', 'class':'inputText'}),label="Comprehensive Name of the Group")
+    shortname = forms.CharField( max_length=20,
+              widget=forms.TextInput(
+                attrs={'size':'50', 'class':'inputText'}),label="Short Name (20 Characters or Less)")
     more_info = forms.CharField(required=False, max_length=100,
               widget=forms.TextInput(
                 attrs={'size':'50', 'class':'inputText'}),label="Link to Group Website") 
     description = forms.CharField(widget=MarkItUpWidget(),label="Group Description")
+    location = forms.CharField(label="Location", max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}),required=False)
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
+
+
+#hack to get around markitup selecting divs and
+#applying itself twice when two forms are on the same page
+class EditTopicForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        newo = super(EditTopicForm, self).save(commit=commit)
+        return newo
+
+    class Meta:
+        model = Topic
+        exclude = ('parent', 'children', 'is_featured', 'slug', 'group_members', 'decisions', 'solutions')
+
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
+    summary = forms.CharField( max_length=100,
+              widget=forms.TextInput(
+                attrs={'size':'50', 'class':'inputText'}),label="Comprehensive Name of the Group")
+    shortname = forms.CharField( max_length=20,
+              widget=forms.TextInput(
+                attrs={'size':'50', 'class':'inputText'}),label="Short Name (20 Characters or Less)")
+    more_info = forms.CharField(required=False, max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}),label="Link to Group Website") 
+    description = forms.CharField(widget=forms.Textarea,label="Edit Description")
     location = forms.CharField(label="Location", max_length=100,
               widget=forms.TextInput(
                 attrs={'size': '50', 'class': 'inputText'}),required=False)

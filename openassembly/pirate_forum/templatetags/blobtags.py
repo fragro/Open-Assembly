@@ -441,8 +441,22 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             parent.parent.solutions += 1
                             parent.parent.save()
                         try:
-                            phase_change_dt = form.cleaned_data['end_of_nomination_phase']
-                            decision_dt = form.cleaned_data['decision_time']
+                            long_term = form.cleaned_data['long_term']
+                            if not long_term:
+                                phase_change_dt = form.cleaned_data['end_of_nomination_phase']
+                                decision_dt = form.cleaned_data['decision_time']
+                                if phase_change_dt == None:
+                                    namespace['errors'] = "Must Either Specify Long Term or set Decision Date and Time"
+                                    namespace['form'] = form
+                                    namespace['POST'] = POST, parent
+                                    output = nodelist.render(context)
+                                    context.pop()
+
+                                    return output
+
+                            else:
+                                phase_change_dt = None
+                                decision_dt = None
                         except:
                             pass
 
@@ -492,7 +506,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
                         if is_new:
                             cons.intiate_vote_distributions()
-                            if not fd.is_child:
+                            if not fd.is_child and phase_change_dt != None:
 
                                 #create phase object
                                 pl = PhaseLink.objects.get(phasename="Question")
@@ -500,6 +514,10 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                                                     creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
                                                                     phase_change_dt=phase_change_dt, complete=False, active=True)
                                 cons.phase = ph
+                                cons.phasename = "Question"
+                                cons.save()
+                            elif fd.is_child:
+                                cons.phasename = "Nomination"
                                 cons.save()
 
                         aso_rep_event.send(sender=user, event_score=1, user=user, initiator=user, dimension=ReputationDimension.objects.get(name=blob.get_verbose_name()), related_object=cons)

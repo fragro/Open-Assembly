@@ -11,6 +11,7 @@ from djangotoolbox.fields import ListField
 from django.db.models import get_model, get_app
 
 from django import forms
+import random
 import datetime
 
 from pirate_core.fields import JqSplitDateTimeField
@@ -160,9 +161,11 @@ class Question(ForumBlob):
 
 
 class Nomination(ForumBlob):
+    #for random sorting of voting candidates
+    random = models.FloatField(default=0)
 
     class Meta:
-        verbose_name = _('nominate')
+        verbose_name = _('nominated')
 
     def __unicode__(self):
         return self.summary
@@ -172,7 +175,7 @@ class Nomination(ForumBlob):
 
     def taggable(self):
         return True
-    
+
     def is_child(self):
         return True
 
@@ -235,8 +238,10 @@ class BlobForm(forms.ModelForm):
                 attrs={'size': '50', 'class': 'inputText'}), initial="")
     description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="")
-    end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
-    decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+
+    long_term = forms.BooleanField(required=False, help_text="If this decision doesn't require a time of decision, ignore the following dates and times")
+    end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
+    decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
 
 
 class NominationForm(forms.ModelForm):
@@ -245,6 +250,7 @@ class NominationForm(forms.ModelForm):
         newo = super(NominationForm, self).save(commit=commit)
         if newo.created_dt == None:
             newo.created_dt = datetime.datetime.now()
+            newo.random = random.random()
         newo.modified_dt = datetime.datetime.now()
         return newo
 
@@ -252,7 +258,7 @@ class NominationForm(forms.ModelForm):
         model = Nomination
         exclude = ('parent', 'parent_pk', 'parent_type',
             'user', 'child', 'children', 'permission_req',
-            'created_dt', 'modified_dt', 'forumdimension')
+            'created_dt', 'modified_dt', 'forumdimension', 'random')
 
     summary = forms.CharField(max_length=100,
               widget=forms.TextInput(

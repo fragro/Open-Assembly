@@ -164,6 +164,7 @@ class Consensus(models.Model):
     rating = models.ForeignKey(Rating, verbose_name=_('rating votes'), null=True)
     vote_rate = models.FloatField(default=0.0, null=None, blank=None)
     phase = models.ForeignKey("Phase", blank=True, null=True, related_name="consensus_phase")
+    phasename = models.CharField(max_length=30, blank=True, null=True)
 
     def __unicode__(self):
         return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk)

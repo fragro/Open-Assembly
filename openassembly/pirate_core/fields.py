@@ -12,6 +12,8 @@ class JqSplitDateTimeField(fields.MultiValueField):
         Have to pass a list of field types to the constructor, else we
         won't get any data to our compress method.
         """
+        self.required = kwargs.get('required', True)
+        print self.required
         all_fields = (
             fields.CharField(max_length=10),
             fields.CharField(max_length=2),
@@ -28,9 +30,13 @@ class JqSplitDateTimeField(fields.MultiValueField):
         """
         if data_list:
             if not (data_list[0] and data_list[1] and data_list[2] and data_list[3]):
-                raise forms.ValidationError("Field is missing data.")
-            input_time = strptime("%s:%s %s"%(data_list[1], data_list[2], data_list[3]), "%I:%M %p")
-            datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
-            print "Datetime: %s"%datetime_string
-            return datetime_string
+                if self.required:
+                    raise forms.ValidationError("Field is missing data.")
+            try:
+                input_time = strptime("%s:%s %s"%(data_list[1], data_list[2], data_list[3]), "%I:%M %p")
+                datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
+                print "Datetime: %s"%datetime_string
+                return datetime_string
+            except:
+                return None
         return None

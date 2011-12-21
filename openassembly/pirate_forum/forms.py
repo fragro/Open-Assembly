@@ -33,5 +33,7 @@ class BlobForm(forms.ModelForm):
                 attrs={'size': '50', 'class': 'inputText'}), initial="")
     description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="")
+
+    long_term = forms.BooleanField(help_text="If this decision doesn't require a time for decision, ignore the following dates and times")
     end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
     decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))

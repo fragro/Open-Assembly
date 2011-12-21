@@ -418,6 +418,7 @@ small {
     padding-bottom:10px;
     border-bottom:1px #e4e4e4 solid;
     margin-bottom:10px;
+    display:block;
 }
 .listing .interest {
     background:url(img/interest_bg.jpg) no-repeat;
@@ -449,10 +450,12 @@ small {
 .listing .summary {
     overflow:hidden;
 }
-.listing .summary a b, .listing .summary b a {
+.listing .summary a b, .listing .summary b a, .listing .summary a {
     text-decoration:none;
     font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
     font-size:120%;
+}
+.listing .summary a b, .listing .summary b a{
     color:black;
 }
 .listing .summary .links {
@@ -1502,6 +1505,8 @@ h2.active {background-position: left bottom;}
 
 .children_details {
     padding-left:30px;
+    display:block;
+    float:left;
 }
 
 .header_title {
@@ -1547,6 +1552,9 @@ h2.active {background-position: left bottom;}
     color:#f4d400;
     font-size:250%;
 }
-.satrtext img {
+.startext img {
     float:left;
+}
+#pp_blob_form b {
+    font-size:120%;
 }
