@@ -3,12 +3,8 @@
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
 
-        	{% if user.is_staff %}
-            <div id="moderator_controls" style="display:none; overflow:hidden; height:625px;width:100%;">
+            <div id="moderator_controls" style="display:none; overflow:hidden; height:900px;width:100%;">
             {% include 'moderator.html' %}
             </div>
-            {% else %}
-            <h2>Facilitator Controls Coming Soon</h2>
-            {% endif %}
         {% endif %}
     {% endcani %}		

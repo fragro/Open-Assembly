@@ -1,7 +1,13 @@
 {% load topictags %}
 {% oa_ingroup object=object user=user %}
     {% if pp_topic.in_group %}
- 		<a href="javascript:;" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> -Remove From MyGroups</a>
+        {% cani object=object user=user %}
+        {% if not pp_permissions.permission %}
+
+            <a href="javascript:;" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> -Remove From MyGroups</a>
+
+        {% endif %}
+    {% endcani %}		
     {% else %}
         {% oa_get_group_settings object=object %}
         	{% if pp_topic.settings.open_group %}

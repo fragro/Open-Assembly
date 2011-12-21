@@ -63,6 +63,11 @@
                                 <span class="word">interest</span>
                             </div>
                             <div class="overview">
+                                {% if object.forumdimension.is_child %}
+                                    <div class="summary" style="font-size:70%;">
+                                        <a href="{% pp_url object=object.parent template='detail.html' %}">{{object.parent.summary}}</a>
+                                    </div>
+                                {% endif %}
                                 <span class="summary">
                                     <a href="{% pp_url object=object template='detail.html' %}"><b>{{object.summary}}</b></a>
                                 </span>
@@ -284,24 +289,19 @@
                             <div id="default_countdown"></div> 
                             </div>
 
-
-
-
                             </div>
+                        </div>
+                    </div>
+
+                        {% pp_get_questions object=object dimension="r" phase="Nomination" %}
+                        {% if object.children > 0 %}<h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{object.children}})</h2>{% endif %}
                             <div id="children_details" class="children_details">
 
-                            {% if object.children > 0 %}
-                                {% pp_get_blob_list object=object dimension="n" %}
-
-                                    <h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{object.children}})</h2>
-
-                                        {% for object in pp_blob.blob_list %}
-                                            {% include 'listing.html' %}
-                                        {% endfor %}
-                                {% endpp_get_blob_list %}
-                            {% endif %}
+                                            {% for object in pp_blob.blob_list %}
+                                                {% include 'listing.html' %}
+                                            {% endfor %}
                             </div>
-
+                        {% endpp_get_questions %}
 
                             <div class="forms">
                                
@@ -336,8 +336,13 @@
                                            <div id="pp_comment_form" class="reply_comment"></div>
                                         </div>
                                     </div>
-
-
+                        {% pp_get_root object=object %} 
+                            {% oa_get_group_settings object=pp_topic.root %}
+                            
+                            {% oa_ingroup object=object user=user %}
+  
+                                {% if pp_topic.settings.open_group or pp_topic.in_group %}
+           
                                     <h2 class="acc_trigger"><a href="#">Write an Argument Supporting {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
@@ -372,6 +377,11 @@
                                     </div>
                                 {% endif %}
 
+                            {% endif %}
+                            {% endoa_ingroup %}
+
+                            {% endoa_get_group_settings %}
+                        {% endpp_get_root %}
                                 </div>
                             </div>
                         </div>

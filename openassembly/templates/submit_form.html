@@ -28,7 +28,9 @@
 
                         {% else %}
                         <p>
-                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>: {% if field.errors %}{% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}{% else %}<br>{% endif %}{{ field }}<br>
+                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
+                            {% if field.errors %}{% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
+
                         </p>
                         {% endif %}
                         {% endfor %}

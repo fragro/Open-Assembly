@@ -1,6 +1,6 @@
 <li id="{{group.topic.pk}}" class="blue">
         <p>
-         <span><a href="{{group.topic.get_absolute_list_url}}">{{group.topic.summary|slice:'0:29'}}</a></span>
+         <span><a href="{{group.topic.get_absolute_list_url}}">{{group.topic.shortname}}</a></span>
          <span style="float:right;"><a href="{% pp_url template='submit.html' object=group.topic %}">
 <img src="/static/img/question.jpg"></a></span>
          <span style="float:right;"><a href="{{group.topic.get_absolute_url}}"><img src="/static/img/home.jpg"></a></span>

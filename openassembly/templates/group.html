@@ -6,6 +6,8 @@
 
     {% include 'facilitator.html' %}
 
+    <h1>{{object.summary}}</h1>
+
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
  
@@ -62,7 +64,7 @@
 
                     <div id="children_details" class="children_details">
                         {% if pp_blob.count > 0 %}
-                            <h2>Newest 3</h2>
+                            <h2>Newest {{pp_blob.count}}</h2>
                             {% for object in pp_blob.blob_list %}
                                 {% include 'listing.html' %}
                             {% endfor %}

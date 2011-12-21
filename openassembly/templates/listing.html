@@ -62,7 +62,8 @@
             {% endif %}
        {% endpp_get_tags_for_object %}
         <ul class="solutions">
-            {% pp_get_blob_list object=object.content_object dimension="h" start=0 end=5 %}
+
+            {% pp_get_questions object=object.content_object dimension="h" start=0 end=5 phase="Nomination" %}
                 {% if object.content_object.children > 0 %}
 
                     <li><b>{{object.content_object.children}} {{object.content_object.child|title}}:</b></li>
@@ -70,17 +71,17 @@
                         {% for child in pp_blob.blob_list %}
                             {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
 
-                                <li>({{child.interest|floatformat:0 }}) <a href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
+                                <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">({{child.interest|floatformat:0 }}) - {{pp_blob.content_object.summary}}</a></li>
                                 
                             {% endpp_get_object %}
 
                         {% endfor %}
 
-                        {% if object.content_object.children > 5 %}
-                            <li>...</li>
-                        {% endif %}
+                    {% if object.content_object.children > 5 %}
+                        <li>...</li>
+                    {% endif %}
                 {% endif %}
-           {% endpp_get_blob_list %}
+           {% endpp_get_questions %}
         </ul>
     </div>
 </div>

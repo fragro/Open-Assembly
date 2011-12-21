@@ -17,21 +17,20 @@
 
         {% else %}
 
-        {{pp_blob.errors}}
+        <h3 style="color:#d90000;">{{pp_blob.errors}}</h3>
 
                 {{ pp_blob.form.media }}
                 <form id='pp_blob_form' method="post" action="">
                 <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
-                    {% if pp_blob.parent_summary %}
-                        <h2>Parent: {{object }}<h2/>
-                    {% endif %}
                 
                         {% for field in pp_blob.form %}
                         {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
 
                         {% else %}
                         <p>
-                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>: {% if field.errors %}{% for err in field.errors %}<div class="error">{{ err }}</div>{% endfor %}{% else %}<br>{% endif %}{{ field }}<br>
+                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
+                            {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
+
                         </p>
                         {% endif %}
                         {% endfor %}
