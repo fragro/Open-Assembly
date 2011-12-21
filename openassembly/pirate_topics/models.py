@@ -67,7 +67,7 @@ class GroupSettings(models.Model):
     livestream = models.CharField(max_length=30, blank=True, null=True, help_text="Link to livestream to embed livestream into navigation.")
     open_group = models.BooleanField(default=True, help_text="If the group is open anyone can join, if it's closed they must be invited")
     percent_reporting = models.FloatField(default=.7, help_text="Percentage of members required to vote for pushing a set of solutions/answers to a ranked vote. Value represents a percentage for instance .7 is 70% of Members voting")
-    conensus_percentage = models.FloatField(default=.8, help_text="For policies or proposals, what percentage of votes constitutes consensus when no blocks are present?")
+    consensus_percentage = models.FloatField(default=.8, help_text="For policies or proposals, what percentage of votes constitutes consensus when no blocks are present?")
 
     def __unicode__(self):
         return str(self.topic)
