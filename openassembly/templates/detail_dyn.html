@@ -293,7 +293,7 @@
                             {% if object.children > 0 %}
                                 {% pp_get_blob_list object=object dimension="n" %}
 
-                                    <h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{pp_blob.count}})</h2>
+                                    <h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{object.children}})</h2>
 
                                         {% for object in pp_blob.blob_list %}
                                             {% include 'listing.html' %}
