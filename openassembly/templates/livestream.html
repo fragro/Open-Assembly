@@ -1,0 +1,8 @@
+
+        {% oa_get_group_settings object=object %}
+        	{% if pp_topic.settings.livestream %}
+            	<iframe src="http://cdn.livestream.com/embed/{{pp_topic.settings.livestream}}?layout=2&autoPlay=true&width=592&height=444" width="592" height="444" style="border:0;outline:0" frameborder=0 scrolling=no></iframe>
+            {% else %}
+            <h1>No Livestream Active</h1>
+            {% endif %}
+        {% endoa_get_group_settings %}
