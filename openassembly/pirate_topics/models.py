@@ -19,6 +19,7 @@ class NullManager(models.Manager):
 class Topic(models.Model):
     #Topic: Category to place issues, includes parent and child for hierarchical topics
     summary = models.CharField(max_length=200, unique=True)
+    shortname = models.CharField(max_length=20, unique=True)
     description = models.CharField(max_length=600, unique=True)
     submit_date = models.DateTimeField('date published', auto_now_add=True)
     parent = models.ForeignKey('self', null=True, blank=True)
@@ -63,6 +64,7 @@ class MyGroup(models.Model):
 
 class GroupSettings(models.Model):
     topic = models.ForeignKey(Topic, blank=True, null=True)
+    livestream = models.CharField(max_length=30, blank=True, null=True, help_text="Link to livestream to embed livestream into navigation.")
     open_group = models.BooleanField(default=True, help_text="If the group is open anyone can join, if it's closed they must be invited")
     percent_reporting = models.FloatField(default=.7, help_text="Percentage of members required to vote for pushing a set of solutions/answers to a ranked vote. Value represents a percentage for instance .7 is 70% of Members voting")
     conensus_percentage = models.FloatField(default=.8, help_text="For policies or proposals, what percentage of votes constitutes consensus when no blocks are present?")
