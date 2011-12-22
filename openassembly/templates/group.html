@@ -7,17 +7,16 @@
     {% include 'facilitator.html' %}
 
     <h1>{{object.summary}}</h1>
-
+    <span class="image">
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
- 
           {% pp_get_contenttype_id object=object %}
             <a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
           {% endpp_get_contenttype_id %}
 
         {% else %}
 
-            <a href="{{object.get_absolute_url}}">
+            <a>
 
         {% endif %}
     {% endcani %}  
@@ -26,15 +25,11 @@
             {% if pp_source.cur_img %}
                 <img src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
             {% else %}
-                {% cani object=object user=user %}
-                    {% if pp_permissions.permission %}
-                        <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
-                    {% endif %}
-                {% endcani %}
-
+                <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
             {% endif %}
         {% endpp_get_sources %}
     </a>
+    </span>
     <ul class="group_info">
         <li> <h2>{{object.group_members}} Members</h2></li>
         {% oa_get_group_settings object=object %}
