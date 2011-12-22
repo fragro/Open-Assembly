@@ -205,14 +205,17 @@ def oa_facilitators_form(context, nodelist, *args, **kwargs):
     if POST is not None and POST.get("form_id") == "oa_facilitators_form":
         form = FacilitatorsForm(POST)
         if form.is_valid():
-            user = User.objects.get(username=form.cleaned_data['username'])
-            ctype = ContentType.objects.get_for_model(new_topic)
-            #create Facilitator permissions for group creator
-            perm_group, is_new = PermissionsGroup.objects.get_or_create(name="Facilitator", description="Permission group for Facilitation of Online Working Groups")
-            perm, newperm = Permission.objects.get_or_create(user=user, name='facilitator-permission', content_type=ctype,
-                        object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
-            mg, newgr = MyGroup.objects.get_or_create(topic=new_topic, user=user)
-            namespace['done'] = form.cleaned_data['username'] + ' added'
+            try:
+                user = User.objects.get(username=form.cleaned_data['username'])
+                ctype = ContentType.objects.get_for_model(new_topic)
+                #create Facilitator permissions for group creator
+                perm_group, is_new = PermissionsGroup.objects.get_or_create(name="Facilitator", description="Permission group for Facilitation of Online Working Groups")
+                perm, newperm = Permission.objects.get_or_create(user=user, name='facilitator-permission', content_type=ctype,
+                            object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
+                mg, newgr = MyGroup.objects.get_or_create(topic=new_topic, user=user)
+                namespace['done'] = form.cleaned_data['username'] + ' added'
+            except:
+                namespace['error'] = 'Username not Found'
         else:
             namespace['errors'] = form.errors
     else:

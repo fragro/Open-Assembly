@@ -349,7 +349,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
     root = kwargs.get('root', Topic.objects.null_dimension())
     user = kwargs.get('user', None)
 
-    if POST and POST.get("form_id") == "pp_topic_form" and user is not None:
+    if POST and (POST.get("form_id") == "pp_topic_form" or POST.get("form_id") == "pp_edittopic_form")and user is not None:
         form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
             new_topic = form.save(commit=False)
@@ -364,16 +364,18 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
             #raise HttpRedirectException(HttpResponseRedirect("/topics.html"))
             namespace['complete'] = True
             namespace['object_pk'] = new_topic.pk
-            ctype = ContentType.objects.get_for_model(new_topic)
-            namespace['content_type'] = ctype.pk
-            #create Facilitator permissions for group creator
-            perm_group, is_new = PermissionsGroup.objects.get_or_create(name="Facilitator", description="Permission group for Facilitation of Online Working Groups")
-            perm = Permission(user=user, name='facilitator-permission', content_type=ctype,
-                        object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
-            perm.save()
-            mg = MyGroup(topic=new_topic, user=user)
-            new_topic.group_members = 1
-            mg.save()
+            if topic is None:
+
+                ctype = ContentType.objects.get_for_model(new_topic)
+                namespace['content_type'] = ctype.pk
+                #create Facilitator permissions for group creator
+                perm_group, is_new = PermissionsGroup.objects.get_or_create(name="Facilitator", description="Permission group for Facilitation of Online Working Groups")
+                perm = Permission(user=user, name='facilitator-permission', content_type=ctype,
+                            object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
+                perm.save()
+                mg = MyGroup(topic=new_topic, user=user)
+                new_topic.group_members = 1
+                mg.save()
         else:
             namespace['errors'] = form.errors
     else:
@@ -494,4 +496,4 @@ class EditTopicForm(forms.ModelForm):
     location = forms.CharField(label="Location", max_length=100,
               widget=forms.TextInput(
                 attrs={'size': '50', 'class': 'inputText'}),required=False)
-    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_edittopic_form")
