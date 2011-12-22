@@ -372,6 +372,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
                         object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
             perm.save()
             mg = MyGroup(topic=new_topic, user=user)
+            new_topic.group_members = 1
             mg.save()
         else:
             namespace['errors'] = form.errors

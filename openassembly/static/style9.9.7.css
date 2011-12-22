@@ -208,7 +208,7 @@ small {
 
 }
 .btn_new_issue b {
-    color:white;   
+    color:white;
 }
 .btn_new_issue {
     background:#a0b2c0;
@@ -226,13 +226,16 @@ small {
     -moz-transition: all .1s ease-in-out;
     -o-transition: all .1s ease-in-out;
     margin-bottom:15px;
-    margin-left:45px;
+    margin-left:55px;
     margin-right:45px;
-
+}
+.btn_new_issue img {
+    margin-right:5px;
 }
 
 .btn_new_issue:hover, .btn_gen:hover {
     background:#ACBBC6;
+    cursor:pointer;
     text-shadow:0 1px 0 rgba(0,0,0,.15);
 }
 .quick_profile {
