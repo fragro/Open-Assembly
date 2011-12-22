@@ -96,6 +96,8 @@ groupnavcache2, is_new = UserSaltCache.objects.get_or_create(model_cache=mcache.
 
 pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="pp_topic_form.html", div_id="#content", jquery_cmd="html", redirect=True)
 
+ppedittopiccache, is_new = UserSaltCache.objects.get_or_create(template="pp_edittopic_form.html", div_id="#pp_edittopic_form", jquery_cmd="html", redirect=True)
+
 ppdeleteformcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk, template="pp_delete_form.html", div_id="#pp_delete_form", jquery_cmd="html", is_recursive=True, is_toggle=True, object_specific=True)
 
 ###SIDE EFFECT CACHE
