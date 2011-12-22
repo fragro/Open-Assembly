@@ -123,13 +123,14 @@
                                 </ul>
                                 <div class="graph_viewer">
                                     
-
+                                {% if user == object %}
                                 {% pp_get_reputation_events_graph user=object y=10 x=40 type='activity'%}
                                     {{pp_reputation.html|safe}}
                                 {% endpp_get_reputation_events_graph %}
                                 {% pp_get_reputation_events_graph user=object y=10 x=30 type='rating'%}
                                    <span style="display:none;">{{pp_reputation.html|safe}}  </span>
                                 {% endpp_get_reputation_events_graph %}
+                                {% endif %}
 
                                 </div>
                             </div>

@@ -2,7 +2,6 @@
 
  {% oa_facilitators_form POST=request.POST object=object %}
     <form id="oa_facilitators_form" method="post" action="">
-
                 {{ oa_ver.form.as_p }}
 
                 {{csrf_string|safe}}
@@ -12,16 +11,21 @@
                 {% for err in oa_ver.errors %}
                     {{err}}<br>
                 {% endfor %}
+                <span style="color:red;">{{oa_ver.error}}</span>
             </span>
     </form>
             {% else %} 
-                <a class='button' href="{% pp_url template='register.html' %}">Submit</a> {{oa_ver.done}}
+                <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
             {% endif %}
+                
+
         <script>
 
           $("form#oa_facilitators_form").submit(function(e){
                 $("#submit_oa_facilitators_form").html("<b>Submitting...</b>");
                 addObject(e);
+                $("#submit_oa_facilitators_form").html("<b>Sent!</b>");
+
             });
 
         </script>

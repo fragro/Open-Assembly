@@ -6,9 +6,6 @@
 					<span class="object">
 					    <li><a  href="{% pp_url template='issues.html' object=pp_topic.root start=0 end=20 dimension='hn' %}">Forum</a></li>
 
-					    <li><a href="{% pp_url template='topics.html' object=pp_topic.root dimension='c' start=0 end=20 %}">Groups</a></li>
-
-
 				        {% oa_get_group_settings object=object %}
 				        	{% if pp_topic.settings.livestream %}
 										<li><a href="{% pp_url template='livestream.html' object=object %}">Stream</a></li>

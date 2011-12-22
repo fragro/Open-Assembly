@@ -3,7 +3,10 @@
   <script>
 
   $("form#submitform5").submit(function(e){
+        $("#submit_submitform5").html("<b>Submitting...</b>")
         addObject(e);
+        $("#submit_submitform5").html("<b>Complete!</b>")
+
     });
 
 </script>
