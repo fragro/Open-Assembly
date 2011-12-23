@@ -12,7 +12,7 @@ from oa_verification.models import ActionTaken
 
 from pirate_topics.models import MyGroup
 
-from settings import DOMAIN_NAME, ADMINS
+from settings import DOMAIN_NAME, EMAIL_HOST_USER
 
 from pirate_permissions.models import PermissionsGroup, Permission
 
@@ -257,7 +257,7 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
                                     key=activation_key, email=email, accepted=False)
                     ref.save()
                     #send referral email
-                    email_subject = 'OpenAssembly Referral'
+                    email_subject = 'OpenAssembly Referral to ' + str(obj.shortname)
                     if obj:
                         email_subject += " to Group " + str(obj)
                     email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\n%sregister.html?_d=%s" % (
@@ -265,7 +265,7 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
                         ref.key)
                     send_mail(email_subject,
                               email_body,
-                              ADMINS[0][1],
+                              'fragro@gmail.com',
                               [user.email])
                     sent += 1
             namespace['errors'].append("Mail sent to " + str(sent) + " recipients")
