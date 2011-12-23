@@ -247,8 +247,8 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
             email_list = email.replace(' ', '').split(',')
             for email in email_list:
                 try:
-                    ref = Referral.objects.get(email=email)
-                    namespace['errors'].append('Referral Key Already Used for Email: ' + str(email))
+                    ref = Referral.objects.get(email=email, topic=obj)
+                    namespace['errors'].append('Referral Key Already Used for this group and email: ' + str(email))
                 except:
                     #create referral
                     salt = sha.new(str(random.random())).hexdigest()[:5]

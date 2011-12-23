@@ -35,6 +35,9 @@ class Referral(models.Model):
     email = models.CharField(max_length=200)
     topic = models.ForeignKey(Topic, blank=True, null=True)
 
+    def __unicode__(self):
+        return '{%s : %s}' % (self.user.username, self.topic.shortname)
+
 
 class EmailVerification(models.Model):
     user = models.ForeignKey(User)
