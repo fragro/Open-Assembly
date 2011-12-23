@@ -4,7 +4,7 @@
  {% oa_referral_form POST=request.POST user=user object=object %}
     <form id="oa_referral_form" method="post" action="">
         <input type="hidden" name="form_id" value="oa_referral_form" id="id_form_id"/>
-
+                <i>Add new members via email. Insert emails delimited by comma.</i>
                 {{ oa_ver.form.as_p }}
 
                 {{csrf_string|safe}}

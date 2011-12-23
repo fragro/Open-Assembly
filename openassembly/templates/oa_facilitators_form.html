@@ -2,6 +2,7 @@
 
  {% oa_facilitators_form POST=request.POST object=object %}
     <form id="oa_facilitators_form" method="post" action="">
+                <i>Add a Facilitator for this Group. Facilitator privileges cannot currently be removed so be cautious</i>
                 {{ oa_ver.form.as_p }}
 
                 {{csrf_string|safe}}
