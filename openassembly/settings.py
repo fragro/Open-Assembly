@@ -115,7 +115,7 @@ MARKITUP_SKIN = 'simple'
 
 JQUERY_URL = '/static/jquery-1.4.2.min.js'
 
-DOMAIN_NAME = 'http://openassembly-fragro.dotcloud.com/'
+DOMAIN_NAME = 'http://openassemblystaging-fragro.dotcloud.com/'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
