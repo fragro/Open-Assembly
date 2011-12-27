@@ -3,7 +3,7 @@
 {% if user.is_authenticated %}       
 <a onClick='$(window).hashchange();' title="Click to Refresh" class="btn_new_issue">
 {% visitors_on_site as visitors %}
-	<img src="/static/img/reload.png"> <b>{{visitors}} Online</b>
+	<span style="vertical-align: -12%;"><img src="/static/img/reload.png"></span><b>{{visitors}} Online</b>
 </a>
 
 {% else %}
