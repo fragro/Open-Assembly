@@ -506,14 +506,15 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
                         if is_new:
                             cons.intiate_vote_distributions()
-                            if not fd.is_child and phase_change_dt != None:
+                            if not fd.is_child:
 
                                 #create phase object
-                                pl = PhaseLink.objects.get(phasename="Question")
-                                ph, is_new = Phase.objects.get_or_create(curphase=pl,
-                                                                    creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
-                                                                    phase_change_dt=phase_change_dt, complete=False, active=True)
-                                cons.phase = ph
+                                if phase_change_dt != None:
+                                    pl = PhaseLink.objects.get(phasename="Question")
+                                    ph, is_new = Phase.objects.get_or_create(curphase=pl,
+                                                                        creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
+                                                                        phase_change_dt=phase_change_dt, complete=False, active=True)
+                                    cons.phase = ph
                                 cons.phasename = "Question"
                                 cons.save()
                             elif fd.is_child:
