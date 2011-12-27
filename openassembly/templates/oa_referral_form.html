@@ -1,7 +1,7 @@
 
  {% load verificationtags %}
 
- {% oa_referral_form POST=request.POST user=request.user object=request.object %}
+ {% oa_referral_form POST=request.POST user=user object=object %}
     <form id="oa_referral_form" method="post" action="">
         <input type="hidden" name="form_id" value="oa_referral_form" id="id_form_id"/>
                 <i>Add new members via email. Insert emails delimited by comma.</i>
@@ -22,9 +22,8 @@
 
         <script>
           $("form#oa_referral_form").submit(function(e){
-                $("#submit_oa_referral_form").html("<b>Submitting...</b>");
+                $("#submit_oa_referral_form").html("<b>Sending...</b>");
                 addObject(e);
-                $("#submit_oa_referral_form").html("<b>Sent!</b>");
             });
         </script>
 
