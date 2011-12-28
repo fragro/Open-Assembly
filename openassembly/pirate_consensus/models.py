@@ -86,7 +86,7 @@ class Spectrum(models.Model):
                 self.save()
                 val = sp.value
             else:
-                val = 0
+                val = sp.value
             l.append((i - 6, val))
         return l
 
