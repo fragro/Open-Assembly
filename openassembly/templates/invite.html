@@ -1,0 +1,14 @@
+
+ {% load cani %}
+
+ {{request.object}}
+ 
+{% comment %}
+    {% cani object=request.object user=request.user %}
+        {% if pp_permissions.permission %}
+
+			{% include 'oa_referral_form.html' %}
+
+        {% endif %}
+    {% endcani %}		
+{% endcomment %}
