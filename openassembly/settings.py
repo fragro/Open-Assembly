@@ -1,6 +1,7 @@
 #from djangoappengine.settings_base import *
 import os
 import json
+import djcelery
 
 FACEBOOK_API_KEY = ''
 FACEBOOK_APP_ID = ''
@@ -36,6 +37,11 @@ try:
     MEDIA_ROOT = '/home/dotcloud/data/media/'
     STATIC_ROOT = '/home/dotcloud/data/static/'
     MEDIA_URL = '/media/'
+    BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
+    BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
+    BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
+    BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
+    BROKER_VHOST = '/'
 except:
 
     DEBUG = True
@@ -98,6 +104,7 @@ INSTALLED_APPS = (
     'search',
     'oa_suggest',
     'tracking',
+    'djcelery',
     'oa_platform',
     'oa_cache',
     'django_mongodb_engine'
@@ -223,5 +230,22 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG',
         }
+    }
+}
+
+
+########CELERY
+
+# Configure Celery using the RabbitMQ credentials found in the DotCloud
+# environment.
+djcelery.setup_loader()
+
+# A very simple queue, just to illustrate the principle of routing.
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_QUEUES = {
+    'default': {
+        'exchange': 'default',
+        'exchange_type': 'topic',
+        'binding_key': 'tasks.#'
     }
 }

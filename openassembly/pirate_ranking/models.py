@@ -209,7 +209,8 @@ def vote_created_callback(sender, **kwargs):
         pis = cons.content_object
         #parent of the consensus object
         #For the HOT dimension
-        ###TODO: Only should rerank when a unique user creates a vote. If a user
+        ##
+#TODO: Only should rerank when a unique user creates a vote. If a user
         ### has created a vote before it should not be counted toward the reranking.
         ### This closes a process that allows users to maliciously inflate hot ranking
 
@@ -230,7 +231,7 @@ def vote_created_callback(sender, **kwargs):
 
         dt = timeDiff / float(timeNormFactor)
 
-        sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)))	]
+        sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)))]
 
         ###I don't know why, but this fails if it's where it should be up above...
         from pirate_ranking.models import Ranking
@@ -242,7 +243,8 @@ def vote_created_callback(sender, **kwargs):
                     obj.save()
                 except:
                     contype = ContentType.objects.get_for_model(pis)
-                    newrank = Ranking(content_object=pis, dimension=dim, score=sc, consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
+                    newrank = Ranking(content_object=pis, dimension=dim, score=sc,
+                                consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
                     newrank.save()
     except:
         raise
