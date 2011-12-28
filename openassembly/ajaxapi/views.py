@@ -552,7 +552,7 @@ def vote(request, pk, vote, votemodel, vote_type_str):
         user_cons.spectrum.get_list()
 
     if vote == -99:
-        st = RatingVote.objects.get(user=request.user, object_pk=pk)
+        st = votemodel.objects.get(user=request.user, object_pk=pk)
         aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user,
                             initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
                             related_object=st, is_vote=True)
