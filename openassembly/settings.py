@@ -24,6 +24,7 @@ try:
 
     DATABASES = {
         'default': {
+
             'ENGINE': 'django_mongodb_engine',
             'NAME': 'admin',
             'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
@@ -37,6 +38,11 @@ try:
     MEDIA_ROOT = '/home/dotcloud/data/media/'
     STATIC_ROOT = '/home/dotcloud/data/static/'
     MEDIA_URL = '/media/'
+
+    # Configure Celery using the RabbitMQ credentials found in the DotCloud
+    # environment.
+    djcelery.setup_loader()
+
 
     BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
     BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
@@ -236,10 +242,6 @@ LOGGING = {
 
 
 ########CELERY
-
-# Configure Celery using the RabbitMQ credentials found in the DotCloud
-# environment.
-djcelery.setup_loader()
 
 # A very simple queue, just to illustrate the principle of routing.
 CELERY_DEFAULT_QUEUE = 'default'
