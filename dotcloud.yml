@@ -4,3 +4,5 @@ db:
   type: mongodb
 worker:
   type: python-worker
+broker:
+  type: rabbitmq
