@@ -37,11 +37,12 @@ try:
     MEDIA_ROOT = '/home/dotcloud/data/media/'
     STATIC_ROOT = '/home/dotcloud/data/static/'
     MEDIA_URL = '/media/'
-    BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
-    BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
-    BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
-    BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
-    BROKER_VHOST = '/'
+
+    #BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
+    #BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
+    #BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
+    #BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
+    #BROKER_VHOST = '/'
 except:
 
     DEBUG = True
