@@ -6,9 +6,7 @@
 {% block content %}
 <div class="register">
 
-
                 {% if request.dimension and user.is_authenticated %}
-        
                     <div class="email_reset">
                     <img src="/static/oa_agent/oa_agent_happy.png"><br>
                         {% oa_activate_referral key=request.dimension user=user %}

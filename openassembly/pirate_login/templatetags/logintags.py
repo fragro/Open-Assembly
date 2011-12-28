@@ -154,7 +154,9 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                 login(request, user)
 
                                 if ref.topic is not None:
-                                    mg = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
+                                    mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
+                                    ref.topic.group_members += 1
+                                    ref.topic.save()
                                 raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
                                 #except:
                                 #    namespace['errors'] = "Illegal Referral Key"
@@ -254,7 +256,9 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                             ref.save()
                             user.is_active = True
                             user.save()
-                            mg = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
+                            mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
+                            ref.topic.group_members += 1
+                            ref.topic.save()
                             raise HttpRedirectException(HttpResponseRedirect('/index.html#referred_user'))
                         except:
                             namespace['errors'] = "Illegal Referral Key"
