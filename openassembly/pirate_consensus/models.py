@@ -7,6 +7,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from pirate_signals.models import vote_created
+from djangotoolbox.fields import ListField
+
 
 
 """ Spectrum and Rating classes hold denormalized
@@ -165,6 +167,8 @@ class Consensus(models.Model):
     vote_rate = models.FloatField(default=0.0, null=None, blank=None)
     phase = models.ForeignKey("Phase", blank=True, null=True, related_name="consensus_phase")
     phasename = models.CharField(max_length=30, blank=True, null=True)
+    vote_algorithm = models.CharField(max_length=100, blank=True, null=True)
+
 
     def __unicode__(self):
         return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk)
@@ -276,27 +280,52 @@ class RankedVote(models.Model):
         or via the javascript interface. Incorrect rankings should not be allowed.
     """
     parent = models.ForeignKey(Consensus,
-            verbose_name=_('parent'))
-    submit_date = models.DateTimeField(_('date/time submitted'), default=None)
+            verbose_name=_('parent'), related_name=_('parent'))
     user = models.ForeignKey(User, verbose_name=_('user'),
                     blank=True, null=True, related_name="%(class)s_ratings")
-    vote_rank = models.IntegerField()
+    ranked_vote = models.IntegerField(blank=True, null=True)
+    nom_cons = models.ForeignKey(Consensus,
+                    verbose_name=_('nomination consensus'), related_name=_('nomination consensus'), blank=True, null=True)
 
     class Meta:
-        unique_together = (('parent', 'user'),)
         verbose_name = _('ranked vote')
         verbose_name_plural = _('ranked votes')
 
     def __unicode__(self):
-        return "%s: %s" % (self.user, self.vote_rank)
+        return "%s : %s" % (self.user, self.parent)
 
-    def save(self, force_insert=False, force_update=False):
-        if self.submit_date is None:
-            self.submit_date = datetime.datetime.now()
-        super(UpDownVote, self).save(force_insert, force_update)
-        self.parent.votes += 1
-        #update consensus object vote count
-        self.parent.save()
+
+class ConfirmRankedVote(models.Model):
+    confirm = models.BooleanField()
+    parent = models.ForeignKey(Consensus,
+            verbose_name=_('parent'), related_name=_('confirm_parent'))
+    user = models.ForeignKey(User, verbose_name=_('user'),
+                    blank=True, null=True, related_name="confirm_%(class)s_ratings")
+    submit_date = models.DateTimeField(_('date/time submitted'), default=None, blank=True, null=True)
+
+    def __unicode__(self):
+        return str(self.id)
+        #cons = Consensus.objects.get(rating=self)
+        #return "%s:%s" % (str(cons.content_type), str(cons.object_pk))
+
+
+class RankedDecision(models.Model):
+    parent = models.ForeignKey(Consensus,
+            verbose_name=_('parent'), related_name=_('decision_parent'))
+    algorithm = models.CharField(max_length=100)
+    submit_date = models.DateTimeField(_('date/time submitted'), default=None, blank=True, null=True)
+    winner = models.CharField(max_length=50, blank=True, null=True)
+    consensus_percent = models.FloatField()
+    reporting_percent = models.FloatField()
+    nomination_consensus_percent = models.FloatField()
+    nomination_reporting_percent = models.FloatField()
+
+
+    def __unicode__(self):
+        return str(self.id)
+        #cons = Consensus.objects.get(rating=self)
+        #return "%s:%s" % (str(cons.content_type), str(cons.object_pk))
+
 
 
 class WeightedVote(models.Model):
@@ -364,9 +393,11 @@ admin.site.register(Consensus)
 admin.site.register(UpDownVote)
 admin.site.register(VideoVote)
 admin.site.register(RankedVote)
+admin.site.register(ConfirmRankedVote)
 admin.site.register(WeightedVote)
 admin.site.register(RatingVote)
 admin.site.register(Spectrum)
 admin.site.register(Rating)
 admin.site.register(Phase)
 admin.site.register(PhaseLink)
+admin.site.register(RankedDecision)

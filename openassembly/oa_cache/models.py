@@ -170,13 +170,13 @@ class ListCache(models.Model):
                 update = False
             elif self.template == 'children':
                 func = get_ranked_list
-                update = True
+                update = False
             elif self.template == 'topics':
                 func = get_topics
                 update = True
             else:
                 func = get_ranked_list
-                update = True
+                update = False
 
             kwr = {'parent': parent, 'start': paramdict['START_KEY'],
                                 'end': paramdict['END_KEY'], 'dimension': dimension, 'ctype_list': ctype_list}
@@ -225,6 +225,8 @@ only rendered when the corresponding model_cache is rendered"""
     cache = models.BooleanField(default=False)
     ###does this object need to be loaded last on the page, for instance if an anchor needs to be placed first
     load_last = models.BooleanField(default=False)
+    ###if we should only load when the user prompts us to load
+    persistent = models.BooleanField(default=False)
 
     def recursive_render(self, tree, context):
         ret_html = []

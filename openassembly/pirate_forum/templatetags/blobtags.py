@@ -8,6 +8,7 @@ from search.core import search
 from oa_cache.models import ListCache
 
 import datetime
+import pytz
 
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -21,12 +22,16 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from pirate_core import HttpRedirectException, namespace_get
 from pirate_consensus.models import UpDownVote, Consensus, Phase, PhaseLink
+from pirate_consensus.tasks import initiate_nextphase, local_tz_to_utc
+
 from pirate_reputation.models import ReputationDimension
 from pirate_forum.models import ForumBlob, Question
-from pirate_forum.forms import BlobForm
+from pirate_forum.models import  BlobEditForm
 from pirate_core.forms import ComboFormFactory
 from pirate_topics.models import Topic
 from pirate_topics.forms import TopicForm
+
+from pirate_profile.models import Profile
 
 from pirate_signals.models import aso_rep_event, update_agent
 
@@ -144,7 +149,7 @@ def pp_get_questions(context, nodelist, *args, **kwargs):
             key += '/_p' + str(phase)
     l = ListCache.objects.get(content_type='item', template=phase)
 
-    cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=False)
+    cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=True)
 
     namespace['count'] = tot_items
     namespace['blob_list'] = cached_list
@@ -364,14 +369,21 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
     sub = kwargs.get('sub', None)
     edit = kwargs.get('edit', None)
     #subcontext imparted to form
+    namespace['timezones'] = pytz.common_timezones
+    vote_algorithm = None
 
     #for editting objects
     if edit and obj is not None:
         blob_form, model, verbose_name = get_form(dimension)
+        blob_form = BlobEditForm
         if POST:
             #save editted form
             form = blob_form(POST, instance=obj)
-            blob = form.save()
+            blob = form.save(commit=False)
+            cleaned_data = form.clean()
+            for k, v in cleaned_data.items():
+                setattr(blob, k, v)
+            blob.save()
 
             if 'link' in form.cleaned_data:
                 validate = URLValidator(verify_exists=False)
@@ -441,10 +453,12 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             parent.parent.solutions += 1
                             parent.parent.save()
                         try:
+                            #####relevant to VOTING and TIME
                             long_term = form.cleaned_data['long_term']
-                            if not long_term:
+                            if long_term == 'SS':
                                 phase_change_dt = form.cleaned_data['end_of_nomination_phase']
                                 decision_dt = form.cleaned_data['decision_time']
+                                vote_algorithm = "Single Winner Schulze"
                                 if phase_change_dt == None:
                                     namespace['errors'] = "Must Either Specify Long Term or set Decision Date and Time"
                                     namespace['form'] = form
@@ -453,10 +467,16 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                     context.pop()
 
                                     return output
+                                else:
+                                    tz = pytz.timezone(form.cleaned_data['timezone'])
+                                    phase_change_dt = local_tz_to_utc(tz, form.cleaned_data['end_of_nomination_phase'])
+                                    decision_dt = local_tz_to_utc(tz, form.cleaned_data['decision_time'])
 
-                            else:
+                            elif long_term == 'PE':
                                 phase_change_dt = None
                                 decision_dt = None
+                                vote_algorithm = "Persistent Temperature Check"
+
                         except:
                             pass
 
@@ -498,11 +518,10 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                 cvt = ContentType.objects.get_for_model(UpDownVote)
                         except:
                             cvt = ContentType.objects.get_for_model(UpDownVote)
-
                         cons, is_new = Consensus.objects.get_or_create(content_type=contype,
                                     object_pk=blob.pk,
                                     vote_type=cvt,
-                                    parent_pk=blob.parent_pk)
+                                    parent_pk=blob.parent_pk, vote_algorithm=vote_algorithm)
 
                         if is_new:
                             cons.intiate_vote_distributions()
@@ -515,6 +534,9 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                                                         creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
                                                                         phase_change_dt=phase_change_dt, complete=False, active=True)
                                     cons.phase = ph
+                                    #now we want to initialize future phasechangetasks
+                                    initiate_nextphase.apply_async(args=[cons], eta=phase_change_dt)
+
                                 cons.phasename = "Question"
                                 cons.save()
                             elif fd.is_child:
@@ -551,8 +573,13 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
         namespace['form'] = form
         namespace['POST'] = POST, parent
+
+        #try to set ids for side effects
         try:
             namespace['object'] = cons
+            namespace['object_pk'] = blob.pk
+            ctype = ContentType.objects.get_for_model(blob)
+            namespace['content_type'] = ctype.pk
         except:
             pass
 

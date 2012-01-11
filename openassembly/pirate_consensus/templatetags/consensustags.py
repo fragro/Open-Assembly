@@ -6,8 +6,10 @@ from django.utils import simplejson
 from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 
+from django.db.models import Q
+
 from pirate_core.views import HttpRedirectException, namespace_get
-from pirate_consensus.models import  UpDownVote, Consensus,  RankedVote, WeightedVote, RatingVote, SpectrumHolder
+from pirate_consensus.models import  UpDownVote, Consensus,  ConfirmRankedVote, RankedVote, WeightedVote, RankedDecision, RatingVote, SpectrumHolder
 
 from pirate_core.widgets import HorizRadioRenderer
 
@@ -52,6 +54,54 @@ SPECTRUM_COLORS = {
 }
 
 get_namespace = namespace_get('pp_consensus')
+
+
+@block
+def pp_get_ranked_decision(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+
+    obj = kwargs.pop('object', None)
+
+    try:
+        rv = RankedDecision.objects.get(parent=obj)
+    except:
+        rv = None
+
+    namespace['ranked_decision'] = rv
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
+def pp_get_ranked_vote(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.pop('user', None)
+    obj = kwargs.pop('object', None)
+
+    rv = RankedVote.objects.filter(user=user, parent=obj)
+    rv = rv.order_by('ranked_vote')
+    namespace['objects'] = [(i.nom_cons, i) for i in rv]
+    if rv.count() > 0:
+        namespace['ranked_vote'] = True
+    else:
+        namespace['ranked_vote'] = None
+    try:
+        rnk = ConfirmRankedVote.objects.get(user=user, parent=obj)
+        namespace['confirmranked'] = rnk.confirm
+        namespace['winner'] = rnk
+    except:
+        namespace['confirmranked'] = False
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
 
 
 @block
@@ -118,6 +168,7 @@ def pp_consensus_get(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
+
 
 #Creates fields for creation of a consensus object, to be added to the object that is being referenced. This form includes settings for time constraints, if allowed at the global level. Some objects such as issues require a consensus object and therefore do not have a form attached.
 @block
@@ -200,8 +251,8 @@ def pp_rating_form(context, nodelist, *args, **kwargs):
             rating = form.cleaned_data['rating']
             consensus = Consensus.objects.get(object_pk= obj.pk)
             st = RatingVote(user=user, parent=consensus, vote=rating)
-    else:   
-        try: 
+    else:
+        try:
             prev_rating = RatingVote.objects.get(user=user, object_pk=obj.pk)
             form = RatingForm(initial={'rating': prev_rating.vote})
         except: form = RatingForm()
@@ -264,6 +315,9 @@ def pp_rating_js(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
     
     obj = kwargs.get('object', None)
+    user = kwargs.get('user', None)
+    ctype = ContentType.objects.get_for_model(obj)
+
         
     if obj: 
         RET = """
@@ -271,7 +325,7 @@ def pp_rating_js(context, nodelist, *args, **kwargs):
                 $("#stars-wrapper-rate""" + str(obj.id) + """").stars({
 	               inputType: "select",
 	               callback: function(ui, type, value){
-                        starvote(""" + "'" + str(obj.id) + "'" + """, value);
+                        starvote(""" + "'" + str(obj.id) + "'" + """, value, """ + "'" + str(user.pk) + "', " + "'" + str(obj.pk) + "', " + "'" + str(ctype.pk) + "'" + """);
                    },
                    captionEl: $("#stars-cap-rate"),
                    cancelTitle:'Cancel Rating',
@@ -293,7 +347,9 @@ def pp_spectrum_js(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
     
-    obj = kwargs.get('object',None)
+    obj = kwargs.get('object', None)
+    user = kwargs.get('user', None)
+    ctype = ContentType.objects.get_for_model(obj)
         
     if obj: 
         RET = """
@@ -301,7 +357,7 @@ def pp_spectrum_js(context, nodelist, *args, **kwargs):
                 $("#stars-wrapper-spec""" + str(obj.id) + """").stars({
 	               inputType: "select",
 	               callback: function(ui, type, value){
-                        spectrumvote(""" + "'" + str(obj.id) + "'" + """, value);
+                        spectrumvote(""" + "'" + str(obj.id) + "'" + """, value, """ + "'" + str(user.pk) + "', " + "'" + str(obj.pk) + "', " + "'" + str(ctype.pk) + "'" + """);
                    },
                    spectrum:true,
                    captionEl: $("#stars-cap-spec"),
@@ -346,8 +402,8 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
                 namespace['chart'] = True
         if obj.rating is not None:
             rating_list = obj.rating.get_list()
-            tot = 0
-            val = 0
+            tot = 0.0
+            val = 0.0
             for i, weight, num in rating_list:
                 val += (i * num)
                 tot += num

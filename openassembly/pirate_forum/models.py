@@ -13,6 +13,7 @@ from django.db.models import get_model, get_app
 from django import forms
 import random
 import datetime
+import pytz
 
 from pirate_core.fields import JqSplitDateTimeField
 from pirate_core.widgets import JqSplitDateTimeWidget
@@ -214,6 +215,11 @@ def create_view(username, addr, obj_id):
     and in order to automatically provide the form with a form_id.
     '''
 
+votechoices = (
+    #('SS', 'Single Winner Timed Decision'),
+    ('PE', 'Persistent Temperature Check'),
+)
+
 
 class BlobForm(forms.ModelForm):
 
@@ -239,9 +245,35 @@ class BlobForm(forms.ModelForm):
     description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="")
 
-    long_term = forms.BooleanField(required=False, help_text="If this decision doesn't require a time of decision, ignore the following dates and times")
+    long_term = forms.ChoiceField(choices=votechoices, required=False, help_text="If this decision doesn't require a time of decision, ignore the following dates and times")
     end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
     decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
+    timezone = forms.ChoiceField(label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
+
+
+class BlobEditForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        newo = super(BlobEditForm, self).save(commit=commit)
+        if newo.created_dt == None:
+            newo.created_dt = datetime.datetime.now()
+            ctype = ContentType.objects.get_for_model(Nomination)
+            newo.child = ctype
+            newo.children = 0
+        newo.modified_dt = datetime.datetime.now()
+        return newo
+
+    class Meta:
+        model = Question
+        exclude = ('parent', 'parent_pk', 'parent_type',
+            'user', 'child', 'children', 'permission_req',
+            'created_dt', 'modified_dt', 'forumdimension')
+
+    summary = forms.CharField(max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}), initial="")
+    description = forms.CharField(widget=MarkItUpWidget(
+                attrs={'cols': '20', 'rows': '10'}), initial="")
 
 
 class NominationForm(forms.ModelForm):

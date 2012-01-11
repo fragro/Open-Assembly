@@ -440,7 +440,7 @@ def add_tag(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        obj_id = int(request.POST[u'obj'])
+        obj_id = request.POST[u'obj']
         tag = str(request.POST[u'tag'])
         c_type = str(request.POST['c_type'])
         app_type = str(request.POST['app_type'])
@@ -465,7 +465,7 @@ def del_tag(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        obj_id = int(request.POST[u'obj'])
+        obj_id = request.POST[u'obj']
         tag = str(request.POST[u'tag'])
         c_type = str(request.POST['c_type'])
         app_type = str(request.POST['app_type'])
@@ -506,7 +506,13 @@ def spectrumvote(request):
 
         vote(request, pk, vote_str, UpDownVote, 'subjective')
 
-        results = {'FAIL': False, 'vote_str': vote_str}
+        if vote_str > 6:
+            vt = 'Consent'
+        elif vote_str == 6:
+            vt = 'Stand Aside'
+        else:
+            vt = 'Dissent'
+        results = {'FAIL': False, 'vote_str': vote_str, 'votetype': vt}
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
             return HttpResponse(simplejson.dumps(results),
                                 mimetype='application/json')
@@ -557,7 +563,8 @@ def vote(request, pk, vote, votemodel, vote_type_str):
                             initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
                             related_object=st, is_vote=True)
         # register reputation for voting
-        user_cons.register_vote(st, 'delete', old_vote=st.vote)
+        if consensus.content_object.user != request.user:
+            user_cons.register_vote(st, 'delete', old_vote=st.vote)
         consensus.register_vote(st, 'delete', old_vote=st.vote)
 
         update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])
@@ -570,21 +577,22 @@ def vote(request, pk, vote, votemodel, vote_type_str):
                 old_vote_pos = old.vote
                 old.vote = vote
                 old.save()
-                user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
+                if consensus.content_object.user != request.user:
+                    user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
                 vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
                 consensus.register_vote(old, 'change', old_vote=old_vote_pos)
 
         except:
             st, is_new = votemodel.objects.get_or_create(user=request.user, parent=consensus, vote=vote, object_pk=pk, parent_pk=consensus.parent_pk)
             st.save()
-            print st.pk
             check_badges(consensus.content_object.user, votemodel, pk)
             aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user,
                                 initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
                                 related_object=st, is_vote=True)
             # register reputation for voting
             vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
-            user_cons.register_vote(st, 'register')
+            if consensus.content_object.user != request.user:
+                user_cons.register_vote(st, 'register')
             consensus.register_vote(st, 'register')
             update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])
 

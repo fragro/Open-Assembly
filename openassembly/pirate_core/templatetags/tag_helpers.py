@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from tagging.models import Tag, TaggedItem
 from django.db.models import get_model
 from pirate_consensus.models import Consensus
-from settings import DOMAIN_NAME
+from settings import DOMAIN_NAME, DOMAIN
 
 from pirate_forum.templatetags.blobtags import get_form
 
@@ -59,11 +59,40 @@ def pp_datetime_less_than(context, nodelist, *args, **kwargs):
             namespace['past'] = False
 
         namespace['now'] = (now - time) > datetime.timedelta(seconds=1)
-
+        namespace['DOMAIN'] = DOMAIN
     output = nodelist.render(context)
     context.pop()
 
     return output
+
+
+@block
+def pp_datetime_less_than_2(context, nodelist, *args, **kwargs):
+    context.push()
+    namespace = get_namespace(context)
+
+    time1 = kwargs.get('time1', None)
+    time2 = kwargs.get('time2', None)
+
+    for i, time in (('past1', time1), ('past2', time2)):
+        if time is not None:
+            now = datetime.datetime.now()
+
+            delta = now - time
+
+            diff = 24 * 60 * 60 * delta.days + delta.seconds + delta.microseconds / 1000000.
+
+            if diff < 0:
+                namespace[i] = True
+            else:
+                namespace[i] = False
+
+    namespace['DOMAIN'] = DOMAIN
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
 
 
 @block
@@ -397,7 +426,7 @@ def pp_tag_form(context, nodelist, *args, **kwargs):
                         clean_tag = clean_html(t.replace(' ', '-'))
                         if len(str(clean_tag)) < 32:
                             Tag.objects.add_tag(obj, clean_tag)
-                            tag = TaggedItem.objects.get(tag_name=clean_tag, object_id=obj.pk)
+                            tag = TaggedItem._default_manager.get(tag_name=clean_tag, object_id=obj.pk)
                             new_tag = tag.tag
                             try:
                                 relationship_event.send(sender=new_tag, obj=new_tag, parent=obj, initiator=user)

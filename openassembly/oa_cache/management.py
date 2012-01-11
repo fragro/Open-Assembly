@@ -8,8 +8,6 @@ emptycache, is_new = ModelCache.objects.get_or_create(template="model.html", div
 
 pcache, is_new = ModelCache.objects.get_or_create(template="platform.html", div_id="#content", content_type="platform", main=True)
 
-pcache, is_new = ModelCache.objects.get_or_create(template="platform.html", div_id="#content", content_type="platform", main=True)
-
 mcache, is_new = ModelCache.objects.get_or_create(template="group.html", div_id="#content", content_type="group", main=True)
 
 tcache, is_new = ModelCache.objects.get_or_create(template="topic.html", div_id="#content", content_type="list", jquery_cmd="append")
@@ -70,7 +68,7 @@ ppargnaycache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailca
 
 ppblobcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="pp_blob_child.html", div_id="#pp_blob_child", jquery_cmd="html")
 
-emptyusersaltcache, is_new = UserSaltCache.objects.get_or_create(model_cache=listcache, template="empty.html", div_id="#sort", jquery_cmd="html", opposite=True)
+emptyusersaltcache, is_new = UserSaltCache.objects.get_or_create(model_cache=listcache.pk, template="empty.html", div_id="#sort", jquery_cmd="html", opposite=True)
 
 ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk, template="pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True, is_toggle=True, object_specific=True)
 
@@ -78,16 +76,21 @@ commentsaltcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comca
 
 ppeditcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk, template="pp_edit_form.html", div_id="#pp_edit_form", jquery_cmd="html",  is_recursive=True, is_toggle=True, object_specific=True)
 
-rangelistcache, is_new = UserSaltCache.objects.get_or_create(model_cache=listcache.pk, template="rangelist.html", div_id="#content", jquery_cmd="append")
+rangelistcache, is_new = UserSaltCache.objects.get_or_create(model_cache=listcache.pk, template="rangelist.html", div_id="#rangelist", jquery_cmd="append")
+rangelist2cache, is_new = UserSaltCache.objects.get_or_create(model_cache=tcache.pk, template="rangelist_topic.html", div_id="#rangelist", jquery_cmd="append")
 
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_blob_form.html", div_id="#pp_blob_form", jquery_cmd="html")
 
 ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_blobedit_form.html", div_id="#pp_blobedit_form", jquery_cmd="html")
 
+ppprofileformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_profile_form.html", div_id="#pp_profile_form", jquery_cmd="html")
+
 oaaddgroupcache, is_new = UserSaltCache.objects.get_or_create(model_cache=tcache.pk, template="oa_addgroup_form.html", div_id="#addgroup", jquery_cmd="html", object_specific=True)
+oaaddgroupitemcache, is_new = UserSaltCache.objects.get_or_create(model_cache=mcache.pk, template="oa_addgroup_form.html", div_id="#addgroup", jquery_cmd="html")
+
 
 sortingcache, is_new = UserSaltCache.objects.get_or_create(model_cache=tcache.pk, template="sort_group.html", div_id="#sort", jquery_cmd="html", load_last=True)
-
+sortdetailcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="detail_sort.html", div_id="#sort", jquery_cmd="html", load_last=True)
 groupnavcache, is_new = UserSaltCache.objects.get_or_create(model_cache=pcache.pk, template="group_nav.html", div_id="#sort", jquery_cmd="html", load_last=True)
 
 ppmessagescache, is_new = UserSaltCache.objects.get_or_create(model_cache=emptycache.pk, template="pp_messages.html", div_id="#pp_messages", jquery_cmd="html", opposite=True)
@@ -100,13 +103,16 @@ ppedittopiccache, is_new = UserSaltCache.objects.get_or_create(template="pp_edit
 
 ppdeleteformcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk, template="pp_delete_form.html", div_id="#pp_delete_form", jquery_cmd="html", is_recursive=True, is_toggle=True, object_specific=True)
 
+livestreamcache, is_new = UserSaltCache.objects.get_or_create(model_cache=emptycache.pk, template="livestream_small.html", div_id="#livestream_small", jquery_cmd="html", persistent=True)
+tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="temp_check.html", div_id="#temp_check", jquery_cmd="html")
+
 ###SIDE EFFECT CACHE
 
 sdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppdeleteformcache.pk, template="comment.html", div_id="#comment", jquery_cmd="html", object_specific=True)
 
 pptopicsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptopiccache.pk, template="comment.html", div_id="#comment", jquery_cmd="html")
 
-ppblobchildcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="listing.html", div_id="#children_details", jquery_cmd="prepend")
+ppblobchildcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="listing_child.html", div_id="#children_details", jquery_cmd="prepend")
 
 pptagformsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptagcache.pk, template="urlsource.html", div_id="#urlsource", jquery_cmd="html")
 

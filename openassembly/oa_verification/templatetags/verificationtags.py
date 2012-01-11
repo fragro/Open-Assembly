@@ -213,9 +213,12 @@ def oa_facilitators_form(context, nodelist, *args, **kwargs):
                 perm, newperm = Permission.objects.get_or_create(user=user, name='facilitator-permission', content_type=ctype,
                             object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
                 mg, newgr = MyGroup.objects.get_or_create(topic=new_topic, user=user)
-                namespace['done'] = form.cleaned_data['username'] + ' added'
+                if is_new:
+                    namespace['done'] = form.cleaned_data['username'] + ' added'
+                else:
+                    namespace['done'] = form.cleaned_data['username'] + ' already facilitator'
             except:
-                namespace['error'] = 'Username not Found'
+                namespace['error'] = 'Account with login name "' + str(form.cleaned_data['username']) + '" not Found'
         else:
             namespace['errors'] = form.errors
     else:
