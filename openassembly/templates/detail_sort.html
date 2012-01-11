@@ -1,0 +1,114 @@
+{% load blobtags %}
+{% load pp_url %}
+{% load consensustags %}
+{% load tag_helpers %}
+
+{% pp_consensus_get object=object.pk %}
+
+{% if pp_consensus.consensus.phase %}
+  <li class="light_gray">Phase:</li>
+
+  {% pp_datetime_less_than_2 time1=pp_consensus.consensus.phase.phase_change_dt time2=pp_consensus.consensus.phase.decision_dt%}
+
+    {% if pp_tag.past1 %}
+
+      <li class="first sortlist">
+        <b>Nomination</b>
+      </li>
+
+      <li class="sortlist">
+        Voting
+      </li>
+
+      <li class="sortlist">
+          Decision
+      </li>
+       
+     <li class="light_gray" style="margin-left:10px;">Time until Shift:</li>
+
+      <li class="last">
+
+            <script type="text/javascript"> 
+
+            $(function () {
+                $('#default_countdown').countdown({expiryUrl: "{{pp_tag.DOMAIN}}{% pp_url object=object template='detail.html' %}/_v", format:'dHM', until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}})}); 
+            });
+
+            </script> 
+
+          <li><div id="default_countdown"></div></li>
+
+
+        {% else %}
+
+        {% if pp_tag.past2 %}
+
+            <li class="first sortlist">
+              Nomination
+            </li>
+
+            <li class="sortlist">
+              <b>Voting</b>
+            </li>
+
+            <li class="sortlist">
+                Decision
+            </li>
+             
+           <li class="light_gray" style="margin-left:10px;">Time until Shift:</li>
+
+          
+           <li class="last">
+
+
+            <script type="text/javascript"> 
+            $(function () {
+                $('#default_countdown').countdown({expiryUrl: "{{pp_tag.DOMAIN}}{% pp_url object=object template='detail.html' %}/_d", format:'dHM', until: new Date({{pp_consensus.consensus.phase.decision_dt.year}}, {{pp_consensus.consensus.phase.decision_dt.month}}-1, {{pp_consensus.consensus.phase.decision_dt.day}}, {{pp_consensus.consensus.phase.decision_dt.time.hour}}, {{pp_consensus.consensus.phase.decision_dt.time.minute}}, {{pp_consensus.consensus.phase.decision_dt.time.second}})}); 
+            });
+
+            </script> 
+
+            <li><div id="default_countdown"></div></li>
+
+
+            {% else %}
+
+            <li class="first sortlist">
+              Nomination
+            </li>
+
+            <li class="sortlist">
+              Voting
+            </li>
+
+            <li class="sortlist">
+              <b>Decision</b>
+            </li>
+             
+            {% endif %}
+
+        {% endif %}
+
+        {% endpp_datetime_less_than_2 %}
+
+  </li>
+
+{% else %}
+    {% if object.parent %}
+
+      {% if not object.parent.shortname %}
+
+      <li class="light_gray">Question:</li>
+
+      <li class="last">
+          <a href="{% pp_url object=object.parent template='detail.html' %}">{{object.parent.summary}}</a>
+      </li>
+
+      {% else %}
+        <li class="light_gray">No Decision Time</li>
+
+      {% endif %}
+  {% endif %}
+{% endif %}
+
+{% endpp_consensus_get %}

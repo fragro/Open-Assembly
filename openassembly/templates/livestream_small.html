@@ -1,0 +1,26 @@
+<div id="player">
+
+{% pp_get_root object=object %} 
+    {% if pp_topic.root %}
+        {% oa_get_group_settings object=pp_topic.root %}
+
+                {% if pp_topic.settings.stream %}
+                    {% if pp_topic.settings.stream_provider = 'L' %}
+                    <iframe src="http://cdn.livestream.com/embed/{{pp_topic.settings.stream}}?layout=2&autoPlay=true&width=320&height=400" width="320" height="400" style="border:0;outline:0" frameborder=0 scrolling=no></iframe>
+                    {% endif %}
+                    {% if pp_topic.settings.stream_provider = 'U' %}
+
+                    <iframe width="320" height="300" src="http://www.ustream.tv/{{pp_topic.settings.stream}}" scrolling="no" frameborder="0" style="border: 0px none transparent;">    </iframe>
+                    {% endif %}
+                {% else %}
+                <h1>No Livestream</h1>
+                {% endif %}   
+        {% endoa_get_group_settings %}
+    {% endif %}
+{% endpp_get_root %}
+
+
+
+<span style="float:left;"><a href="javascript:;" onClick="$('#player').hide('slow');$('#player').html('');$('#non_livestream_sidebar').show('slow');" ><img src="/static/img/media.jpg">Deactivate Stream Sidebar</a></span>
+
+</div>

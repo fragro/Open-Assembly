@@ -1,0 +1,7 @@
+{% load pp_url %}
+
+<ul class="pagination">
+    {% for s,e,n in rangelist %}
+        <li><a href="{% pp_url template='topics.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+    {% endfor %}
+</ul>

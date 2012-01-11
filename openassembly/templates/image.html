@@ -1,0 +1,29 @@
+{% load pp_url %}
+{% load sourcetags %}
+
+{% block content%}
+
+<div class="email_reset">
+
+{% if object.private and object.content_object == user or not object.private %}
+
+<div style="width:20%;float:left;">
+  {% url pirate_sources.views.download_handler pk=object.pk as fallback_url %}
+  <img src="{{object.thumbnail_large.url}}"><br>
+  
+</div>
+
+  {% if object.private %}<i>Private</i>{% endif %}({{ object.file.size|filesizeformat }})<br>
+
+  <a class="button" href="{% firstof object.file|public_download_url fallback_url %}">Download</a> | 
+<a class="button" href="{{object.content_object.get_absolute_url}}">Return to {{object.content_object}}</a>
+
+</div>
+
+{% else %}
+
+<h2>Private Image</h2>
+
+{% endif %}
+
+{% endblock %}
