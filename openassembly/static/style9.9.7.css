@@ -115,7 +115,7 @@ small {
 #sort .last:hover {
     border-right:1px #5a6470 solid;
 }
-#sort a {
+#sort a, #sort .sortlist{
     padding:10px 20px;
     display:block;
     line-height:20px;
@@ -226,8 +226,8 @@ small {
     -moz-transition: all .1s ease-in-out;
     -o-transition: all .1s ease-in-out;
     margin-bottom:15px;
-    margin-left:55px;
-    margin-right:45px;
+    margin-left:5px;
+    margin-right:5px;
 }
 .btn_new_issue img {
     margin-right:5px;
@@ -453,6 +453,9 @@ small {
 .listing .summary {
     overflow:hidden;
 }
+.listing .summary img {
+    float:right;
+}
 .listing .summary a b, .listing .summary b a, .listing .summary a {
     text-decoration:none;
     font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
@@ -478,7 +481,11 @@ small {
 .listing .meta {
     font-size:11px;
 }
-.listing img {
+.listing .img {
+    float:right;
+    margin-left:10px;
+}
+.listing .right {
     float:right;
     margin-left:10px;
 }
@@ -523,6 +530,7 @@ small {
     float:left;
     font-size:11px;
     overflow:hidden;
+    display:block;
 }
 .listing .tags li {
     list-style:none;
@@ -537,6 +545,8 @@ small {
     color:#75828C;
 }
 .tags {
+    padding:0px;
+    margin:0px;
     width:100%;
 }
 .listing .info {
@@ -1201,6 +1211,10 @@ select {
     display:block;
 }
 
+.side_img {
+    display:block;
+}
+
 .platformcount {
     float:right;
 }
@@ -1216,9 +1230,9 @@ select {
 #id_ctype_sort { float:left; margin:5px 0 0 10px; } 
 
 #sort .chzn-container .chzn-results li {
-border:0;
-padding:10px;
-background:#f5f5f5;
+    border:0;
+    padding:10px;
+    background:#f5f5f5;
 }
 
 #sort .chzn-container .chzn-drop {
@@ -1368,13 +1382,12 @@ background:#f5f5f5;
     width:469px;
 }
 #group .group_info {
-    margin-top:25px;
     overflow:hidden;
-    float:right;
+    float:left;
     width:30%;
 }
 #group .image {
-    margin-left:40px;
+    float:left;
 }
 #group .platform {
     clear:right;
@@ -1390,11 +1403,23 @@ h2 {
 }
 
 /* OCT 20 2011 */
-
+#ui-datepicker-div {
+    border-style:solid;
+    border-width:2px;
+}
 .ui-datepicker, .ui-datepicker-calendar {
     padding:5px;
     background:white;
     background:solid;
+}
+.ui-datepicker a, .ui-datepicker-calendar a {
+    text-decoration:none;
+    padding:1px;
+    font-size:110%;
+    font-weight:bold;
+}
+.ui-datepicker-next {
+    float:right;
 }
 
 .group_user a {
@@ -1501,6 +1526,7 @@ h2.active {background-position: left bottom;}
     list-style:none;
     font-size:110%;
     color:black;
+    display:block;
 }
 
 .solutions li a{
@@ -1530,12 +1556,22 @@ h2.active {background-position: left bottom;}
 
 /* DEC 5 2011 */
 
-.countdown {
-    margin-left:70px;
+#default_countdown {
+    background:#4d5967;
+    border:0;
 }
 
+.countdown {
+    background:#4d5967;
+}
+.countdown_section {
+    height:25px;
+    background:#4d5967;
+    color:white;
+
+}
 #default_countdown, #countdown_container {
-    width:200px;
+    width:100px;
     display:block;
 }
 
@@ -1563,4 +1599,28 @@ h2.active {background-position: left bottom;}
 }
 #pp_blob_form b {
     font-size:120%;
+}
+#info {
+    margin-left:32px;
+    padding:10px;
+    font-size:110%;
+    overflow:hidden;
+    clear: both;
+}
+
+.group_left_box{
+    float: left;
+    padding: 10px;
+    width: 350px;
+}
+
+.group_right_box{
+    float: right;
+    padding: 10px;
+    width: 250px;
+}
+.decision_report {
+    line-height:50px;
+    width:92%;
+    float:right;
 }

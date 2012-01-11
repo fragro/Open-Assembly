@@ -2,9 +2,11 @@
 
  {% oa_facilitators_form POST=request.POST object=object %}
     <form id="oa_facilitators_form" method="post" action="">
-                <i>Add a Facilitator for this Group. Facilitator privileges cannot currently be removed so be cautious</i>
-                {{ oa_ver.form.as_p }}
-
+                {{ oa_ver.form.form_id }}
+                <b>Account Name:</b><br>{{ oa_ver.form.username }}
+                <p>
+                <i>Add a Facilitator for this Group. Facilitator privileges cannot currently be removed so be cautious. In the future facilitator recall and more sophisticated ways to ensure trust will be provided.</i>
+                </p>
                 {{csrf_string|safe}}
             {% if user.is_authenticated and user.is_active %}                                                            
             <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_oa_facilitators_form">
@@ -13,6 +15,7 @@
                     {{err}}<br>
                 {% endfor %}
                 <span style="color:red;">{{oa_ver.error}}</span>
+                <span style="color:black;">{{oa_ver.done}}</span>
             </span>
     </form>
             {% else %} 

@@ -6,11 +6,6 @@
 
     {% pp_topic_form POST=request.POST user=user topic=object %}
 
-            {% if pp_topic.complete %}
-
-                Topic submitted, redirecting!
-
-            {% else %}
                 <form id="pp_edittopic_form" method="post" action="">
                     <div id="errors" class="errors">{{ pp_topic.errors }}</div>
                             {{ pp_topic.form.form_id}}
@@ -28,18 +23,21 @@
                         {% else %} 
                             <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
+
+                        {% if pp_topic.complete %}
+
+                            Changes Submitted ({% now "jS F Y H:i:s" %})
+                        
+                        {% endif %}
                 <script>
 
                   $("form#pp_edittopic_form").submit(function(e){
-                        $("#submit_pp_edittopic_form").html("<b>Submitting...</b>")
                         addObject(e);
-                        $("#submit_pp_edittopic_form").html("<b>Complete!</b>")
+                        $("#submit_pp_edittopic_form").html("<b>Submitting...</b>")
 
                     });
 
                 </script>
-
-            {% endif %}
 
                 <span id="content_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
     {% endpp_topic_form %}

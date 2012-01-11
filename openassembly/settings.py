@@ -19,6 +19,9 @@ try:
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
+    DOMAIN_NAME = 'http://openassemblyrev43-fragro.dotcloud.com/'
+    DOMAIN = 'http://openassemblyrev43-fragro.dotcloud.com'
+
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
 
@@ -50,6 +53,9 @@ try:
     BROKER_VHOST = '/'
 except:
 
+    DOMAIN_NAME = 'http://localhost:8000'
+    DOMAIN = 'http://localhost:8000'
+
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
 
@@ -65,6 +71,12 @@ except:
     STATIC_ROOT = 'static_dev_serve/static/'
     MEDIA_ROOT = 'static_dev_serve/media/'
     MEDIA_URL = '/media/'
+
+    BROKER_HOST = "localhost"
+    BROKER_PORT = 5672
+    BROKER_USER = "guest"
+    BROKER_PASSWORD = "guest"
+    BROKER_VHOST = "/"
 
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)

@@ -3,8 +3,6 @@
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
 
-            <div id="moderator_controls" style="display:none; overflow:hidden; height:900px;width:100%;">
             {% include 'moderator.html' %}
-            </div>
         {% endif %}
     {% endcani %}		
