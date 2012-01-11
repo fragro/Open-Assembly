@@ -9,6 +9,8 @@ from pirate_profile.models import Profile
 from pirate_core.helpers import clean_html
 from pirate_sources.models import IMGSource
 
+import pytz
+
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
 
 from customtags.decorators import block_decorator
@@ -27,7 +29,7 @@ def pp_get_user_profile(context, nodelist, *args, **kwargs):
        Do stuff with {{ pp_profile.user }} and {{ pp_profile.profile }}.
     {% endpp_get_user_profile %}
     '''
-    
+
     context.push()
     namespace = get_namespace(context)
 
@@ -51,6 +53,7 @@ def pp_get_user_profile(context, nodelist, *args, **kwargs):
     context.pop()
     return output
 
+
 @block
 def pp_avatar_thumbnail(context, nodelist, *args, **kwargs):
     '''
@@ -70,7 +73,7 @@ def pp_avatar_thumbnail(context, nodelist, *args, **kwargs):
     except:
         img = '/static/img/avatar_20x18.jpg'
 
-    namespace['avatar_url'] = img.url + '=s20-c'
+    namespace['avatar_url'] = img.url
     output = nodelist.render(context)
     context.pop()
 
@@ -87,38 +90,40 @@ def pp_profile_form(context, nodelist, *args, **kwargs):
        Do stuff with {{ pp_profile.form }}.
     {% endpp_profile_form %}
     '''
-    
+
     context.push()
     namespace = get_namespace(context)
 
-    user = kwargs.get('user',None)
-    profile = kwargs.get('profile',None)
-    POST = kwargs.get('POST',None)
+    user = kwargs.get('user', None)
+    profile = kwargs.get('profile', None)
+    POST = kwargs.get('POST', None)
 
     if POST and POST.get("form_id") == "pp_profile_form":
         if user.is_authenticated:
-            if profile is not None and isinstance(profile, Profile): form = ProfileForm(POST, instance=profile)
-            else: form = ProfileForm(POST)       
+            if profile is not None and isinstance(profile, Profile):
+                form = ProfileForm(POST, instance=profile)
+            else:
+                form = ProfileForm(POST)
             #new_arg = form.save(commit=False)
             if form.is_valid():
-                new_profile=form.save(commit=False)
+                new_profile = form.save(commit=False)
                 new_profile.user = user
-                new_profile.bio = clean_html(new_profile.bio)
+                new_profile.about_me = clean_html(new_profile.about_me)
                 new_profile.save()
-                raise HttpRedirectException(HttpResponseRedirect(new_profile.get_absolute_url()))
+                namespace['complete'] = True
             else:
                 namespace['errors'] = form.errors
-        else: 
-            raise HttpRedirectException(HttpResponseRedirect('/register.html'))
     else:
-        if profile is not None and isinstance(profile, Profile): form = ProfileForm(instance=profile)
-        else: form = ProfileForm()
+        if profile is not None and isinstance(profile, Profile):
+            form = ProfileForm(instance=profile)
+        else:
+            form = ProfileForm()
 
     namespace['form'] = form
     output = nodelist.render(context)
     context.pop()
 
-    return output    
+    return output
 
 
 @block
@@ -164,5 +169,6 @@ class ProfileForm(forms.ModelForm):
         exclude = ('user','submit_date')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_profile_form")
-    birth_date = forms.DateField(widget=forms.DateInput,required=False)
-    bio = forms.CharField(widget=forms.Textarea, label="Who are you?",required=False)
+    about_me = forms.CharField(widget=forms.Textarea, label="Who are you?", required=False)
+    timezone = forms.ChoiceField(label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
+

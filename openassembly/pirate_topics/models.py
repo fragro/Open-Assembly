@@ -64,7 +64,8 @@ class MyGroup(models.Model):
 
 class GroupSettings(models.Model):
     topic = models.ForeignKey(Topic, blank=True, null=True)
-    livestream = models.CharField(max_length=30, blank=True, null=True, help_text="Link to livestream to embed livestream into navigation.")
+    stream = models.CharField(max_length=30, blank=True, null=True, help_text="Account name to Embed stream into navigation.")
+    stream_provider = models.CharField(max_length=30, blank=True, null=True, help_text="Provider of streaming service.")
     open_group = models.BooleanField(default=True, help_text="If the group is open anyone can join, if it's closed they must be invited")
     percent_reporting = models.FloatField(default=.7, help_text="Percentage of members required to vote for pushing a set of solutions/answers to a ranked vote. Value represents a percentage for instance .7 is 70% of Members voting")
     consensus_percentage = models.FloatField(default=.8, help_text="For policies or proposals, what percentage of votes constitutes consensus when no blocks are present?")

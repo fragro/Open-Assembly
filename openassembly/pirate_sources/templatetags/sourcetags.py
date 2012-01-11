@@ -7,7 +7,7 @@ from pirate_core.views import HttpRedirectException, namespace_get
 from django.template import Library
 from django.core.urlresolvers import reverse
 import re
-
+from django.core.cache import cache
 from py_etherpad import EtherpadLiteClient
 
 from filetransfers.api import prepare_upload
@@ -19,6 +19,41 @@ register = template.Library()
 block = block_decorator(register)
 
 get_namespace = namespace_get('pp_source')
+
+
+@block
+def pp_set_livestreamcache(context, nodelist, *args, **kwargs):
+    """
+    Retrieves the current image for this object id.
+    """
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+    obj = kwargs.get('object', None)
+
+    cache.set(str(user.pk) + '-livestream', obj.pk)
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
+def pp_check_livestreamcache(context, nodelist, *args, **kwargs):
+    """
+    Retrieves the current image for this object id.
+    """
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+
+    namespace['livestream'] = cache.get(str(user.pk) + '-livestream')
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
 
 
 @block
@@ -48,7 +83,7 @@ def pp_get_pad(context, nodelist, *args, **kwargs):
     return output
 
 
-@block 
+@block
 def pp_current_image(context, nodelist, *args, **kwargs):
     """
     Retrieves the current image for this object id.
@@ -58,7 +93,7 @@ def pp_current_image(context, nodelist, *args, **kwargs):
 
     obj = kwargs.get('object',None)
 
-    if obj_pk is not None: 
+    if obj is not None: 
         imgsource = IMGSource.objects.get(object_pk=obj.pk, current=True)
         namespace['current_img'] = imgsource
     

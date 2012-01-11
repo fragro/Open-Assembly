@@ -49,18 +49,27 @@ def pp_get_root(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
     root = kwargs.pop('object', None)
-    try:
-        if root is not None:
+    #try:
+    if root is not None:
+        try:
             parent = root.parent
-            while parent is not None:
-                if parent.summary == '__NULL__':
-                    break
-                root = parent
-                parent = parent.parent
+        except:
+            try:
+                parent = root.content_object
+            except:
+                namespace['root'] = None
+                output = nodelist.render(context)
+                context.pop()
+                return output
+        while parent is not None:
+            if parent.summary == '__NULL__':
+                break
+            root = parent
+            parent = parent.parent
 
-        namespace['root'] = root
-    except:
-        namespace['root'] = None
+    namespace['root'] = root
+    #except:
+    #    namespace['root'] = None
     output = nodelist.render(context)
     context.pop()
 
@@ -373,9 +382,9 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
                 perm = Permission(user=user, name='facilitator-permission', content_type=ctype,
                             object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
                 perm.save()
-                mg = MyGroup(topic=new_topic, user=user)
+                mg, is_new = MyGroup.objects.get_or_create(topic=new_topic, user=user)
                 new_topic.group_members = 1
-                mg.save()
+                new_topic.save()
         else:
             namespace['errors'] = form.errors
     else:
@@ -407,6 +416,7 @@ def pp_setting_form(context, nodelist, *args, **kwargs):
     if POST and POST.get("form_id") == "oa_group_settings_form":
         form = SettingsForm(POST) if setting is None else SettingsForm(POST, instance=setting)
         form.save()
+        namespace['complete'] = True
     else:
         form = SettingsForm() if setting is None else SettingsForm(instance=setting)
 
@@ -429,6 +439,12 @@ class InviteForm(forms.ModelForm):
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="oa_group_settings_form")
 
+streamproviderchoices = (
+    ('N', 'None'),
+    ('U', 'UStream'),
+    ('L', 'Livestream'),
+)
+
 
 class SettingsForm(forms.ModelForm):
 
@@ -441,6 +457,7 @@ class SettingsForm(forms.ModelForm):
         exclude = ('topic')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="oa_group_settings_form")
+    stream_provider = forms.ChoiceField(choices=streamproviderchoices)
 
 
 class TopicForm(forms.ModelForm):

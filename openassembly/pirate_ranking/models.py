@@ -203,51 +203,52 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
 #the issue ranked score, for each dimension    
 def vote_created_callback(sender, **kwargs):
     #udpate hot
-    try:
-        cons = kwargs.pop('parent', None)
-        vt = kwargs.pop('vote_type', None)
-        pis = cons.content_object
-        #parent of the consensus object
-        #For the HOT dimension
-        ##
+    cons = kwargs.pop('parent', None)
+    pis = cons.content_object
+    #parent of the consensus object
+    #For the HOT dimension
+    ##
 #TODO: Only should rerank when a unique user creates a vote. If a user
-        ### has created a vote before it should not be counted toward the reranking.
-        ### This closes a process that allows users to maliciously inflate hot ranking
+    ### has created a vote before it should not be counted toward the reranking.
+    ### This closes a process that allows users to maliciously inflate hot ranking
 
-        spectrum = cons.spectrum.get_list()
-
-        try:
-            rating = cons.rating.get_list()
-        except:
-            #add rating to consensus if first rating
-            rt = Rating()
-            cons.rating = rt
-            rt.save()
-            cons.save()
-            rating = cons.rating.get_list()
-        dt = cons.submit_date
-        timeDiff = (dt - datetime.datetime(2010, 7, 5, 20, 16, 19, 539498)).seconds
-        timeNormFactor = (dt - datetime.datetime.now()).seconds
-
-        dt = timeDiff / float(timeNormFactor)
-
-        sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)))]
-
-        ###I don't know why, but this fails if it's where it should be up above...
-        from pirate_ranking.models import Ranking
-        for scores in sols:
-            for dim, sc in scores:
-                try:
-                    obj = Ranking.objects.get(object_pk=pis.id, dimension=dim)
-                    obj.score = sc
-                    obj.save()
-                except:
-                    contype = ContentType.objects.get_for_model(pis)
-                    newrank = Ranking(content_object=pis, dimension=dim, score=sc,
-                                consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
-                    newrank.save()
+    #if cons.spectrum is None:
+        #add rating to consensus if first rating
+    #rt = Spectrum()
+    #cons.spectrum = rt
+    #rt.save()
+    #cons.save()
+    spectrum = cons.spectrum.get_list()
+    try:
+        rating = cons.rating.get_list()
     except:
-        raise
+        #add rating to consensus if first rating
+        rt = Rating()
+        cons.rating = rt
+        rt.save()
+        cons.save()
+        rating = cons.rating.get_list()
+    dt = cons.submit_date
+    timeDiff = (dt - datetime.datetime(2010, 7, 5, 20, 16, 19, 539498)).seconds
+    timeNormFactor = (dt - datetime.datetime.now()).seconds
+
+    dt = timeDiff / float(timeNormFactor)
+
+    sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)))]
+
+    ###I don't know why, but this fails if it's where it should be up above...
+    from pirate_ranking.models import Ranking
+    for scores in sols:
+        for dim, sc in scores:
+            try:
+                obj = Ranking.objects.get(object_pk=pis.id, dimension=dim)
+                obj.score = sc
+                obj.save()
+            except:
+                contype = ContentType.objects.get_for_model(pis)
+                newrank = Ranking(content_object=pis, dimension=dim, score=sc,
+                            consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
+                newrank.save()
 
 
 vote_created.connect(vote_created_callback)
