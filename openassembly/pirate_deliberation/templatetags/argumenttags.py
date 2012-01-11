@@ -141,6 +141,7 @@ def pp_argument_form(context, nodelist, *args, **kwargs):
                                                            object_pk=new_arg.pk, parent_pk=new_arg.parent_pk)
 
             if is_new:
+                cons.intiate_vote_distributions()
                 #if this is a new issue/consensus, send signal for reputation
                 aso_rep_event.send(sender=new_arg, event_score=4, user=new_arg.user, initiator=new_arg.user, dimension=ReputationDimension.objects.get('Argument'), related_object=new_arg)
                 notification_send.send(sender=new_arg.user, obj=new_arg, reply_to=parent)

@@ -9,10 +9,11 @@ from pirate_social.models import Location
 
 class Profile(models.Model):
     avatar = models.ForeignKey(IMGSource, blank=True, null=True)
-    bio = models.TextField(max_length=1000, default="", blank=True)
+    about_me = models.TextField(max_length=1000, default="", blank=True)
     birth_date = models.DateTimeField('birth_date', blank=True, null=True)
     user = models.ForeignKey(User)
     receive_emails = models.BooleanField(default=True)
+    timezone = models.CharField(max_length=50)
 
     def __unicode__(self):
         return self.user.username
