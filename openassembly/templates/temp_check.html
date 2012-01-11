@@ -1,6 +1,11 @@
 <!--Requires a consensus object -->
- 
+{% load consensustags %}
+
+{% pp_consensus_get object=object.pk %}
+
           {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
+             {{pp_consensus.consensus.chart_data }}
+
                {% if pp_consensus.chart %}
                   <script>
                   var chart1; // globally available
@@ -42,7 +47,6 @@
 
                               {% if pp_consensus.mean_information %}
                                     <b>{{pp_consensus.mean_information|floatformat:"1"}}</b>
-                                    <img src="/static/images/star_on_small.gif">
                                  {% else %} <b>----</b>
                               {% endif %}
 
@@ -50,3 +54,5 @@
                       </div>
                   {% endif %}
           {% endpp_consensus_chart %}
+
+{% endpp_consensus_get %}

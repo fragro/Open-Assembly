@@ -23,17 +23,41 @@
                 <form id='pp_blob_form' method="post" action="">
                 <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
                 
-                        {% for field in pp_blob.form %}
+                    {% for field in pp_blob.form %}
                         {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
 
                         {% else %}
-                        <p>
-                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
-                            {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
 
-                        </p>
+                                {% if field.html_name == 'timezone' %}
+                                    
+                                    <b>Time Zone:</b>
+                                    <select name="timezone" id="id_timezone">
+                                    <option value="" ></option>
+
+                                        {% for timezone in pp_blob.timezones %}
+                                            {% pp_get_user_profile user=user %}
+                                                {% if pp_profile.profile %}
+                                                    <option {% if pp_profile.profile.timezone == timezone %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
+                                                {% else %}
+                                                    <option {% if timezone == 'US/Eastern' %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
+                                                {% endif %}
+                                            {% endpp_get_user_profile %}
+                                        {% endfor %}
+                                        </select>
+                                    <br>
+                                {% else %}
+
+
+                                <p>
+                                    <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
+                                    {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
+                                </p>
+
+                                {% endif %}
+
+                            
                         {% endif %}
-                        {% endfor %}
+                    {% endfor %}
 
 
                     {% csrf_token %}
@@ -53,6 +77,10 @@
                 </script>
 
         {% endif %}
+
+        
+            <span id="content_side_effect" style="display:none;">["{{pp_blob.object_pk}}", "{{pp_blob.content_type}}"]</span>
+
 
 
     {% endpp_blob_form %}

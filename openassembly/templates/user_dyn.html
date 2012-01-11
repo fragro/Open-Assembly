@@ -97,13 +97,13 @@
                                     </tr>
                                     <tr>
                                         {% pp_subscriber_count user=object %}                
-                                        <td class="left"><b>Followers:</b></td>
+                                        <td class="left"><b>Trust You:</b></td>
                                         <td>{{pp_subscription.count}}</td>
                                         {% endpp_subscriber_count %}
                                     </tr>
                                     <tr>
                                         {% pp_subscribee_count user=object %}                
-                                        <td class="left"><b>Following:</b></td>
+                                        <td class="left"><b>You Trust:</b></td>
                                         <td>{{pp_subscription.count}}</td>
                                         {% endpp_subscribee_count %}                
                                     </tr>
@@ -144,6 +144,24 @@
                         {% endcomment %}
                     <!-- end .profile_overview -->
                     </div>
+
+                                <!--SHOW PROFILE INFORMATION, GIVE ACCESS TO PROFILE CHANGE FORM -->
+                    
+                    <div class="profile_overview">
+                        {% pp_get_user_profile user=object %}
+
+                                <b>About Me:</b>
+                                <p>
+                                {{pp_profile.profile.about_me}}
+                                </p>
+                        {% endpp_get_user_profile %}
+                    </div>
+                    {% if user == object %}
+                        <div class="profile_overview">
+                            <a class="button" href="{% pp_url template='pp_profile_form.html' object=object %}">Edit Profile</a>
+                        </div>
+                    {% endif %}
+
                     {% if user != object %} 
 
                     <!--Interactions between users -->
@@ -156,9 +174,9 @@
 
                          {% pp_has_subscription subscriber=user subscribee=object %}
                                 {% if not pp_subscription.has_subscription %}
-                                    <a class="button" href="{% url ajaxapi.views.add_support object.id %}">Follow</a> 
+                                    <a class="button" href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
                                 {% else %}
-                                    <a class="button" href="{% url ajaxapi.views.remove_support object.id %}">Stop Following</a>
+                                    <a class="button" href="{% url ajaxapi.views.remove_support object.id %}">Stop Trusting</a>
                                 {% endif %}
                         {% endpp_has_subscription %}
 
@@ -361,7 +379,7 @@
                                     <tbody>
                                         {% pp_get_subscribers_for_user user=object start=start end=end %}
                                         <tr>
-                                            <td class="left" colspan="2"><b>{{pp_subscription.count}} Followers</b></td>
+                                            <td class="left" colspan="2"><b>{{pp_subscription.count}} Trust You</b></td>
                                         </tr>
                                            
                                             {% for i in pp_subscription.subscribers %}
@@ -385,7 +403,7 @@
                                     {% pp_get_subscribees_for_user user=object start=start end=end %}
 
                                         <tr>
-                                            <td class="left" colspan="2"><b>Following {{pp_subscription.count}}</b></td>
+                                            <td class="left" colspan="2"><b>You Trust {{pp_subscription.count}}</b></td>
                                         </tr>
 
                                             {% for i in pp_subscription.subscribees %}

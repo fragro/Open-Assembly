@@ -84,6 +84,17 @@
             <li class="sortlist">
               <b>Decision</b>
             </li>
+            <li>                
+            {% pp_get_ranked_decision object=pp_consensus.consensus %}
+
+              {% if pp_consensus.ranked_decision %}
+                Passed
+              {% else %}
+                Failed
+              {% endif %}
+            {% endpp_get_ranked_decision %}
+            </li>
+
              
             {% endif %}
 

@@ -14,7 +14,10 @@
 
         {% if user == object or object.user == user or pp_permissions.permission %}
 
-        <h2>Upload</h2>
+        <h2>Upload Images</h2>
+        <div style="display:block;">
+        <a class="button" href="{{object.get_absolute_url}}">Back to {{object}}</a>
+        </div>
         <p>
         <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
           {% csrf_token %}
@@ -45,9 +48,9 @@
           {% endfor %}
 
         </p>
+      </div>
 
-    </div></div>
-
+    </div>
     {% else %}
 
       {% include 'malicious_behavior.html' %}

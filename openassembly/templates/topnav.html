@@ -1,5 +1,8 @@
- {#<li class="first"><a href="/index.html#myplatform">Platform</a></li>#}
+{% load topictags %}
 
+	{% if user.is_staff %}
+ 		<li class="first"><a href="/200.html">Cache</a></li>
+ 	{% endif %}
 		{% if object %}
 		    {% pp_get_root object=object %} 
 		    	{% if pp_topic.root %}
@@ -7,7 +10,7 @@
 					    <li><a  href="{% pp_url template='issues.html' object=pp_topic.root start=0 end=20 dimension='hn' %}">Forum</a></li>
 
 				        {% oa_get_group_settings object=object %}
-				        	{% if pp_topic.settings.livestream %}
+				        	{% if pp_topic.settings.stream %}
 										<li><a href="{% pp_url template='livestream.html' object=object %}">Stream</a></li>
 				            {% endif %}
 				        {% endoa_get_group_settings %}

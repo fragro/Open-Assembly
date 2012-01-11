@@ -27,7 +27,7 @@
 
         {% pp_get_sources object=object.content_object type='img' %}
             {% if pp_source.cur_img %}
-                <img src="{{pp_source.cur_img.url}}" alt="{{object.content_object.summary}}">
+                <img src="{{pp_source.cur_img.thumbnail_large.url}}" alt="{{object.content_object.summary}}">
             {% endif %}
         {% endpp_get_sources %}
 
@@ -51,16 +51,6 @@
             {{pp_argumentation.count}} Argument{{pp_argumentation.count|pluralize}}
         {% endpp_get_argument_count %}
         </div>
-        {% pp_get_tags_for_object object=object %}
-            {% if pp_tag.tags|length > 0 %}
-                <ul class="tags">
-                      <li><b>Tags:</b></li>
-                        {% for tag in pp_tag.tags %}
-                            <li><a href="{% pp_url template='issues.html' object=tag start=0 end=20 dimension='hn' %}">{{tag.name}}</a></li>
-                        {% endfor %}
-                       </ul>
-            {% endif %}
-       {% endpp_get_tags_for_object %}
         <ul class="solutions">
 
             {% pp_get_questions object=object.content_object dimension="h" start=0 end=5 phase="Nomination" %}
@@ -82,7 +72,33 @@
                     {% endif %}
                 {% endif %}
            {% endpp_get_questions %}
+
         </ul>
+
+        <ul class="tags" style="line-height:32px;">
+        <li><b>Type: </b>
+        {% if not object.phase %}
+        <li>Temperature Check</li><li><img src="/static/img/tempcheck.jpg"></li>
+        {% else %}
+            {% if object.phase.curphase.phasename == 'Nomination' %}
+                <li>{{object.phase}}</li><li><img src="/static/img/clock_incomplete.jpg"></li>
+            {% endif %}
+            {% if object.phase.curphase.phasename == 'Decision' %}
+                <li>{{object.phase}}</li><li><img src="/static/img/clock_complete.jpg"></li>
+            {% endif %}
+        {% endif %}
+        {% pp_get_tags_for_object object=object %}
+            {% if pp_tag.tags|length > 0 %}
+                <ul class="tags">
+                      <li><b>Tags:</b></li>
+                        {% for tag in pp_tag.tags %}
+                            <li><a href="{% pp_url template='issues.html' object=tag start=0 end=20 dimension='hn' %}">{{tag.name}}</a></li>
+                        {% endfor %}
+                       </ul>
+            {% endif %}
+       {% endpp_get_tags_for_object %}
+
+        </div>
     </div>
 </div>
 {% endif %}

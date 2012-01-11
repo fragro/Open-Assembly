@@ -5,7 +5,7 @@ django-mongodb-engine==0.4.0
 hg+http://bitbucket.org/wkornewald/django-nonrel#egg=Django
 hg+http://bitbucket.org/wkornewald/djangotoolbox#egg=djangotoolbox
 hg+http://bitbucket.org/fragro/django-customtags-lib#egg=customtags
-hg+http://bitbucket.org/legutierr/django-tagging-multidb#egg=tagging
+hg+http://bitbucket.org/fragro/django-tagging-multidb#egg=tagging
 hg+http://bitbucket.org/offline/django-annoying#egg=annoying
 hg+http://bitbucket.org/fragro/python-markdown#egg=markdown
 hg+http://bitbucket.org/twanschik/django-autoload#egg=autoload
@@ -22,3 +22,5 @@ hg+http://bitbucket.org/nator/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
 django-celery
 setproctitle
+pytz
+git+https://github.com/bradbeattie/python-vote-core.git#egg=pyvotecore

@@ -10,7 +10,6 @@
 </script>
 
 {% pp_consensus_get object=object.pk user=user %}
-
   <div class="addtags">
   {% pp_tag_form POST=request.POST path=request.path object=pp_consensus.consensus user=user %}
       <div class="inner"><b>Add Tags</b></div>

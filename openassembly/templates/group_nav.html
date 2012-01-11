@@ -13,6 +13,6 @@
 
 <li><a href="{% pp_url template='topics.html' object=object start=0 end=20 dimension='c' %}">Working Groups</a></li>
 {% if object.more_info %}<li><a href="{{object.more_info}}">Website</a></li>{% endif %}
-{% endcomment %}
 
 {% cani object=object user=user %}{% if pp_permissions.permission %}<li class="last"><a onmousedown="toggleSlide('moderator_controls');" href="javascript:;"><i>Facilitator +</i></a></li>{% endif %}{% endcani %}
+{% endcomment %}

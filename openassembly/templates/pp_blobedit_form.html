@@ -21,7 +21,7 @@
                     {% endif %}
                 
                         {% for field in pp_blob.form %}
-                        {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id'%}
+                        {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id' or field.html_name == 'decision_time' or field.html_name == 'end_of_nomination_phase' or field.html_name == 'long_term' or field.html_name == 'timezone' %}
 
                         {% else %}
                         <p>

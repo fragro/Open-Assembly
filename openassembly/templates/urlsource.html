@@ -1,5 +1,6 @@
 {% load consensustags %}
 {% load sourcetags %}
+{% load tag_helpers %}
 
 {% pp_consensus_get object=object.pk %}
 
@@ -26,7 +27,7 @@
             <div class="imagetitle">Images:</div>
             <ul class="images" id="images">
                    {% for img in pp_source.sources %}
-                        <li><a href="{{img.url}}" target="_blank"><img src="{{img.url}}"></a></li>
+                        <li><a href="{% pp_url template='image.html' object=img %}"><img src="{{img.thumbnail.url}}"></a></li>
                    {% endfor %}
             </ul>
         {% endif %}

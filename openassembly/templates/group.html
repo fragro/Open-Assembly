@@ -4,7 +4,7 @@
 
     <div id="group">
 
-    {% include 'facilitator.html' %}
+   {# {% include 'facilitator.html' %} #}
 
     <h1>{{object.summary}}</h1>
     <span class="image">
@@ -31,50 +31,72 @@
     </a>
     </span>
     <ul class="group_info">
-        <li> <h2>{{object.group_members}} Members</h2></li>
+        <li> <h3>{{object.group_members}} Member{{object.group_members|pluralize}}</h3></li>
         {% oa_get_group_settings object=object %}
-            <li> <h2>{% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group</h2></li>
-            <li> <h2>{{ pp_topic.settings.percent_reporting|percent}} Reporting</h2></li>
-            <li> <h2>{{ pp_topic.settings.consensus_percentage|percent}} Consensus</h2></li>
+            <li> <h3>{% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group</h3></li>
+            <li> <h3>{{ pp_topic.settings.percent_reporting|percent}} Reporting</h3></li>
+            <li> <h3>{{ pp_topic.settings.consensus_percentage|percent}} Consensus</h3></li>
         {% endoa_get_group_settings %}
-        <li><span id="addgroup"></span></li>
      </ul>
     <ul class="group_info">
-        <li> <h2>{{object.children}} Issues</h2></li>
-        <li> <h2>{{object.solutions}} Nominations</h2></li>
-        <li> <h2>{{object.decisions}} Decisions</h2></li>
+        <li> <h3>{{object.children}} Issues</h3></li>
+        <li> <h3>{{object.solutions}} Nominations</h3></li>
+        <li> <h3>{{object.decisions}} Decisions</h3></li>
+        <li><span id="addgroup"><h3>{% include 'oa_addgroup_form.html' %}</h3></span></li>
+
      </ul>
-        
+
         <div id="container">
+                
+                <div id="info">
+                <h2>Mission</h2>
+                <p>{{object.description}}</p>
+                </div>
 
-            
-            <div class="platforms">
+            {% comment %}
 
-            <div id="info">
-            <h2>Mission</h2>
-            {{object.description}}
-            </div>
-
-                 <div id="questions">
-
+                     <div id="questions">
                 {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Question" %}
-
+                <h2>{{pp_blob.count}} Active Questions</h2>
                     <div id="children_details" class="children_details">
                         {% if pp_blob.count > 0 %}
-                            <h2>Newest {{pp_blob.count}}</h2>
                             {% for object in pp_blob.blob_list %}
                                 {% include 'listing.html' %}
                             {% endfor %}
                         {% endif %}
-
                    </div>
                 {% endpp_get_questions %}
+                </div>
+                <hr>
+                {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Nomination" %}
+                <h2>{{pp_blob.count}} with Voting In Progress</h2>
+                    <div id="children_details" class="children_details">
+                        {% if pp_blob.count > 0 %}
+                            {% for object in pp_blob.blob_list %}
+                                {% include 'listing.html' %}
+                            {% endfor %}
+                        {% endif %}
+                   </div>
+                {% endpp_get_questions %}
+                </div>
+                <hr>
+                {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Decision" %}
+                <h2>{{pp_blob.count}} Decisions Made</h2>
+                    <div id="children_details" class="children_details">
+                        {% if pp_blob.count > 0 %}
+                            {% for object in pp_blob.blob_list %}
+                                {% include 'listing.html' %}
+                            {% endfor %}
+                        {% endif %}
+                   </div>
+                {% endpp_get_questions %}
+                </div>
+            {% endcomment %}
 
-            </div>
                 <div class="platform">
                     {% oa_mygroup_users object=object %}
 
-                        <h2>{{pp_topic.count}} Members</h2>
+                        <h2>{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</h2>
                         <p>
                             {% for mygroup in pp_topic.groups %}
                                 {% include 'group_user.html' %}
@@ -85,7 +107,7 @@
                 <div class="platform">
                     {% has_permissions object=object name='facilitator-permission' %}
 
-                        <h2>{{pp_permissions.count}} Facilitators</h2>
+                        <h2>{{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}</h2>
                         <p>
                             {% for mygroup in pp_permissions.permissions %}
                                 {% include 'group_user.html' %}
@@ -93,9 +115,7 @@
                         </p>
                     {% endhas_permissions %}       
                 </div>
-
-            </div>
-            
+        
         </div>
         
     </div>

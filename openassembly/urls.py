@@ -11,8 +11,9 @@ from ajaxapi.views import vote, generate_vote_content, delete_source, add_tag, s
 from ajaxapi.views import flagvote, set_loc_by_ip, del_tag, add_video_vote, update_video_votes, remove_platform
 from ajaxapi.views import setup_admin, confirm, add_platform, change_hash_dim, change_hash_ctype, delete_object
 from pirate_login.views import logout_view
+from pirate_consensus.views import set_ranked_vote, confirm_ranked_vote, del_confirm_ranked_vote
 
-from oa_cache.views import load_page, nuke_memcache, update_ranks, side_effect
+from oa_cache.views import load_page, nuke_memcache, update_ranks, side_effect, load_usersaltcache
 from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm
 
 #autodiscovery
@@ -51,17 +52,21 @@ urlpatterns = patterns('',
     (r'^set_loc_by_ip/', set_loc_by_ip),
     (r'^spectrumvote/', spectrumvote),
     (r'^add_tag/', add_tag),  #ajax
+    (r'^confirm_ranked_vote/', confirm_ranked_vote),  #ajax
+    (r'^del_confirm_ranked_vote/', del_confirm_ranked_vote),  #ajax
     (r'^add_group/', add_group),  #ajax
     (r'^remove_group/', remove_group),  #ajax
     (r'^del_tag/', del_tag),  #ajax
     (r'^change_hash_dim/', change_hash_dim),  #ajax
     (r'^change_hash_ctype/', change_hash_ctype),  #ajax
     (r'^add_platform/', add_platform),
+    (r'^set_ranked_vote/', set_ranked_vote),
     (r'^remove_platform/', remove_platform),
     (r'^generate_vote_content/', generate_vote_content),
     (r'^comments/', include('django.contrib.comments.urls')),
     (r'^markitup/', include('markitup.urls')),
     (r'^logout/', logout_view),
+    (r'^load_usersaltcache/', load_usersaltcache),
     (r'^load_page/', load_page),
     (r'^side_effect/', side_effect),
     (r'^confirm/(?P<key>[0-9A-Za-z_\-]+)/$', confirm),

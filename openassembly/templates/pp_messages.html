@@ -6,9 +6,9 @@
     {% pp_has_mail user=user %}
 
         {% if pp_messages.count > 0 %}
-            <a href="{% pp_url template='user_profile.html' object=user %}" ><img src="/static/img/mail_some.jpg" alt="You have unread messages!"> <b> {{pp_messages.count}} Notification{{pp_messages.count|pluralize}}</b></a>
+            <a href="{% pp_url template='user_profile.html' object=user %}" > <b> {{pp_messages.count}} Notification{{pp_messages.count|pluralize}}</b><img style="margin-left:32px;" src="/static/img/mail_some.jpg" alt="You have unread messages!"></a>
         {% else %}
-         <a href="{% pp_url template='user_profile.html' object=user %}" ><img src="/static/img/mail_none.jpg" alt="You have no unread messages!"><b> No Notifications </b></a>
+         <a href="{% pp_url template='user_profile.html' object=user %}" ><b> No Notifications </b><img style="margin-left:20px;" src="/static/img/mail_none.jpg" alt="You have no unread messages!"></a>
         {% endif %}
 
     {% endpp_has_mail %}

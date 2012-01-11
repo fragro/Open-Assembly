@@ -23,15 +23,39 @@
     $(document).ready(function(){
 
 
-    {% pp_consensus_get object=object.id %}
+    {% pp_consensus_get object=object.id %}   
+    
+        $('#bookmark_system ul').sortable({
+            tolerance: 'pointer',
+            opacity: .5,
+            connectWith: '#bookmark_system ul',
+            update: function(event, ui) {
+                var result = $('#bookmark_system ul').sortable('toArray');
+                var pk = '{{pp_consensus.consensus.pk}}';
+                $.post("/set_ranked_vote/", {ranked_list: result.toString(), object_pk: pk},
+                    function(data) {
+                        //alert(data['FAIL']);
+                        var ranking = 1;
+                        for(var pg in data.rvote){
+                            var st = '#rank' + String(data.rvote[pg]);
+                            $(st).html('#' + String(ranking));
+                            ranking = ranking + 1;
+                            $('#changed').html('<b>' + data.now + '</b>');
+                        }
+                    }, "json");                                
+
+            }
+        }); 
+  
+
     {% if pp_consensus.consensus %}
-          {% pp_rating_js object=object %}
+          {% pp_rating_js object=object user=user cons=pp_consensus.consensus %}
 
            {{pp_consensus.rating_js|safe}} 
 
           {% endpp_rating_js %}
 
-          {% pp_spectrum_js object=object %}
+          {% pp_spectrum_js object=object user=user cons=pp_consensus.consensus %}
 
            {{pp_consensus.spectrum_js|safe}}
 
@@ -63,11 +87,6 @@
                                 <span class="word">interest</span>
                             </div>
                             <div class="overview">
-                                {% if object.forumdimension.is_child %}
-                                    <div class="summary" style="font-size:70%;">
-                                        <a href="{% pp_url object=object.parent template='detail.html' %}">{{object.parent.summary}}</a>
-                                    </div>
-                                {% endif %}
                                 <span class="summary">
                                     <a href="{% pp_url object=object template='detail.html' %}"><b>{{object.summary}}</b></a>
                                 </span>
@@ -169,11 +188,10 @@
                             <table cellspacing="0" class="rating">
                                 <tbody>
                                     <tr>
-                                        <td>
-                                            {% include 'temp_check.html' %}
+                                        <td id="temp_check">
                                         </td>
                                         <td style="margin-top:11px;">
-                                            <h2>Vote</h2>
+                                            <h2>Vote <span style="font-size:80%;" id="spectrum_vote"></span></h2>
                                             <b>Agreement: <span id="stars-cap-spec"></span></div></b><br>
 
                                             {% pp_spectrum_form object=object user=user %}
@@ -187,7 +205,7 @@
                                                 </div>
                                                 {{csrf_string|safe}}
 
-                                            {# input type="submit" class='button green' value="Rating"> #}
+                                            <noscript><input type="submit" class='button green' value="Rating"></noscript>
 
                                             </form>
                                             {% endpp_spectrum_form %}
@@ -207,7 +225,7 @@
                                                 
                                                 {{csrf_string|safe}}
 
-                                            {# input type="submit" class='button green' value="Rating"> #}
+                                            <noscript><input type="submit" class='button green' value="Rating"> </noscript>
 
                                             </form>
                                             {% endpp_rating_form %}
@@ -233,17 +251,26 @@
                                             {% endcomment %}
                                         </td>
                                         <td>
-                                        {% ifequal object.user user %}
-                                        <b>Author Controls:</b><br>
+                {% pp_get_ranked_decision object=pp_consensus.consensus %}
+                    {% oa_get_group_settings object=object.parent %}
 
-                                            <a class="btn_gen" href="{% pp_url template='submit.html' object=object dimension='edit' %}">edit</a>
-                                            {% endifequal %}
-                                            {% if object.user == user or user.is_staff %}
+                    {% if not pp_consensus.ranked_decision %}
+                            {% ifequal object.user user %}
+                            <b>Author Controls:</b><br>
 
-                                            <span style="padding:5px;border:dotted;"><span style="cursor: pointer; cursor: hand" class="red btn_gen" onClick="checkDelete({{pp_consensus.consensus.content_type.pk}}, {{object.pk}});">Delete</span><input id="nukecheck" type="checkbox" name="vehicle" value="Deleted" />Sure?</span>
-                                            {% endif %}
-                                        </td>
+                                <a class="button" style="height:24px;margin-right:10px;" href="{% pp_url template='submit.html' object=object dimension='edit' %}"><img src="/static/img/edit.png">Edit</a>
+                                {% endifequal %}
+                                {% if object.user == user or user.is_staff %}
 
+                                <span style="padding:5px;border:dotted;">
+                                <span style="cursor: pointer; height:24px;cursor: hand" class="red button" onClick="checkDelete({{pp_consensus.consensus.content_type.pk}}, {{object.pk}});">
+                                    <img src="/static/img/recycle.png"> Delete</span>
+
+                                    <input id="nukecheck" type="checkbox" name="vehicle" value="Deleted" />Sure?
+                                </span>
+                                {% endif %}
+                            </td>
+                    {% endif %}
 
                                     </tr>
                                 </tbody>
@@ -255,56 +282,119 @@
                                     </tr>
                                 </tbody>
                             </table>
+                    {% if pp_consensus.ranked_decision %}
+                                {% if pp_topic.settings.consensus_percentage > pp_consensus.ranked_decision.consensus_percent or pp_topic.settings.percent_reporting > pp_consensus.ranked_decision.reporting_percent %}
+                            <div style="width:32px;float:left;"><img src="/static/img/failed.jpg"></div>
 
-                            {% pp_datetime_less_than time=pp_consensus.consensus.phase.phase_change_dt %}
+                                <div class="decision_report">
+                                    <b>Failed</b> - 
+                                {% else %}
+                            <div style="width:32px;float:left;"><img src="/static/img/collab.jpg"></div>
 
-                                {% if pp_tag.past %}
-
-                                <script type="text/javascript"> 
-                                $(function () {
-                                    $('#default_countdown').countdown({format:'dHM', until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}})}); 
-                                });
-
-                                </script> 
-                                <div id="countdown_container">
-                                <h3>Time Until Voting</h3>
-                                </div>
-
-                            {% else %}
-
-                                <script type="text/javascript"> 
-                                $(function () {
-                                    $('#default_countdown').countdown({format:'dHM', until: new Date({{pp_consensus.consensus.phase.decision_dt.year}}, {{pp_consensus.consensus.phase.decision_dt.month}}-1, {{pp_consensus.consensus.phase.decision_dt.day}}, {{pp_consensus.consensus.phase.decision_dt.time.hour}}, {{pp_consensus.consensus.phase.decision_dt.time.minute}}, {{pp_consensus.consensus.phase.decision_dt.time.second}})}); 
-                                });
-
-                                </script> 
-                                <div id="countdown_container">
-                                <h3>Time Until Decision</h3>
-                                </div>
-
-                            {% endif %}
-
-                            {% endpp_datetime_less_than %}
-
-                            <div id="default_countdown"></div> 
-                            </div>
-
+                                <div class="decision_report">
+                                    <b>Passed</b> - 
+                                {% endif %}
+                                    {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.consensus_percent %}
+                                        <b style="color:#56e110;">
+                                    {% else %}
+                                        <b style="color:#e11010">
+                                    {% endif %}
+                                    {{ pp_consensus.ranked_decision.consensus_percent|percent }} Consensus</b> - 
+                                    
+                                    {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.reporting_percent %}
+                                        <b style="color:#56e110;">
+                                    {% else %}
+                                        <b style="color:#e11010">
+                                    {% endif %}
+                                    {{ pp_consensus.ranked_decision.reporting_percent|percent }} Reported</b>
+                                    ({{pp_consensus.ranked_decision.submit_date|date:"jS F Y H:i"}})
+                                    </div>
+                        {% endif %}
                             </div>
                         </div>
                     </div>
 
-                        {% pp_get_questions object=object dimension="r" phase="Nomination" %}
-                        {% if object.children > 0 %}<h2>{{object.forumdimension.name}}{{pp_blob.count|pluralize}} ({{object.children}})</h2>{% endif %}
-                            <div id="children_details" class="children_details">
+
+                {% if pp_consensus.consensus.phase.curphase.phasename == 'Nomination' %}
+
+                <h3>{{object.forumdimension.name}} Nomination{{pp_blob.count|pluralize}} ({{object.children}})</h3>
+
+                    {% pp_get_questions object=object dimension="r" phase="Nomination" %}
+                    
+                    <div id="children_details" class="children_details">
+
+                     <ul class="recent_activity_holder">         
+                            <li id="bookmark_system">
+                        
+                                {% if object.children > 0 %}
+                                <div style="padding-bottom:10px;">
+
+                                {% pp_get_ranked_vote object=pp_consensus.consensus user=user %}
+
+                                </div>
+                                <ul id="nominated">
+
+
+                                        {% if pp_consensus.ranked_vote %}
+                                    
+                                            {% for object,ranked_vote in pp_consensus.objects %}
+
+                                                {% include 'listing_ranked_shell.html' %}
+
+                                            {% endfor %}
+
+                                        {% else %}
 
                                             {% for object in pp_blob.blob_list %}
-                                                {% include 'listing.html' %}
-                                            {% endfor %}
-                            </div>
-                        {% endpp_get_questions %}
+                                                
+                                                {% include 'listing_ranked_shell.html' %}
 
+                                            {% endfor %}
+
+                                        {% endif %}
+                        
+                            </li>
+                            </ul>
+                            <span style="float:right;">
+                                {% if not pp_consensus.confirmranked %}
+                                <span id="confirm_button"><a class="green btn_gen" style="margin-left:20px;" onClick="ranked_vote_confirm('{{pp_consensus.consensus.pk}}', true);">Confirm Your Ranked Vote</a></span>
+                                {% else %}
+                                <span id="confirm_button"><a class="red btn_gen" style="margin-left:20px;" onClick="ranked_vote_confirm('{{pp_consensus.consensus.pk}}', false);">Cancel Your Ranked Vote</a></span>
+                                {% endif %}
+                            </span>
+                            <div style="padding-top:10px;float:right;" id="changed">
+                            </div>
+
+                        {% endpp_get_ranked_vote %}
+
+                    {% endif %}
+
+                {% endpp_get_questions %}
+                                                            
+
+                        </li>
+                    </ul>
+                    </div>
+                    {% else %}
+{% if pp_consensus.consensus.phase.curphase.phasename == 'Question' or pp_consensus.consensus.phase.curphase.phasename == 'Decision'%}
+                            {% pp_get_questions object=object dimension="r" phase="Nomination" %}
+
+                            <h3>{{object.forumdimension.name}} Nomination{{pp_blob.count|pluralize}} ({{object.children}})</h3>
+
+                                <div id="children_details" class="children_details">
+                                    {% for object in pp_blob.blob_list %}
+                                        {% include 'listing_child.html' %}
+                                    {% endfor %}
+                            {% endpp_get_questions %}
+                                </div>
+
+                            {% endif %}
+                        {% endif %}
+                    {% endoa_get_group_settings %}
+
+                {% endpp_get_ranked_decision %}
                             <div class="forms">
-                               
+                               {% comment %}
                                 <div class="socialhooks">
                                 {% pp_get_url object=object safe='True' dimension=dimension url=request.path|cut:"/" %}
                                     <!-- AddThis Button BEGIN -->
@@ -328,9 +418,10 @@
                                     <!-- AddThis Button END -->
                                 {% endpp_get_url %}
                                 </div>
+                                {% endcomment %}
                                 <div>
 
-                                    <h2 class="acc_trigger"><a href="#">Comment</a></h2>
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/comment.jpg">Comment</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
                                            <div id="pp_comment_form" class="reply_comment"></div>
@@ -343,21 +434,21 @@
   
                                 {% if pp_topic.settings.open_group or pp_topic.in_group %}
            
-                                    <h2 class="acc_trigger"><a href="#">Write an Argument Supporting {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/agree.jpg">Write an Argument Supporting {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
                                             <div id="pp_argument_form_yea" class="reply_comment>"></div>
                                         </div>
                                     </div>
 
-                                    <h2 class="acc_trigger"><a href="#">Write an Argument Against {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/disagree.jpg">Write an Argument Against {{pp_consensus.consensus.content_object.get_verbose_name|title}}</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
                                             <div id="pp_argument_form_nay" class="reply_comment"></div>
                                         </div>
                                     </div>
 
-                                    <h2 class="acc_trigger"><a href="#">Add Sources/Citations or Tags</a></h2>
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/info.jpg">Add Sources/Citations or Tags</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
                                             <div id="pp_tagsource_form" class="reply_comment"></div>
@@ -367,8 +458,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                 {% if object.child %}
-                                    <h2 class="acc_trigger"><a href="#">Nominate a {{object.forumdimension.name|title}} To Be Voted On</a></h2>
+                                 {% if object.child and pp_consensus.consensus.phase.curphase.phasename == 'Question' %}
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/idea.jpg">Nominate a {{object.forumdimension.name|title}} To Be Voted On</a></h2>
                                     <div class="acc_container">
                                         <div class="block">
                                             <div id="pp_blob_child" class="reply_comment">
@@ -408,19 +499,19 @@
 <h2 class="content_children_header">
 
     {% pp_comment_count object=object.id %}
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>  | 
+        <img src="/static/img/comment.jpg"><a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>  | 
 
     {% endpp_comment_count %}
 
     {% pp_get_argument_count object=object arg_type='yea' %}
 
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
+        <img src="/static/img/agree.jpg"><a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
 
     {% endpp_get_argument_count %}
 
     {% pp_get_argument_count object=object arg_type='nay' %}
 
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+        <img src="/static/img/disagree.jpg"><a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
 
     {% endpp_get_argument_count %}
 
@@ -433,6 +524,7 @@
 
 </div>
 <!-- end #content -->
-
+{% comment %}
     <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4e743d0b5609a737"></script>
+{% endcomment %}
 {% endblock %}

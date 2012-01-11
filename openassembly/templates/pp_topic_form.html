@@ -8,9 +8,10 @@
 
             {% if pp_topic.complete %}
 
-                Topic submitted, redirecting!
+            <h2>Topic Created</h2>
 
-            {% else %}
+            {% endif %}
+
                 <form id="pp_topic_form" method="post" action="">
                     <div id="errors" class="errors">{{ pp_topic.errors }}</div>
                             {{ pp_topic.form.form_id}}
@@ -36,8 +37,6 @@
                     });
 
                 </script>
-
-            {% endif %}
 
 
                 <span id="content_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>

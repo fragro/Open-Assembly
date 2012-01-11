@@ -8,6 +8,7 @@
 <li class="last"><a STYLE="text-decoration:none" href="{% pp_url template='issues.html' dimension='n' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'n' %}<b>New</b>{% else %}New{% endif %}</a></li>
 <li><a STYLE="text-decoration:none" href="{% pp_url template='issues.html' dimension='h' start=0 end=20 object=object sort_type=sort_type %}">{% if dimension == 'h' %}<b>Best</b>{% else %}Best{% endif %}</a></li>
 
+{% comment %}
 <li>
 
     {% pp_get_contenttypes dimension=sort_type object=object%}
@@ -33,4 +34,6 @@
             //then populate the page with the necessary form
          });
  </script>
+
+ {% endcomment %}
 
