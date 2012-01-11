@@ -2,7 +2,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import add_to_builtins
 import datetime
 from pirate_forum.models import View, create_view
-from django.utils import tzinfo
 
 
 TYPE_KEY = "_t"
@@ -148,10 +147,3 @@ class AddToBuiltinsMiddleware(object):
     def process_request(self, request):
         # This adds all tags registered separately through native_tags to the builtins
         add_to_builtins('native_tags.templatetags.native')
-
-
-class TimezoneMiddleware(object):
-    def process_request(self, request):
-        tz = request.session.get('django_timezone')
-        if tz:
-            timezone.activate(tz)
