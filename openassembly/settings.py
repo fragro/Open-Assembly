@@ -19,8 +19,8 @@ try:
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
-    DOMAIN_NAME = 'http://openassemblyrev43-fragro.dotcloud.com/'
-    DOMAIN = 'http://openassemblyrev43-fragro.dotcloud.com'
+    DOMAIN_NAME = 'http://http://openassembly1-fragro.dotcloud.com/'
+    DOMAIN = 'http://http://openassembly1-fragro.dotcloud.com'
 
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
@@ -139,8 +139,6 @@ MARKITUP_SET = 'markitup/sets/markdown'
 MARKITUP_SKIN = 'simple'
 
 JQUERY_URL = '/static/jquery-1.4.2.min.js'
-
-DOMAIN_NAME = 'http://openassemblyrev43-fragro.dotcloud.com/'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
