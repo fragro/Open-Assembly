@@ -24,19 +24,18 @@
             Open Assembly
         {% endif %}
         {% endblock %}
-
         </title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-        <meta property="og:title" content="Open Assembly"/>
-        <meta property="og:locale" content="og:locale:alternate"/>
-        
-        <meta property="og:image" content="http://www.openassembly.org/static/img/open_assembly_logo_facebook.png"/>
-        <meta property="og:site_name" content="OpenAssembly"/>
-        <meta property="og:description"
-              content="OpenAssembly allows users to make decentralized
-                        decisions online without having to worry about
-                        trolls and sockpuppets manipulating the vote. "/>
+            <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+            <meta property="og:title" content="{{pp_tag.title}}"/>
+            <meta property="og:locale" content="og:locale:alternate"/>
+            
+            <meta property="og:image" content="{{pp_tag.image}}"/>
+            <meta property="og:site_name" content="OpenAssembly"/>
+            <meta property="og:description"
+                  content="{{pp_tag.description}}"/>
+
 
         <link rel="stylesheet" type="text/css" href="/static/style9.9.7.css">
         <link rel="stylesheet" type="text/css" href="/static/bookmark2.css">
@@ -283,7 +282,7 @@
                     <div class="top">
                         <!-- Logo -->
 
-                        <a href="/index.html#landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a><span><div id="header_title" class="header_title"></div></span>
+                        <a href="/index.html#!landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a><span><div id="header_title" class="header_title"></div></span>
                         <!-- Nav -->
                         <ul id="topnav">
                             {% include 'topnav.html' %}
@@ -365,7 +364,7 @@
                                 <b>Activist Driven Open Source</b><br> Feature Development For the People
                                 </p>
                                 <p><b>Occupy The Internet</b></p>
-                                <p><a href="/index.html#faq">Learn More</a></p>
+                                <p><a href="/index.html#!faq">Learn More</a></p>
 
                                 </div>
                         
@@ -383,16 +382,18 @@
 
                                     <ul>
                                         {% pp_get_badges user=request.user %}
-                                            <li><a href="/index.html#badges"><img src="/static/img/badges.jpg" alt="Bell"> {{pp_badge.total}} Badge{{pp_badge.total|pluralize}}</a></li>
+                                            <li><a href="/index.html#!badges"><img src="/static/img/badges.jpg" alt="Bell"> {{pp_badge.total}} Badge{{pp_badge.total|pluralize}}</a></li>
                                         {% endpp_get_badges %}
                                         {% oa_get_verifications user=request.user %}
-                                            <li><a href="/index.html#arpv"><img src="/static/img/badge_gold_star.jpg" alt="Bell"> {{oa_ver.count}} Verification{{oa_ver.count|pluralize}}</a></li>
+                                            <li><a href="/index.html#!arpv"><img src="/static/img/badge_gold_star.jpg" alt="Bell"> {{oa_ver.count}} Verification{{oa_ver.count|pluralize}}</a></li>
                                         {% endoa_get_verifications %}
 
 
                                     </ul>
                                 </div>
                                 {% endcomment %}
+
+                        </div>
 
                             <div style="display:block;">
 
@@ -408,7 +409,6 @@
                             </div>
 
                             {% endif %}
-                        </div>
 
                         </div>
 

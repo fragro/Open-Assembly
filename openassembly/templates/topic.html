@@ -15,6 +15,29 @@
                 {% endif %}
             </div>
             <div class="summary"> <b><a href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> </b> {% if object.more_info %} - <a href="{{object.more_info}}">more info</a>{% endif %}
+                  <span class="img">
+                {% cani object=object user=user %}
+                    {% if pp_permissions.permission %}
+                      {% pp_get_contenttype_id object=object %}
+                        <a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
+                      {% endpp_get_contenttype_id %}
+
+                    {% else %}
+
+                        <a>
+
+                    {% endif %}
+                {% endcani %}  
+                    {% pp_get_sources object=object type='img' %}
+
+                        {% if pp_source.cur_img %}
+                            <img src="/media/{{pp_source.cur_img.thumbnail}}" alt="{{object.content_object.summary}}">
+                        {% else %}
+                           {# <img src="/static/img/group_header.jpg" alt="{{object.summary}}"> #}
+                        {% endif %}
+                    {% endpp_get_sources %}
+                </a>
+                </span>
                                
                 <div>
                 <p>
@@ -34,10 +57,10 @@
 
                         {% endif %}
                         {% endif %}
-                    {% endpp_get_topic_list %}               
+                    {% endpp_get_topic_list %}   
+             
              </div>
-            <span id="addgroup{{object.pk}}"></span>               
-
+            <span id="addgroup{{object.pk}}"></span>            
+  
         </div>
-    <img>
-</div>
+  </div>

@@ -21,18 +21,14 @@
             {% else %} 
                 <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
             {% endif %}
-                
+
 
         <script>
-
           $("form#oa_facilitators_form").submit(function(e){
                 $("#submit_oa_facilitators_form").html("<b>Submitting...</b>");
                 addObject(e);
                 $("#submit_oa_facilitators_form").html("<b>Sent!</b>");
-
-            });
-
+          });
         </script>
 
     {% endoa_facilitators_form %}
-

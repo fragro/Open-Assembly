@@ -376,7 +376,7 @@
                     </ul>
                     </div>
                     {% else %}
-{% if pp_consensus.consensus.phase.curphase.phasename == 'Question' or pp_consensus.consensus.phase.curphase.phasename == 'Decision'%}
+                    {% if pp_consensus.consensus.phase.curphase.phasename == 'Question' or pp_consensus.consensus.phase.curphase.phasename == 'Decision'%}
                             {% pp_get_questions object=object dimension="r" phase="Nomination" %}
 
                             <h3>{{object.forumdimension.name}} Nomination{{pp_blob.count|pluralize}} ({{object.children}})</h3>

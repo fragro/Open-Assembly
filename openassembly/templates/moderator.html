@@ -59,6 +59,33 @@ meant to only ensure one person per vote.
 	    </div>
 	</div>
 
+	<h2 class="acc_trigger"><a href="#">Change Image</a></h2>
+	<div class="acc_container">
+	    <div class="block">
+	     		<div id="pp_change_image">
+				    <p>
+				    {% cani object=object user=user %}
+				        {% if pp_permissions.permission %}
+				          {% pp_get_contenttype_id object=object %}
+				                <a style="margin-left:15px;text-decoration:none;text-align:center;" href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}"><b>Click to Upload a New Image</b><br><br>
+				          {% endpp_get_contenttype_id %}
+				        {% else %}
+				            <a>
+				        {% endif %}
+				    {% endcani %}  
+				        {% pp_get_sources object=object type='img' %}
+				            {% if pp_source.cur_img %}
+				                <img style="margin-left:25px;" src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
+				            {% else %}
+				                <img style="margin-left:25px;" src="/static/img/group_header.jpg" alt="{{object.summary}}">
+				            {% endif %}
+				        {% endpp_get_sources %}
+				    </p>
+				</div>
+	    </div>
+	</div>
+
+
 
 </div>
 

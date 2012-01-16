@@ -9,7 +9,7 @@
 					<span class="object">
 					    <li><a  href="{% pp_url template='issues.html' object=pp_topic.root start=0 end=20 dimension='hn' %}">Forum</a></li>
 
-				        {% oa_get_group_settings object=object %}
+				        {% oa_get_group_settings object=pp_topic.root%}
 				        	{% if pp_topic.settings.stream %}
 										<li><a href="{% pp_url template='livestream.html' object=object %}">Stream</a></li>
 				            {% endif %}

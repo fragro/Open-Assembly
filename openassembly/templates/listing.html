@@ -11,6 +11,29 @@
 
 <div class="listing">
     <div class="interest">
+        {% if not object.phase %}
+            <span class="category">Temperature</span>
+            <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/tempcheck.png"></a></span>
+            <span class="word">Check</span>
+        {% else %}
+            {% if object.phase.curphase.phasename == 'Question' %}
+                    <span class="category">Timed</span>
+                    <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_voting.png"></a></span>
+                    <span class="word">Nomination</span>
+            {% endif %}
+            {% if object.phase.curphase.phasename == 'Nomination' %}
+                    <span class="category">Timed</span>
+                    <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_incomplete.png"></a></span>
+                    <span class="word">Voting</span>
+            {% endif %}
+            {% if object.phase.curphase.phasename == 'Decision' %}
+                    <span class="category">Timed</span>
+                    <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_complete.png"></a></span>
+                    <span class="word">Voting</span>
+            {% endif %}
+        {% endif %}
+
+        {% comment %}
         <span class="category">{{object.content_object.get_verbose_name|title }}</span>
         {% if request.dimension = 'c' %}
             <span class="points"><a href="{{object.get_absolute_url}}">{{ object.controversy|floatformat:0 }}</a></span>
@@ -22,6 +45,7 @@
                 
             </span>
         {% endif %}
+        {% endcomment %}
     </div>
     <div class="summary">
 
@@ -51,17 +75,18 @@
             {{pp_argumentation.count}} Argument{{pp_argumentation.count|pluralize}}
         {% endpp_get_argument_count %}
         </div>
+
+{% pp_get_questions object=object.content_object dimension="r" start=0 end=5 phase="Nomination" %}
+    {% if object.content_object.children > 0 %}
+
+        <h4>{{object.content_object.children}} {{object.content_object.child|title}}:</h4>
+
         <ul class="solutions">
-
-            {% pp_get_questions object=object.content_object dimension="h" start=0 end=5 phase="Nomination" %}
-                {% if object.content_object.children > 0 %}
-
-                    <li><b>{{object.content_object.children}} {{object.content_object.child|title}}:</b></li>
 
                         {% for child in pp_blob.blob_list %}
                             {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
 
-                                <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">({{child.interest|floatformat:0 }}) - {{pp_blob.content_object.summary}}</a></li>
+                                <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
                                 
                             {% endpp_get_object %}
 
@@ -70,23 +95,12 @@
                     {% if object.content_object.children > 5 %}
                         <li>...</li>
                     {% endif %}
+           </ul>   
                 {% endif %}
            {% endpp_get_questions %}
 
-        </ul>
 
         <ul class="tags" style="line-height:32px;">
-        <li><b>Type: </b>
-        {% if not object.phase %}
-        <li>Temperature Check</li><li><img src="/static/img/tempcheck.jpg"></li>
-        {% else %}
-            {% if object.phase.curphase.phasename == 'Nomination' %}
-                <li>{{object.phase}}</li><li><img src="/static/img/clock_incomplete.jpg"></li>
-            {% endif %}
-            {% if object.phase.curphase.phasename == 'Decision' %}
-                <li>{{object.phase}}</li><li><img src="/static/img/clock_complete.jpg"></li>
-            {% endif %}
-        {% endif %}
         {% pp_get_tags_for_object object=object %}
             {% if pp_tag.tags|length > 0 %}
                 <ul class="tags">

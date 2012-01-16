@@ -2,31 +2,32 @@
 
 <li id="{{group.topic.pk}}" class="blue">
         <p>
-         <span><a style="font-size:100%;" href="{{group.topic.get_absolute_list_url}}">{{group.topic.shortname}}</a></span>
-         <br>
-
+         <span><a style="width:100%;font-size:100%;" href="{{group.topic.get_absolute_list_url}}">{{group.topic.shortname}}</a></span>
+         </p>
+         <div>
 		    {% cani object=group.topic user=user %}
 		        {% if pp_permissions.permission %}
 
-					<span style="float:right;font-size:120%;"><a href="{% pp_url object=group.topic template='facilitator.html' %}"><img src="/static/img/process.jpg"></a></span>  
+					<span style="float:right;"><a class="tooltip" href="{% pp_url object=group.topic template='facilitator.html' %}"><img src="/static/img/process.jpg"><span>Edit the group settings, invite members, add faciliators</span></a></span>  
      
 				{% endif %}
 		    {% endcani %}
-        <span style="float:right;"><a href="{% pp_url template='submit.html' object=group.topic %}">
-<img src="/static/img/question.jpg"></a></span>
-        <span style="float:right;"><a href="{{group.topic.get_absolute_url}}"><img src="/static/img/home.jpg"></a></span>
+        <span style="float:right;"><a class="tooltip" href="{% pp_url template='submit.html' object=group.topic %}">
+<img src="/static/img/question.jpg"><span>Click here to ask a question for a temp. check or a timed decision</span></a></span>
+
+
+        <span style="float:right;"><a class="tooltip" href="{{group.topic.get_absolute_url}}"><img src="/static/img/home.jpg"><span>See the group information and consensus requirements</span></a></span>
 
     	{% pp_get_contenttype_id object=group.topic %}	
 			{% pp_getcreate_setting topic=group.topic %}
 
 				{% if pp_topic.settings.stream %}
 
-				<span style="float:right;"><a href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{group.topic.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" ><img src="/static/img/media.jpg"></a></span>
+				<span style="float:right;"><a class="tooltip" href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{group.topic.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" ><img src="/static/img/media.jpg"><span>Click to open the Stream in the sidebar</span></a></span>
 
 				{% endif %}
 
 			{% endpp_getcreate_setting %}
 
 		{% endpp_get_contenttype_id %}
-        </p>  
-</li>
+		</div>

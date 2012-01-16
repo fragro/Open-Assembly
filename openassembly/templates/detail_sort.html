@@ -87,10 +87,10 @@
             <li>                
             {% pp_get_ranked_decision object=pp_consensus.consensus %}
 
-              {% if pp_consensus.ranked_decision %}
-                Passed
+              {% if pp_consensus.ranked_decision.passed %}
+                <li class="sortlist">Passed</li>
               {% else %}
-                Failed
+                <li class="sortlist">Failed</li>
               {% endif %}
             {% endpp_get_ranked_decision %}
             </li>
