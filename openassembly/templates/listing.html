@@ -79,7 +79,7 @@
 {% pp_get_questions object=object.content_object dimension="r" start=0 end=5 phase="Nomination" %}
     {% if object.content_object.children > 0 %}
 
-        <h4>{{object.content_object.children}} {{object.content_object.child|title}}:</h4>
+        <h4>{{object.content_object.children}} {{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</h4>
 
         <ul class="solutions">
 

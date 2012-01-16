@@ -6,7 +6,7 @@
 
    {# {% include 'facilitator.html' %} #}
 
-    <h1>{{object.summary}}</h1>
+    <h1>{{object.summary}}</h1><span id="addgroup"><h3>{% include 'oa_addgroup_form.html' %}</h3></span>
     <span class="image">
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
@@ -42,7 +42,6 @@
         <li> <h3>{{object.children}} Issues</h3></li>
         <li> <h3>{{object.solutions}} Nominations</h3></li>
         <li> <h3>{{object.decisions}} Decisions</h3></li>
-        <li><span id="addgroup"><h3>{% include 'oa_addgroup_form.html' %}</h3></span></li>
 
      </ul>
 

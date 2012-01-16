@@ -104,6 +104,7 @@ def pp_get_ranked_vote(context, nodelist, *args, **kwargs):
     return output
 
 
+#returns teh updownvotes pertaining to an object and a user
 @block
 def pp_get_votes(context, nodelist, *args, **kwargs):
 
@@ -117,6 +118,25 @@ def pp_get_votes(context, nodelist, *args, **kwargs):
 
     namespace['votes'] = votes
     namespace['count'] = votes.count()
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+#returns the reporting percentage of a consensus object
+@block
+def pp_get_reporting_percentage(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+
+    obj = kwargs.pop('object', None)
+    topic = kwargs.pop('group', None)
+
+    votes = UpDownVote.objects.filter(object_pk=obj.pk)
+
+    namespace['reporting'] = votes.count() / float(topic.group_members)
     output = nodelist.render(context)
     context.pop()
 
