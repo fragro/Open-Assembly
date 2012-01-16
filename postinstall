@@ -38,7 +38,7 @@ stdout_logfile = /var/log/supervisor/%(program_name)s.log
 EOF
 }
 
-if [ `dotcloud_get_env SERVICE_NAME` = workers ] ; then
+if [ `dotcloud_get_env SERVICE_NAME` = worker ] ; then
     setup_django_celery
 else
     setup_django
