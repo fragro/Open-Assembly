@@ -11,14 +11,17 @@ from pirate_forum.models import get_children
 from django.contrib import admin
 from django.core.context_processors import csrf
 
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, PHASE_KEY, SEARCH_KEY, S_KEY
+from pirate_core.middleware import START_KEY, END_KEY, DIM_KEY, SCROLL_KEY, RETURN_KEY, SIMPLEBOX_KEY
 
-DIMS = {"_t": 'TYPE_KEY', "_o": "OBJ_KEY", "_s": "START_KEY",
-            "_e": "END_KEY", "_d": "DIM_KEY", "_i": "S_KEY",
-            '_c': "SCROLL_KEY", "_r": "SEARCH_KEY", "_l": "CTYPE_KEY", "_p": "PHASE_KEY"}
 
-OPP_DIMS = {'TYPE_KEY': "_t", "OBJ_KEY": "_o", "START_KEY": "_s",
-            "END_KEY": "_e", "DIM_KEY": "_d", "S_KEY": "_i",
-            "SCROLL_KEY": '_c', "SEARCH_KEY": "_r", "CTYPE_KEY": "_l",  "PHASE_KEY": "_p"}
+DIMS = {TYPE_KEY: 'TYPE_KEY', OBJ_KEY: "OBJ_KEY", START_KEY: "START_KEY",
+            END_KEY: "END_KEY", DIM_KEY: "DIM_KEY", S_KEY: "S_KEY",
+            SCROLL_KEY: "SCROLL_KEY", SEARCH_KEY: "SEARCH_KEY", CTYPE_KEY: "CTYPE_KEY", PHASE_KEY: "PHASE_KEY"}
+
+OPP_DIMS = {'TYPE_KEY': TYPE_KEY, "OBJ_KEY": OBJ_KEY, "START_KEY": START_KEY,
+            "END_KEY": END_KEY, "DIM_KEY": DIM_KEY, "S_KEY": S_KEY,
+            "SCROLL_KEY": SCROLL_KEY, "SEARCH_KEY": SEARCH_KEY, "CTYPE_KEY": CTYPE_KEY,  "PHASE_KEY": PHASE_KEY}
 
 
 def initiate_update(obj_pk, content_pk):
@@ -36,8 +39,7 @@ def interpret_hash(h):
     l = h.split('/')
     retdict = {}
     rendertype = l[0]
-    if rendertype[0] == '#':
-        rendertype = rendertype[1:]
+    rendertype = rendertype[1:]
     key = str(rendertype)
     for dim in l[1:]:
         key += '/' + dim[0:2] + dim[2:]
@@ -49,7 +51,7 @@ def interpret_hash(h):
 
 
 def build_hash(rendertype, paramdict):
-    l = '#' + rendertype
+    l = '#!' + rendertype
     for k, v in paramdict.items():
         l += '/' + OPP_DIMS[k] + v
     return l

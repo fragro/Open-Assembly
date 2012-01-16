@@ -98,8 +98,6 @@ def main():
 ph1, is_new = PhaseLink.objects.get_or_create(phasename="Question", verb="pose your question")
 ph2, is_new = PhaseLink.objects.get_or_create(phasename="Nomination", verb="nominate a solution and debate")
 ph3, is_new = PhaseLink.objects.get_or_create(phasename="Decision", verb="vote to make a decision")
-ph3, is_new = PhaseLink.objects.get_or_create(phasename="Failed", verb="failed")
-ph3, is_new = PhaseLink.objects.get_or_create(phasename="Passed", verb="passed")
 
 
 ph1.prevphase = None

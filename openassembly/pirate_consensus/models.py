@@ -315,6 +315,7 @@ class RankedDecision(models.Model):
     algorithm = models.CharField(max_length=100)
     submit_date = models.DateTimeField(_('date/time submitted'), default=None, blank=True, null=True)
     winner = models.CharField(max_length=50, blank=True, null=True)
+    passed = models.BooleanField()
     consensus_percent = models.FloatField()
     reporting_percent = models.FloatField()
     nomination_consensus_percent = models.FloatField()

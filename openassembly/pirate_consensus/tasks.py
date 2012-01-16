@@ -44,6 +44,8 @@ def get_consensus(consensus):
 
 """
 Run this task on Conesnsu objects attached to questions. Shifts timed decisions.
+Also takes care of determining the winners, so this possibly computationally expensive
+task is offloaded to the worker
 """
 
 
@@ -55,68 +57,79 @@ def initiate_nextphase(consensus):
     consensus.phase.curphase = consensus.phase.curphase.nextphase
     consensus.phasname = consensus.phase.curphase.phasename
     if consensus.phase.curphase.nextphase == None:
+        #get the group settings
+        settings, is_new = GroupSettings.objects.get_or_create(topic=consensus.content_object.parent)
 
         consensus.content_object.parent.decisions += 1
         consensus.content_object.parent.save()
-        #determine if this consensus passes reporting and consensus requirements
-        #currently supports single winner
-        confirmed = ConfirmRankedVote.objects.filter(parent=consensus, confirm=True)
-        ballot_dict = defaultdict(int)
-        for conf in confirmed:
-            rv = tuple([i.nom_cons.pk for i in RankedVote.objects.filter(user=conf.user, parent=consensus).order_by('ranked_vote')])
-            ballot_dict[rv] += 1
-        blist = []
-        for k, v in ballot_dict.items():
-            ballot = [[i] for i in k]
-            if ballot != []:
-                blist.append({'count': v, 'ballot': ballot})
-        print 'calc schulze'
-        try:
+        #if this question does not pass consensus we do not accept, however ignore reporting
+        #this gives people an opportunity to not agree with the need for the question itself
+        cons_perc = get_consensus(consensus)
+        report_perc = UpDownVote.objects.filter(parent=consensus).count() / float(consensus.content_object.parent.group_members)
+        cons_passed = test_if_passes(cons_perc, report_perc, settings, ignore_reporting=False)
+
+        winner = None
+        max_cons = 0.0
+        max_report = 0.0
+        passes = False
+        if cons_passed:
+            #currently supports single winner, in the future we check here for multiple winner or single winner
+            confirmed = ConfirmRankedVote.objects.filter(parent=consensus, confirm=True)
+            ballot_dict = defaultdict(int)
+            for conf in confirmed:
+                rv = tuple([i.nom_cons.pk for i in RankedVote.objects.filter(user=conf.user, parent=consensus).order_by('ranked_vote')])
+                ballot_dict[rv] += 1
+            blist = []
+            for k, v in ballot_dict.items():
+                ballot = [[i] for i in k]
+                if ballot != []:
+                    blist.append({'count': v, 'ballot': ballot})
+            print 'calc schulze'
+            #right now there is only single winner schulze, add mechanism in for multi later on
+            noms_passed = False
             if blist != []:
                 scz = SchulzeMethod(blist, ballot_notation="grouping").as_dict()
-                win = scz['winner']
-                nominations = [(Consensus.objects.get(pk=win), win)]
-                ##calculate consensus percentage
-            else:
-                win = ''
-                nominations = []
-                #nominations = [(i, i.win), Consensus.objects.filter(parent=consensus.content_object)]
+                schulze_winner = scz['winner']
+                #make sure it passes consensus also
+                nom = Consensus.objects.get(pk=schulze_winner)
+                max_cons = get_consensus(nom)
+                max_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
+                noms_passed = test_if_passes(max_cons, max_report, settings, ignore_reporting=True)
+                if noms_passed == True:
+                    passes = True
+                    winner = nom.pk
 
-            settings, is_new = GroupSettings.objects.get_or_create(topic=consensus.content_object.parent)
-            passed = False
-            for nom_cons, winner in nominations:
-                nom_cons_perc = get_consensus(nom_cons)
-                cons_perc = get_consensus(consensus)
-                ##calculate reporting percentage
-                report_perc = UpDownVote.objects.filter(parent=consensus).count() / float(consensus.content_object.parent.group_members)
-                nom_report_perc = UpDownVote.objects.filter(parent=nom_cons).count() / float(nom_cons.content_object.parent.parent.group_members)
-                if report_perc >= settings.percent_reporting and nom_report_perc >= settings.percent_reporting:
-                    if cons_perc >= settings.consensus_percentage and nom_cons_perc >= settings.consensus_percentage:
-                        passed = True
+            #there was no ranked winner or the ranked winner failed to consense (weird side case), cycle through all and choose
+            if passes == False:
+                nominations = [i for i in Consensus.objects.filter(parent_pk=consensus.content_object.pk)]
 
-                rd = RankedDecision(winner=winner,
-                        parent=consensus,
-                        consensus_percent=cons_perc,
-                        nomination_consensus_percent=nom_cons_perc,
-                        nomination_reporting_percent=nom_report_perc,
-                        reporting_percent=report_perc,
-                        submit_date=datetime.datetime.now(),
-                        algorithm='Schulze Method Single Winner')
-                rd.save()
-            #decision failed, no one voted in time
-            if nominations == []:
-                rd = RankedDecision(winner=None,
-                    parent=consensus,
-                    consensus_percent=0.0,
-                    nomination_consensus_percent=0.0,
-                    nomination_reporting_percent=0.0,
-                    reporting_percent=0.0,
-                    submit_date=datetime.datetime.now(),
-                    algorithm='Schulze Method Single Winner')
-        except:
-            print 'schulze failed'
-            print blist
-            raise
+                max_cons = 0.0
+                max_report = 0.0
+
+                for nom in nominations:
+                    nom_cons = get_consensus(nom)
+                    nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
+                    ##calculate reporting percentage, the best is the winner
+                    noms_passed = test_if_passes(nom_cons, nom_report, settings, ignore_reporting=True)
+                    if nom_cons > max_cons and noms_passed:
+                        max_cons = nom_cons
+                        max_report = nom_report
+                        winner = nom.pk
+                        passes = True
+
+        #what to do if there is no winner?
+        #decision failed, no one voted in time
+        rd = RankedDecision(passed=passes and cons_passed,
+                winner=winner,
+                parent=consensus,
+                consensus_percent=cons_perc,
+                nomination_consensus_percent=max_cons,
+                nomination_reporting_percent=max_report,
+                reporting_percent=report_perc,
+                submit_date=datetime.datetime.now(),
+                algorithm='Schulze Method Single Winner')
+        rd.save()
+
         consensus.phase.complete = True
         consensus.phase.active = False
     else:
@@ -126,3 +139,11 @@ def initiate_nextphase(consensus):
     consensus.save()
 
     logger.info('Next Phase Transition {0} completed'.format(consensus.content_object.summary))
+
+
+#Tests to see if these objects pass the consensus/reporting settings of the groups
+def test_if_passes(cons_perc, report_perc, settings, ignore_reporting=False):
+    if cons_perc >= settings.consensus_percentage:
+        if report_perc >= settings.percent_reporting or ignore_reporting:
+            return True
+    return False

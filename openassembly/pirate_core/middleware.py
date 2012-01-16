@@ -4,17 +4,18 @@ import datetime
 from pirate_forum.models import View, create_view
 
 
-TYPE_KEY = "_t"
-OBJ_KEY = "_o"
-START_KEY = "_s"
-END_KEY = "_e"
-DIM_KEY = "_d"
-SCROLL_KEY = "_c"
-RETURN_KEY = "_r"
-SIMPLEBOX_KEY = "_i"
-SEARCH_KEY = "_sc"
-CTYPE_KEY = "_l"
-
+TYPE_KEY = "-t"
+OBJ_KEY = "-o"
+START_KEY = "-s"
+END_KEY = "-e"
+DIM_KEY = "-d"
+SCROLL_KEY = "-c"
+RETURN_KEY = "-r"
+SIMPLEBOX_KEY = "-i"
+SEARCH_KEY = "-sc"
+CTYPE_KEY = "-l"
+PHASE_KEY = "-p"
+S_KEY = "-i"
 
 def human_readable_dim(d):
     if d == 'h':

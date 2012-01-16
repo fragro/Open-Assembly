@@ -17,10 +17,10 @@ from pirate_core.middleware import START_KEY, END_KEY, DIM_KEY, SCROLL_KEY, RETU
 This file contains the tag responsible for creating useful urls within pp templates.
 '''
 #quick hack until I push this to the oa_cache admin interface
-TEMPLATE_DICT = {'/user_profile.html': '/index.html#user', '/None': '/?hash=#', '/issues.html': '/index.html#list',
-                    '/topics.html': '/index.html#topics', '/faq.html': '/index.html#faq',
-                    '/200.html': '/index.html#200', '/detail.html': '/index.html#item',
-                    '/submit.html': '/index.html#submit', '/arpv.html': '/index.html#arpv', '/register.html': '/register.html?'}
+TEMPLATE_DICT = {'/user_profile.html': '/index.html#!user', '/None': '/?hash=#', '/issues.html': '/index.html#!list',
+                    '/topics.html': '/index.html#!topics', '/faq.html': '/index.html#!faq',
+                    '/200.html': '/index.html#!200', '/detail.html': '/index.html#!item',
+                    '/submit.html': '/index.html#!submit', '/arpv.html': '/index.html#!arpv', '/register.html': '/register.html?'}
 
 
 @function
@@ -145,7 +145,7 @@ def get_reverse(pattern, kwargs, content_type_id=None,
             if val in TEMPLATE_DICT:
                 url = TEMPLATE_DICT[val]
             else:
-                url = '/index.html#' + str(val[1:-5])
+                url = '/index.html#!' + str(val[1:-5])
             inter = ''
             j = '/'
             qu = '/'

@@ -141,12 +141,12 @@ def pp_get_questions(context, nodelist, *args, **kwargs):
 
     if key is None:
         if parent is None:
-            key = 'list/' + '/_s' + str(start) + '/_e' + str(end) + '/_d' + str(dimension)
+            key = 'list/' + '/-s' + str(start) + '/-e' + str(end) + '/-d' + str(dimension)
         else:
             ctype = ContentType.objects.get_for_model(parent)
-            key = 'list/_t' + str(ctype.pk) + '/_o' + str(parent.pk) + '/_s' + str(start) + '/_e' + str(end) + '/_d' + str(dimension)
+            key = 'list/-t' + str(ctype.pk) + '/-o' + str(parent.pk) + '/-s' + str(start) + '/-e' + str(end) + '/-d' + str(dimension)
         if phase is not None:
-            key += '/_p' + str(phase)
+            key += '/-p' + str(phase)
     l = ListCache.objects.get(content_type='item', template=phase)
 
     cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=True)
@@ -274,10 +274,10 @@ def pp_get_blob_list(context, nodelist, *args, **kwargs):
 
     if key is None:
         if parent is None:
-            key = 'list/' + '/_s' + str(start) + '/_e' + str(end) + '/_d' + str(dimension)
+            key = 'list/' + '/-s' + str(start) + '/-e' + str(end) + '/-d' + str(dimension)
         else:
             ctype = ContentType.objects.get_for_model(parent)
-            key = 'list/_t' + str(ctype.pk) + '/_o' + str(parent.pk) + '/_s' + str(start) + '/_e' + str(end) + '/_d' + str(dimension)
+            key = 'list/-t' + str(ctype.pk) + '/-o' + str(parent.pk) + '/-s' + str(start) + '/-e' + str(end) + '/-d' + str(dimension)
 
     l = ListCache.objects.get(content_type='item', template="children")
 
@@ -404,7 +404,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                     output = nodelist.render(context)
                     context.pop()
             content_type = ContentType.objects.get_for_model(obj.__class__)
-            path = "/index.html#item" + "/_t" + str(content_type.pk) + "/_o" + str(obj.pk)
+            path = "/index.html#!item" + "/-t" + str(content_type.pk) + "/-o" + str(obj.pk)
             namespace['form_complete'] = True
             namespace['path'] = path
             namespace['form'] = form
@@ -555,7 +555,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         #relationship_event.send(sender=issue,obj=issue,parent=issue.topic)
                         content_type = ContentType.objects.get_for_model(blob.__class__)
 
-                        path = "/index.html#item" + "/_t" + str(content_type.pk) + "/_o" + str(blob.pk)
+                        path = "/index.html#!item" + "/-t" + str(content_type.pk) + "/-o" + str(blob.pk)
                         namespace['path'] = path
                         namespace['form_complete'] = True
                         #provide context with extension path

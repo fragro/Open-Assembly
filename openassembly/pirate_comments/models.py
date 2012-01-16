@@ -30,7 +30,7 @@ class Comment(models.Model):
         return self.user.username + ":" + str(self.submit_date)
 
     def get_absolute_url(self):
-        path = "/index.html#item" + "/_t" + str(self.content_type.pk) + "/_o" + str(self.object_pk) + "/_ccomment" + str(self.pk)
+        path = "/index.html#!item" + "/-t" + str(self.content_type.pk) + "/-o" + str(self.object_pk) + "/-ccomment" + str(self.pk)
         return path
 
 

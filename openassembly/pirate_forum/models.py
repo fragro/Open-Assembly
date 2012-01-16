@@ -133,7 +133,7 @@ class ForumBlob(models.Model):
 
     def get_absolute_url(self):
         content_type = ContentType.objects.get_for_model(self.__class__)
-        path = "/index.html#item" + "/_t" + str(content_type.pk) + "/_o" + str(self.pk)
+        path = "/index.html#!item" + "/-t" + str(content_type.pk) + "/-o" + str(self.pk)
         return path
 
     class Meta:
@@ -166,7 +166,7 @@ class Nomination(ForumBlob):
     random = models.FloatField(default=0)
 
     class Meta:
-        verbose_name = _('nominated')
+        verbose_name = _('nomination')
 
     def __unicode__(self):
         return self.summary
@@ -216,7 +216,7 @@ def create_view(username, addr, obj_id):
     '''
 
 votechoices = (
-    #('SS', 'Single Winner Timed Decision'),
+    ('SS', 'Single Winner Timed Decision'),
     ('PE', 'Persistent Temperature Check'),
 )
 

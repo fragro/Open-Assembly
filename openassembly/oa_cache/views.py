@@ -126,7 +126,7 @@ as a reference for the template, div, and other necessary inforamtion.
                 for html, pk in recursive_list:
                     rendered_list.append({'obj_pk': obj_id, 'usc_pk': usc.pk, 'toggle': usc.is_toggle, 'div': div_id, 'type': usc.jquery_cmd, 'html': html})
 
-            #NOW we must update all the corresponding lists affected by this in the background: args, comments, etc.
+            #NOW we must update all the c#!landingorresponding lists affected by this in the background: args, comments, etc.
             #deferred.defer(commit_update, None, key)
         return rendered_list, paramdict
 
@@ -371,7 +371,7 @@ decreased the latency of the system.
             hashed = ''
         empty = request.GET.get('empty', None)
         if hashed == '' and empty != 'false':
-            hashed = 'landing'
+            hashed = '!landing'
         if hashed != '':
             props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
             if props['render']:

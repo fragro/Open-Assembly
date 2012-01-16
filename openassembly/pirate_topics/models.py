@@ -45,12 +45,12 @@ class Topic(models.Model):
 
     def get_absolute_url(self):
         content_type = ContentType.objects.get_for_model(self.__class__)
-        path = "/index.html#group" + "/_t" + str(content_type.pk) + "/_o" + str(self.pk) + "/_dhn"
+        path = "/index.html#!group" + "/-t" + str(content_type.pk) + "/-o" + str(self.pk) + "/-dhn"
         return path
 
     def get_absolute_list_url(self):
         content_type = ContentType.objects.get_for_model(self.__class__)
-        path = "/index.html#list" + "/_t" + str(content_type.pk) + "/_o" + str(self.pk) + "/_s0/_e20/_dn"
+        path = "/index.html#!list" + "/-t" + str(content_type.pk) + "/-o" + str(self.pk) + "/-s0/-e20/-dn"
         return path
 
 
