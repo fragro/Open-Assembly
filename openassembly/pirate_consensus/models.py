@@ -169,7 +169,6 @@ class Consensus(models.Model):
     phasename = models.CharField(max_length=30, blank=True, null=True)
     vote_algorithm = models.CharField(max_length=100, blank=True, null=True)
 
-
     def __unicode__(self):
         return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk)
 
@@ -247,7 +246,7 @@ class UpDownVote(models.Model):
         verbose_name_plural = _('Up/Down Votes')
 
     def __unicode__(self):
-        return " on %s" % (self.pk)
+        return " on %s" % (self.parent.content_object)
 
     def save(self, *args, **kwargs):
         if self.submit_date is None:

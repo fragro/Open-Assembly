@@ -147,15 +147,16 @@
 
                                 <!--SHOW PROFILE INFORMATION, GIVE ACCESS TO PROFILE CHANGE FORM -->
                     
-                    <div class="profile_overview">
                         {% pp_get_user_profile user=object %}
-
-                                <b>About Me:</b>
-                                <p>
-                                {{pp_profile.profile.about_me}}
-                                </p>
+                                {% if pp_profile.profile.about_me %}
+                                    <div class="profile_overview">
+                                        <b>About Me:</b>
+                                        <p>
+                                        {{pp_profile.profile.about_me}}
+                                        </p>
+                                    </div>
+                                {% endif %}
                         {% endpp_get_user_profile %}
-                    </div>
                     {% if user == object %}
                         <div class="profile_overview">
                             <a class="button" href="{% pp_url template='pp_profile_form.html' object=object %}">Edit Profile</a>
@@ -185,6 +186,8 @@
                         </div>
                     
                     </div>
+
+                    {% endif %}
 
                         {% if not dimension or dimension == 'activity' %}
 
@@ -240,7 +243,7 @@
                         
                         {% endif %}
 
-                    {% else %}
+                    {% if user == object %}
 
                         </div>
 

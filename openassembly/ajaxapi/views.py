@@ -67,8 +67,8 @@ def add_support(request, pk):
         sub = Subscription(subscriber=request.user, subscribee=user,
                             created_dt=datetime.datetime.now())
         sub.save()
-        return redirect("/index.html#user/_t" + str(c_type.pk) +
-                    "/_o" + str(user.pk))
+        return redirect("/index.html#!user/-t" + str(c_type.pk) +
+                    "/-o" + str(user.pk))
     else:
         return redirect('/register.html?')
 
@@ -80,8 +80,8 @@ def remove_support(request, pk):
         sub = Subscription.objects.get(subscriber=request.user,
                                         subscribee=user)
         sub.delete()
-        return redirect("/index.html#user/_t" + str(c_type.pk) +
-                        "/_o" + str(user.pk))
+        return redirect("/index.html#!user/-t" + str(c_type.pk) +
+                        "/-o" + str(user.pk))
     else:
         return redirect('/register.html?')
 
