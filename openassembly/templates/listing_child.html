@@ -70,8 +70,7 @@
     <!--- if this was a winner, etc. -->
     {% if pp_consensus.ranked_decision.passed %}
         <span style="margin-left:10px;font-size:100%;">
-        {% if pp_consensus.ranked_decision.winner == object.pk %}
-            {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent and pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
+        {% if pp_consensus.ranked_decision.passed %}
                 <b>Passed</b> - 
             {% else %}
                 <b>Failed</b> - 
