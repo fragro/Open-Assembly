@@ -40,6 +40,20 @@ def percent(value):
 
 
 @block
+def pp_slice(context, nodelist, *args, **kwargs):
+    context.push()
+    namespace = get_namespace(context)
+
+    obj = kwargs.get('obj', None)
+
+    namespace['sliced'] = obj[0:200]
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
 def pp_datetime_less_than(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
