@@ -67,7 +67,7 @@
             {% endif %}
        {% endpp_get_tags_for_object %}
     </div>
-    {% if pp_consensus.ranked_decision.passed %}
+    {% if pp_consensus.ranked_decision.winner == object.pk %}
     <!--- if this was a winner, etc. -->
         <span style="margin-left:10px;font-size:100%;">
         {% if pp_consensus.ranked_decision.passed %}
