@@ -71,24 +71,24 @@
         <span style="margin-left:10px;font-size:100%;">
         {% if pp_consensus.ranked_decision.passed %}
                 <b>Passed</b> - 
-            {% else %}
-                <b>Failed</b> - 
-            {% endif %}
-                {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
-                    <b style="color:#56e110;">
-                {% else %}
-                    <b style="color:#e11010">
-                {% endif %}
-                {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
-                
-                {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
-                    <b style="color:#56e110;">
-                {% else %}
-                    <b style="color:#e11010">
-                {% endif %}
-                {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
-                </span>
+        {% else %}
+            <b>Failed</b> - 
         {% endif %}
+               
+        {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
+            <b style="color:#56e110;">
+        {% else %}
+            <b style="color:#e11010">
+        {% endif %}
+        {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
+        
+        {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
+            <b style="color:#56e110;">
+        {% else %}
+            <b style="color:#e11010">
+        {% endif %}
+        {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
+        </span>
 
 </div>
 {% endif %}
