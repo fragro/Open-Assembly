@@ -68,7 +68,6 @@
        {% endpp_get_tags_for_object %}
     </div>
     <!--- if this was a winner, etc. -->
-    {% if pp_consensus.ranked_decision.passed %}
         <span style="margin-left:10px;font-size:100%;">
         {% if pp_consensus.ranked_decision.passed %}
                 <b>Passed</b> - 
@@ -90,7 +89,6 @@
                 {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
                 </span>
         {% endif %}
-    {% endif %}
 
 </div>
 {% endif %}
