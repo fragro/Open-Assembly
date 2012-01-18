@@ -51,7 +51,10 @@ import datetime
 ForumDimension.objects.register(key='nom', name="Nomination", help_text='Nomination a Solution to a Question',
 								app_label='pirate_forum', model_class_name='Nomination', form_class_name='NominationForm', is_child=True)
 
-ForumDimension.objects.register(key='pol', name="Policy", help_text='Need to develop an internal policy proposal?.',
+ForumDimension.objects.register(key='pol', name="Policy", help_text='Single Policy with Timed Decision. Nominate your ideas for policy or action and then vote on those. Optionally you can also rank the resulting ideas.',
+								app_label='pirate_forum', model_class_name='Question', form_class_name='BlobForm')
+
+ForumDimension.objects.register(key='tem', name="Temp. Check", help_text='Temperature Check of idea over time, no set time for decision',
 								app_label='pirate_forum', model_class_name='Question', form_class_name='BlobForm')
 
 

@@ -111,10 +111,11 @@ def initiate_nextphase(consensus):
                     nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
                     ##calculate reporting percentage, the best is the winner
                     noms_passed = test_if_passes(nom_cons, nom_report, settings, ignore_reporting=True)
-                    if nom_cons > max_cons and noms_passed:
+                    if nom_cons > max_cons:
                         max_cons = nom_cons
                         max_report = nom_report
                         winner = nom.pk
+                    if noms_passed:
                         passes = True
 
         #what to do if there is no winner?

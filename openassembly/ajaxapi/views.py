@@ -322,8 +322,8 @@ def delete_object(request):
                                 mimetype='application/json')
 
     if request.method == 'POST':
-        content_type = int(request.POST[u'content_type'])
-        object_id = int(request.POST[u'object_id'])
+        content_type = request.POST[u'content_type']
+        object_id = request.POST[u'object_id']
         contype = ContentType.objects.get(pk=content_type)
         cons = Consensus.objects.get(object_pk=object_id)
         mod = contype.model_class()

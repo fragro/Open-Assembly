@@ -31,7 +31,7 @@
             <script type="text/javascript"> 
 
             $(function () {
-                $('#default_countdown').countdown({expiryUrl: "{{pp_tag.DOMAIN}}{% pp_url object=object template='detail.html' %}/_v", format:'dHM', until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}})}); 
+                $('#default_countdown').countdown({expiryUrl: "{{pp_tag.DOMAIN}}{% pp_url object=object template='detail.html' %}/_v", format:'dHM', until: new Date({{pp_consensus.consensus.phase.phase_change_dt.year}}, {{pp_consensus.consensus.phase.phase_change_dt.month}}-1, {{pp_consensus.consensus.phase.phase_change_dt.day}}, {{pp_consensus.consensus.phase.phase_change_dt.time.hour}}, {{pp_consensus.consensus.phase.phase_change_dt.time.minute}}, {{pp_consensus.consensus.phase.phase_change_dt.time.second}}+15)}); 
             });
 
             </script> 
@@ -63,7 +63,7 @@
 
             <script type="text/javascript"> 
             $(function () {
-                $('#default_countdown').countdown({expiryUrl: "{{pp_tag.DOMAIN}}{% pp_url object=object template='detail.html' %}/_d", format:'dHM', until: new Date({{pp_consensus.consensus.phase.decision_dt.year}}, {{pp_consensus.consensus.phase.decision_dt.month}}-1, {{pp_consensus.consensus.phase.decision_dt.day}}, {{pp_consensus.consensus.phase.decision_dt.time.hour}}, {{pp_consensus.consensus.phase.decision_dt.time.minute}}, {{pp_consensus.consensus.phase.decision_dt.time.second}})}); 
+                $('#default_countdown').countdown({expiryUrl: "{{pp_tag.DOMAIN}}{% pp_url object=object template='detail.html' %}/_d", format:'dHM', until: new Date({{pp_consensus.consensus.phase.decision_dt.year}}, {{pp_consensus.consensus.phase.decision_dt.month}}-1, {{pp_consensus.consensus.phase.decision_dt.day}}, {{pp_consensus.consensus.phase.decision_dt.time.hour}}, {{pp_consensus.consensus.phase.decision_dt.time.minute}}, {{pp_consensus.consensus.phase.decision_dt.time.second}}+15)}); 
             });
 
             </script> 

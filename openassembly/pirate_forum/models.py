@@ -245,10 +245,9 @@ class BlobForm(forms.ModelForm):
     description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="")
 
-    long_term = forms.ChoiceField(choices=votechoices, required=False, help_text="If this decision doesn't require a time of decision, ignore the following dates and times")
     end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
     decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
-    timezone = forms.ChoiceField(label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
+    timezone = forms.ChoiceField(required=False, label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
 
 
 class BlobEditForm(forms.ModelForm):

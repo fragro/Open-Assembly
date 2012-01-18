@@ -454,8 +454,8 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             parent.parent.save()
                         try:
                             #####relevant to VOTING and TIME
-                            long_term = form.cleaned_data['long_term']
-                            if long_term == 'SS':
+                            long_term = fd.key
+                            if long_term == 'pol':
                                 phase_change_dt = form.cleaned_data['end_of_nomination_phase']
                                 decision_dt = form.cleaned_data['decision_time']
                                 vote_algorithm = "Single Winner Schulze"
@@ -472,7 +472,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                     phase_change_dt = local_tz_to_utc(tz, form.cleaned_data['end_of_nomination_phase'])
                                     decision_dt = local_tz_to_utc(tz, form.cleaned_data['decision_time'])
 
-                            elif long_term == 'PE':
+                            elif long_term == 'tem':
                                 phase_change_dt = None
                                 decision_dt = None
                                 vote_algorithm = "Persistent Temperature Check"
