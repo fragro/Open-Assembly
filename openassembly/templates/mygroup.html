@@ -5,7 +5,7 @@
          <span><a style="width:100%;font-size:100%;" href="{{group.topic.get_absolute_list_url}}">{{group.topic.shortname}}</a></span>
          </p>
          <div>
-		    {% cani object=group.topic user=user %}
+		    {% cani object=group.topic user=request.user %}
 		        {% if pp_permissions.permission %}
 
 					<span style="float:right;"><a class="tooltip" href="{% pp_url object=group.topic template='facilitator.html' %}"><img src="/static/img/process.jpg"><span>Edit the group settings, invite members, add faciliators</span></a></span>  

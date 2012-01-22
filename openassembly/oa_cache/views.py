@@ -8,7 +8,7 @@ from pirate_forum.models import create_view, get_rangelist
 from django.template import RequestContext
 from pirate_topics.models import Topic
 from django.contrib.auth.models import User
-
+from settings import DOMAIN
 
 def get_object_or_none(ctype_id, obj_id):
     """
@@ -368,8 +368,11 @@ decreased the latency of the system.
         if hashed is None:
             hashed = ''
         empty = request.GET.get('empty', None)
-        if hashed == '' and empty != 'false':
-            hashed = 'landing'
+        if hashed == DOMAIN + '/' and empty != 'false' and not request.user.is_authenticated():
+            hashed = '/p/landing'
+        elif hashed == DOMAIN + '/' and empty != 'false' and request.user.is_authenticated():
+            hashed = '/p/landing'
+            #need to make this some sort of home feed for user
         if hashed != '':
             props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
             if props['render']:

@@ -42,18 +42,22 @@ def interpret_hash(h):
     h = h.replace(DOMAIN, '')[1:]
     l = h.split('/')
     retdict = {}
-    rendertype = l[1]
-    #rendertype = rendertype[1:]
-    key = str(rendertype)
-    for dim in l[2:]:
-        int_key = key + '/' + dim[0:2] + dim[2:]
-        int_key = DIMS[dim[0:2]]
-        if int_key == 'STR_KEY':
-            ctype_pk, obj_pk = reverse_pretty_url(dim[2:])
-            retdict['OBJ_KEY'] = obj_pk
-            retdict['TYPE_KEY'] = ctype_pk
-        else:
-            retdict[int_key] = dim[2:]
+    if len(l) >= 2:
+        rendertype = l[1]
+        #rendertype = rendertype[1:]
+        key = str(rendertype)
+        for dim in l[2:]:
+            int_key = key + '/' + dim[0:2] + dim[2:]
+            int_key = DIMS[dim[0:2]]
+            if int_key == 'STR_KEY':
+                ctype_pk, obj_pk = reverse_pretty_url(dim[2:])
+                retdict['OBJ_KEY'] = obj_pk
+                retdict['TYPE_KEY'] = ctype_pk
+            else:
+                retdict[int_key] = dim[2:]
+    else:
+        rendertype = ''
+        retdict = {}
     return h, rendertype, retdict
 
 
