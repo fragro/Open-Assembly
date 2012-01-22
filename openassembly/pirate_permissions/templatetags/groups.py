@@ -23,10 +23,15 @@ def has_permissions(context, nodelist, *args, **kwargs):
     name = kwargs.pop('name', None)
     obj = kwargs.pop('object', None)
 
-    perm = Permission.objects.filter(name=name, object_pk=obj.pk)
+    try:
+        attempt = obj.is_authenticated()
+    except:
+        attempt = True
+    if attempt:
+        perm = Permission.objects.filter(name=name, object_pk=obj.pk)
 
-    namespace['permissions'] = perm
-    namespace['count'] = perm.count()
+        namespace['permissions'] = perm
+        namespace['count'] = perm.count()
 
     output = nodelist.render(context)
     context.pop()
@@ -52,6 +57,7 @@ def pp_permgroup_list(context, nodelist, *args, **kwargs):
 
     return output
 
+
 @block
 def pp_permgroup_list(context, nodelist, *args, **kwargs):
 
@@ -71,7 +77,7 @@ def pp_permgroup_list(context, nodelist, *args, **kwargs):
     return output
 
 
-@block 
+@block
 def pp_permgroup_form(context, nodelist, *args, **kwargs):
 
     context.push()

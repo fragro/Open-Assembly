@@ -15,6 +15,8 @@ from django.core.exceptions import ValidationError
 
 from django.core.cache import cache as memcache
 
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY, DIM_KEY, START_KEY, END_KEY, PHASE_KEY
+
 from pirate_ranking.models import get_ranked_list
 from pirate_sources.models import URLSource
 
@@ -141,12 +143,12 @@ def pp_get_questions(context, nodelist, *args, **kwargs):
 
     if key is None:
         if parent is None:
-            key = 'list/' + '/-s' + str(start) + '/-e' + str(end) + '/-d' + str(dimension)
+            key = 'list/' + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
         else:
             ctype = ContentType.objects.get_for_model(parent)
-            key = 'list/-t' + str(ctype.pk) + '/-o' + str(parent.pk) + '/-s' + str(start) + '/-e' + str(end) + '/-d' + str(dimension)
+            key = 'list/' + TYPE_KEY + str(ctype.pk) + '/' + OBJ_KEY + str(parent.pk) + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
         if phase is not None:
-            key += '/-p' + str(phase)
+            key += '/' + PHASE_KEY + str(phase)
     l = ListCache.objects.get(content_type='item', template=phase)
 
     cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=True)
@@ -404,9 +406,8 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                     output = nodelist.render(context)
                     context.pop()
             content_type = ContentType.objects.get_for_model(obj.__class__)
-            path = "/index.html#!item" + "/-t" + str(content_type.pk) + "/-o" + str(obj.pk)
             namespace['form_complete'] = True
-            namespace['path'] = path
+            namespace['path'] = obj
             namespace['form'] = form
         else:
             form = blob_form(instance=obj)
@@ -553,10 +554,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
                         #if is_new: #if this is a new issue/consensus, send signal for reputation
                         #relationship_event.send(sender=issue,obj=issue,parent=issue.topic)
-                        content_type = ContentType.objects.get_for_model(blob.__class__)
-
-                        path = "/index.html#!item" + "/-t" + str(content_type.pk) + "/-o" + str(blob.pk)
-                        namespace['path'] = path
+                        namespace['path'] = blob
                         namespace['form_complete'] = True
                         #provide context with extension path
                         #raise HttpRedirectException(HttpResponseRedirect(path))

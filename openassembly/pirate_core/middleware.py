@@ -1,21 +1,22 @@
 from django.contrib.contenttypes.models import ContentType
 from django.template import add_to_builtins
-import datetime
-from pirate_forum.models import View, create_view
+from django.core.cache import cache
 
 
-TYPE_KEY = "-t"
-OBJ_KEY = "-o"
-START_KEY = "-s"
-END_KEY = "-e"
-DIM_KEY = "-d"
-SCROLL_KEY = "-c"
-RETURN_KEY = "-r"
-SIMPLEBOX_KEY = "-i"
-SEARCH_KEY = "-sc"
-CTYPE_KEY = "-l"
-PHASE_KEY = "-p"
-S_KEY = "-i"
+TYPE_KEY = "t-"
+OBJ_KEY = "o-"
+START_KEY = "s-"
+END_KEY = "e-"
+DIM_KEY = "d-"
+SCROLL_KEY = "c-"
+RETURN_KEY = "r-"
+SIMPLEBOX_KEY = "i-"
+SEARCH_KEY = "sc-"
+CTYPE_KEY = "l-"
+PHASE_KEY = "p-"
+S_KEY = "i-"
+STR_KEY = "k-"
+
 
 def human_readable_dim(d):
     if d == 'h':

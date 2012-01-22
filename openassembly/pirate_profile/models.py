@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
 from pirate_sources.models import IMGSource
 from pirate_social.models import Location
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY
 
 
 class Profile(models.Model):
@@ -20,7 +21,7 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         content_type2 = ContentType.objects.get_for_model(self.user)
-        path = "/index.html#user/_t" + str(content_type2.pk) + "/_o" + str(self.user.pk)
+        path = "/index.html#user/" + TYPE_KEY + str(content_type2.pk) + "/" + OBJ_KEY + str(self.user.pk)
         return path
 
 admin.site.register(Profile)

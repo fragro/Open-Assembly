@@ -11,15 +11,18 @@ from pirate_forum.models import get_children
 from django.contrib import admin
 from django.core.context_processors import csrf
 
-from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, PHASE_KEY, SEARCH_KEY, S_KEY
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, PHASE_KEY, SEARCH_KEY, S_KEY, STR_KEY
 from pirate_core.middleware import START_KEY, END_KEY, DIM_KEY, SCROLL_KEY, RETURN_KEY, SIMPLEBOX_KEY
+from pirate_forum.models import get_pretty_url, reverse_pretty_url
+
+from settings import DOMAIN
 
 
-DIMS = {TYPE_KEY: 'TYPE_KEY', OBJ_KEY: "OBJ_KEY", START_KEY: "START_KEY",
+DIMS = {TYPE_KEY: 'TYPE_KEY', OBJ_KEY: "OBJ_KEY", START_KEY: "START_KEY", STR_KEY: "STR_KEY",
             END_KEY: "END_KEY", DIM_KEY: "DIM_KEY", S_KEY: "S_KEY",
             SCROLL_KEY: "SCROLL_KEY", SEARCH_KEY: "SEARCH_KEY", CTYPE_KEY: "CTYPE_KEY", PHASE_KEY: "PHASE_KEY"}
 
-OPP_DIMS = {'TYPE_KEY': TYPE_KEY, "OBJ_KEY": OBJ_KEY, "START_KEY": START_KEY,
+OPP_DIMS = {'TYPE_KEY': TYPE_KEY, "OBJ_KEY": OBJ_KEY, "START_KEY": START_KEY, "STR_KEY": STR_KEY,
             "END_KEY": END_KEY, "DIM_KEY": DIM_KEY, "S_KEY": S_KEY,
             "SCROLL_KEY": SCROLL_KEY, "SEARCH_KEY": SEARCH_KEY, "CTYPE_KEY": CTYPE_KEY,  "PHASE_KEY": PHASE_KEY}
 
@@ -36,22 +39,26 @@ def initiate_update(obj_pk, content_pk):
 
 
 def interpret_hash(h):
+    h = h.replace(DOMAIN, '')[1:]
     l = h.split('/')
     retdict = {}
-    rendertype = l[0]
-    rendertype = rendertype[1:]
+    rendertype = l[1]
+    #rendertype = rendertype[1:]
     key = str(rendertype)
-    for dim in l[1:]:
-        key += '/' + dim[0:2] + dim[2:]
-        try:
-            retdict[DIMS[dim[0:2]]] = dim[2:]
-        except:
-            pass
-    return key, rendertype, retdict
+    for dim in l[2:]:
+        int_key = key + '/' + dim[0:2] + dim[2:]
+        int_key = DIMS[dim[0:2]]
+        if int_key == 'STR_KEY':
+            ctype_pk, obj_pk = reverse_pretty_url(dim[2:])
+            retdict['OBJ_KEY'] = obj_pk
+            retdict['TYPE_KEY'] = ctype_pk
+        else:
+            retdict[int_key] = dim[2:]
+    return h, rendertype, retdict
 
 
 def build_hash(rendertype, paramdict):
-    l = '#!' + rendertype
+    l = rendertype
     for k, v in paramdict.items():
         l += '/' + OPP_DIMS[k] + v
     return l
@@ -103,7 +110,7 @@ it is a ListCache, or a detailed content item/user if otherwise.
             try:
                 key = str(self.template) + '-' + str(context['object'].pk)
             except:
-                key = str(self.template) + '- anon'
+                key = str(self.template) + '-anon'
             obj = memcache.get(key)
             if obj is None or forcerender:
                 obj = render_to_string(self.template, context)

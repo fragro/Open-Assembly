@@ -162,7 +162,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     try:
         obj = get_object_or_none(ctype_id, obj_id)
     except:
-        return {'rendered_list': [{'html': render_to_string('dead_link.html'), 'div': '#content', 'type': 'html'}],
+        return {'rendered_list': [{'html': render_to_string('dead_link.html'), 'ctype_id': ctype_id, 'obj_id': obj_id, 'div': '#content', 'type': 'html'}],
                  'paramdict': {}, 'render': True}
     if dimension is not None and not empty:
         render = False
@@ -365,13 +365,11 @@ decreased the latency of the system.
     if request.method == 'GET':
         data = {'output': []}
         hashed = request.GET.get('hash', None)
-        if hashed is not None:
-            hashed = hashed[1:]
-        else:
+        if hashed is None:
             hashed = ''
         empty = request.GET.get('empty', None)
         if hashed == '' and empty != 'false':
-            hashed = '!landing'
+            hashed = 'landing'
         if hashed != '':
             props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
             if props['render']:
@@ -392,7 +390,7 @@ decreased the latency of the system.
         #we just want to update the request changes and return what is rendered
         q = QueryDict('', mutable=True)
         p = request.POST.copy()
-        hashed = p.pop('hash', '')[0][1:]
+        hashed = p.pop('hash', '')[0]
         for k, v in p.items():
             #cut off javascript 'form[...]'' in key to get ...
             q[k[5:-1]] = v
@@ -424,8 +422,6 @@ decreased the latency of the system.
     if request.method == 'GET':
         data = {'output': []}
         hashed = request.GET.get('hash', None)
-        if hashed is not None:
-            hashed = hashed[1:]
         div = request.GET.get('div', None)
         try:
             user = User.objects.get(pk=request.GET.get('user', None))

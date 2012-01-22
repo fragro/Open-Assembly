@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY, START_KEY, END_KEY, DIM_KEY
+from django.template import Context, Template
 
 # First, define the Manager subclass.
 class TopicManager(models.Manager):
@@ -19,7 +21,7 @@ class NullManager(models.Manager):
 class Topic(models.Model):
     #Topic: Category to place issues, includes parent and child for hierarchical topics
     summary = models.CharField(max_length=200, unique=True)
-    shortname = models.CharField(max_length=20, unique=True)
+    shortname = models.CharField(max_length=23, unique=True)
     description = models.CharField(max_length=600, unique=True)
     submit_date = models.DateTimeField('date published', auto_now_add=True)
     parent = models.ForeignKey('self', null=True, blank=True)
@@ -35,7 +37,7 @@ class Topic(models.Model):
     clean_objects = TopicManager()
 
     def __unicode__(self):
-        return self.summary
+        return self.shortname
 
     def get_verbose_name(self):
         return 'topic'
@@ -44,14 +46,14 @@ class Topic(models.Model):
         return True
 
     def get_absolute_url(self):
-        content_type = ContentType.objects.get_for_model(self.__class__)
-        path = "/index.html#!group" + "/-t" + str(content_type.pk) + "/-o" + str(self.pk) + "/-dhn"
-        return path
+        t = Template("{% load pp_url%}{% pp_url template='group.html' object=object %}")
+        c = Context({"object": self})
+        return t.render(c)
 
     def get_absolute_list_url(self):
-        content_type = ContentType.objects.get_for_model(self.__class__)
-        path = "/index.html#!list" + "/-t" + str(content_type.pk) + "/-o" + str(self.pk) + "/-s0/-e20/-dn"
-        return path
+        t = Template("{% load pp_url%}{% pp_url template='issues.html' object=object start=0 end=20 dimension='n' %}")
+        c = Context({"object": self})
+        return t.render(c)
 
 
 class MyGroup(models.Model):

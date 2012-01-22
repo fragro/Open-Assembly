@@ -9,6 +9,9 @@ from pirate_permissions.models import Permission
 from django.utils.translation import ugettext as _
 from djangotoolbox.fields import ListField
 from django.db.models import get_model, get_app
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY
+from django.template import Context, Template
+
 
 from django import forms
 import random
@@ -19,6 +22,35 @@ from pirate_core.fields import JqSplitDateTimeField
 from pirate_core.widgets import JqSplitDateTimeWidget
 
 from markitup.widgets import MarkItUpWidget
+
+
+def get_pretty_url(ctype_pk, obj_pk):
+    ctype = ContentType.objects.get(pk=ctype_pk)
+    obj = ctype.get_object_for_this_type(pk=obj_pk)
+    try:
+        key = obj.__unicode__().replace(' ', '-')
+        val, is_new = cached_url.objects.get_or_create(slug=key, obj_pk=obj_pk, ctype_pk=ctype_pk)
+
+        #cache.set('/' + key, (ctype_pk, obj_pk))
+    except:
+        raise ValueError(obj.__unicode__())
+    return key
+
+
+def reverse_pretty_url(obj_str):
+    val, is_new = cached_url.objects.get_or_create(slug=obj_str)
+    if is_new == True:
+        raise ValueError(obj_str)
+    return val.ctype_pk, val.obj_pk
+
+
+class cached_url(models.Model):
+    slug = models.CharField(max_length=100)
+    obj_pk = models.CharField(max_length=30)
+    ctype_pk = models.CharField(max_length=30)
+
+    def __unicode__(self):
+        return self.slug
 
 
 def get_rangelist(start, end, count):
@@ -132,9 +164,9 @@ class ForumBlob(models.Model):
         return True
 
     def get_absolute_url(self):
-        content_type = ContentType.objects.get_for_model(self.__class__)
-        path = "/index.html#!item" + "/-t" + str(content_type.pk) + "/-o" + str(self.pk)
-        return path
+        t = Template("{% load pp_url%}{% pp_url template='detail.html' object=object %}")
+        c = Context({"object": self})
+        return t.render(c)
 
     class Meta:
         abstract = True
@@ -301,3 +333,4 @@ admin.site.register(ForumDimension)
 admin.site.register(DimensionTracker)
 admin.site.register(Question)
 admin.site.register(Nomination)
+admin.site.register(cached_url)

@@ -255,10 +255,15 @@ def oa_mygroup_users(context, nodelist, *args, **kwargs):
 
     obj = kwargs.get('object', None)
 
-    mygroups = MyGroup.objects.filter(topic=obj)
+    try:
+        mygroups = MyGroup.objects.filter(topic=obj)
+        cnt = mygroups.count()
+    except:
+        mygroups = None
+        cnt = 0
 
     namespace['groups'] = mygroups
-    namespace['count'] = mygroups.count()
+    namespace['count'] = cnt
 
     output = nodelist.render(context)
     context.pop()
@@ -329,9 +334,10 @@ def pp_getcreate_setting(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     topic = kwargs.get('topic', None)
-
-    settings, is_new = GroupSettings.objects.get_or_create(topic=topic)
-
+    if topic is not None:
+        settings, is_new = GroupSettings.objects.get_or_create(topic=topic)
+    else:
+        settings = None
     namespace['settings'] = settings
 
     output = nodelist.render(context)
@@ -474,7 +480,7 @@ class TopicForm(forms.ModelForm):
     summary = forms.CharField( max_length=100,
               widget=forms.TextInput(
                 attrs={'size':'50', 'class':'inputText'}),label="Comprehensive Name of the Group")
-    shortname = forms.CharField( max_length=20,
+    shortname = forms.CharField( max_length=23,
               widget=forms.TextInput(
                 attrs={'size':'50', 'class':'inputText'}),label="Short Name (20 Characters or Less)")
     more_info = forms.CharField(required=False, max_length=100,

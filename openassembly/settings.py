@@ -51,9 +51,9 @@ try:
     BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
     BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
     BROKER_VHOST = '/'
-except:
 
-    DOMAIN_NAME = 'http://localhost:8000'
+except:
+    DOMAIN_NAME = 'http://localhost:8000/'
     DOMAIN = 'http://localhost:8000'
 
     DEBUG = True
@@ -172,6 +172,7 @@ MIDDLEWARE_CLASSES = (
     'pirate_core.middleware.UrlMiddleware',
     'customtags.middleware.AddToBuiltinsMiddleware',
     'minidetector.middleware.MobileMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -196,14 +197,17 @@ GEOIP_PATH = "static/GeoIP/"
 GEOIP_CACHE_TYPE = 1
 DEFAULT_TRACKING_TEMPLATE = 'map.html'
 
-#memcache
+# some johnny settings
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
+    'default': dict(
+        BACKEND='johnny.backends.memcached.MemcachedCache',
+        LOCATION=['127.0.0.1:11211'],
+        JOHNNY_CACHE=True,
+        TIMEOUT=0,
+    )
 }
 
+JOHNNY_MIDDLEWARE_KEY_PREFIX = 'jc_openassembly'
 
 LOGGING = {
     'version': 1,

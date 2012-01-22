@@ -140,7 +140,7 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
                 type_class = ContentType.objects.get(app_label=str(fd.app_label), model=str(fd.model_class_name).lower())
                 issue_list = issue_list.filter(content_type=type_class)
             except Exception, e:
-                raise ValueError(str(fd.app_label) + " , " + fd.model_class_name)
+                raise ValueError(str(ctype_list))
                 #invalid ctype_list key
         if phase:
             issue_list = issue_list.filter(phasename=phase)

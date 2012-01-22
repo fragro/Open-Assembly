@@ -6,21 +6,23 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 import string
 
+
 from customtags.decorators import function_decorator
 register = template.Library()
 function = function_decorator(register)
 
-from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, STR_KEY
 from pirate_core.middleware import START_KEY, END_KEY, DIM_KEY, SCROLL_KEY, RETURN_KEY, SIMPLEBOX_KEY
+from pirate_forum.models import get_pretty_url
 
 '''
 This file contains the tag responsible for creating useful urls within pp templates.
 '''
 #quick hack until I push this to the oa_cache admin interface
-TEMPLATE_DICT = {'/user_profile.html': '/index.html#!user', '/None': '/?hash=#', '/issues.html': '/index.html#!list',
-                    '/topics.html': '/index.html#!topics', '/faq.html': '/index.html#!faq',
-                    '/200.html': '/index.html#!200', '/detail.html': '/index.html#!item',
-                    '/submit.html': '/index.html#!submit', '/arpv.html': '/index.html#!arpv', '/register.html': '/register.html?'}
+TEMPLATE_DICT = {'/user_profile.html': '/p/user', '/None': '/?hash=#', '/issues.html': '/p/list',
+                    '/topics.html': '/p/topics', '/faq.html': '/p/faq',
+                    '/200.html': '/p/200', '/detail.html': '/p/item',
+                    '/submit.html': '/p/submit', '/arpv.html': '/p/arpv', '/register.html': '/register.html?'}
 
 
 @function
@@ -140,41 +142,43 @@ def get_reverse(pattern, kwargs, content_type_id=None,
     obj_id=None, start=None, end=None, dimension=None, scroll_to=None,
     returnurl=None, htmlsafe=None, simplebox=None, is_hash=True, sort_type=None):
     try:
-        try:
-            val = reverse(pattern, kwargs=kwargs)
-            if val in TEMPLATE_DICT:
-                url = TEMPLATE_DICT[val]
-            else:
-                url = '/index.html#!' + str(val[1:-5])
-            inter = ''
-            j = '/'
-            qu = '/'
-        except:
-            url = reverse(pattern, kwargs=kwargs)
-            inter = '='
-            j = '&'
-            qu = '?'
-        qs = []
-        if simplebox is not None:
-            qs.append(SIMPLEBOX_KEY + "=s")
-        if content_type_id is not None and obj_id is not None:
-            qs.append(TYPE_KEY + inter + str(content_type_id))
-            qs.append(OBJ_KEY + inter + str(obj_id))
-        if start is not None and end is not None:
-            qs.append(START_KEY + inter + str(start))
-            qs.append(END_KEY + inter + str(end))
-        if dimension is not None:
-            qs.append(DIM_KEY + inter + str(dimension))
-        if sort_type is not None:
-            qs.append(CTYPE_KEY + inter + str(sort_type))
-        if scroll_to is not None:
-            qs.append(SCROLL_KEY + inter + str(scroll_to))
-        qs = qu + j.join(qs)
-        if htmlsafe is not None:
-            qs = qs.replace("&", "%26")
-        if url == "/None":
-            url = '/'
-        return url + qs
+        val = reverse(pattern, kwargs=kwargs)
+        if val in TEMPLATE_DICT:
+            url = TEMPLATE_DICT[val]
+        else:
+            url = '/p/' + str(val[1:-5])
+        inter = ''
+        j = '/'
+        qu = '/'
     except:
-        pattern = str(pattern == None)
-        return pattern
+        url = reverse(pattern, kwargs=kwargs)
+        inter = '='
+        j = '&'
+        qu = '?'
+    qs = []
+    if simplebox is not None:
+        qs.append(SIMPLEBOX_KEY + "=s")
+    if content_type_id is not None and obj_id is not None:
+        #let's make the object part of the url pretty
+        obj_str = get_pretty_url(content_type_id, obj_id)
+        qs.append(STR_KEY + inter + obj_str)
+        #qs.append(TYPE_KEY + inter + str(content_type_id))
+        #qs.append(OBJ_KEY + inter + str(obj_id))
+    if start is not None and end is not None:
+        qs.append(START_KEY + inter + str(start))
+        qs.append(END_KEY + inter + str(end))
+    if dimension is not None:
+        qs.append(DIM_KEY + inter + str(dimension))
+    if sort_type is not None:
+        qs.append(CTYPE_KEY + inter + str(sort_type))
+    if scroll_to is not None:
+        qs.append(SCROLL_KEY + inter + str(scroll_to))
+    if len(qs) > 0:
+        qs = qu + j.join(qs)
+    else:
+        qs = ''
+    if htmlsafe is not None:
+        qs = qs.replace("&", "%26")
+    if url == "/None":
+        url = '/'
+    return url + qs

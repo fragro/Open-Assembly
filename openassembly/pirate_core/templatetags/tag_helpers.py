@@ -36,7 +36,10 @@ from django.template.defaultfilters import floatformat
 def percent(value):
     if value is None:
         return None
-    return floatformat(value * 100.0, 0) + '%'
+    try:
+        return floatformat(value * 100.0, 0) + '%'
+    except:
+        return '0 %'
 
 
 @block

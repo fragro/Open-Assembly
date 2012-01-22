@@ -21,3 +21,4 @@ class BaseRankingAbstractModel(models.Model):
     class Meta:
         unique_together = ("score", "dimension")
         abstract = True
+

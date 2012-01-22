@@ -36,6 +36,7 @@ parser.register("file", r'[\w0-9\_]+\.?[\w0-9\_]*')
 
 urlpatterns = patterns('',
     (r'^$', welcome_page),
+    (r'^p/', welcome_page),
     (r'^tulsa/', home_page),
     (r'^politics/', welcome_page),
     (r'^politics', welcome_page),
