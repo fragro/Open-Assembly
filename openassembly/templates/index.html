@@ -46,7 +46,6 @@
         <script type="text/javascript" src="/static/js/etherpad.js"></script>
 
         <script type="text/javascript" src="/static/jquery.ba-hashchange.min.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.slideto.js"></script>
 
         <script type="text/javascript" src="/static/js/jquery.cycle.lite.js"></script>
         <script type="text/javascript" src="/static/js/motionpack.js"></script>
@@ -67,6 +66,8 @@
             
         <link rel="stylesheet" type="text/css" href="/static/chosen.css">
         <script type="text/javascript" src="/static/chosen.jquery.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.slideto.js"></script>
+
 
         {% block css %}
 
@@ -76,16 +77,15 @@
 
         {% endblock %}
 
+
     <script type="text/javascript">
 
-
-        $(function(){
-         
-        // Bind the event.
-        $(window).hashchange( function(){
-        // Alerts every time the hash changes!
+        function getContent(){
+//            if (currentXhr != null && typeof currentXhr != 'undefined') {
+//                currentXhr.abort();
+//            }
             d = {};
-            d['hash'] = location.hash;
+            d['hash'] = location.href;
             d['empty'] = ($('#content').is(':empty'));
             $.get("/load_page/", d,
               function(OAdata) {
@@ -114,12 +114,36 @@
                     $('html').slideto({'slide_duration': "fast", 'highlight': false});
                   }
 
-             }, "json");            
-                //alert( location.hash );
-        }) 
-            // Trigger the event (useful on page load).
-            $(window).hashchange();  
-        });
+             }, "json");   
+        }
+
+        function allowPush(e, url, that) {
+            return (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey &&
+                url != ''  && url.indexOf('javascript') == -1 && url.indexOf('http://') == -1 && url.indexOf('https://') == -1 &&
+                (typeof that.attr('target') == 'undefined' || that.attr('target') == '') 
+                && !that.hasClass('nobbq') && typeof $.data(that.get(0), 'events') == 'undefined' && typeof disablePush == 'undefined')
+        }
+
+        $(document).ready(function() {
+
+            if (history.pushState) {
+                $('body').delegate('a', 'click', function (e) {
+                    var that = $(this);
+                    var url = (typeof that.attr('href') != 'undefined') ? that.attr('href').replace('{{DOMAIN}}', '') : '';
+
+                    if (allowPush(e, url, that)) {
+                        e.preventDefault();
+                        history.pushState({load:true}, '', url);
+                        getContent();
+                    }           
+                });
+                history.replaceState({load:true}, '');
+                getContent();
+            }
+            // when the page first loads update the history entry with the URL
+            // needed to recreate the 'first' page with AJAX
+
+    });
 
         $(document).ready(function(){
 
@@ -282,7 +306,7 @@
                     <div class="top">
                         <!-- Logo -->
 
-                        <a href="/index.html#!landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a><span><div id="header_title" class="header_title"></div></span>
+                        <a href="/p/landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a><span><div id="header_title" class="header_title"></div></span>
                         <!-- Nav -->
                         <ul id="topnav">
                             {% include 'topnav.html' %}
@@ -356,14 +380,26 @@
 
 
                                 <div class="intro">
-                                <h2>Open Assembly is <br>Open Source Democracy</h2>
-                                <p>
-                                <b>A Voting Platform for the Internet</b><br> Secured Against Manipulation
-                                </p>
-                                <p>
-                                <b>Activist Driven Open Source</b><br> Feature Development For the People
-                                </p>
-                                <p><b>Occupy The Internet</b></p>
+
+                             {% pp_user_login_form request=request dimension=request.dimension %}
+                                <form method="post" action="">
+                                        Username: 
+                                            <br> {{ pp_login.form.name }}<br>
+                                        Password:<br> {{ pp_login.form.password }}<br><a style="font-size:80%;" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a><br><br>
+                                        {{ pp_login.form.form_id}}
+                                        {% csrf_token %}
+                                    
+                                      <input type="submit" class="button green" value="Login">
+                                    <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
+
+                                    </form>
+                            {% endpp_user_login_form %}
+
+
+                                <h2 style="margin-bottom:20px;">Open Assembly is <br>Open Source Democracy</h2>
+
+                                <a href="{%pp_url template='register.html' %}" class="button">Register</a>
+
                                 <p><a href="/index.html#!faq">Learn More</a></p>
 
                                 </div>
@@ -375,17 +411,17 @@
                                 </div>
 
                             </div>
-                            {% if user.is_authenticated %}
+                            {% if request.user.is_authenticated %}
                                 {% comment %}
 
                                 <div class="badges">
 
                                     <ul>
                                         {% pp_get_badges user=request.user %}
-                                            <li><a href="/index.html#!badges"><img src="/static/img/badges.jpg" alt="Bell"> {{pp_badge.total}} Badge{{pp_badge.total|pluralize}}</a></li>
+                                            <li><a href="/p/badges"><img src="/static/img/badges.jpg" alt="Bell"> {{pp_badge.total}} Badge{{pp_badge.total|pluralize}}</a></li>
                                         {% endpp_get_badges %}
                                         {% oa_get_verifications user=request.user %}
-                                            <li><a href="/index.html#!arpv"><img src="/static/img/badge_gold_star.jpg" alt="Bell"> {{oa_ver.count}} Verification{{oa_ver.count|pluralize}}</a></li>
+                                            <li><a href="/p/arpv"><img src="/static/img/badge_gold_star.jpg" alt="Bell"> {{oa_ver.count}} Verification{{oa_ver.count|pluralize}}</a></li>
                                         {% endoa_get_verifications %}
 
 
@@ -399,7 +435,7 @@
 
                                     <ul id="mygroup" class="recent_activity">
                                         <span><b>MyGroups - <a href="{% pp_url template='create_group.html' %}">Create New</a></b></span>
-                                         {% pp_mygroups user=user %}
+                                         {% pp_mygroups user=request.user %}
                                             {% for group in pp_topic.mygroups %}  
                                                 {% include 'mygroup.html' %}
                                             {% endfor %}

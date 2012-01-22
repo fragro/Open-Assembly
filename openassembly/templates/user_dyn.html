@@ -199,26 +199,28 @@
                                     {% pp_get_reputation_events user=object start=start end=end %}
                                     <tbody>
                                     {% for note in pp_reputation.reputation_events %}
-                                        {% cycle "<tr>" "" %}
-                                            {% cycle "<td class='left'>" "<td>" %}
-                                                {% if note.related_object.user == object %}
-                                                    <span class="icon orange_bg">{{note.dimension|title}}</span>
-                                                {% else %}
-                                                    <span class="icon">{{note.dimension|title}}</span>
-                                                {% endif %}
-                                                <p><a href="{{note.get_absolute_url}}">
-                                                    {% if note.related_object.content_object.summary %}                                                
-                                                        {{note.related_object.content_object.summary}}
-                                                    {% else %}
-                                                        {% if note.related_object %}
-                                                        {{note.related_object}}  
+                                    {% if note.related_object.user != object %}
+                                            {% cycle "<tr>" "" %}
+                                                {% cycle "<td class='left'>" "<td>" %}
+                                                    
+                                                        <span class="icon">{{note.dimension|title}}</span>
+                                                    <p><a href="{{note.get_absolute_url}}">
+                                                        {% if note.related_object.content_object.summary %}                                                
+                                                            {{note.related_object.content_object.summary}}
                                                         {% else %}
-                                                            {{note.pk}}
-                                                        {% endif %}  
-                                                    {% endif %}
-                                                <br></a></p>
-                                            </td>
-                                        {% cycle "" "</tr>" %}
+                                                            {% if note.related_object %}
+                                                            {{note.related_object}}  
+                                                            {% else %}
+                                                                {{note.pk}}
+                                                            {% endif %}  
+                                                        {% endif %}
+
+                                                    <br></a></p>
+
+                                                </td>
+                                            {% cycle "" "</tr>" %}
+                                        {% endif %}
+
                                     {% endfor %} 
                                     <tr>
                                         <td class="left" colspan="2"><small><a href="{% pp_url template='user_profile.html' dimension='activity' object=object start=0 end=20 %}">(view all)</a></small></td>
