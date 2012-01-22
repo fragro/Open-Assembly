@@ -1634,3 +1634,16 @@ h2.active {background-position: left bottom;}
 #mygroup a:hover {background:#ffffff; text-decoration:none;} /*BG color is a must for IE6*/
 #mygroup a.tooltip span {display:none; padding:2px 3px; margin-left:8px; margin-top:20px; width:130px;}
 #mygroup a.tooltip:hover span{display:inline; position:absolute; background:#ffffff; border:1px solid #cccccc; color:#6c6c6c;}
+
+.landinglist li {
+    list-style:none;
+}
+.landinglist li h3 {
+    margin-bottom:5px;
+    font-size:120%;
+    font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
+}
+.landinglist li p {
+    margin-bottom:5px;
+    margin-left:10px;
+}

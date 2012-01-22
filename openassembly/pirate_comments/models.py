@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
+from django.template import Context, Template
+
 #from ModuleDeliberation.models import Comment
 from django.utils.translation import ugettext as _
 
@@ -30,8 +32,9 @@ class Comment(models.Model):
         return self.user.username + ":" + str(self.submit_date)
 
     def get_absolute_url(self):
-        path = "/index.html#!item" + "/-t" + str(self.content_type.pk) + "/-o" + str(self.object_pk) + "/-ccomment" + str(self.pk)
-        return path
+        t = Template("{% load pp_url%}{% pp_url template='detail.html' object=object scroll_to=scroll_to %}")
+        c = Context({"object": self.content_object, 'scroll_to': 'comment' + str(self.pk)})
+        return t.render(c)
 
 
 def get_children(object_pk, cur_comment):

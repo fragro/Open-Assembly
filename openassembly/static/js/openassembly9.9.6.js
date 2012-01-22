@@ -140,7 +140,7 @@ function checkDelete(ctype_id, obj_id)
          $.post("/objectdelete/", {content_type: ctype_id, object_id: obj_id},
               function(data) {
                 if(data.FAIL !== true){
-                  js_redirect('content_delete.html');
+                  js_redirect('/p/content_delete');
                 }
              }, "json");
      }
@@ -208,7 +208,7 @@ else{
 function addObject(e){
     e.preventDefault();
     var form = $(e.target).serializeObject();
-    $.post("/load_page/", {form: form, hash: location.hash},
+    $.post("/load_page/", {form: form, hash: location.href},
         function(data) {
                 for(var item in data.output){
                     if(data.output[item].type == 'prepend'){
@@ -225,7 +225,7 @@ function addObject(e){
                     }
                     //now we need to gather side-effect data and render all side-effects
                     var se = $(data.output[item].div + '_side_effect').html();
-                    $.get("/side_effect/", {key: location.hash, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
+                    $.get("/side_effect/", {key: location.href, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
                       function(data2) {
                           for(var item in data2.output){
                             if(data2.output[item].type == 'redirect'){
@@ -257,7 +257,7 @@ function addObject(e){
   }
 
 function load_usersaltcache(div, user, obj_pk, ctype_pk){
-    $.get("/load_usersaltcache/", {div: div, hash: location.hash, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
+    $.get("/load_usersaltcache/", {div: div, hash: location.href, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
         function(data) {
                 for(var item in data.output){
                     if(data.output[item].type == 'prepend'){
@@ -274,7 +274,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                     }
                     //now we need to gather side-effect data and render all side-effects
                     var se = $(data.output[item].div + '_side_effect').html();
-                    $.get("/side_effect/", {key: location.hash, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
+                    $.get("/side_effect/", {key: location.href, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
                       function(data2) {
                           for(var item in data2.output){
                             if(data2.output[item].type == 'redirect'){

@@ -190,16 +190,18 @@ def pp_get_source(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
 
-    object_pk = kwargs.get('object_pk', None)
+    obj = kwargs.get('object', None)
     t = kwargs.get('type', None)
 
     src = None
-
-    if object_pk is not None:
-        if t == 'url':
-            src = URLSource.objects.get(pk=object_pk)
-        elif t == 'img':
-            src = IMGSource.objects.get(pk=object_pk)
+    try:
+        if obj is not None:
+            if t == 'url':
+                src = URLSource.objects.get(pk=obj.pk)
+            elif t == 'img':
+                src = IMGSource.objects.get(pk=obj.pk)
+    except:
+        pass
 
     namespace['src'] = src
 
@@ -217,22 +219,26 @@ def pp_get_sources(context, nodelist, *args, **kwargs):
     obj = kwargs.get('object', None)
     t = kwargs.get('type', None)
 
-    if obj:
-        if t == 'url':
-            namespace['sources'] = URLSource.objects.filter(object_pk=obj.pk, is_video=False)
-        #namespace['videosource_list'] = URLSource.objects.filter(object_pk=obj.pk, is_video=True)
-        elif t == 'img':
-            l = IMGSource.objects.filter(object_pk=obj.pk).order_by('submit_date')
-            namespace['sources'] = l
-            cnt = l.count()
-            if cnt > 0:
-                try:
-                    namespace['cur_img'] = l.filter(current=True)[0]
-                except:
+    try:
+        if obj is not None:
+            if t == 'url':
+                namespace['sources'] = URLSource.objects.filter(object_pk=obj.pk, is_video=False)
+            #namespace['videosource_list'] = URLSource.objects.filter(object_pk=obj.pk, is_video=True)
+            elif t == 'img':
+                l = IMGSource.objects.filter(object_pk=obj.pk).order_by('submit_date')
+                namespace['sources'] = l
+                cnt = l.count()
+                if cnt > 0:
+                    try:
+                        namespace['cur_img'] = l.filter(current=True)[0]
+                    except:
+                        namespace['cur_img'] = None
+                else:
                     namespace['cur_img'] = None
-            else:
-                namespace['cur_img'] = None
-            namespace['count'] = cnt
+                namespace['count'] = cnt
+    except:
+        namespace['cur_img'] = None
+        namespace['sources'] = []
 
     output = nodelist.render(context)
     context.pop()
