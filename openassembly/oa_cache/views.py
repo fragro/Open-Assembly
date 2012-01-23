@@ -10,6 +10,7 @@ from pirate_topics.models import Topic
 from django.contrib.auth.models import User
 from settings import DOMAIN
 
+
 def get_object_or_none(ctype_id, obj_id):
     """
 Returns object with ID and ContentType ID

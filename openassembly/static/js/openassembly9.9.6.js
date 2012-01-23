@@ -304,3 +304,49 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
             //if(data.POST){}  
         }, "json");
   }
+
+function getContent(){
+//            if (currentXhr != null && typeof currentXhr != 'undefined') {
+//                currentXhr.abort();
+//            }
+    d = {};
+    d['hash'] = location.href;
+    d['empty'] = ($('#content').is(':empty'));
+    $.get("/load_page/", d,
+      function(OAdata) {
+          if(OAdata.empty_content){$('#content').html('');}
+          if(OAdata.FAIL != true){
+                for(var item in OAdata.output){
+                    if(OAdata.output[item].type == 'prepend'){
+                      $(OAdata.output[item].div).prepend(OAdata.output[item].html); 
+                    } 
+                    if(OAdata.output[item].type == 'append'){
+                        $(OAdata.output[item].div).append(OAdata.output[item].html); 
+                    } 
+                    if(OAdata.output[item].type == 'html'){
+                        $(OAdata.output[item].div).html(OAdata.output[item].html); 
+                    }
+                }
+              //$("#content").append(data.POST);
+              
+              //location.hash = data.url
+          }
+          if(OAdata.FAIL == true){
+              //history.go(-1);
+          }
+
+          if(OAdata.scroll_to != null){
+            $(OAdata.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
+          }
+          else{
+            $('html').slideto({'slide_duration': "fast", 'highlight': false});
+          }
+
+     }, "json");   
+}
+
+function allowPush(e, url, that) {
+    return (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey &&
+        url != ''  && url.indexOf('#')==-1 && url.indexOf('javascript') == -1 && url.indexOf('http://') == -1 && url.indexOf('https://') == -1 && (typeof that.attr('target') == 'undefined' || that.attr('target') == '') 
+        && !that.hasClass('nobbq') && typeof $.data(that.get(0), 'events') == 'undefined' && typeof disablePush == 'undefined')
+}

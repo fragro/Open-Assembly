@@ -12,29 +12,37 @@
 {% load json_filters %}
 {% load platformtags %}
 {% load tag_helpers %}
+{% load cachetags %}
 
 <!doctype html>
 <html lang="en">
+
+
     <head>
+        <object>
+            <noscript>
+                {% pp_get_cached_data request=request %}
+            </noscript>
+        </object>
         <title>
         {% block title %}
-        {% if request.object %}
-            Open Assembly | Beta | {{request.object.summary|title}}{{request.object.username}}
+        {% if pp_cache.object %}
+            Open Assembly | Beta | {{pp_cache.object.summary|title}}{{pp_cache.object.username}}
         {% else %}   
             Open Assembly
         {% endif %}
         {% endblock %}
         </title>
 
-            <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-            <meta property="og:title" content="{{pp_tag.title}}"/>
-            <meta property="og:locale" content="og:locale:alternate"/>
-            
-            <meta property="og:image" content="{{pp_tag.image}}"/>
-            <meta property="og:site_name" content="OpenAssembly"/>
-            <meta property="og:description"
-                  content="{{pp_tag.description}}"/>
+        <meta property="og:title" content="{{pp_cache.object.summary|title}}{{pp_cache.object.username}}"/>
+        <meta property="og:locale" content="og:locale:alternate"/>
+        
+        <meta property="og:image" content="{{pp_tag.image}}"/>
+        <meta property="og:site_name" content="OpenAssembly"/>
+        <meta property="og:description"
+              content="{{pp_cache.object.description}}"/>
 
 
         <link rel="stylesheet" type="text/css" href="/static/style9.9.7.css">
@@ -79,52 +87,6 @@
 
 
     <script type="text/javascript">
-
-        function getContent(){
-//            if (currentXhr != null && typeof currentXhr != 'undefined') {
-//                currentXhr.abort();
-//            }
-            d = {};
-            d['hash'] = location.href;
-            d['empty'] = ($('#content').is(':empty'));
-            $.get("/load_page/", d,
-              function(OAdata) {
-                  if(OAdata.empty_content){$('#content').html('');}
-                  if(OAdata.FAIL != true){
-                        for(var item in OAdata.output){
-                            if(OAdata.output[item].type == 'prepend'){
-                              $(OAdata.output[item].div).prepend(OAdata.output[item].html); 
-                            } 
-                            if(OAdata.output[item].type == 'append'){
-                                $(OAdata.output[item].div).append(OAdata.output[item].html); 
-                            } 
-                            if(OAdata.output[item].type == 'html'){
-                                $(OAdata.output[item].div).html(OAdata.output[item].html); 
-                            }
-                        }
-                      //$("#content").append(data.POST);
-                      
-                      //location.hash = data.url
-                  }
-                  if(OAdata.FAIL == true){
-                      //history.go(-1);
-                  }
-
-                  if(OAdata.scroll_to != null){
-                    $(OAdata.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
-                  }
-                  else{
-                    $('html').slideto({'slide_duration': "fast", 'highlight': false});
-                  }
-
-             }, "json");   
-        }
-
-        function allowPush(e, url, that) {
-            return (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey &&
-                url != ''  && url.indexOf('#')==-1 && url.indexOf('javascript') == -1 && url.indexOf('http://') == -1 && url.indexOf('https://') == -1 && (typeof that.attr('target') == 'undefined' || that.attr('target') == '') 
-                && !that.hasClass('nobbq') && typeof $.data(that.get(0), 'events') == 'undefined' && typeof disablePush == 'undefined')
-        }
 
         $(document).ready(function() {
 
@@ -301,6 +263,7 @@
 
     </head>
     <body>
+
         <div id="wrap">
             
             <div id="header">
@@ -308,19 +271,21 @@
                     <div class="top">
                         <!-- Logo -->
 
-                        <a href="/p/landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a><span><div id="header_title" class="header_title"></div></span>
+                        <a href="/p/landing" id="logo"><img src="/static/img/open_assembly_logo.png" alt="Open Assembly logo"></a>
+                        <span>
+                            <div id="header_title" class="header_title">
+                                {{pp_cache.data.header_title}}
+                            </div>
+                        </span>
                         <!-- Nav -->
                         <ul id="topnav">
-                            {% include 'topnav.html' %}
+                            {{pp_cache.data.topnav}}
                         </ul>
                     </div>
                     
                     <div class="bottom">
                         <!-- Sort -->
                         <ul id="sort">
-                            {% if request.META.PATH_INFO|slice:'1:' == 'issues.html' %}
-
-                            {% endif %}
                             
                         </ul>
 
@@ -339,21 +304,26 @@
                 </div>
             </div>
             <!-- end #header -->
+
+
             
             <div id="container">
                 <div class="center">
                     <!-- Content -->
                         {% autoescape on %}
-                            <div id="content">{% block content %}{% endblock %}</div>
+                            <div id="content">
+                            {{pp_cache.data.content|safe}}
+                            {% block content %}{% endblock %}</div>
                         {% endautoescape %}
                     <!-- end #content -->
                     
                     <!-- Sidebar -->
                     <div id="sidebar">
 
+                    {% if not pp_cache.nojs %}
                         <span style="float:right;"class="spinner"><img src="/static/img/spinner.gif" alt="" /></span>
-                            <span style="width:14px;float:right;" class="spinner"><img src="/static/oa_agent/oa_agent_wut_36.png" alt="" /></span>
-
+                        <span style="width:14px;float:right;" class="spinner"><img src="/static/oa_agent/oa_agent_wut_36.png" alt="" /></span>
+                    {% endif %}
                             <div id="create_content">
                                 {% include 'create_content.html' %}
                             </div>
@@ -449,5 +419,12 @@
                     </ul>
                 </div>
             </div>
+
+    <noscript>
+        {% endpp_get_cached_data %}
+    </noscript>
+
     </body>
+
+
 </html>

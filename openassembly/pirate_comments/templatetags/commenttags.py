@@ -12,6 +12,8 @@ from pirate_core.helpers import clean_html
 from pirate_consensus.models import Consensus, UpDownVote
 from pirate_reputation.models import ReputationDimension
 from pirate_sources.models import IMGSource
+from django.utils.html import urlize
+
 
 from markdown import markdown
 
@@ -221,7 +223,7 @@ def render_comment(comment_obj, count, user, request):
         html += "<div class='reply_comment' id='edit_reply" + str(comment_obj.id) + "' style='display:none; overflow:hidden; height:290px;width:100%;'><form id='add_reply_form" + str(comment_obj.id) +"' method='post' action=''><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='" + str(request.COOKIES.get('csrftoken')) + "' /><input id='edit_object' type='hidden' name='edit_object' value='" + str(comment_obj.id)+ "'/>" + '<input type="hidden" name="form_id" value="pp_comment_form' +  str(comment_obj.id) + '" id="id_form_id"/>' + "</div>" + str(editform.as_p()) + "<input type='submit' class='button' value='Submit'></form></div>"
     html += '</p>'
     html += "</li>"
-    return html
+    return urlize(html, trim_url_limit=30, nofollow=True)
 
     #return "<div id='comment" + str(comment_obj.id) + "'> <div class='comment_user'> <a href='/user_profile.html" + "?_t=" + str(content_type.pk) + "&_o=" + str(comment_obj.user.pk) + "'>" + str(comment_obj.user.username)+ "</a>" + generate_time_string(comment_obj.submit_date, datetime.datetime.now()) + ":</div><div>" + smart_str(comment_obj.text, encoding='utf-8', strings_only=False, errors='strict') +"</div><div class='comment_reply'>" + " <a href='javascript:;' onmousedown=" + "'toggleSlide(" + '"add_reply' + str(comment_obj.id) + '"' + ");'>reply</a> <a href='/" + path + "'>permalink</a><div id='add_reply" + str(comment_obj.id) + "' style='display:none; overflow:hidden; height:250px;'><form id='add_reply_form" + str(comment_obj.id) +"' method='post' action=''><div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='" + str(csrf.get_token(request)) + "' /><input id='reply_to_object' type='hidden' name='reply_to_object' value='" + str(comment_obj.id)+ "'/></div>" + str(form.as_p()) + "<input type='submit' class='button green' value='Submit Comment'></form></div></div></div>"
 

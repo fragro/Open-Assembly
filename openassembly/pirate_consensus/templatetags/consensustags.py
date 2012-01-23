@@ -330,64 +330,98 @@ def pp_spectrum_form(context, nodelist, *args, **kwargs):
 
 @block
 def pp_rating_js(context, nodelist, *args, **kwargs):
-    
+
     context.push()
     namespace = get_namespace(context)
-    
+
     obj = kwargs.get('object', None)
     user = kwargs.get('user', None)
     ctype = ContentType.objects.get_for_model(obj)
 
-        
-    if obj: 
-        RET = """
-        $(function(){
-                $("#stars-wrapper-rate""" + str(obj.id) + """").stars({
-	               inputType: "select",
-	               callback: function(ui, type, value){
-                        starvote(""" + "'" + str(obj.id) + "'" + """, value, """ + "'" + str(user.pk) + "', " + "'" + str(obj.pk) + "', " + "'" + str(ctype.pk) + "'" + """);
-                   },
-                   captionEl: $("#stars-cap-rate"),
-                   cancelTitle:'Cancel Rating',
-                   cancelValue:-99
+    if obj:
+        if user.is_authenticated():
+            RET = """
+            $(function(){
+                    $("#stars-wrapper-rate""" + str(obj.id) + """").stars({
+                       inputType: "select",
+                       callback: function(ui, type, value){
+                            starvote(""" + "'" + str(obj.id) + "'" + """, value, """ + "'" + str(user.pk) + "', " + "'" + str(obj.pk) + "', " + "'" + str(ctype.pk) + "'" + """);
+                       },
+                       captionEl: $("#stars-cap-rate"),
+                       cancelTitle:'Cancel Rating',
+                       cancelValue:-99
+                    });
                 });
-            });
-        """
-    else: RET = ""
+            """
+        else:
+            RET = """
+            $(function(){
+                    $("#stars-wrapper-rate""" + str(obj.id) + """").stars({
+                       inputType: "select",
+                       callback: function(ui, type, value){
+                            js_redirect('/register.html?');
+                       },
+                       captionEl: $("#stars-cap-rate"),
+                       cancelTitle:'Cancel Rating',
+                       cancelValue:-99
+                    });
+                });
+            """
+    else:
+        RET = ""
     namespace['rating_js'] = RET
-        
+
     output = nodelist.render(context)
     context.pop()
 
     return output
 
+
 @block
 def pp_spectrum_js(context, nodelist, *args, **kwargs):
-    
+
     context.push()
     namespace = get_namespace(context)
-    
+
     obj = kwargs.get('object', None)
     user = kwargs.get('user', None)
     ctype = ContentType.objects.get_for_model(obj)
-        
-    if obj: 
-        RET = """
-        $(function(){
-                $("#stars-wrapper-spec""" + str(obj.id) + """").stars({
-	               inputType: "select",
-	               callback: function(ui, type, value){
-                        spectrumvote(""" + "'" + str(obj.id) + "'" + """, value, """ + "'" + str(user.pk) + "', " + "'" + str(obj.pk) + "', " + "'" + str(ctype.pk) + "'" + """);
-                   },
-                   spectrum:true,
-                   captionEl: $("#stars-cap-spec"),
-                   cancelTitle:'Cancel Vote',
-                   cancelValue:-99
 
+    if obj:
+        if user.is_authenticated():
+            RET = """
+            $(function(){
+                    $("#stars-wrapper-spec""" + str(obj.id) + """").stars({
+                       inputType: "select",
+                       callback: function(ui, type, value){
+                            spectrumvote(""" + "'" + str(obj.id) + "'" + """, value, """ + "'" + str(user.pk) + "', " + "'" + str(obj.pk) + "', " + "'" + str(ctype.pk) + "'" + """);
+                       },
+                       spectrum:true,
+                       captionEl: $("#stars-cap-spec"),
+                       cancelTitle:'Cancel Vote',
+                       cancelValue:-99
+
+                    });
                 });
-            });
-        """
-    else: RET = ""
+            """
+        else:
+            RET = """
+            $(function(){
+                    $("#stars-wrapper-spec""" + str(obj.id) + """").stars({
+                       inputType: "select",
+                       callback: function(ui, type, value){
+                            js_redirect('/register.html?');
+                       },
+                       spectrum:true,
+                       captionEl: $("#stars-cap-spec"),
+                       cancelTitle:'Cancel Vote',
+                       cancelValue:-99
+
+                    });
+                });
+            """
+    else:
+        RET = ""
     namespace['spectrum_js'] = RET
 
     output = nodelist.render(context)
