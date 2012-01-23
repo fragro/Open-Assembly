@@ -153,8 +153,8 @@ def pp_argument_form(context, nodelist, *args, **kwargs):
                     form = NayArgumentForm()
                 if arg_type == 'y':
                     form = YeaArgumentForm()
-        else:
-            namespace['errors'] = form.errors
+            else:
+                namespace['errors'] = form.errors
     else:
         if arg_type == 'n':
             form = NayArgumentForm()
