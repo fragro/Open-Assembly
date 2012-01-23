@@ -128,30 +128,31 @@ def pp_argument_form(context, nodelist, *args, **kwargs):
         if POST.get("form_id") == "pp_argument_form_yea":
             stance, created = Stance.objects.get_or_create(arg='yea')
             form = YeaArgumentForm(POST)
-        if form.is_valid():
-            new_arg = form.save(commit=False)
-            new_arg.stance = stance
-            new_arg.user = user
-            new_arg.parent_type = ContentType.objects.get_for_model(parent)
-            new_arg.parent_pk = parent.id
-            new_arg.save()
-            namespace['object_pk'] = new_arg.pk
-            namespace['content_type'] = ContentType.objects.get_for_model(new_arg).pk
-            cons, is_new = Consensus.objects.get_or_create(content_type=ContentType.objects.get_for_model(Argument),
-                                                           object_pk=new_arg.pk, parent_pk=new_arg.parent_pk)
+        if POST.get("form_id") == "pp_argument_form_yea" or POST.get("form_id") == "pp_argument_form_nay":
+            if form.is_valid():
+                new_arg = form.save(commit=False)
+                new_arg.stance = stance
+                new_arg.user = user
+                new_arg.parent_type = ContentType.objects.get_for_model(parent)
+                new_arg.parent_pk = parent.id
+                new_arg.save()
+                namespace['object_pk'] = new_arg.pk
+                namespace['content_type'] = ContentType.objects.get_for_model(new_arg).pk
+                cons, is_new = Consensus.objects.get_or_create(content_type=ContentType.objects.get_for_model(Argument),
+                                                               object_pk=new_arg.pk, parent_pk=new_arg.parent_pk)
 
-            if is_new:
-                cons.intiate_vote_distributions()
-                #if this is a new issue/consensus, send signal for reputation
-                aso_rep_event.send(sender=new_arg, event_score=4, user=new_arg.user, initiator=new_arg.user, dimension=ReputationDimension.objects.get('Argument'), related_object=new_arg)
-                notification_send.send(sender=new_arg.user, obj=new_arg, reply_to=parent)
-                relationship_event.send(sender=new_arg.user, obj=new_arg, parent=parent)
+                if is_new:
+                    cons.intiate_vote_distributions()
+                    #if this is a new issue/consensus, send signal for reputation
+                    aso_rep_event.send(sender=new_arg, event_score=4, user=new_arg.user, initiator=new_arg.user, dimension=ReputationDimension.objects.get('Argument'), related_object=new_arg)
+                    notification_send.send(sender=new_arg.user, obj=new_arg, reply_to=parent)
+                    relationship_event.send(sender=new_arg.user, obj=new_arg, parent=parent)
 
-            #raise HttpRedirectException(HttpResponseRedirect(new_arg.get_absolute_url()))
-            if arg_type == 'n':
-                form = NayArgumentForm()
-            if arg_type == 'y':
-                form = YeaArgumentForm()
+                #raise HttpRedirectException(HttpResponseRedirect(new_arg.get_absolute_url()))
+                if arg_type == 'n':
+                    form = NayArgumentForm()
+                if arg_type == 'y':
+                    form = YeaArgumentForm()
         else:
             namespace['errors'] = form.errors
     else:
