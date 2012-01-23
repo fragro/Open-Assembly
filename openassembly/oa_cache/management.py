@@ -112,7 +112,7 @@ sdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppdelete
 
 pptopicsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptopiccache.pk, template="comment.html", div_id="#comment", jquery_cmd="html")
 
-ppblobchildcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="listing_childF.html", div_id="#children_details", jquery_cmd="prepend")
+ppblobchildcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="listing_child.html", div_id="#children_details", jquery_cmd="prepend")
 
 pptagformsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptagcache.pk, template="urlsource.html", div_id="#urlsource", jquery_cmd="html")
 

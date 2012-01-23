@@ -106,6 +106,9 @@
                       
                       //location.hash = data.url
                   }
+                  if(OAdata.FAIL == true){
+                      //history.go(-1);
+                  }
 
                   if(OAdata.scroll_to != null){
                     $(OAdata.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
@@ -119,8 +122,7 @@
 
         function allowPush(e, url, that) {
             return (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey &&
-                url != ''  && url.indexOf('javascript') == -1 && url.indexOf('http://') == -1 && url.indexOf('https://') == -1 &&
-                (typeof that.attr('target') == 'undefined' || that.attr('target') == '') 
+                url != ''  && url.indexOf('#')==-1 && url.indexOf('javascript') == -1 && url.indexOf('http://') == -1 && url.indexOf('https://') == -1 && (typeof that.attr('target') == 'undefined' || that.attr('target') == '') 
                 && !that.hasClass('nobbq') && typeof $.data(that.get(0), 'events') == 'undefined' && typeof disablePush == 'undefined')
         }
 
@@ -135,7 +137,7 @@
                         e.preventDefault();
                         history.pushState({load:true}, '', url);
                         getContent();
-                    }           
+                    }
                 });
                 history.replaceState({load:true}, '');
                 getContent();
@@ -353,7 +355,7 @@
                             <span style="width:14px;float:right;" class="spinner"><img src="/static/oa_agent/oa_agent_wut_36.png" alt="" /></span>
 
                             <div id="create_content">
-
+                                {% include 'create_content.html' %}
                             </div>
 
                         <div id="livestream_small">
@@ -370,7 +372,7 @@
                                 {% pp_get_reputation user=request.user %}
                                 <small>(+{{pp_reputation.reputation}})</small>
                                 {% endpp_get_reputation %}
-                                <a href="/logout/" class="logout">Logout</a>
+                                <a href="/logout/" class="logout nobbq">Logout</a>
                             {% endif %}
 
 
@@ -381,26 +383,12 @@
 
                                 <div class="intro">
 
-                             {% pp_user_login_form request=request dimension=request.dimension %}
-                                <form method="post" action="">
-                                        Username: 
-                                            <br> {{ pp_login.form.name }}<br>
-                                        Password:<br> {{ pp_login.form.password }}<br><a style="font-size:80%;" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a><br><br>
-                                        {{ pp_login.form.form_id}}
-                                        {% csrf_token %}
-                                    
-                                      <input type="submit" class="button green" value="Login">
-                                    <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
-
-                                    </form>
-                            {% endpp_user_login_form %}
-
 
                                 <h2 style="margin-bottom:20px;">Open Assembly is <br>Open Source Democracy</h2>
 
-                                <a href="{%pp_url template='register.html' %}" class="button">Register</a>
+                                <a href="/register.html?"class="nobbq button">Register or Login</a>
 
-                                <p><a href="/index.html#!faq">Learn More</a></p>
+                                <p><a class="button" href="/p/faq">Learn More</a></p>
 
                                 </div>
                         

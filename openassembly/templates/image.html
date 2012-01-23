@@ -15,8 +15,8 @@
 
   {% if object.private %}<i>Private</i>{% endif %}({{ object.file.size|filesizeformat }})<br>
 
-  <a class="button" href="{% firstof object.file|public_download_url fallback_url %}">Download</a> | 
-<a class="button" href="{{object.content_object.get_absolute_url}}">Return to {{object.content_object}}</a>
+  <a class="nobbq button" href="{% firstof object.file|public_download_url fallback_url %}">Download</a> | 
+<a class="nobbq button" href="{{object.content_object.get_absolute_url}}">Return to {{object.content_object}}</a>
 
 </div>
 

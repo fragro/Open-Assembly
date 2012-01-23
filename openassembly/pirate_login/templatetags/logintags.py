@@ -85,7 +85,7 @@ def pp_generate_key(context, nodelist, *args, **kwargs):
                 namespace['errors'] = 'Username not found.'
         else:
            form = KeyGenerator(POST)
-           namespace['errors'] = form.errors 
+           namespace['errors'] = form.errors
 
     else:
         form = KeyGenerator()
@@ -157,7 +157,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                     mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                     ref.topic.group_members += 1
                                     ref.topic.save()
-                                raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
+                                return HttpResponseRedirect(ref.topic.get_absolute_url())
                                 #except:
                                 #    namespace['errors'] = "Illegal Referral Key"
 
@@ -180,7 +180,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                           'fragro@gmail.com',
                                           [user.email])
 
-                                raise HttpRedirectException(HttpResponseRedirect('/index.html#check_key'))
+                                return HttpResponseRedirect('/p/check_key')
                 else:
                     namespace['errors'] = "Passwords are not the same. Try again."
         except HttpRedirectException, e:
@@ -246,7 +246,7 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                 if user.is_active:
                     login(request, user)
                     #check the user's current location
-                    path = 'index.html'
+                    path = '/'
                     if dimension is not None:
                         try:
                             ref = Referral.objects.get(key=dimension, accepted=False)
@@ -259,7 +259,7 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                             mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                             ref.topic.group_members += 1
                             ref.topic.save()
-                            raise HttpRedirectException(HttpResponseRedirect('/index.html#referred_user'))
+                            raise HttpRedirectException(HttpResponseRedirect('/'))
                         except:
                             namespace['errors'] = "Illegal Referral Key"
                     raise HttpRedirectException(HttpResponseRedirect(path))

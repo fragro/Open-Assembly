@@ -368,23 +368,28 @@ decreased the latency of the system.
         if hashed is None:
             hashed = ''
         empty = request.GET.get('empty', None)
-        if hashed == DOMAIN + '/' and empty != 'false' and not request.user.is_authenticated():
+        hashed = hashed.replace(DOMAIN, '')
+        if hashed == '/' and empty != 'false' and not request.user.is_authenticated():
             hashed = '/p/landing'
-        elif hashed == DOMAIN + '/' and empty != 'false' and request.user.is_authenticated():
+        elif hashed == '/' and empty != 'false' and request.user.is_authenticated():
             hashed = '/p/landing'
             #need to make this some sort of home feed for user
         if hashed != '':
-            props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
-            if props['render']:
-                #if the c
-                props['rendered_list'].insert(0, {'div': '#content', 'type': 'html', 'html': ''})
-            for d in props['rendered_list']:
-                data['output'].append(d)
-            #deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), props['paramdict'].get('OBJ_ID', None), _countdown=10)
-            data['FAIL'] = False
-            if 'SCROLL_KEY' in props['paramdict']:
-                data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
-
+            try:
+                props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
+                if props['render']:
+                    #if the c
+                    props['rendered_list'].insert(0, {'div': '#content', 'type': 'html', 'html': ''})
+                for d in props['rendered_list']:
+                    data['output'].append(d)
+                #deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), props['paramdict'].get('OBJ_ID', None), _countdown=10)
+                data['FAIL'] = False
+                if 'SCROLL_KEY' in props['paramdict']:
+                    data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
+            except:
+                data['FAIL'] = hashed
+        elif hashed[0:2] != '/p':
+            data['FAIL'] = hashed
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
                 return HttpResponse(simplejson.dumps(data),
                                     mimetype='application/json')

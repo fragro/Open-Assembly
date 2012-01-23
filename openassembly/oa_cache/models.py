@@ -62,9 +62,21 @@ def interpret_hash(h):
 
 
 def build_hash(rendertype, paramdict):
-    l = rendertype
+    l = '/p/' + rendertype
     for k, v in paramdict.items():
-        l += '/' + OPP_DIMS[k] + v
+        if k == 'OBJ_KEY':
+            obj_pk = v
+        elif k == 'TYPE_KEY':
+            ctype_pk = v
+        else:
+            l += '/' + OPP_DIMS[k] + v
+    try:
+        obj_str = get_pretty_url(ctype_pk, obj_pk)
+        l += '/' + OPP_DIMS['STR_KEY'] + obj_str
+    except:
+        l += '/' + OPP_DIMS['OBJ_KEY'] + obj_pk
+        l += '/' + OPP_DIMS['TYPE_KEY'] + ctype_pk
+    l = DOMAIN + l
     return l
 
 

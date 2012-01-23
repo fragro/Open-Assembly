@@ -73,7 +73,6 @@ urlpatterns = patterns('',
     (r'^confirm/(?P<key>[0-9A-Za-z_\-]+)/$', confirm),
     (r'^tasks/update_ranks/', update_ranks),
     (r'^tasks/nuke_memcache/', nuke_memcache),
-
 )
 
 urlpatterns += patterns('',
@@ -109,6 +108,7 @@ urlpatterns += patterns('',
 urlpatterns += patterns('',
    # all my other url mappings
    (r'^api/', include('api.urls')),
+    #welcome page goes absolutely last!
 )
 
 

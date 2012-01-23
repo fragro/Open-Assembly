@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from pirate_sources.models import URLSource
 from tagging.models import Tag
 import datetime
-from django.shortcuts import get_object_or_404,redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.contenttypes.models import ContentType
 from pirate_flags.models import Flag, UserFlag
 from django.contrib.auth.models import User
@@ -53,7 +53,7 @@ def search_posts(request):
     posts = None
     if 'query' in request.GET:
         posts = search(FilmIdea, request.GET['query'])
-    return redirect("/index.html#search_results")
+    return redirect("/p/search_results")
     return render_to_response('search_results.html',
         {'posts': posts}, context_instance=RequestContext(request))
 
@@ -67,7 +67,7 @@ def add_support(request, pk):
         sub = Subscription(subscriber=request.user, subscribee=user,
                             created_dt=datetime.datetime.now())
         sub.save()
-        return redirect("/index.html#!user/-t" + str(c_type.pk) +
+        return redirect("/p/user/-t" + str(c_type.pk) +
                     "/-o" + str(user.pk))
     else:
         return redirect('/register.html?')
@@ -80,10 +80,10 @@ def remove_support(request, pk):
         sub = Subscription.objects.get(subscriber=request.user,
                                         subscribee=user)
         sub.delete()
-        return redirect("/index.html#!user/-t" + str(c_type.pk) +
+        return redirect("/p/user/-t" + str(c_type.pk) +
                         "/-o" + str(user.pk))
     else:
-        return redirect('/register.html?')
+        return redirect('/p/register')
 
 
 def change_hash_dim(request):
@@ -93,7 +93,7 @@ def change_hash_dim(request):
 
     if request.method == 'GET':
         results = {}
-        hashed = request.GET[u'hash'][1:]
+        hashed = request.GET[u'hash']
         dim = request.GET[u'dim']
         newkey, rtype, d = interpret_hash(hashed)
         d['DIM_KEY'] = dim
@@ -244,17 +244,17 @@ def remove_platform(request):
 
 def confirm(request, key):
     if request.user.is_authenticated():
-        return redirect("/index.html")
+        return redirect("/")
     user_profile = get_object_or_404(EmailVerification,
                                      activation_key=key)
     if user_profile.key_expires < datetime.datetime.today():
-        return redirect("/expired.html")
+        return redirect("/p/expired")
     user_account = user_profile.user
     user_account.is_active = True
     user_account.save()
     update_agent.send(sender=user_account, type="user",
                                 params=[user_account.pk])
-    return redirect("/index.html#confirm")
+    return redirect("/p/confirm")
 
 
 #HTML5 video voting functions
