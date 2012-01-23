@@ -1,0 +1,39 @@
+{% load tag_helpers %}
+{% load consensustags %}
+
+ <script>
+
+  $("form#submitform4").submit(function(e){
+        addObject(e);
+    });
+
+</script>
+
+{% pp_consensus_get object=object.pk user=user %}
+  <div class="addtags">
+  {% pp_tag_form POST=request.POST path=request.path object=pp_consensus.consensus user=user %}
+      <div class="inner"><b>Add Tags</b></div>
+          <div id="errors" class="errors">{{ pp_tag.errors }}</div>
+
+          <form id="pp_tag_form" method="post" action="">
+              {{pp_tag.form.form_id}}
+              {{csrf_string|safe}}
+              {{ pp_tag.form.tag}}
+          <input type="submit" class="button" value="Submit Tag"><span style="color:grey;" id="submit_pp_tag_form"></span>
+          </form>
+
+          <span id="pp_tag_form_side_effect" style="display:none;">["{{object.pk}}", "{{pp_consensus.content_type.pk}}"]</span>
+
+<script>
+
+  $("form#pp_tag_form").submit(function(e){
+        $("#submit_pp_tag_form").html("<b>Submitting...</b>")
+        addObject(e);
+    });
+
+</script>  
+
+  {% endpp_tag_form %}
+  </div>
+
+{% endpp_consensus_get %}
