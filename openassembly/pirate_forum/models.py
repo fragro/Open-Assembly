@@ -20,6 +20,7 @@ import pytz
 
 from pirate_core.fields import JqSplitDateTimeField
 from pirate_core.widgets import JqSplitDateTimeWidget
+from django.template.defaultfilters import slugify
 
 from markitup.widgets import MarkItUpWidget
 
@@ -28,7 +29,7 @@ def get_pretty_url(ctype_pk, obj_pk):
     ctype = ContentType.objects.get(pk=ctype_pk)
     obj = ctype.get_object_for_this_type(pk=obj_pk)
     try:
-        key = obj.__unicode__().replace(' ', '-')
+        key = slugify(obj.__unicode__())
         val, is_new = cached_url.objects.get_or_create(slug=key, obj_pk=obj_pk, ctype_pk=ctype_pk)
 
         #cache.set('/' + key, (ctype_pk, obj_pk))
