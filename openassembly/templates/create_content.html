@@ -1,6 +1,6 @@
 {% load tracking_tags %}
 
-<a onClick='$(window).hashchange();' title="Click to Refresh" class="btn_new_issue">
+<a onClick="history.replaceState({load:true},'');getContent();" title="Click to Refresh" class="btn_new_issue">
 {% visitors_on_site as visitors %}
 	<span style="vertical-align: -12%;"><img src="/static/img/reload.png"></span><b>{{visitors}} Online</b>
 </a>
