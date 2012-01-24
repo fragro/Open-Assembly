@@ -55,12 +55,15 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
             if data['div'] == '#content':
                 soup.feed(data['html'])
             else:
-                txt_list = soup.findAll('span', {'id': re.compile(data['div'])})
+                txt_list = soup.findAll('span', {'id': re.compile(data['div'][1:])})
+                txt_list.extend(soup.findAll('div', {'id': re.compile(data['div'][1:])}))
+                txt_list.extend(soup.findAll('td', {'id': re.compile(data['div'][1:])}))
                 for txt in txt_list:
                     txt.insert(0, data['html'])
                 if len(txt_list) == 0:
+                    #raise ValueError(data['div'][1:] + soup.prettify())
                     ret[data['div'][1:]] = data['html']
-            ret['content'] = soup.prettify()
+        ret['content'] = soup.prettify()
 
         namespace['data'] = ret
         namespace['object'] = obj

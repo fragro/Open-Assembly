@@ -19,20 +19,6 @@
 
 
     <head>
-        <object>
-            <noscript>
-                {% pp_get_cached_data request=request %}
-            </noscript>
-        </object>
-        <title>
-        {% block title %}
-        {% if pp_cache.object %}
-            Open Assembly | Beta | {{pp_cache.object.summary|title}}{{pp_cache.object.username}}
-        {% else %}   
-            Open Assembly
-        {% endif %}
-        {% endblock %}
-        </title>
 
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
@@ -148,7 +134,7 @@
                     }
                 });
                 history.replaceState({load:true}, '');
-                getContent();
+                //getContent();
             }
             // when the page first loads update the history entry with the URL
             // needed to recreate the 'first' page with AJAX
@@ -307,8 +293,19 @@
         </script>
         <![endif]--> 
 
+        <title>
+        {% block title %}
+        {% if pp_cache.object %}
+            Open Assembly | Beta | {{pp_cache.object.summary|title}}{{pp_cache.object.username}}
+        {% else %}   
+            Open Assembly
+        {% endif %}
+        {% endblock %}
+        </title>
+
     </head>
     <body>
+            {% pp_get_cached_data request=request %}
 
         <div id="wrap">
             
@@ -419,7 +416,6 @@
                                 {% comment %}
 
                                 <div class="badges">
-
                                     <ul>
                                         {% pp_get_badges user=request.user %}
                                             <li><a href="/p/badges"><img src="/static/img/badges.jpg" alt="Bell"> {{pp_badge.total}} Badge{{pp_badge.total|pluralize}}</a></li>
@@ -427,8 +423,6 @@
                                         {% oa_get_verifications user=request.user %}
                                             <li><a href="/p/arpv"><img src="/static/img/badge_gold_star.jpg" alt="Bell"> {{oa_ver.count}} Verification{{oa_ver.count|pluralize}}</a></li>
                                         {% endoa_get_verifications %}
-
-
                                     </ul>
                                 </div>
                                 {% endcomment %}

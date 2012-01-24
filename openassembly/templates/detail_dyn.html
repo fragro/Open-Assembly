@@ -189,9 +189,9 @@
                                     <tr>
                                         <td id="temp_check">
                                         </td>
-                                        <td style="margin-top:11px;">
+                                        <td>
                                             <h2>Vote <span style="font-size:80%;" id="spectrum_vote"></span></h2>
-                                            <b>Agreement: <span id="stars-cap-spec"></span></div></b><br>
+                                            <b>Agreement: <span id="stars-cap-spec"></span></b><br>
 
                                             {% pp_spectrum_form object=object user=user %}
 
@@ -279,16 +279,10 @@
                                         {% endpp_get_reporting_percentage %}
                                     {% endif %}
                                 {% endpp_get_root %}
-                            </td>
                                          
                     {% endif %}
+                            </td>
 
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table cellspacing="0" class="rating">
-                                <tbody>
-                                    <tr>
                                     </tr>
                                 </tbody>
                             </table>
@@ -435,9 +429,7 @@
                                     <div class="acc_container">
                                         <div class="block">
                                            <div id="pp_comment_form" class="reply_comment">
-                                               <noscript>
-                                                    {% include 'pp_comment_form.html'%}
-                                               </noscript>
+                                    
 
                                            </div>
                                         </div>
@@ -455,9 +447,7 @@
                                         <div class="block">
                                             <div id="pp_argument_form_yea" class="reply_comment>">
                                                 
-                                                <noscript>
-                                                    {% include 'pp_argument_form_yea.html'%}
-                                               </noscript>
+                                        
 
                                             </div>
                                         </div>
@@ -468,9 +458,7 @@
                                         <div class="block">
                                             <div id="pp_argument_form_nay" class="reply_comment">
                                                 
-                                                <noscript>
-                                                    {% include 'pp_argument_form_nay.html'%}
-                                               </noscript>
+                  
 
                                             </div>
                                         </div>
@@ -483,14 +471,10 @@
 
                                             </div>
                                             <div id="pp_tag_form">
-                                                <noscript>
-                                                    {% include 'pp_tag_form_wout_recommendation.html'%}
-                                               </noscript>
+                              
                                             </div>
                                             <div id="pp_urlsource_form">
-                                                <noscript>
-                                                    {% include 'pp_urlsource_form.html'%}
-                                               </noscript>
+                                     
                                             </div>
                                         </div>
                                     </div>
