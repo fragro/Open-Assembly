@@ -20,6 +20,9 @@
 
     <head>
 
+    {% pp_get_cached_data request=request %}
+
+
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
         <meta property="og:title" content="{{pp_cache.object.summary|title}}{{pp_cache.object.username}}"/>
@@ -35,9 +38,9 @@
         <link rel="stylesheet" type="text/css" href="/static/bookmark2.css">
         <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
 
-        <script type="text/javascript" src="/static/js/jquery-1.5.1.min.js"></script>
-        <script type="text/javascript" src="/static/js/openassembly9.9.7.js"></script>
+        <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
         <script type="text/javascript" src="/static/js/etherpad.js"></script>
+        <script type="text/javascript" src="/static/js/openassembly9.9.6.js"></script>
 
         <script type="text/javascript" src="/static/jquery.ba-hashchange.min.js"></script>
 
@@ -305,7 +308,6 @@
 
     </head>
     <body>
-            {% pp_get_cached_data request=request %}
 
         <div id="wrap">
             
@@ -363,10 +365,9 @@
                     <!-- Sidebar -->
                     <div id="sidebar">
 
-                    {% if not pp_cache.nojs %}
                         <span style="float:right;"class="spinner"><img src="/static/img/spinner.gif" alt="" /></span>
                         <span style="width:14px;float:right;" class="spinner"><img src="/static/oa_agent/oa_agent_wut_36.png" alt="" /></span>
-                    {% endif %}
+
                             <div id="create_content">
                                 {% include 'create_content.html' %}
                             </div>
@@ -460,10 +461,7 @@
                 </div>
             </div>
 
-    <noscript>
         {% endpp_get_cached_data %}
-    </noscript>
-
     </body>
 
 

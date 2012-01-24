@@ -83,7 +83,7 @@ def remove_support(request, pk):
         return redirect("/p/user/-t" + str(c_type.pk) +
                         "/-o" + str(user.pk))
     else:
-        return redirect('/p/register')
+        return redirect('/register.html?')
 
 
 def change_hash_dim(request):

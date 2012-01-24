@@ -22,7 +22,7 @@ This file contains the tag responsible for creating useful urls within pp templa
 TEMPLATE_DICT = {'/user_profile.html': '/p/user', '/None': '/?hash=#', '/issues.html': '/p/list',
                     '/topics.html': '/p/topics', '/faq.html': '/p/faq',
                     '/200.html': '/p/200', '/detail.html': '/p/item',
-                    '/submit.html': '/p/submit', '/arpv.html': '/p/arpv', '/register.html': '/p/register'}
+                    '/submit.html': '/p/submit', '/arpv.html': '/p/arpv', '/register.html': '/register.html?'}
 
 
 @function
