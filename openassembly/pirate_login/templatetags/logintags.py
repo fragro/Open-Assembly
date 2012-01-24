@@ -157,10 +157,9 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                     mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                     ref.topic.group_members += 1
                                     ref.topic.save()
-                                return HttpResponseRedirect(ref.topic.get_absolute_url())
+                                raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
                                 #except:
                                 #    namespace['errors'] = "Illegal Referral Key"
-
                             else:
                                 salt = sha.new(str(random.random())).hexdigest()[:5]
                                 activation_key = sha.new(salt + user.username).hexdigest()
@@ -180,7 +179,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                           'fragro@gmail.com',
                                           [user.email])
 
-                                return HttpResponseRedirect('/p/check_key')
+                    raise HttpRedirectException(HttpResponseRedirect('/p/check_key'))
                 else:
                     namespace['errors'] = "Passwords are not the same. Try again."
         except HttpRedirectException, e:
