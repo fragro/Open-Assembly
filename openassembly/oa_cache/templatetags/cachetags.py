@@ -29,7 +29,9 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
     hashed = request.META['PATH_INFO']
 
-    if string.find(hashed, '.html') == -1:
+    #we only consider certain items to be
+
+    if string.find(hashed, '.html') == -1 and hashed[0:2] == '/p' or hashed == '/':
         if hashed is None:
             hashed = ''
         if hashed == '/' or hashed == '':

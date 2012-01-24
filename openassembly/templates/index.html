@@ -125,6 +125,13 @@
 
         $(document).ready(function() {
 
+            $(window).bind("popstate", function(evt) {
+                  var state = evt.originalEvent.state;
+                  if (state && state.module === "leave") {
+                        getContent();
+                  }
+            });
+
             if (history.pushState) {
                 $('body').delegate('a', 'click', function (e) {
                     var that = $(this);
@@ -132,12 +139,12 @@
 
                     if (allowPush(e, url, that)) {
                         e.preventDefault();
-                        history.pushState({load:true}, '', url);
+                        history.pushState({load:true, module:'leave'}, '', url);
                         getContent();
                     }
                 });
+
                 history.replaceState({load:true}, '');
-                //getContent();
             }
             // when the page first loads update the history entry with the URL
             // needed to recreate the 'first' page with AJAX
@@ -324,26 +331,29 @@
                         </span>
                         <!-- Nav -->
                         <ul id="topnav">
-                            {{pp_cache.data.topnav}}
+                            {% if pp_cache.data.topnav %}
+                                {{pp_cache.data.topnav}}
+                            {% else %}
+                                {% include 'topnav.html' %}
+                            {% endif %}
                         </ul>
                     </div>
                     
                     <div class="bottom">
                         <!-- Sort -->
                         <ul id="sort">
-                            
+                            {{pp_cache.data.sort}}
                         </ul>
 
                         <!-- Search -->
                         <div id="id_search">
-
-                                {% pp_search_form user=request.user POST=request.POST %}
-                                    <form method="post" action="" class="searchbox">
-                                 {% csrf_token %}
-                                 <span class="light_gray">Search:</span> {{ pp_blob.form.search }}
-                                      {#<input type="submit" value="Search posts"/>#}
-                                    </form>
-                                {% endpp_search_form %}
+                            {% pp_search_form user=request.user POST=request.POST %}
+                                <form method="post" action="" class="searchbox">
+                             {% csrf_token %}
+                             <span class="light_gray">Search:</span> {{ pp_blob.form.search }}
+                                  {#<input type="submit" value="Search posts"/>#}
+                                </form>
+                            {% endpp_search_form %}
                          </div>
                     </div>
                 </div>

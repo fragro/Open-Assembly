@@ -50,7 +50,31 @@
                 <div id="info">
                 <h2>Mission</h2>
                 <p>{{object.description}}</p>
+            {% cani object=object user=user %}
+                {% if pp_permissions.permission %}
+
+                    <span style="float:left;margin-right:10px;"><a class="button" href="{% pp_url object=object template='facilitator.html' %}">Facilitate</a></span>  
+     
+                {% endif %}
+            {% endcani %}
+                    <span style="float:left;"><a class="button" href="{% pp_url template='submit.html' object=object %}">
+                    Ask a Question to the Group</a></span>
+
+
+        {% pp_get_contenttype_id object=object %}  
+            {% pp_getcreate_setting topic=object %}
+
+                {% if pp_topic.settings.stream %}
+
+                <span style="float:right;">Check out the Stream<a class="tooltip" href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{object.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" ><img src="/static/img/media.jpg"><span>Click to open the Stream in the sidebar</span></a></span>
+
+                {% endif %}
+
+            {% endpp_getcreate_setting %}
+
+        {% endpp_get_contenttype_id %}
                 </div>
+
 
             {% comment %}
 

@@ -30,12 +30,22 @@ def get_pretty_url(ctype_pk, obj_pk):
     obj = ctype.get_object_for_this_type(pk=obj_pk)
     try:
         key = slugify(obj.__unicode__())
-        val, is_new = cached_url.objects.get_or_create(slug=key, obj_pk=obj_pk, ctype_pk=ctype_pk)
+        val, is_new = cached_url.objects.get_or_create(common_summary=key, obj_pk=obj_pk, ctype_pk=ctype_pk)
+        if is_new:
+            #validate to ensure this is a unique slug, otherwise increment til unique
+            prevs = cached_url.objects.filter(common_summary=key)
+            cnt = prevs.count()
+            #if this is not a unique slug/url
+            if cnt > 1:
+                val.slug = key + str(cnt)
+            else:
+                val.slug = key
+            val.save()
 
         #cache.set('/' + key, (ctype_pk, obj_pk))
     except:
-        raise ValueError(obj.__unicode__())
-    return key
+        raise
+    return val.slug
 
 
 def reverse_pretty_url(obj_str):
@@ -46,6 +56,7 @@ def reverse_pretty_url(obj_str):
 
 
 class cached_url(models.Model):
+    common_summary = models.CharField(max_length=200)
     slug = models.CharField(max_length=100)
     obj_pk = models.CharField(max_length=30)
     ctype_pk = models.CharField(max_length=30)

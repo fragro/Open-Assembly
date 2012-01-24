@@ -1,10 +1,17 @@
-{% extends 'index.html' %}
-{% load filetransfers %}
-{% load profiletags %}
-{% block title %}Upload file to Blobstore{% endblock %}
+{% load pp_url %}
+{% load blobtags %}
+{% load argumenttags %}
+{% load messagetags %}
+{% block title %}{% endblock %}
+{% block browser_bar %}
 
-{% block content %}
+{% endblock %}
 
-<h1>404</h1>   
+{% block content%}
+
+<div class="email_reset">
+<img src="/static/oa_agent/oa_agent_sad.png"><br>
+<h1>404</h1>
+</div>
 
 {% endblock %}

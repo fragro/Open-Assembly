@@ -388,7 +388,7 @@ decreased the latency of the system.
                 if 'SCROLL_KEY' in props['paramdict']:
                     data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
             except:
-                data['FAIL'] = hashed
+                data['FAIL'] = True
         elif hashed[0:2] != '/p':
             data['FAIL'] = hashed
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
