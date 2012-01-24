@@ -2,34 +2,31 @@
 
    {% pp_argument_form object=object POST=request.POST user=user dimension='n' %}
         
-        <div id="errors" class="errors"> {{pp_argumentation.errors}}</div>
+        <div id="errors" class="errors" style="color:red;list-style:none;" > {{pp_argumentation.errors}}</div>
 
         <form id="pp_argument_form_nay" method="post" action="">
             {{pp_argumentation.form.form_id}}
             {{ pp_argumentation.form.media }}
-
             {{csrf_string|safe}}
-            <div style="float:left;"><b>Summary</b>:</div><br><br>{{ pp_argumentation.form.summary}}
+            <div style="float:left;margin-right:10%;"><b>Summary</b>:</div>{{ pp_argumentation.form.summary}}
             <p>
-            <div style="float:left;"><b>Details of Argument</b>:</div><br><br>{{pp_argumentation.form.description}}
-            </p>
-        <input type="submit" class="red button" value="Submit"><span style="color:grey;" id="submit_pp_argument_form_nay"></span>
-        </form>
-
-        <script language="javascript">
-            $(document).ready(function()    {
-               $('#pp_argument_form_nay #id_description').markItUp(mySettings);
-            });
-        </script>  
+            <div style="float:left;margin-right:10%;"><b>Details of Argument</b>:</div><br>{{pp_argumentation.form.description}} 
+        <input type="submit" class="green button" value="Submit"><span style="color:grey;" id="submit_pp_argument_form_nay"></span>
+        </form>     
         
-        <script>
+<script>
 
-          $("form#pp_argument_form_nay").submit(function(e){
-                $("#submit_pp_argument_form_nay").html("<b>Submitting...</b>")
-                addObject(e);
-            });
+    $(document).ready(function()    {
+       $('#pp_argument_form_nay #id_description').markItUp(mySettings);
+    });
 
-        </script>   
 
-        <span id="pp_argument_form_nay_side_effect" style="display:none;">["{{pp_argumentation.object_pk}}", "{{pp_argumentation.content_type}}"]</span>                                                
-    {% endpp_argument_form %}
+  $("form#pp_argument_form_nay").submit(function(e){
+        $("#submit_pp_argument_form_nay").html("<b>Submitting...</b>")
+        addObject(e);
+    });
+
+</script>
+
+        <span id="pp_argument_form_nay_side_effect" style="display:none;">["{{pp_argumentation.object_pk}}", "{{pp_argumentation.content_type}}"]</span>                                 
+    {% endpp_argument_form %}               

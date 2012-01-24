@@ -2,7 +2,7 @@
 
    {% pp_argument_form object=object POST=request.POST user=user dimension='y' %}
         
-        <div id="errors" class="errors"> {{pp_argumentation.errors}}</div>
+        <div id="errors" class="errors" style="color:red;list-style:none;" > {{pp_argumentation.errors}}</div>
 
         <form id="pp_argument_form_yea" method="post" action="">
             {{pp_argumentation.form.form_id}}
