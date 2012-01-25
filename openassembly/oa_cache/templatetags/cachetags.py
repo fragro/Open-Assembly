@@ -8,6 +8,8 @@ from pirate_forum.models import get_pretty_url, reverse_pretty_url
 
 from BeautifulSoup import BeautifulSoup
 
+from settings import DEBUG
+
 import string, re
 
 from customtags.decorators import block_decorator
@@ -40,7 +42,10 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
         try:
             props = get_cache_or_render(request.user, hashed, False, request=request, forcerender=True)
         except:
-            props = get_cache_or_render(request.user, '/p/404', False, request=request, forcerender=True)
+            if not DEBUG:
+                props = get_cache_or_render(request.user, '/p/404', False, request=request, forcerender=True)
+            else:
+                raise
         #get object for the cache
         key, rtype, paramdict = interpret_hash(hashed)
         obj = None

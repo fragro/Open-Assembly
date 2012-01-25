@@ -143,10 +143,10 @@ def pp_get_questions(context, nodelist, *args, **kwargs):
 
     if key is None:
         if parent is None:
-            key = 'list/' + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
+            key = '/p/list/' + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
         else:
             ctype = ContentType.objects.get_for_model(parent)
-            key = 'list/' + TYPE_KEY + str(ctype.pk) + '/' + OBJ_KEY + str(parent.pk) + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
+            key = '/p/list/' + TYPE_KEY + str(ctype.pk) + '/' + OBJ_KEY + str(parent.pk) + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
         if phase is not None:
             key += '/' + PHASE_KEY + str(phase)
     l = ListCache.objects.get(content_type='item', template=phase)
@@ -154,6 +154,7 @@ def pp_get_questions(context, nodelist, *args, **kwargs):
     cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=True)
 
     namespace['count'] = tot_items
+    namespace['key'] = key
     namespace['blob_list'] = cached_list
 
     output = nodelist.render(context)

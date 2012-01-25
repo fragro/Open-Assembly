@@ -82,25 +82,49 @@
         {% endpp_get_argument_count %}
         </div>
 
+        {% if pp_consensus.ranked_decision.winner == object.pk %}
+        <!--- if this was a winner, etc. -->
+            <span style="margin-left:10px;font-size:100%;">
+            {% if pp_consensus.ranked_decision.passed %}
+                    <b>Passed</b> - 
+            {% else %}
+                <b>Failed</b> - 
+            {% endif %}
+                   
+            {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
+                <b style="color:#56e110;">
+            {% else %}
+                <b style="color:#e11010">
+            {% endif %}
+            {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
+            
+            {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
+                <b style="color:#56e110;">
+            {% else %}
+                <b style="color:#e11010">
+            {% endif %}
+            {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
+            </span>
+        {% endif %}
+
 {% pp_get_questions object=object.content_object dimension="r" start=0 end=5 phase="Nomination" %}
     {% if object.content_object.children > 0 %}
 
         <h4>{{object.content_object.children}} {{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</h4>
 
         <ul class="solutions">
+                {% for child in pp_blob.blob_list %}
+                    {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
 
-                        {% for child in pp_blob.blob_list %}
-                            {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
+                        <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
+                        
+                    {% endpp_get_object %}
 
-                                <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
-                                
-                            {% endpp_get_object %}
+                {% endfor %}
 
-                        {% endfor %}
-
-                    {% if object.content_object.children > 5 %}
-                        <li>...</li>
-                    {% endif %}
+            {% if object.content_object.children > 5 %}
+                <li>...</li>
+            {% endif %}
            </ul>   
                 {% endif %}
            {% endpp_get_questions %}
@@ -117,6 +141,39 @@
                        </ul>
             {% endif %}
        {% endpp_get_tags_for_object %}
+{% comment %}
+
+
+    {% pp_get_ranked_decision object=object %}
+        {% oa_get_group_settings object=object.content_object.parent %}
+            <!--- if this was a winner, etc. -->
+                <span style="margin-left:10px;font-size:100%;">
+                {% if pp_consensus.ranked_decision.passed %}
+                        <b>Passed</b> - 
+                {% else %}
+                    <b>Failed</b> - 
+                {% endif %}
+                       
+                {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
+                    <b style="color:#56e110;">
+                {% else %}
+                    <b style="color:#e11010">
+                {% endif %}
+                {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
+                
+                {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
+                    <b style="color:#56e110;">
+                {% else %}
+                    <b style="color:#e11010">
+                {% endif %}
+                {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
+                </span>
+
+            {% endoa_get_group_settings %}
+    
+    {% endpp_get_ranked_decision %}
+
+{% endcomment %}
 
         </div>
     </div>
