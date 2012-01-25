@@ -11,7 +11,7 @@
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
           {% pp_get_contenttype_id object=object %}
-            <a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
+            <a class="nobbq" href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
           {% endpp_get_contenttype_id %}
 
         {% else %}
@@ -78,7 +78,7 @@
 
             {% comment %}
 
-                     <div id="questions">
+                <div id="questions">
                 {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Question" %}
                 <h2>{{pp_blob.count}} Active Questions</h2>
                     <div id="children_details" class="children_details">
