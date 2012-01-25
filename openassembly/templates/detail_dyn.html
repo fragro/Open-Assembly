@@ -373,8 +373,7 @@
 
                     {% endif %}
 
-                {% endpp_get_questions %}
-                                                            
+                {% endpp_get_questions %}                         
 
                         </li>
                     </ul>
@@ -384,6 +383,9 @@
                             {% pp_get_questions object=object dimension="r" phase="Nomination" %}
 
                             <h3>{{object.forumdimension.name}} Nomination{{pp_blob.count|pluralize}} ({{object.children}})</h3>
+                                {% if object.children == 0 %}
+                                    <h4 style="margin-left:25px;">Be the first to Nominate a {{object.forumdimension.name}}! Click Nominate Below.</h4>
+                                {% endif %}
 
                                 <div id="children_details" class="children_details">
                                     {% for object in pp_blob.blob_list %}

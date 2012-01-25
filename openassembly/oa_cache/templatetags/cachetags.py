@@ -37,8 +37,10 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
         if hashed == '/' or hashed == '':
             hashed = '/p/landing'
             #need to make this some sort of home feed for user
-        props = get_cache_or_render(request.user, hashed, False, request=request, forcerender=True)
-
+        try:
+            props = get_cache_or_render(request.user, hashed, False, request=request, forcerender=True)
+        except:
+            props = get_cache_or_render(request.user, '/p/404', False, request=request, forcerender=True)
         #get object for the cache
         key, rtype, paramdict = interpret_hash(hashed)
         obj = None

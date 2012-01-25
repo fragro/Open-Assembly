@@ -15,7 +15,7 @@ def get_object_or_none(ctype_id, obj_id):
     """
 Returns object with ID and ContentType ID
 """
-    if ctype_id is not None and obj_id is not None:
+    if ctype_id is not None and obj_id is not None and ctype_id != '' and obj_id != '':
         content_type = ContentType.objects.get(pk=ctype_id)
         try:
             obj = content_type.get_object_for_this_type(pk=obj_id)
