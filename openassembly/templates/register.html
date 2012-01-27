@@ -6,10 +6,10 @@
 {% block content %}
 <div class="register">
 
-                {% if request.dimension and user.is_authenticated %}
+                {% if request.dimension and request.user.is_authenticated %}
                     <div class="email_reset">
                     <img src="/static/oa_agent/oa_agent_happy.png"><br>
-                        {% oa_activate_referral key=request.dimension user=user %}
+                        {% oa_activate_referral key=request.dimension user=request.user %}
                             {% if oa_ver.referral %}
                                  {% if not oa_ver.errors %}
                                     <h1> You Joined the Group "{{oa_ver.referral.topic}}"</h1>
@@ -27,7 +27,7 @@
                 <h2>OpenAssembly | Beta <div id="location"></div></h2>
 
 
-                    {% if request.dimension and not user.is_authenticated %}
+                    {% if request.dimension and not request.user.is_authenticated %}
                         {% oa_get_referral key=request.dimension %}
                             {% if oa_ver.referral %}
                                 <h3 style="color:black;"> You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!</h3>
