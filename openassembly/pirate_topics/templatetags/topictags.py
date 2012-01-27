@@ -11,6 +11,8 @@ from markitup.widgets import MarkItUpWidget
 from pirate_topics.models import Topic, MyGroup, GroupSettings
 from pirate_core.views import namespace_get
 
+from django.db.models import Q
+
 from customtags.decorators import block_decorator
 register = template.Library()
 block = block_decorator(register)
@@ -370,6 +372,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
             new_topic = form.save(commit=False)
             new_topic.is_featured = False
             new_topic.slug = _slugify(new_topic.summary)
+            #let's see if there are any groups with this shortname or full name
             if root and isinstance(root, Topic):
                 new_topic.parent = root
                 new_topic.save()

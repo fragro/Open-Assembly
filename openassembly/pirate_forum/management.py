@@ -48,10 +48,10 @@ import datetime
 #								app_label='pirate_actions', model_class_name='Boycott', form_class_name='BoycottForm')
 
 
-ForumDimension.objects.register(key='nom', name="Nomination", help_text='Nomination a Solution to a Question',
+ForumDimension.objects.register(key='nom', name="Response", help_text='Respond to a Proposal',
 								app_label='pirate_forum', model_class_name='Nomination', form_class_name='NominationForm', is_child=True)
 
-ForumDimension.objects.register(key='pol', name="Policy", help_text='Single Policy with Timed Decision. Nominate your ideas for policy or action and then vote on those. Optionally you can also rank the resulting ideas.',
+ForumDimension.objects.register(key='pol', name="Proposal", help_text='Single Policy with Timed Decision. Nominate your ideas for policy or action and then vote on those. Optionally you can also rank the resulting ideas.',
 								app_label='pirate_forum', model_class_name='Question', form_class_name='BlobForm')
 
 ForumDimension.objects.register(key='tem', name="Temp. Check", help_text='Temperature Check of idea over time, no set time for decision',
@@ -98,9 +98,9 @@ def main():
 
 ### CREATE THE PHASELINKS and LINKS BETWEEN THEM
 
-ph1, is_new = PhaseLink.objects.get_or_create(phasename="Question", verb="pose your question")
-ph2, is_new = PhaseLink.objects.get_or_create(phasename="Nomination", verb="nominate a solution and debate")
-ph3, is_new = PhaseLink.objects.get_or_create(phasename="Decision", verb="vote to make a decision")
+ph1, is_new = PhaseLink.objects.get_or_create(phasename="nom", verb="pose your question")
+ph2, is_new = PhaseLink.objects.get_or_create(phasename="vote", verb="nominate a solution and debate")
+ph3, is_new = PhaseLink.objects.get_or_create(phasename="decision", verb="vote to make a decision")
 
 
 ph1.prevphase = None

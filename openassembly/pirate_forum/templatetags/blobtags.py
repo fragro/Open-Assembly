@@ -456,6 +456,8 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             parent.parent.save()
                         try:
                             #####relevant to VOTING and TIME
+                            now = datetime.datetime.now()
+                            now = now.replace(tzinfo=pytz.utc)
                             long_term = fd.key
                             if long_term == 'pol':
                                 phase_change_dt = form.cleaned_data['end_of_nomination_phase']
@@ -473,6 +475,14 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                     tz = pytz.timezone(form.cleaned_data['timezone'])
                                     phase_change_dt = local_tz_to_utc(tz, form.cleaned_data['end_of_nomination_phase'])
                                     decision_dt = local_tz_to_utc(tz, form.cleaned_data['decision_time'])
+                                    if phase_change_dt < now or decision_dt < now:
+                                        namespace['errors'] = "Cannot Set Decision or End of Nomination Time in the Past."
+                                        namespace['form'] = form
+                                        namespace['POST'] = POST, parent
+                                        output = nodelist.render(context)
+                                        context.pop()
+
+                                        return output
 
                             elif long_term == 'tem':
                                 phase_change_dt = None
@@ -480,7 +490,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                 vote_algorithm = "Persistent Temperature Check"
 
                         except:
-                            pass
+                            raise
 
                         if sub is not None:
                             for form_key, value in sub.items():
@@ -531,7 +541,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
                                 #create phase object
                                 if phase_change_dt != None:
-                                    pl = PhaseLink.objects.get(phasename="Question")
+                                    pl = PhaseLink.objects.get(phasename="nom")
                                     ph, is_new = Phase.objects.get_or_create(curphase=pl,
                                                                         creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
                                                                         phase_change_dt=phase_change_dt, complete=False, active=True)
@@ -539,7 +549,9 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                     #now we want to initialize future phasechangetasks
                                     initiate_nextphase.apply_async(args=[cons], eta=phase_change_dt)
 
-                                cons.phasename = "Question"
+                                    cons.phasename = "nom"
+                                else:
+                                    cons.phasename = "temp"
                                 cons.save()
                             elif fd.is_child:
                                 cons.phasename = "Nomination"
