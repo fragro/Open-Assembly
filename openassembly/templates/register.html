@@ -5,10 +5,8 @@
 
 {% block content %}
 <div class="register">
-
+                <div class="email_reset">
                 {% if request.dimension and request.user.is_authenticated %}
-                    <div class="email_reset">
-                    <img src="/static/oa_agent/oa_agent_happy.png"><br>
                         {% oa_activate_referral key=request.dimension user=request.user %}
                             {% if oa_ver.referral %}
                                  {% if not oa_ver.errors %}
@@ -20,20 +18,19 @@
                             <h1>Referral Not Found</h1>
                             {% endif %}
                          {% endoa_activate_referral %}
-                    </div>
                 {% endif %}
+                {% if request.dimension and not request.user.is_authenticated %}
 
-                <div class="register_title">
-                <h2>OpenAssembly | Beta <div id="location"></div></h2>
-
-
-                    {% if request.dimension and not request.user.is_authenticated %}
                         {% oa_get_referral key=request.dimension %}
                             {% if oa_ver.referral %}
                                 <h3 style="color:black;"> You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!</h3>
                             {% endif %}
                         {% endoa_get_referral %}
                     {% endif %}
+                </div>
+
+                <div class="register_title">
+                <h2>OpenAssembly | Beta <div id="location"></div></h2>
 
                 </div>
                     <div class="register_registration" style="text-align:center;">
@@ -76,8 +73,6 @@
                     </div>
 
             </div>
-
-</div>
 
 
 

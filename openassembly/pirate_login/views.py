@@ -7,4 +7,3 @@ def logout_view(request):
     if request.user.is_authenticated() and request.user.is_active:
         logout(request)
 	return redirect('/')
-

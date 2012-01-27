@@ -368,8 +368,11 @@
                         {% autoescape on %}
                             <div id="content">
                             {{pp_cache.data.content|safe}}
-                            {% block content %}{% endblock %}</div>
+                            {% block content %}{% endblock %}
+                            </div>
                         {% endautoescape %}
+                </div>
+
                     <!-- end #content -->
                     
                     <!-- Sidebar -->
