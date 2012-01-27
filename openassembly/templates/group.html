@@ -57,16 +57,19 @@
      
                 {% endif %}
             {% endcani %}
-                    <span style="float:left;"><a class="button" href="{% pp_url template='submit.html' object=object %}">
+                <span style="float:left;margin-right:10px;"><a class="button" href="{% pp_url template='submit.html' object=object %}">
                     Ask a Question to the Group</a></span>
 
+                <span style="float:left;margin-right:10px;"><a class="button" href="{% pp_url template='issues.html' object=object %}">
+                    Forum</a></span>
 
-        {% pp_get_contenttype_id object=object %}  
+
+        {% pp_get_contenttype_id object=object %}
             {% pp_getcreate_setting topic=object %}
 
                 {% if pp_topic.settings.stream %}
 
-                <span style="float:right;"><a class="button" href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{object.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" >Video Stream</a></span>
+                <span style="float:left;margin-right:10px;"><a class="button" href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{object.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" >Video Stream</a></span>
 
                 {% endif %}
 
