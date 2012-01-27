@@ -5,74 +5,74 @@
 
 {% block content %}
 <div class="register">
-                <div class="email_reset">
-                {% if request.dimension and request.user.is_authenticated %}
-                        {% oa_activate_referral key=request.dimension user=request.user %}
-                            {% if oa_ver.referral %}
-                                 {% if not oa_ver.errors %}
-                                    <h1> You Joined the Group "{{oa_ver.referral.topic}}"</h1>
-                                {% else %}
-                                    <h1>{{oa_ver.errors}}</h1>
-                                {% endif %}
-                            {% else %}
-                            <h1>Referral Not Found</h1>
-                            {% endif %}
-                         {% endoa_activate_referral %}
-                {% endif %}
-                {% if request.dimension and not request.user.is_authenticated %}
-
-                        {% oa_get_referral key=request.dimension %}
-                            {% if oa_ver.referral %}
-                                <h3 style="color:black;"> You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!</h3>
-                            {% endif %}
-                        {% endoa_get_referral %}
+    <div class="email_reset">
+        {% if request.dimension and request.user.is_authenticated %}
+            {% oa_activate_referral key=request.dimension user=request.user %}
+                {% if oa_ver.referral %}
+                     {% if not oa_ver.errors %}
+                        <h1> You Joined the Group "{{oa_ver.referral.topic}}"</h1>
+                    {% else %}
+                        <h1>{{oa_ver.errors}}</h1>
                     {% endif %}
-                </div>
+                {% else %}
+                <h1>Referral Not Found</h1>
+                {% endif %}
+             {% endoa_activate_referral %}
+        {% endif %}
+        {% if request.dimension and not request.user.is_authenticated %}
 
-                <div class="register_title">
-                <h2>OpenAssembly | Beta <div id="location"></div></h2>
+            {% oa_get_referral key=request.dimension %}
+                {% if oa_ver.referral %}
+                    <h1> You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!</h1>
+                {% endif %}
+            {% endoa_get_referral %}
+        {% endif %}
+    </div>
 
-                </div>
-                    <div class="register_registration" style="text-align:center;">
-                        <h3> Register a new account</h3>
-                        <form method="post" action="">
-                        {% pp_user_registration_form request=request dimension=request.dimension user=request.user %}
-                                Username:<br>
-                                {{ pp_login.form.name }}<br>
-                                Password:<br>
-                                {{ pp_login.form.password1 }}<br>
-                                Check Password:<br>
-                                {{ pp_login.form.password2 }}<br>
-                                Email:<br>
-                                {{ pp_login.form.email }}<br><br>
-                                {{ pp_login.form.form_id}}
-                                {% csrf_token %}
-                              <input type="submit" class="button green" value="Register">
-                            <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
-                            </form>
-                        {% endpp_user_registration_form %}
-                    </div>
-                    <div class="register_login" style="text-align:center;">
-                    <h3> Login to existing account!</h3>
-                        {% pp_user_login_form request=request dimension=request.dimension %}
-                            <form method="post" action="">
-                                    Username: 
-                                        <br> {{ pp_login.form.name }}<br>
-                                    Password:<br> {{ pp_login.form.password }}<br><br>
-                                    {{ pp_login.form.form_id}}
-                                    {% csrf_token %}
-                                
-                                  <input type="submit" class="button green" value="Login">
+    <div class="register_title">
+    <h2>OpenAssembly | Beta <div id="location"></div></h2>
 
-                                <br><br><a style="font-size:80%;" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a><br>
-                                <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
+    </div>
+        <div class="register_registration" style="text-align:center;">
+            <h3> Register a new account</h3>
+            <form method="post" action="">
+            {% pp_user_registration_form request=request dimension=request.dimension user=request.user %}
+                    Username:<br>
+                    {{ pp_login.form.name }}<br>
+                    Password:<br>
+                    {{ pp_login.form.password1 }}<br>
+                    Check Password:<br>
+                    {{ pp_login.form.password2 }}<br>
+                    Email:<br>
+                    {{ pp_login.form.email }}<br><br>
+                    {{ pp_login.form.form_id}}
+                    {% csrf_token %}
+                  <input type="submit" class="button green" value="Register">
+                <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
+                </form>
+            {% endpp_user_registration_form %}
+        </div>
+        <div class="register_login" style="text-align:center;">
+        <h3> Login to existing account!</h3>
+            {% pp_user_login_form request=request dimension=request.dimension %}
+                <form method="post" action="">
+                        Username: 
+                            <br> {{ pp_login.form.name }}<br>
+                        Password:<br> {{ pp_login.form.password }}<br><br>
+                        {{ pp_login.form.form_id}}
+                        {% csrf_token %}
+                    
+                      <input type="submit" class="button green" value="Login">
 
-                                </form>
-                        {% endpp_user_login_form %}
-                            
-                    </div>
+                    <br><br><a style="font-size:80%;" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a><br>
+                    <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
 
-            </div>
+                    </form>
+            {% endpp_user_login_form %}
+                
+        </div>
+
+</div>
 
 
 
