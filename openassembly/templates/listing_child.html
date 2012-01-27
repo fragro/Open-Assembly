@@ -12,16 +12,10 @@
 <div class="listing">
     <div class="interest">
         <span class="category">{{object.content_object.get_verbose_name|title }}</span>
-        {% if request.dimension = 'c' %}
-            <span class="points"><a href="{{object.get_absolute_url}}">{{ object.controversy|floatformat:0 }}</a></span>
-            <span class="word">controversy</span>
-        {% else %}
-            <span class="points"> <a href="{{object.get_absolute_url}}">{{ object.interest|floatformat:0 }}</a></span>
-            <span class="word">interest</span>
+            <span class="points"> <a href="{{object.content_object.get_absolute_url}}">{{ object.votes }}</a></span>
+            <span class="word">votes</span>
             <span id="votes{{object.pk}}" class="votes">
-                
             </span>
-        {% endif %}
     </div>
     <div class="summary">
 
@@ -66,7 +60,39 @@
                        </ul>
             {% endif %}
        {% endpp_get_tags_for_object %}
+
+    {% pp_get_ranked_decision object=pp_consensus.consensus %}
+        {% if pp_consensus.ranked_decision.winner == object.pk %}
+            {% oa_get_group_settings object=object.content_object.parent %}
+                <!--- if this was a winner, etc. -->
+                    <span style="margin-left:10px;font-size:100%;">
+                    {% if pp_consensus.ranked_decision.passed %}
+                            <b>Passed</b> - 
+                    {% else %}
+                        <b>Failed</b> - 
+                    {% endif %}
+                           
+                    {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
+                        <b style="color:#56e110;">
+                    {% else %}
+                        <b style="color:#e11010">
+                    {% endif %}
+                    {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
+                    
+                    {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
+                        <b style="color:#56e110;">
+                    {% else %}
+                        <b style="color:#e11010">
+                    {% endif %}
+                    {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
+                    </span>
+
+                {% endoa_get_group_settings %}
+        {% endif %}
+    {% endpp_get_ranked_decision %}
     </div>
+
+
 
 </div>
 {% endif %}

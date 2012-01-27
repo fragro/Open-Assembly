@@ -2,7 +2,6 @@
 {% load pp_url %}
 
 {% if user.is_authenticated %}
-
     {% pp_has_mail user=user %}
 
         {% if pp_messages.count > 0 %}
@@ -12,6 +11,5 @@
         {% endif %}
 
     {% endpp_has_mail %}
-
 {% else %}                            
 {% endif %}

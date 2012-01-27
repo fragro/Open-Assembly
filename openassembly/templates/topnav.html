@@ -1,13 +1,13 @@
 {% load topictags %}
 
 	{% if user.is_staff %}
- 		<li class="first"><a href="/200.html?">Cache</a></li>
+		<li class="first"><a href="/200.html?">Cache</a></li>
  	{% endif %}
 		{% if object %}
 		    {% pp_get_root object=object %} 
 		    	{% if pp_topic.root %}
 					<span class="object">
-					    <li><a  href="{% pp_url template='issues.html' object=pp_topic.root start=0 end=20 dimension='hn' %}">Forum</a></li>
+					    <li><a  href="{% pp_url template='issues.html' object=pp_topic.root start=0 end=20 dimension='hn' %}">Decisions</a></li>
 
 				        {% oa_get_group_settings object=pp_topic.root%}
 				        	{% if pp_topic.settings.stream %}

@@ -11,7 +11,7 @@ from customtags.decorators import function_decorator
 register = template.Library()
 function = function_decorator(register)
 
-from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, STR_KEY
+from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, STR_KEY, PHASE_KEY
 from pirate_core.middleware import START_KEY, END_KEY, DIM_KEY, SCROLL_KEY, RETURN_KEY, SIMPLEBOX_KEY
 from pirate_forum.models import get_pretty_url
 
@@ -84,7 +84,7 @@ def pp_url(*args, **kwargs):
     simplebox = kwargs.pop('simplebox', None)
     #for keeping simplbox open
     sort_type = kwargs.pop('sort_type', None)
-    #for keeping simplbox open
+    phase_key = kwargs.pop('phase', None)
 
     pattern = kwargs.pop('view', 'pp-page')
 
@@ -116,6 +116,8 @@ def pp_url(*args, **kwargs):
             rev_kwargs['end'] = end
         if simplebox is not None:
             rev_kwargs['simplebox'] = True
+        if phase_key is not None:
+            rev_kwargs['phase'] = phase_key
 
         if dimension is not None:
             output = get_reverse(pattern, kwargs, dimension=dimension, **rev_kwargs)
@@ -140,7 +142,7 @@ def pp_url(*args, **kwargs):
 
 def get_reverse(pattern, kwargs, content_type_id=None,
     obj_id=None, start=None, end=None, dimension=None, scroll_to=None,
-    returnurl=None, htmlsafe=None, simplebox=None, is_hash=True, sort_type=None):
+    returnurl=None, htmlsafe=None, simplebox=None, is_hash=True, sort_type=None, phase=None):
     try:
         val = reverse(pattern, kwargs=kwargs)
         if val in TEMPLATE_DICT:
@@ -173,6 +175,8 @@ def get_reverse(pattern, kwargs, content_type_id=None,
         qs.append(CTYPE_KEY + inter + str(sort_type))
     if scroll_to is not None:
         qs.append(SCROLL_KEY + inter + str(scroll_to))
+    if phase is not None:
+        qs.append(PHASE_KEY + inter + str(phase))
     if len(qs) > 0:
         qs = qu + j.join(qs)
     else:

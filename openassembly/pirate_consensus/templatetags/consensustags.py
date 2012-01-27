@@ -85,19 +85,20 @@ def pp_get_ranked_vote(context, nodelist, *args, **kwargs):
     user = kwargs.pop('user', None)
     obj = kwargs.pop('object', None)
 
-    rv = RankedVote.objects.filter(user=user, parent=obj)
-    rv = rv.order_by('ranked_vote')
-    namespace['objects'] = [(i.nom_cons, i) for i in rv]
-    if rv.count() > 0:
-        namespace['ranked_vote'] = True
-    else:
-        namespace['ranked_vote'] = None
-    try:
-        rnk = ConfirmRankedVote.objects.get(user=user, parent=obj)
-        namespace['confirmranked'] = rnk.confirm
-        namespace['winner'] = rnk
-    except:
-        namespace['confirmranked'] = False
+    if user.is_authenticated():
+        rv = RankedVote.objects.filter(user=user, parent=obj)
+        rv = rv.order_by('ranked_vote')
+        namespace['objects'] = [(i.nom_cons, i) for i in rv]
+        if rv.count() > 0:
+            namespace['ranked_vote'] = True
+        else:
+            namespace['ranked_vote'] = None
+        try:
+            rnk = ConfirmRankedVote.objects.get(user=user, parent=obj)
+            namespace['confirmranked'] = rnk.confirm
+            namespace['winner'] = rnk
+        except:
+            namespace['confirmranked'] = False
     output = nodelist.render(context)
     context.pop()
 

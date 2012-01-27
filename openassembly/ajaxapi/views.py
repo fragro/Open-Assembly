@@ -114,15 +114,17 @@ def change_hash_ctype(request):
 
     if request.method == 'GET':
         results = {}
-        hashed = request.GET[u'hash'][1:]
-        if hashed == '':
-            topic, is_new = Topic.objects.get_or_create(is_featured=True)
-            content_type = ContentType.objects.get_for_model(topic)
-            hashed = 'list/_t' + str(content_type.pk) + '/_o' + str(topic.pk) + '/_s0/_e20/_dhn'
+        hashed = request.GET[u'hash']
         ctype = request.GET[u'dim']
-        newkey, rtype, d = interpret_hash(hashed)
-        d['CTYPE_KEY'] = ctype
-        h = build_hash(rtype, d)
+        if ctype != '':
+            newkey, rtype, d = interpret_hash(hashed)
+            d['PHASE_KEY'] = ctype
+            h = build_hash(rtype, d)
+
+        else:
+            newkey, rtype, d = interpret_hash(hashed)
+            del d['PHASE_KEY']
+            h = build_hash(rtype, d)
         results['new_hash'] = h
         results['FAIL'] = False
     else:

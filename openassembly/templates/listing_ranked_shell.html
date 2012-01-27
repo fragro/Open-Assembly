@@ -2,10 +2,10 @@
     <div class="listing">
      <div class="interest">
             <span class="category"><span id="rank{{object.pk}}">#{{ranked_vote.ranked_vote|floatformat:0 }}</span> Ranked</span>
-                <span class="points"> <a href="{{object.get_absolute_url}}">{{ object.interest|floatformat:0 }}</a></span>
-                <span class="word">interest</span>
-                <span id="votes{{object.pk}}" class="votes">   
-                </span>
+            <span class="points"> <a href="{{object.get_absolute_url}}">{{ object.votes }}</a></span>
+            <span class="word">votes</span>
+            <span id="votes{{object.pk}}" class="votes">
+            </span>
         </div>
                                                          
         {% include 'listing_ranked.html' %}

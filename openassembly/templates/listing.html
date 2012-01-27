@@ -16,20 +16,25 @@
             <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/tempcheck.png"></a></span>
             <span class="word">Check</span>
         {% else %}
-            {% if object.phase.curphase.phasename == 'Question' %}
+            {% if object.phasename == 'nom' %}
                     <span class="category">Timed</span>
                     <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_voting.png"></a></span>
                     <span class="word">Nomination</span>
             {% endif %}
-            {% if object.phase.curphase.phasename == 'Nomination' %}
+            {% if object.phasename == 'vote' %}
                     <span class="category">Timed</span>
                     <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_incomplete.png"></a></span>
                     <span class="word">Voting</span>
             {% endif %}
-            {% if object.phase.curphase.phasename == 'Decision' %}
+            {% if object.phasename == 'pass' %}
                     <span class="category">Timed</span>
-                    <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_complete.png"></a></span>
-                    <span class="word">Decision</span>
+                    <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_complete_pass.png"></a></span>
+                    <span class="word">Passed</span>
+            {% endif %}
+            {% if object.phasename == 'fail' %}
+                    <span class="category">Timed</span>
+                    <span class="points"><a href="{{object.get_absolute_url}}"><img src="/static/img/clock_complete_fail.png"></a></span>
+                    <span class="word">Failed</span>
             {% endif %}
         {% endif %}
 
@@ -82,41 +87,27 @@
         {% endpp_get_argument_count %}
         </div>
 
-        {% if pp_consensus.ranked_decision.winner == object.pk %}
-        <!--- if this was a winner, etc. -->
-            <span style="margin-left:10px;font-size:100%;">
-            {% if pp_consensus.ranked_decision.passed %}
-                    <b>Passed</b> - 
-            {% else %}
-                <b>Failed</b> - 
-            {% endif %}
-                   
-            {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
-                <b style="color:#56e110;">
-            {% else %}
-                <b style="color:#e11010">
-            {% endif %}
-            {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
-            
-            {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
-                <b style="color:#56e110;">
-            {% else %}
-                <b style="color:#e11010">
-            {% endif %}
-            {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
-            </span>
-        {% endif %}
+{% pp_get_ranked_decision object=object %}
 
-{% pp_get_questions object=object.content_object dimension="r" start=0 end=5 phase="Nomination" %}
-    {% if object.content_object.children > 0 %}
-
+    {% pp_get_questions object=object.content_object dimension="r" start=0 end=5 phase="Nomination" %}
+       {% if object.content_object.children > 0 %}
+{% if object.phasename != 'pass' %}
         <h4>{{object.content_object.children}} {{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</h4>
+{% else %}
+        <h4>Winner:</h4>
 
+{% endif %}
         <ul class="solutions">
                 {% for child in pp_blob.blob_list %}
                     {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
 
+                      {% if object.phasename != 'pass' %}  <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
+
+                      {% else %} 
+                        {% if pp_consensus.ranked_decision.winner == child.pk %}
                         <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
+                        {% endif %}
+                      {% endif %}
                         
                     {% endpp_get_object %}
 
@@ -128,6 +119,7 @@
            </ul>   
                 {% endif %}
            {% endpp_get_questions %}
+    {% endpp_get_ranked_decision %}
 
 
         <ul class="tags" style="line-height:32px;">
@@ -141,39 +133,6 @@
                        </ul>
             {% endif %}
        {% endpp_get_tags_for_object %}
-{% comment %}
-
-
-    {% pp_get_ranked_decision object=object %}
-        {% oa_get_group_settings object=object.content_object.parent %}
-            <!--- if this was a winner, etc. -->
-                <span style="margin-left:10px;font-size:100%;">
-                {% if pp_consensus.ranked_decision.passed %}
-                        <b>Passed</b> - 
-                {% else %}
-                    <b>Failed</b> - 
-                {% endif %}
-                       
-                {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
-                    <b style="color:#56e110;">
-                {% else %}
-                    <b style="color:#e11010">
-                {% endif %}
-                {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
-                
-                {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
-                    <b style="color:#56e110;">
-                {% else %}
-                    <b style="color:#e11010">
-                {% endif %}
-                {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
-                </span>
-
-            {% endoa_get_group_settings %}
-    
-    {% endpp_get_ranked_decision %}
-
-{% endcomment %}
 
         </div>
     </div>

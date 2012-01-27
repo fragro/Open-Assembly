@@ -160,6 +160,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     obj_id = paramdict.get('OBJ_KEY', None)
     dimension = paramdict.get('DIM_KEY', None)
     scroll_to = paramdict.get('SCROLL_KEY', None)
+    phase = paramdict.get('PHASE_KEY', None)
     try:
         obj = get_object_or_none(ctype_id, obj_id)
     except:
@@ -248,7 +249,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
             for usc in lu:
                 rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                                     usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
-                                    'object': obj, 'user': user, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                                    'object': obj, 'user': user, 'phase': phase, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
 
             sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
             for li in cached_list:
@@ -258,7 +259,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
                         try:
                             rendered_list.append({'div': usc.div_id + str(li.pk), 'type': usc.jquery_cmd, 'html':
                             usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),
-                            'object': li, 'user': user, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                            'object': li, 'user': user, 'phase': phase, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
                         except:
                             raise ValueError(str(li) + ' : ' + str(usc))
                     else:
@@ -273,13 +274,13 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
             for usc in u:
                 rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                             usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
-                                'object': obj, 'user': user, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                                'object': obj, 'user': user, 'phase': phase, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
             #load last for list caches
             lu = UserSaltCache.objects.filter(model_cache=lm.pk, load_last=True, **kwargs)
             for usc in lu:
                 load_last.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                                     usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
-                                    'object': obj, 'user': user, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                                    'object': obj, 'user': user, 'phase': phase, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
 
         #USER SALT CACHCES WITH DYNAMIC RESPONSES ARE DONE
         if tot_items is not None:
@@ -289,7 +290,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
                 html = usc.render(RequestContext(request, {'rangelist': rangelist,
                         'start': paramdict.get('START_KEY', 0), 'end': paramdict.get('END_KEY', 20),
                         'dimension': paramdict.get('DIM_KEY', None), 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
-                rendered_list.append({'div': '#content', 'type': usc.jquery_cmd, 'html': html})
+                rendered_list.append({'div': '#content', 'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     if rendered_list == []:
         context = RequestContext(request, {'search': paramdict.get('SEARCH_KEY', ''),
                             'dimension': paramdict.get('DIM_KEY', None),
@@ -305,13 +306,13 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         #exclude if model is available
         lu = lu.exclude(model_cache=m.pk)
     for usc in lu:
-        rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
+        rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
     if m is not None:
         r = UserSaltCache.objects.filter(model_cache=m.pk, load_last=True, **kwargs)
         for usc in r:
             html = usc.render(RequestContext(request, {
                     'dimension': dimension, 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
-            rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html': html})
+            rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     rendered_list.extend(load_last)
     return {'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to}
 

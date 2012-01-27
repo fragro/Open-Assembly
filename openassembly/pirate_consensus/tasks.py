@@ -98,25 +98,34 @@ def initiate_nextphase(consensus):
                 if noms_passed == True:
                     passes = True
                     winner = nom.pk
-
+                    print 'set winner via schulze and passing'
             #there was no ranked winner or the ranked winner failed to consense (weird side case), cycle through all and choose
             if passes == False:
                 nominations = [i for i in Consensus.objects.filter(parent_pk=consensus.content_object.pk)]
 
                 max_cons = 0.0
                 max_report = 0.0
-
+                print nominations
                 for nom in nominations:
                     nom_cons = get_consensus(nom)
-                    nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
+                    try:
+                        nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
+                    except:
+                        raise ValueError(nom_report)
                     ##calculate reporting percentage, the best is the winner
                     noms_passed = test_if_passes(nom_cons, nom_report, settings, ignore_reporting=True)
                     if nom_cons > max_cons:
                         max_cons = nom_cons
                         max_report = nom_report
                         winner = nom.pk
+                        print 'winner: ' + str(winner)
                     if noms_passed:
                         passes = True
+                        print 'noms passed' + str(noms_passed)
+        if passes == False:
+            consensus.phasename = 'fail'
+        elif passes == True:
+            consensus.phasename = 'pass'
 
         #what to do if there is no winner?
         #decision failed, no one voted in time

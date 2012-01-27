@@ -1225,10 +1225,14 @@ select {
     float:right;
 }
 
+.errors ul {
+    color:red;
+    list-style:none;
+    font-weight:bold;
+}
 .error {
     color:red;
 }
-
 /* 10 / 09 / 2011 */
 
 #sort li:last-child { border:0; }

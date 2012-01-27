@@ -170,7 +170,7 @@ class Consensus(models.Model):
     vote_algorithm = models.CharField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
-        return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk)
+        return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk) + ' phase: ' + str(self.phasename)
 
     def register_vote(self, vote, dtype, old_vote=None):
         vtype = ContentType.objects.get_for_model(vote)

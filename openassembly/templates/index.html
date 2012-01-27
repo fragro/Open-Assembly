@@ -422,7 +422,11 @@
                                 {% endif %}
 
                                 <div id="pp_messages" class="messages">
-                                    {{pp_cache.data.pp_messages}}
+                                    {% if pp_cache.data.pp_messages %}
+                                        {{pp_cache.data.pp_messages}}
+                                    {% else %}
+                                        {% include 'pp_messages.html' %}
+                                    {% endif %}
                                 </div>
 
                             </div>

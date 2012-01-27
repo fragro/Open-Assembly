@@ -301,7 +301,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                         }
                     }, "json");
                 }
-            //if(data.POST){}  
+            //if(data.POST){}
         }, "json");
   }
 
