@@ -115,75 +115,78 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
     return_path= kwargs.get('return_path')
     return_query= kwargs.get('return_query')
     returnurl = kwargs.get('returnurl') #this is for register.html:
+    user = kwargs.get('user', None)
 
     if request is not None: 
         POST = request.POST
     else:
         raise ValueError("Tag pp_user_login_form must contain the argument 'request=request'")
 
-    returnurl = '/issues.html/_s0/_e20/_dhn'
-
     if POST and POST.get("form_id") == "pp_user_registration_form":
-        try:
+        if user.is_authenticated():
             form = RegisterForm(POST)
-            if form.is_valid():
-                new_user = form.save()
-                if new_user.password1 == new_user.password2:
-                    #check to see if there are other users with this name
-                    try:
-                        ui = User.objects.get(username=new_user.name)
-                        namespace['errors'] = "Sorry that username is taken already, please pick another."
-                    except:
-                        user = User.objects.create_user(new_user.name, new_user.email, new_user.password1)
-                        user.is_active = False
-                        user.save()
-                        #set user location
-                        user = authenticate(username=new_user.name, password=new_user.password1)
+            namespace['errors'] = "You are already logged in. Log out and try again."
+        else:
+            try:
+                form = RegisterForm(POST)
+                if form.is_valid():
+                    new_user = form.save()
+                    if new_user.password1 == new_user.password2:
+                        #check to see if there are other users with this name
+                        try:
+                            ui = User.objects.get(username=new_user.name)
+                            namespace['errors'] = "Sorry that username is taken already, please pick another."
+                        except:
+                            user = User.objects.create_user(new_user.name, new_user.email, new_user.password1)
+                            user.is_active = False
+                            user.save()
+                            #set user location
+                            user = authenticate(username=new_user.name, password=new_user.password1)
 
-                        if user is not None:
-                            #if this is a referred user
-                            if dimension is not None:
-                                #try:
-                                ref = Referral.objects.get(key=dimension, accepted=False)
-                                ref.referred_user = user
-                                ref.accepted_dt = datetime.datetime.now()
-                                ref.accepted = True
-                                ref.save()
-                                user.is_active = True
-                                user.save()
-                                login(request, user)
+                            if user is not None:
+                                #if this is a referred user
+                                if dimension is not None:
+                                    #try:
+                                    ref = Referral.objects.get(key=dimension, accepted=False)
+                                    ref.referred_user = user
+                                    ref.accepted_dt = datetime.datetime.now()
+                                    ref.accepted = True
+                                    ref.save()
+                                    user.is_active = True
+                                    user.save()
+                                    login(request, user)
 
-                                if ref.topic is not None:
-                                    mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
-                                    ref.topic.group_members += 1
-                                    ref.topic.save()
-                                raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
-                                #except:
-                                #    namespace['errors'] = "Illegal Referral Key"
-                            else:
-                                salt = sha.new(str(random.random())).hexdigest()[:5]
-                                activation_key = sha.new(salt + user.username).hexdigest()
-                                key_expires = datetime.datetime.today() + datetime.timedelta(2)
+                                    if ref.topic is not None:
+                                        mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
+                                        ref.topic.group_members += 1
+                                        ref.topic.save()
+                                    raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
+                                    #except:
+                                    #    namespace['errors'] = "Illegal Referral Key"
+                                else:
+                                    salt = sha.new(str(random.random())).hexdigest()[:5]
+                                    activation_key = sha.new(salt + user.username).hexdigest()
+                                    key_expires = datetime.datetime.today() + datetime.timedelta(2)
 
-                                new_profile = EmailVerification(user=user,
-                                                          activation_key=activation_key,
-                                                          key_expires=key_expires)
-                                new_profile.save()
+                                    new_profile = EmailVerification(user=user,
+                                                              activation_key=activation_key,
+                                                              key_expires=key_expires)
+                                    new_profile.save()
 
-                                email_subject = 'OpenAssembly account confirmation'
-                                email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n%sconfirm/%s/" % (
-                                    user.username, DOMAIN_NAME,
-                                    new_profile.activation_key)
-                                send_mail(email_subject,
-                                          email_body,
-                                          'fragro@gmail.com',
-                                          [user.email])
+                                    email_subject = 'OpenAssembly account confirmation'
+                                    email_body = "Hello, %s, and thanks for signing up for an Open Assembly account!\n\nTo activate your account, click this link within 48 hours:\n\n%sconfirm/%s/" % (
+                                        user.username, DOMAIN_NAME,
+                                        new_profile.activation_key)
+                                    send_mail(email_subject,
+                                              email_body,
+                                              'fragro@gmail.com',
+                                              [user.email])
 
-                    raise HttpRedirectException(HttpResponseRedirect('/p/check_key'))
-                else:
-                    namespace['errors'] = "Passwords are not the same. Try again."
-        except HttpRedirectException, e:
-            raise e
+                        raise HttpRedirectException(HttpResponseRedirect('/p/check_key'))
+                    else:
+                        namespace['errors'] = "Passwords are not the same. Try again."
+            except HttpRedirectException, e:
+                raise e
     else:
         form = RegisterForm()
 
