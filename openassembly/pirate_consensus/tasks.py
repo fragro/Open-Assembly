@@ -109,7 +109,7 @@ def initiate_nextphase(consensus):
                 for nom in nominations:
                     nom_cons = get_consensus(nom)
                     try:
-                        nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
+                        nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.group_members)
                     except:
                         print nom.content_object
                         print nom.content_object.parent
