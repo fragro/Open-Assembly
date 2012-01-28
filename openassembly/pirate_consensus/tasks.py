@@ -56,6 +56,8 @@ def initiate_nextphase(consensus):
 
     consensus.phase.curphase = consensus.phase.curphase.nextphase
     consensus.phasname = consensus.phase.curphase.phasename
+
+    num_members = consensus.content_object.parent.group_members
     if consensus.phase.curphase.nextphase == None:
         #get the group settings
         settings, is_new = GroupSettings.objects.get_or_create(topic=consensus.content_object.parent)
@@ -65,7 +67,7 @@ def initiate_nextphase(consensus):
         #if this question does not pass consensus we do not accept, however ignore reporting
         #this gives people an opportunity to not agree with the need for the question itself
         cons_perc = get_consensus(consensus)
-        report_perc = UpDownVote.objects.filter(parent=consensus).count() / float(consensus.content_object.parent.group_members)
+        report_perc = UpDownVote.objects.filter(parent=consensus).count() / num_members
         cons_passed = test_if_passes(cons_perc, report_perc, settings, ignore_reporting=False)
 
         winner = None
@@ -93,7 +95,7 @@ def initiate_nextphase(consensus):
                 #make sure it passes consensus also
                 nom = Consensus.objects.get(pk=schulze_winner)
                 max_cons = get_consensus(nom)
-                max_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.parent.group_members)
+                max_report = UpDownVote.objects.filter(parent=nom).count() / num_members
                 noms_passed = test_if_passes(max_cons, max_report, settings, ignore_reporting=True)
                 if noms_passed == True:
                     passes = True
@@ -109,7 +111,7 @@ def initiate_nextphase(consensus):
                 for nom in nominations:
                     nom_cons = get_consensus(nom)
                     try:
-                        nom_report = UpDownVote.objects.filter(parent=nom).count() / float(nom.content_object.parent.group_members)
+                        nom_report = UpDownVote.objects.filter(parent=nom).count() / num_members
                     except:
                         print nom.content_object
                         print nom.content_object.parent
