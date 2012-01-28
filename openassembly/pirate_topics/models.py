@@ -22,7 +22,7 @@ class Topic(models.Model):
     #Topic: Category to place issues, includes parent and child for hierarchical topics
     summary = models.CharField(max_length=200, unique=True)
     shortname = models.CharField(max_length=23, unique=True)
-    description = models.CharField(max_length=600, unique=True)
+    description = models.CharField(max_length=2500, unique=True)
     submit_date = models.DateTimeField('date published', auto_now_add=True)
     parent = models.ForeignKey('self', null=True, blank=True)
     children = models.IntegerField(_('Children'), default=0)
