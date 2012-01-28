@@ -104,7 +104,7 @@
                       {% if object.phasename != 'pass' %}  <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
 
                       {% else %} 
-                        {% if pp_consensus.ranked_decision.winner == child.pk %}
+                        {% if child.pk in pp_consensus.ranked_decision.winner %}
                         <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
                         {% endif %}
                       {% endif %}

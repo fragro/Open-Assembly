@@ -210,49 +210,49 @@ function addObject(e){
     var form = $(e.target).serializeObject();
     $.post("/load_page/", {form: form, hash: location.href},
         function(data) {
-                for(var item in data.output){
-                    if(data.output[item].type == 'prepend'){
-                      $(data.output[item].div).prepend(data.output[item].html); 
-                    } 
-                    if(data.output[item].type == 'append'){
-                        $(data.output[item].div).append(data.output[item].html); 
-                    } 
-                    if(data.output[item].type == 'html'){
-                        $(data.output[item].div).html(data.output[item].html); 
-                    }
-                    if(data.output[item].toggle === true){
-                        $(data.output[item].div).slideToggle();
-                    }
-                    //now we need to gather side-effect data and render all side-effects
-                    var se = $(data.output[item].div + '_side_effect').html();
-                    $.get("/side_effect/", {key: location.href, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
-                      function(data2) {
-                          for(var item in data2.output){
-                            if(data2.output[item].type == 'redirect'){
-                              js_redirect(data2.output[item].html); 
-                            } 
-                            if(data2.output[item].type == 'after'){
-                                $(data2.output[item].div).after(data2.output[item].html); 
-                            } 
-                            if(data2.output[item].type == 'before'){
-                                $(data2.output[item].div).before(data2.output[item].html); 
-                            } 
-                            if(data2.output[item].type == 'prepend'){
-                                $(data2.output[item].div).prepend(data2.output[item].html); 
-                            } 
-                            if(data2.output[item].type == 'append'){
-                                $(data2.output[item].div).append(data2.output[item].html); 
-                            } 
-                            if(data2.output[item].type == 'html'){
-                                $(data2.output[item].div).html(data2.output[item].html); 
-                            }
-                            if(data2.output[item].scroll_to === true){
-                                $(data2.output[item].div).slideto({'highlight_color':'#d6e3ec'});
-                            }
-                        }
-                    }, "json");
+            for(var item in data.output){
+                if(data.output[item].type == 'prepend'){
+                  $(data.output[item].div).prepend(data.output[item].html);
                 }
-            //if(data.POST){}  
+                if(data.output[item].type == 'append'){
+                    $(data.output[item].div).append(data.output[item].html);
+                }
+                if(data.output[item].type == 'html'){
+                    $(data.output[item].div).html(data.output[item].html);
+                }
+                if(data.output[item].toggle === true){
+                    $(data.output[item].div).slideToggle();
+                }
+                //now we need to gather side-effect data and render all side-effects
+                var se = $(data.output[item].div + '_side_effect').html();
+                $.get("/side_effect/", {key: location.href, side_effect: se, usc_pk: data.output[item].usc_pk, obj_pk: data.output[item].obj_pk},
+                  function(data2) {
+                      for(var item in data2.output){
+                        if(data2.output[item].type == 'redirect'){
+                          js_redirect(data2.output[item].html);
+                        }
+                        if(data2.output[item].type == 'after'){
+                            $(data2.output[item].div).after(data2.output[item].html);
+                        }
+                        if(data2.output[item].type == 'before'){
+                            $(data2.output[item].div).before(data2.output[item].html);
+                        }
+                        if(data2.output[item].type == 'prepend'){
+                            $(data2.output[item].div).prepend(data2.output[item].html);
+                        }
+                        if(data2.output[item].type == 'append'){
+                            $(data2.output[item].div).append(data2.output[item].html);
+                        }
+                        if(data2.output[item].type == 'html'){
+                            $(data2.output[item].div).html(data2.output[item].html);
+                        }
+                        if(data2.output[item].scroll_to === true){
+                            $(data2.output[item].div).slideto({'highlight_color':'#d6e3ec'});
+                        }
+                    }
+                }, "json");
+            }
+          //if(data.POST){}
         }, "json");
   }
 
@@ -261,13 +261,13 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
         function(data) {
                 for(var item in data.output){
                     if(data.output[item].type == 'prepend'){
-                      $(data.output[item].div).prepend(data.output[item].html); 
-                    } 
+                      $(data.output[item].div).prepend(data.output[item].html);
+                    }
                     if(data.output[item].type == 'append'){
-                        $(data.output[item].div).append(data.output[item].html); 
-                    } 
+                        $(data.output[item].div).append(data.output[item].html);
+                    }
                     if(data.output[item].type == 'html'){
-                        $(data.output[item].div).html(data.output[item].html); 
+                        $(data.output[item].div).html(data.output[item].html);
                     }
                     if(data.output[item].toggle === true){
                         $(data.output[item].div).slideToggle();
@@ -278,22 +278,22 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                       function(data2) {
                           for(var item in data2.output){
                             if(data2.output[item].type == 'redirect'){
-                              js_redirect(data2.output[item].html); 
-                            } 
+                              js_redirect(data2.output[item].html);
+                            }
                             if(data2.output[item].type == 'after'){
-                                $(data2.output[item].div).after(data2.output[item].html); 
-                            } 
+                                $(data2.output[item].div).after(data2.output[item].html);
+                            }
                             if(data2.output[item].type == 'before'){
-                                $(data2.output[item].div).before(data2.output[item].html); 
-                            } 
+                                $(data2.output[item].div).before(data2.output[item].html);
+                            }
                             if(data2.output[item].type == 'prepend'){
-                                $(data2.output[item].div).prepend(data2.output[item].html); 
-                            } 
+                                $(data2.output[item].div).prepend(data2.output[item].html);
+                            }
                             if(data2.output[item].type == 'append'){
-                                $(data2.output[item].div).append(data2.output[item].html); 
-                            } 
+                                $(data2.output[item].div).append(data2.output[item].html);
+                            }
                             if(data2.output[item].type == 'html'){
-                                $(data2.output[item].div).html(data2.output[item].html); 
+                                $(data2.output[item].div).html(data2.output[item].html);
                             }
                             if(data2.output[item].scroll_to === true){
                                 $(data2.output[item].div).slideto({'highlight_color':'#d6e3ec'});

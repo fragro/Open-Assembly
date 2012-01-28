@@ -167,7 +167,9 @@ class Consensus(models.Model):
     vote_rate = models.FloatField(default=0.0, null=None, blank=None)
     phase = models.ForeignKey("Phase", blank=True, null=True, related_name="consensus_phase")
     phasename = models.CharField(max_length=30, blank=True, null=True)
-    vote_algorithm = models.CharField(max_length=100, blank=True, null=True)
+    consensus_percent = models.FloatField(blank=True, null=True)
+    reporting_percent = models.FloatField(blank=True, null=True)
+    winners = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
         return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk) + ' phase: ' + str(self.phasename)
@@ -313,19 +315,15 @@ class RankedDecision(models.Model):
             verbose_name=_('parent'), related_name=_('decision_parent'))
     algorithm = models.CharField(max_length=100)
     submit_date = models.DateTimeField(_('date/time submitted'), default=None, blank=True, null=True)
-    winner = models.CharField(max_length=50, blank=True, null=True)
+    winner = ListField()
     passed = models.BooleanField()
     consensus_percent = models.FloatField()
     reporting_percent = models.FloatField()
-    nomination_consensus_percent = models.FloatField()
-    nomination_reporting_percent = models.FloatField()
-
 
     def __unicode__(self):
         return str(self.id)
         #cons = Consensus.objects.get(rating=self)
         #return "%s:%s" % (str(cons.content_type), str(cons.object_pk))
-
 
 
 class WeightedVote(models.Model):

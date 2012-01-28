@@ -373,7 +373,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
     edit = kwargs.get('edit', None)
     #subcontext imparted to form
     namespace['timezones'] = pytz.common_timezones
-    vote_algorithm = None
 
     #for editting objects
     if edit and obj is not None:
@@ -462,7 +461,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             if long_term == 'pol':
                                 phase_change_dt = form.cleaned_data['end_of_nomination_phase']
                                 decision_dt = form.cleaned_data['decision_time']
-                                vote_algorithm = "Single Winner Schulze"
                                 if phase_change_dt == None:
                                     namespace['errors'] = "Must Either Specify Long Term or set Decision Date and Time"
                                     namespace['form'] = form
@@ -487,7 +485,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                             elif long_term == 'tem':
                                 phase_change_dt = None
                                 decision_dt = None
-                                vote_algorithm = "Persistent Temperature Check"
 
                         except:
                             raise
@@ -533,7 +530,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         cons, is_new = Consensus.objects.get_or_create(content_type=contype,
                                     object_pk=blob.pk,
                                     vote_type=cvt,
-                                    parent_pk=blob.parent_pk, vote_algorithm=vote_algorithm)
+                                    parent_pk=blob.parent_pk)
 
                         if is_new:
                             cons.intiate_vote_distributions()
@@ -550,6 +547,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                     initiate_nextphase.apply_async(args=[cons], eta=phase_change_dt)
 
                                     cons.phasename = "nom"
+                                    cons.winners = form.cleaned_data['winners']
                                 else:
                                     cons.phasename = "temp"
                                 cons.save()
@@ -569,6 +567,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         #relationship_event.send(sender=issue,obj=issue,parent=issue.topic)
                         namespace['path'] = blob
                         namespace['form_complete'] = True
+                        form = ComboFormFactory(TopicForm(POST), blob_form(POST)).ComboForm()
                         #provide context with extension path
                         #raise HttpRedirectException(HttpResponseRedirect(path))
 
@@ -577,7 +576,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         namespace['errors'] = form.errors
                         form = ComboFormFactory(TopicForm(POST), blob_form(POST)).ComboForm()
                         break
-
         else:
             blob_form, model, verbose_name = get_form(dimension)
             form = ComboFormFactory(TopicForm(), blob_form()).ComboForm()

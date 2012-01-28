@@ -319,10 +319,9 @@ def pp_spectrum_form(context, nodelist, *args, **kwargs):
             form = SpectrumForm(initial={'spectrum': prev_rating.vote})
         except:
             form = SpectrumForm()
-        
+
     namespace['form'] = form
 
-        
     output = nodelist.render(context)
     context.pop()
 

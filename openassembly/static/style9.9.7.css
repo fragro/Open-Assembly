@@ -1651,3 +1651,6 @@ h2.active {background-position: left bottom;}
     margin-bottom:5px;
     margin-left:10px;
 }
+#id_end_of_nomination_phase_1, #id_end_of_nomination_phase_2, #id_decision_time_1, #id_decision_time_2 {
+    width:25px;
+}

@@ -310,14 +310,14 @@
                                     ({{pp_consensus.ranked_decision.submit_date|date:"jS F Y H:i"}})
                                     </div>
                         {% endif %}
-                            </div>
                         </div>
                     </div>
-
+                </div>
 
                 {% if pp_consensus.consensus.phase.curphase.phasename == 'vote' and object.children != 1 %}
 
-                <h3>{{object.forumdimension.name}} Nomination{{pp_blob.count|pluralize}} ({{object.children}})</h3>
+                <h3>{{object.forumdimension.name}} Response{{pp_blob.count|pluralize}} ({{object.children}})</h3>
+                {% if pp_consensus.consensus.winners %}<h4>Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}</h4>{% else %}<h4>Accepting All Responses With Consent</h4>{% endif %}
 
                     {% pp_get_questions object=object dimension="r" phase="Nomination" %}
                     
@@ -334,24 +334,23 @@
                                 </div>
                                 <ul id="nominated">
 
+                                    {% if pp_consensus.ranked_vote %}
+                                
+                                        {% for object,ranked_vote in pp_consensus.objects %}
 
-                                        {% if pp_consensus.ranked_vote %}
-                                    
-                                            {% for object,ranked_vote in pp_consensus.objects %}
+                                            {% include 'listing_ranked_shell.html' %}
 
-                                                {% include 'listing_ranked_shell.html' %}
+                                        {% endfor %}
 
-                                            {% endfor %}
+                                    {% else %}
 
-                                        {% else %}
+                                        {% for object in pp_blob.blob_list %}
+                                            
+                                            {% include 'listing_ranked_shell.html' %}
 
-                                            {% for object in pp_blob.blob_list %}
-                                                
-                                                {% include 'listing_ranked_shell.html' %}
+                                        {% endfor %}
 
-                                            {% endfor %}
-
-                                        {% endif %}
+                                    {% endif %}
                         
                             </li>
                             </ul>
@@ -371,24 +370,27 @@
 
                 {% endpp_get_questions %}                         
 
-                        </li>
+                    </li>
                     </ul>
                     </div>
                     {% else %}
                     {% if pp_consensus.consensus.phase.curphase.phasename == 'nom' or pp_consensus.consensus.phasename == 'fail'  or pp_consensus.consensus.phasename == 'pass' or object.children == 1 %}
                             {% pp_get_questions object=object dimension="r" phase="Nomination" %}
 
-                            <h3>{{object.forumdimension.name}} Nomination{{pp_blob.count|pluralize}} ({{object.children}})</h3>
-                                {% if object.children == 0 %}
-                                    <h4 style="margin-left:25px;">Be the first to Nominate a {{object.forumdimension.name}}! Click Nominate Below.</h4>
-                                {% endif %}
+                    <div id="proposal_header">
+                    <h3>{{object.forumdimension.name}} Response{{object.children|pluralize}} ({{object.children}})</h3>
+                        
+                    </div>
+
+                    {% if pp_consensus.consensus.winners %}<h4>Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}</h4>{% else %}<h4>Accepting All Responses With Consent</h4>{% endif %}
+
 
                                 <div id="children_details" class="children_details">
                                     {% for object in pp_blob.blob_list %}
                                         {% include 'listing_child.html' %}
                                     {% endfor %}
                             {% endpp_get_questions %}
-                                </div>
+                            </div>
 
                             {% endif %}
                         {% endif %}
@@ -423,15 +425,15 @@
                                 {% endcomment %}
                                 <div>
 
-                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/comment.jpg">Comment</a></h2>
-                                    <div class="acc_container">
-                                        <div class="block">
-                                           <div id="pp_comment_form" class="reply_comment">
-                                    
+                                <h2 class="acc_trigger"><a href="#"><img src="/static/img/comment.jpg">Comment</a></h2>
+                                <div class="acc_container">
+                                    <div class="block">
+                                       <div id="pp_comment_form" class="reply_comment">
+                                
 
-                                           </div>
-                                        </div>
+                                       </div>
                                     </div>
+                                </div>
 
                         {% pp_get_root object=object %} 
                             {% oa_get_group_settings object=pp_topic.root %}

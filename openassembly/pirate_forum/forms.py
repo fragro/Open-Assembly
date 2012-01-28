@@ -37,3 +37,4 @@ class BlobForm(forms.ModelForm):
     long_term = forms.BooleanField(help_text="If this decision doesn't require a time for decision, ignore the following dates and times")
     end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
     decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+    winners = forms.IntegerField(help_text="Number of responses to accept, leave this blank to accept all responses.")

@@ -108,6 +108,8 @@ tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailc
 
 ###SIDE EFFECT CACHE
 
+proposalheadercache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="proposal_header.html", div_id="#proposal_header", jquery_cmd="html")
+
 sdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppdeleteformcache.pk, template="comment.html", div_id="#comment", jquery_cmd="html", object_specific=True)
 
 pptopicsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=pptopiccache.pk, template="comment.html", div_id="#comment", jquery_cmd="html")

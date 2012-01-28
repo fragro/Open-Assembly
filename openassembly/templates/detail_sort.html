@@ -13,7 +13,7 @@
     {% if pp_tag.past1 %}
 
       <li class="first sortlist">
-        <b>Nomination</b>
+        <b>Response</b>
       </li>
 
       <li class="sortlist">
@@ -44,7 +44,7 @@
         {% if pp_tag.past2 %}
 
             <li class="first sortlist">
-              Nomination
+              Response
             </li>
 
             <li class="sortlist">
@@ -74,7 +74,7 @@
             {% else %}
 
             <li class="first sortlist">
-              Nomination
+              Response
             </li>
 
             <li class="sortlist">
@@ -90,11 +90,10 @@
               {% if pp_consensus.ranked_decision.passed %}
                 <li style="font-weight:bold;color:#56e110;" class="sortlist">Passed</li>
               {% else %}
-                <li style="font-weight:bold;color:#78e110;" class="sortlist">Failed</li>
+                <li style="font-weight:bold;color:#e13310;" class="sortlist">Failed</li>
               {% endif %}
             {% endpp_get_ranked_decision %}
             </li>
-
              
             {% endif %}
 

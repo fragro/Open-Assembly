@@ -41,7 +41,6 @@ def get_pretty_url(ctype_pk, obj_pk):
             else:
                 val.slug = key
             val.save()
-
         #cache.set('/' + key, (ctype_pk, obj_pk))
     except:
         raise
@@ -289,9 +288,10 @@ class BlobForm(forms.ModelForm):
     description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="")
 
-    end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
-    decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}), required=False)
-    timezone = forms.ChoiceField(required=False, label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
+    end_of_nomination_phase = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+    decision_time = JqSplitDateTimeField(widget=JqSplitDateTimeWidget(attrs={'date_class': 'datepicker', 'time_class': 'timepicker'}))
+    timezone = forms.ChoiceField(label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
+    winners = forms.IntegerField(required=False, help_text="Number of responses to accept, leave this blank to accept all responses.")
 
 
 class BlobEditForm(forms.ModelForm):

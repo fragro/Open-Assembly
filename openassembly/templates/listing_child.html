@@ -62,32 +62,35 @@
        {% endpp_get_tags_for_object %}
 
     {% pp_get_ranked_decision object=pp_consensus.consensus %}
-        {% if pp_consensus.ranked_decision.winner == object.pk %}
-            {% oa_get_group_settings object=object.content_object.parent %}
+        {% if pp_consensus.consensus.phasename == 'pass' or pp_consensus.consensus.phasename == 'fail' %}
+        {% if object.pk in pp_consensus.ranked_decision.winner or not pp_consensus.consensus.winners %}
+            {% oa_get_group_settings object=object.content_object.parent.parent %}
                 <!--- if this was a winner, etc. -->
                     <span style="margin-left:10px;font-size:100%;">
-                    {% if pp_consensus.ranked_decision.passed %}
+                    {% if object.pk in pp_consensus.ranked_decision.winner %}
                             <b>Passed</b> - 
                     {% else %}
                         <b>Failed</b> - 
                     {% endif %}
-                           
-                    {% if pp_topic.settings.consensus_percentage < pp_consensus.ranked_decision.nomination_consensus_percent %}
+                    {% if pp_topic.settings.consensus_percentage < object.consensus_percent %}
                         <b style="color:#56e110;">
                     {% else %}
                         <b style="color:#e11010">
                     {% endif %}
-                    {{ pp_consensus.ranked_decision.nomination_consensus_percent|percent }} Consensus</b> - 
-                    
-                    {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.nomination_reporting_percent %}
-                        <b style="color:#56e110;">
-                    {% else %}
-                        <b style="color:#e11010">
-                    {% endif %}
-                    {{ pp_consensus.ranked_decision.nomination_reporting_percent|percent }} Reported</b>
+                    {{ object.consensus_percent|percent }} Consensus</b> - 
+                    {% comment %}
+                        {% if pp_topic.settings.percent_reporting < object.reporting_percent %}
+                            <b style="color:#56e110;">
+                        {% else %}
+                            <b style="color:#e11010">
+                        {% endif %}
+                    {% endcomment %}
+                    <b>
+                    {{ object.reporting_percent|percent }} Reported</b>
                     </span>
 
                 {% endoa_get_group_settings %}
+        {% endif %}
         {% endif %}
     {% endpp_get_ranked_decision %}
     </div>

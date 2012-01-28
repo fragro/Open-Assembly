@@ -6,19 +6,18 @@
 
     {% pp_get_tags object=pp_consensus.consensus %}
 
-            {% if pp_tag.tags|length > 0 %}
 
                 <ul class="tags" id="tags">
-                    <li><b>Tags:</b></li>
-                        
-                 {% for name, t_id, c_type_id, count in pp_tag.tags %}
+                {% if pp_tag.tags|length > 0 %}
 
-                    <li><a href="/index.html#list/_t{{c_type_id}}/_o{{t_id}}/_dhn">{{name|replace_w_space}}({{count}})</a></li>
-                {% endfor %}
+                    <li><b>Tags:</b></li>
+                     {% for name, t_id, c_type_id, count in pp_tag.tags %}
+                        <li><a href="/index.html#list/_t{{c_type_id}}/_o{{t_id}}/_dhn">{{name|replace_w_space}}({{count}})</a></li>
+                    {% endfor %}
+                {% endif %}
 
                 </ul>
 
-            {% endif %}
 
         {% endpp_get_tags %} 
 
