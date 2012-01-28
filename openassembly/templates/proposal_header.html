@@ -1,0 +1,4 @@
+
+{% pp_consensus_get object=object.parent_pk %}
+<h3>Proposal Response{{pp_consensus.consensus.content_object.children|pluralize}} ({{pp_consensus.consensus.content_object.children}})</h3>
+{% endpp_consensus_get %}
