@@ -68,7 +68,7 @@ def initiate_nextphase(consensus):
         #if this question does not pass consensus we do not accept, however ignore reporting
         #this gives people an opportunity to not agree with the need for the question itself
         cons_perc = get_consensus(consensus)
-        report_perc = UpDownVote.objects.filter(parent=consensus).count() / num_members
+        report_perc = float(UpDownVote.objects.filter(parent=consensus).count()) / float(num_members)
         cons_passed = test_if_passes(cons_perc, report_perc, settings, ignore_reporting=False)
 
         winner = []
