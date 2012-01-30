@@ -314,7 +314,7 @@
                     </div>
                 </div>
 
-                {% if pp_consensus.consensus.phase.curphase.phasename == 'vote' and object.children != 1 %}
+                {% if pp_consensus.consensus.phase.curphase.phasename == 'vote' and object.children != 1 and pp_consensus.consensus.winners != None %}
 
                 <h3>{{object.forumdimension.name}} Response{{pp_blob.count|pluralize}} ({{object.children}})</h3>
                 {% if pp_consensus.consensus.winners %}<h4>Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}</h4>{% else %}<h4>Accepting All Responses With Consent</h4>{% endif %}
