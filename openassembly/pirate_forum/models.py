@@ -227,6 +227,19 @@ class Nomination(ForumBlob):
         return 'nom'
 
 
+class Edit(models.Model):
+    user = models.ForeignKey(User)
+    time = models.DateTimeField()
+    object_type = models.ForeignKey(ContentType, verbose_name=_('parent content type'),
+                                            related_name="%(app_label)s_%(class)s_parent",
+                                            blank=True, null=True)
+    object_pk = models.CharField(_('Object PK'), max_length=100, blank=True, null=True)
+    content_object = generic.GenericForeignKey(ct_field="object_type", fk_field="object_pk")
+
+    def __unicode__(self):
+        return str(self.object_pk) + ' : ' + str(self.time)
+
+
 class View(models.Model):
     object_pk = models.IntegerField()
     num = models.IntegerField(default=0)
@@ -298,6 +311,9 @@ class BlobEditForm(forms.ModelForm):
 
     def save(self, commit=True):
         newo = super(BlobEditForm, self).save(commit=commit)
+        selftype = ContentType.objects.get_for_model(newo)
+        new_edit = Edit(time=datetime.datetime.now(), object_pk=newo.pk, object_type=selftype, user=newo.user)
+        new_edit.save()
         if newo.created_dt == None:
             newo.created_dt = datetime.datetime.now()
             ctype = ContentType.objects.get_for_model(Nomination)
@@ -346,3 +362,4 @@ admin.site.register(DimensionTracker)
 admin.site.register(Question)
 admin.site.register(Nomination)
 admin.site.register(cached_url)
+admin.site.register(Edit)

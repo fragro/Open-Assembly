@@ -5,6 +5,7 @@
 
 {% block title %}Upload file to Blobstore{% endblock %}
 
+
 {% block content %}
 
   {% if user.is_authenticated %}
@@ -50,7 +51,6 @@
         </p>
       </div>
 
-    </div>
     {% else %}
 
       {% include 'malicious_behavior.html' %}

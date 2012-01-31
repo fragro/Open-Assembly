@@ -25,19 +25,19 @@ RATINGS_CHOICES = (
     (5, "Excellent"),
 )
 
-SPECTRUM_CHOICES = (
-    (1, "Never!"),
-    (2, "Strongly Disagree"),
-    (3, "Disagree"),
-    (4, "Mostly Disagree"),
-    (5, "Pt. of Contention"),
-    (6, "Meh"),
-    (7, "Slightly Agree"),
-    (8, "Mostly Agree"),
-    (9, "Agree"),
-    (10, "Strongly Agree"),
-    (11, "Extremely Agree"),
-)
+SPECTRUM_CHOICES = {
+    1: "Never!",
+    2: "Strongly Disagree",
+    3: "Disagree",
+    4: "Mostly Disagree",
+    5: "Pt. of Contention",
+    6: "Meh",
+    7: "Slightly Agree",
+    8: "Mostly Agree",
+    9: "Agree",
+    10: "Strongly Agree",
+    11: "Extremely Agree",
+}
 
 SPECTRUM_COLORS = {
     1: "#e11010",
@@ -449,7 +449,7 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
 
         if obj.spectrum is not None:
             for i in SpectrumHolder.objects.filter(spectrum_pk=obj.spectrum.pk):
-                data.append({'name': str(int(i.vote) - 6), 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
+                data.append({'name': SPECTRUM_CHOICES[int(i.vote)], 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
             dchart['data'] = data
             namespace['chart_data'] = str([dchart])
             if dchart['data'] != []:
@@ -512,4 +512,4 @@ class RatingForm(forms.Form):
     
 class SpectrumForm(forms.Form):
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_spectrum_form")
-    spectrum = forms.ChoiceField(choices=SPECTRUM_CHOICES)
+    spectrum = forms.ChoiceField(choices=SPECTRUM_CHOICES.items())

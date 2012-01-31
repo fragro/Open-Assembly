@@ -18,6 +18,11 @@
                            title: {
                               text: 'Temperature Check'
                            },
+                           tooltip: {
+                              formatter: function() {
+                                 return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                              }
+                           },
                            yAxis: {
                               title: {
                                  text: 'Consensus'
@@ -47,7 +52,7 @@
 
                               {% if pp_consensus.mean_information %}
                                     <b>{{pp_consensus.mean_information|floatformat:"1"}}</b>
-                                 {% else %} <b>----</b>
+                                 {% else %} <b>---</b>
                               {% endif %}
 
                               </div>

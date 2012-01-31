@@ -27,7 +27,7 @@ from pirate_consensus.models import UpDownVote, Consensus, Phase, PhaseLink
 from pirate_consensus.tasks import initiate_nextphase, local_tz_to_utc
 
 from pirate_reputation.models import ReputationDimension
-from pirate_forum.models import ForumBlob, Question
+from pirate_forum.models import ForumBlob, Question, Edit
 from pirate_forum.models import  BlobEditForm
 from pirate_core.forms import ComboFormFactory
 from pirate_topics.models import Topic
@@ -635,6 +635,29 @@ def pp_blob_child_dimension(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
+
+
+@block
+def pp_blob_edits(context, nodelist, *args, **kwargs):
+    '''Takes an object from the context, identifies the submission
+    dimension for it's children, and returns the dimension to the context
+    as a str that can be used in a pp_url to redirect to submit.html page
+    '''
+
+    context.push()
+    namespace = get_namespace(context)
+
+    obj = kwargs.get('object', None)
+
+    if obj is not None:
+        edits = Edit.objects.filter(object_pk=obj.pk).order_by('time')
+        namespace['edits'] = edits
+
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
 
 
 @block

@@ -265,3 +265,7 @@ CELERY_QUEUES = {
         'binding_key': 'tasks.#'
     }
 }
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda o: "/p/user/k-%s" % o.username,
+}
