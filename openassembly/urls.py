@@ -35,6 +35,7 @@ parser = dselector.Parser()
 parser.register("file", r'[\w0-9\_]+\.?[\w0-9\_]*')
 
 urlpatterns = patterns('',
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/favicon.ico'}),
     (r'^$', welcome_page),
     (r'^p/', welcome_page),
     (r'^tulsa/', home_page),
