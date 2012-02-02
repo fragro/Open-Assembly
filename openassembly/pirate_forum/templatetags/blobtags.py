@@ -387,7 +387,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
             cleaned_data = form.clean()
             for k, v in cleaned_data.items():
                 setattr(blob, k, v)
-            blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
+            #blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
             blob.save()
 
             if 'link' in form.cleaned_data:
@@ -450,7 +450,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                         blob = form.save(commit=False)
                         blob.forumdimension = fd
                         blob.user = user
-                        blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
+                        #blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
                         blob.parent_pk = parent.pk
                         blob.parent_type = ContentType.objects.get_for_model(parent)
                         ctype = ContentType.objects.get_for_model(Topic)

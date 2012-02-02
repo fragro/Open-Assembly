@@ -564,14 +564,13 @@ def vote(request, pk, vote, votemodel, vote_type_str):
     if is_new:
         user_cons.intiate_vote_distributions()
         user_cons.spectrum.get_list()
-
     if vote == -99:
         st = votemodel.objects.get(user=request.user, object_pk=pk)
         aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user,
                             initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
                             related_object=st, is_vote=True)
         # register reputation for voting
-        if consensus.content_object.user != request.user:
+        if consensus.content_object.user.pk != request.user.pk:
             user_cons.register_vote(st, 'delete', old_vote=st.vote)
         consensus.register_vote(st, 'delete', old_vote=st.vote)
 
@@ -585,7 +584,7 @@ def vote(request, pk, vote, votemodel, vote_type_str):
                 old_vote_pos = old.vote
                 old.vote = vote
                 old.save()
-                if consensus.content_object.user != request.user:
+                if consensus.content_object.user.pk != request.user.pk:
                     user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
                 vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
                 consensus.register_vote(old, 'change', old_vote=old_vote_pos)
@@ -599,7 +598,7 @@ def vote(request, pk, vote, votemodel, vote_type_str):
                                 related_object=st, is_vote=True)
             # register reputation for voting
             vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
-            if consensus.content_object.user != request.user:
+            if consensus.content_object.user.pk != request.user.pk:
                 user_cons.register_vote(st, 'register')
             consensus.register_vote(st, 'register')
             update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])
