@@ -64,7 +64,7 @@
                     
                       <input type="submit" class="button green" value="Login">
 
-                    <br><br><a style="font-size:80%;" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a><br>
+                    <br><br><a class="nobbq" style="font-size:80%;" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a><br>
                     <div class="error">{{pp_login.errors}}<br>{{ pp_login.form.errors }}</div>
 
                     </form>

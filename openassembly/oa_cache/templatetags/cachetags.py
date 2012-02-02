@@ -33,7 +33,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
     #we only consider certain items to be
 
-    if string.find(hashed, '.html') == -1 and hashed[0:2] == '/p' or hashed == '/':
+    if string.find(hashed, '.html') == -1 and hashed[0:3] == '/p/' or hashed == '/':
         if hashed is None:
             hashed = ''
         if hashed == '/' or hashed == '':
