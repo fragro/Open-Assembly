@@ -27,6 +27,9 @@ from oa_cache.views import update_ranks
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
+from pirate_core.middleware import STR_KEY
+from pirate_forum.models import get_pretty_url
+
 from pirate_ranking.models import vote_created_callback
 from tagging.models import TaggedItem
 from pirate_core.templatetags.tag_helpers import get_recommended_tag_list,get_link_tag_list
@@ -67,8 +70,8 @@ def add_support(request, pk):
         sub = Subscription(subscriber=request.user, subscribee=user,
                             created_dt=datetime.datetime.now())
         sub.save()
-        return redirect("/p/user/-t" + str(c_type.pk) +
-                    "/-o" + str(user.pk))
+        obj_str = get_pretty_url(c_type.pk, pk)
+        return redirect("/p/user/" + STR_KEY + str(obj_str))
     else:
         return redirect('/register.html?')
 
@@ -80,8 +83,8 @@ def remove_support(request, pk):
         sub = Subscription.objects.get(subscriber=request.user,
                                         subscribee=user)
         sub.delete()
-        return redirect("/p/user/-t" + str(c_type.pk) +
-                        "/-o" + str(user.pk))
+        obj_str = get_pretty_url(c_type.pk, pk)
+        return redirect("/p/user/" + STR_KEY + str(obj_str))
     else:
         return redirect('/register.html?')
 
