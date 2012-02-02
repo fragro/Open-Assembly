@@ -437,7 +437,7 @@
                                 </div>
                                 {% endcomment %}
                                 <div>
-
+                {% if user.is_authenticated %}
                                 <h2 class="acc_trigger"><a href="#"><img src="/static/img/comment.jpg">Comment</a></h2>
                                 <div class="acc_container">
                                     <div class="block">
@@ -509,6 +509,8 @@
 
                             {% endoa_get_group_settings %}
                         {% endpp_get_root %}
+
+                {% endif %}
                                 </div>
                             </div>
                         </div>

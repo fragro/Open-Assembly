@@ -49,7 +49,7 @@
                 
                 <div id="info">
                 <h2>Mission</h2>
-                <p>{{object.description}}</p>
+                <p>{{object.description|markdown }}</p>
             {% cani object=object user=user %}
                 {% if pp_permissions.permission %}
 

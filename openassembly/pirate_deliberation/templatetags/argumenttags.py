@@ -12,6 +12,8 @@ from pirate_deliberation.choices import ARG_TYPES_DICT
 
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
 
+from django.utils.html import urlize
+
 from pirate_signals.models import aso_rep_event,notification_send, relationship_event
 
 from customtags.decorators import block_decorator
@@ -133,6 +135,7 @@ def pp_argument_form(context, nodelist, *args, **kwargs):
                 new_arg = form.save(commit=False)
                 new_arg.stance = stance
                 new_arg.user = user
+                new_arg.description = urlize(new_arg.description, trim_url_limit=30, nofollow=True)
                 new_arg.parent_type = ContentType.objects.get_for_model(parent)
                 new_arg.parent_pk = parent.id
                 new_arg.save()
