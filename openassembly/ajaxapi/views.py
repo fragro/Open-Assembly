@@ -328,6 +328,12 @@ def delete_object(request):
         object_id = request.POST[u'object_id']
         contype = ContentType.objects.get(pk=content_type)
         cons = Consensus.objects.get(object_pk=object_id)
+        parent = cons.content_object.parent
+        try:
+            parent.children -= 1
+            parent.save()
+        except:
+            pass
         mod = contype.model_class()
         obj = mod.objects.get(pk=object_id)
         if not obj.user == request.user:

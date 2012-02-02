@@ -544,10 +544,11 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                                                                         phase_change_dt=phase_change_dt, complete=False, active=True)
                                     cons.phase = ph
                                     #now we want to initialize future phasechangetasks
-                                    initiate_nextphase.apply_async(args=[cons], eta=phase_change_dt)
 
                                     cons.phasename = "nom"
                                     cons.winners = form.cleaned_data['winners']
+                                    #INITIATE THIS AFTER ALL CHANGES ARE MADE !IMPORTANT
+                                    initiate_nextphase.apply_async(args=[cons], eta=phase_change_dt)
                                 else:
                                     cons.phasename = "temp"
                                 cons.save()

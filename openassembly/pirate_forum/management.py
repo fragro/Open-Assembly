@@ -91,7 +91,7 @@ def main():
 			#issue_list = issue_list.filter(parent_pk=topic.pk)
 			#type_class = ContentType.objects.get(app_label=str(fd.app_label), model=str(fd.model_class_name).lower())
 			#issue_list = issue_list.filter(content_type=type_class)
-			d, is_new = DimensionTracker.objects.get_or_create(object_pk=topic.pk,dimension=fd)
+			d, is_new = DimensionTracker.objects.get_or_create(object_pk=topic.pk, dimension=fd)
 			#d.children = issue_list.count()
 			d.save()
 

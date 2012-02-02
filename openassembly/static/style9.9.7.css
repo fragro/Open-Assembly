@@ -247,8 +247,11 @@ small {
     float:left;
     margin-top:-5px;
 }
-.quick_profile .avatar {
+.quick_profile .avatar_holder {
     float:left;
+    height:70px;
+}
+.quick_profile .avatar {
     margin-right:10px;
 }
 .quick_profile .user {

@@ -396,7 +396,9 @@
                             <div class="quick_profile">  
                             {% if request.user.is_authenticated %}                
                                 {% pp_get_avatar user=request.user %}
+                                <span class="avatar_holder">
                                 <a href="{% pp_url template='user_profile.html' object=request.user %}"><img class="avatar" src="{{pp_profile.thumbnail}}" alt="{{request.user.username}}"></a>
+                                </span>
                                 {% endpp_get_avatar %}
                                 {% pp_get_reputation user=request.user %}
                                 <small>(+{{pp_reputation.reputation}})</small>

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
 import PIL
-
+from PIL import Image
 from StringIO import StringIO
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -47,38 +47,61 @@ class IMGSource(models.Model):
 
     def make(self, image, thumb_field_name):
         im = PIL.Image.open(StringIO(''.join(image.chunks())))
-
-        thumb_small = self.rescale(im, 20, 18)
-        thumb_small_io = StringIO()
-        thumb_small.save(thumb_small_io, im.format)
-        thumbnail_small = InMemoryUploadedFile(thumb_small_io, thumb_field_name, '%s_thumbsmall.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', thumb_small_io.len, None)
-
-        thumb = self.rescale(im, 70, 60)
-        thumb_io = StringIO()
-        thumb.save(thumb_io, im.format)
-        thumbnail = InMemoryUploadedFile(thumb_io, thumb_field_name, '%s_thumb.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', thumb_io.len, None)
-
-        thumb = self.rescale(im, 180, 160)
-        thumb_io = StringIO()
-        thumb.save(thumb_io, im.format)
-        thumbnail_large = InMemoryUploadedFile(thumb_io, thumb_field_name, '%s_thumblarge.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', thumb_io.len, None)
-
         im_io = StringIO()
         im.save(im_io, im.format)
 
         image = InMemoryUploadedFile(im_io, thumb_field_name, '%s.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
+        im = PIL.Image.open(StringIO(''.join(image.chunks())))
+
+        src_width, src_height = im.size
+
+        if src_width > src_height:
+            small = (46, 40)
+            medium = (70, 90)
+            large = (190, 220)
+        else:
+            small = (40, 36)
+            medium = (90, 70)
+            large = (220, 190)
+        im_io = StringIO()
+        im.thumbnail(small, Image.ANTIALIAS)
+        im.save(im_io, im.format)
+
+        thumbnail_small = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumbsmall.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
+        im = PIL.Image.open(StringIO(''.join(image.chunks())))
+
+        im_io = StringIO()
+        im.thumbnail(medium, Image.ANTIALIAS)
+        im.save(im_io, im.format)
+
+        thumbnail = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumb.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
+        im = PIL.Image.open(StringIO(''.join(image.chunks())))
+
+        im_io = StringIO()
+        im.thumbnail(large, Image.ANTIALIAS)
+
+        im.save(im_io, im.format)
+
+        thumbnail_large = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumblarge.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
 
         self.file = image
         self.thumbnail_small = thumbnail_small
+
         self.thumbnail = thumbnail
         self.thumbnail_large = thumbnail_large
         self.save()
 
     def rescale(self, data, width, height, force=True):
         """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-        max_width = width
-        max_height = height
 
+        image = Image.open(data.path)
+
+      # normalize image mode
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        image.thumbnail((width, height), Image.ANTIALIAS)
+        image.save(data.path, 'JPEG', quality=100)
+        """
         img = data
         if not force:
             img.thumbnail((max_width, max_height), PIL.Image.ANTIALIAS)
@@ -100,7 +123,7 @@ class IMGSource(models.Model):
                 y_offset = float(src_height - crop_height) / 3
             img = img.crop((x_offset, y_offset, x_offset + int(crop_width), y_offset + int(crop_height)))
             img = img.resize((dst_width, dst_height), PIL.Image.ANTIALIAS)
-
+"""
         return img
 
     @property

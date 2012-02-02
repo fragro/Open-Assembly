@@ -35,12 +35,12 @@
                   <img src="{{upload.thumbnail.url}}"><br>
                   {% if upload.private %}<i>Private</i>{% endif %}({{ upload.file.size|filesizeformat }})<br>
 
-                  <a href="{% firstof upload.file|public_download_url fallback_url %}">Download</a> | 
-                  <a href="{% url pirate_sources.views.change_avatar obj_pk=obj_pk new_pk=upload.pk ctype_pk=ctype_pk %}">Choose</a>
+                  <a class="nobbq" href="{% firstof upload.file|public_download_url fallback_url %}">Download</a> | 
+                  <a class="nobbq" href="{% url pirate_sources.views.change_avatar obj_pk=obj_pk new_pk=upload.pk ctype_pk=ctype_pk %}">Choose</a>
 
                 {% if request.user.is_staff or request.user == upload.user %}
                
-                   | <a href="{% url pirate_sources.views.delete_handler pk=upload.pk ctype_pk=ctype_pk %}">Delete</a>
+                   | <a class="nobbq" href="{% url pirate_sources.views.delete_handler pk=upload.pk ctype_pk=ctype_pk %}">Delete</a>
 
                 {% endif %}
                   

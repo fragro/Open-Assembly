@@ -72,7 +72,7 @@ for more information on SideEffectCache
                     #        user = obj.user
                         #deferred.defer(usc.model_cache.render, {'object': obj, 'user': user}, True)
 
-                    rendered_list.append({'scroll_to': True, 'div': div, 'type': s.jquery_cmd, 'html':
+                    rendered_list.append({'scroll_to': s.scroll_to, 'div': div, 'type': s.jquery_cmd, 'html':
                                         s.render(RequestContext(request, {'salted': True, 'object': obj, 'user': request.user}))})
             data['output'] = rendered_list
             data['FAIL'] = False

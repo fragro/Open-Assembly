@@ -59,17 +59,18 @@ def initiate_nextphase(consensus):
     consensus.phasname = consensus.phase.curphase.phasename
 
     num_members = consensus.content_object.parent.group_members
+
     if consensus.phase.curphase.nextphase == None:
         #get the group settings
         settings, is_new = GroupSettings.objects.get_or_create(topic=consensus.content_object.parent)
-
+        #iterate decisions made
         consensus.content_object.parent.decisions += 1
         consensus.content_object.parent.save()
         #if this question does not pass consensus we do not accept, however ignore reporting
         #this gives people an opportunity to not agree with the need for the question itself
-        cons_perc = get_consensus(consensus)
-        report_perc = float(UpDownVote.objects.filter(parent=consensus).count()) / float(num_members)
-        cons_passed = test_if_passes(cons_perc, report_perc, settings, ignore_reporting=False)
+        consensus.consensus_percent = get_consensus(consensus)
+        consensus.reporting_percent = float(UpDownVote.objects.filter(parent=consensus).count()) / float(num_members)
+        cons_passed = test_if_passes(consensus.consensus_percent, consensus.reporting_percent, settings, ignore_reporting=False)
 
         winner = []
         passes = False
@@ -96,9 +97,10 @@ def initiate_nextphase(consensus):
                 #make sure it passes consensus also
                 for schulze_winner in schulze_winners:
                     nom = Consensus.objects.get(pk=schulze_winner)
-                    max_cons = get_consensus(nom)
-                    max_report = UpDownVote.objects.filter(parent=nom).count() / num_members
-                    noms_passed = test_if_passes(max_cons, max_report, settings, ignore_reporting=True)
+                    nom.consensus_percent = get_consensus(nom)
+                    nom.reporting_percent = UpDownVote.objects.filter(parent=nom).count() / num_members
+                    nom.save()
+                    noms_passed = test_if_passes(nom.consensus_percent, nom.reporting_percent, settings, ignore_reporting=True)
                     if noms_passed == True:
                         passes = True
                         winner.append(nom.pk)
@@ -128,18 +130,18 @@ def initiate_nextphase(consensus):
                     passes = True
                     print 'noms passed ' + str(noms_passed)
         #if we still haven't
-        if passes == False:
-            consensus.phasename = 'fail'
-        elif passes == True and cons_passed == True:
+        if passes == True and cons_passed == True:
             consensus.phasename = 'pass'
+        else:
+            consensus.phasename = 'fail'
 
         #what to do if there is no winner?
         #decision failed, no one voted in time
         rd = RankedDecision(passed=passes and cons_passed,
                 winner=winner,
                 parent=consensus,
-                consensus_percent=cons_perc,
-                reporting_percent=report_perc,
+                consensus_percent=consensus.consensus_percent,
+                reporting_percent=consensus.reporting_percent,
                 submit_date=datetime.datetime.now(),
                 algorithm='Schulze Method Single Winner')
         rd.save()

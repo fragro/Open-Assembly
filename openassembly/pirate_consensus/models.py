@@ -261,8 +261,8 @@ class UpDownVote(models.Model):
 
 class VideoVote(models.Model):
     """
-    Integrates OpenAssembly with HTML5 video voting, allowing users 
-    to easily vote on the scenes they like in videos. Stores info 
+    Integrates OpenAssembly with HTML5 video voting, allowing users
+    to easily vote on the scenes they like in videos. Stores info
     such as video ID and time in the video voted.
     """
     user = models.ForeignKey(User, null=True, blank=True)
