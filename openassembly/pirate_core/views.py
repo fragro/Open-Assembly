@@ -14,8 +14,8 @@ from django.template import Context, loader
 
 @detect_mobile
 def welcome_page(request):
-    if request.mobile:
-        return HttpResponseRedirect('mobile.html')
+    #if request.mobile:
+    #    return HttpResponseRedirect('mobile.html')
     t = loader.get_template('index.html')
     c = Context({'request': request})
     return HttpResponse(t.render(c))

@@ -376,7 +376,7 @@ decreased the latency of the system.
         elif hashed == '/' and empty != 'false' and request.user.is_authenticated():
             hashed = '/p/landing'
             #need to make this some sort of home feed for user
-        if hashed != '':
+        if hashed[0:2] == '/p':
             props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
             if props['render']:
                 #if the c
@@ -387,7 +387,7 @@ decreased the latency of the system.
             data['FAIL'] = False
             if 'SCROLL_KEY' in props['paramdict']:
                 data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
-        elif hashed[0:2] != '/p':
+        else:
             data['FAIL'] = hashed
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
                 return HttpResponse(simplejson.dumps(data),

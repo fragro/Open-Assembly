@@ -91,12 +91,18 @@ def pp_current_image(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
 
-    obj = kwargs.get('object',None)
+    obj = kwargs.get('object', None)
 
-    if obj is not None: 
-        imgsource = IMGSource.objects.get(object_pk=obj.pk, current=True)
-        namespace['current_img'] = imgsource
-    
+    if obj is not None:
+        try:
+            imgsource = IMGSource.objects.get(object_pk=obj.pk, current=True)
+            namespace['current_img'] = imgsource
+        except:
+            imgsource = IMGSource.objects.filter(object_pk=obj.pk)
+            if len(imgsource) > 1:
+                namespace['current_img'] = imgsource
+
+
     output = nodelist.render(context)
     context.pop()
 

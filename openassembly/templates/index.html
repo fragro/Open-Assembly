@@ -28,8 +28,13 @@
 
         <meta property="og:title" content="{{pp_cache.object.summary|title}}{{pp_cache.object.username}}"/>
         <meta property="og:locale" content="og:locale:alternate"/>
-        
-        <meta property="og:image" content="{{pp_tag.image}}"/>
+        {% pp_current_image object=pp_cache.object %}
+            {% if pp_source.current_image %}
+            <meta property="og:image" content="{{pp_source.current_image}}"/>
+            {% else %}
+            <meta property="og:image" content="/static/img/openassembly_logo_new.png"/>
+            {% endif %}
+        {% endpp_current_image %}
         <meta property="og:site_name" content="OpenAssembly"/>
         <meta property="og:description"
               content="{{pp_cache.object.description}}"/>
@@ -127,30 +132,42 @@
 
         $(document).ready(function() {
 
+
             $(window).bind("popstate", function(evt) {
                   var state = evt.originalEvent.state;
                   if (state && state.module === "leave") {
                         getContent();
                   }
+                  if (state && state.module === "nobbq") {
+                        js_redirect(state.url);
+                  }
             });
+            //we're popping states for nobbq events that should be loaded the usual way...
 
             if (history.pushState) {
+                var that = $(this);
+                if(!that.hasClass('nobbq')){
+                    history.replaceState({load:true, module:'nobbq', url: location.href}, '');
+                }
                 $('body').delegate('a', 'click', function (e) {
                     var that = $(this);
                     var url = (typeof that.attr('href') != 'undefined') ? that.attr('href').replace('{{DOMAIN}}', '') : '';
-
                     if (allowPush(e, url, that)) {
                         e.preventDefault();
                         history.pushState({load:true, module:'leave'}, '', url);
                         getContent();
+
+                    }
+                    else{
+                        //need to load some error msg
                     }
                 });
 
-                history.replaceState({load:true}, '');
             }
+
             // when the page first loads update the history entry with the URL
             // needed to recreate the 'first' page with AJAX
-
+            //history.pushState({load:true}, '', location.href);
     });
 
         $(document).ready(function(){
@@ -165,91 +182,6 @@
             });
                    
         });
-
-        {% if request.scroll_to %}
-            {% if request.META.PATH_INFO == '/detail.html' %}
-                $(document).ready(function() {
-                    $("#{{request.scroll_to_div}}").slideto({'highlight_color':'#d6e3ec','div_offset':1000});
-                });  
-            {% else %}
-                $(document).ready(function() {
-                    $("#{{request.scroll_to_div}}").slideto({'highlight_color':'#d6e3ec'});
-                });
-            {% endif %}
-
-        {% endif %}
-
-        {% if request.object %}
-            {% pp_consensus_get object=request.object.id %}
-                {% if pp_consensus.consensus %}
-                      {% pp_rating_js object=request.object user=request.user %}
-
-                       {{pp_consensus.rating_js|safe}} 
-
-                      {% endpp_rating_js %}
-
-                      {% pp_spectrum_js object=request.object user=request.user %}
-
-                       {{pp_consensus.spectrum_js|safe}}
-
-                      {% endpp_spectrum_js %}
-
-                {% endif %}
-            {% endpp_consensus_get %}
-        {% endif %}
-
-        {% if request.simplebox == 's' %}
-            $().ready(function() {
-                $("#registration_simplebox").simplebox();
-            });
-        {% endif %}
-
-        {% if request.simplebox == 'c' %}
-            $().ready(function() {
-                $("#confirm_simplebox").simplebox();
-            });
-        {% endif %}
-    {% comment %}
-      {% if request.simplebox %}
-
-          google.load("maps", "3",  {callback: initialize, other_params:"sensor=false"});
-
-          function initialize() {
-            // Initialize default values
-            //var zoom = 3;
-            //var latlng = new google.maps.LatLng(37.4419, -100.1419);
-            var location = "";
-
-            // If ClientLocation was filled in by the loader, use that info instead
-            if (google.loader.ClientLocation) {
-              //zoom = 13;
-              //latlng = new google.maps.LatLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude);
-              location = "from <b>" + getFormattedLocation() + "</b>";
-              set_loc_by_ip(google.loader.ClientLocation.address.city,google.loader.ClientLocation.address.region.toUpperCase(),google.loader.ClientLocation.address.country_code);
-            }
-
-            //var myOptions = {
-            //  zoom: zoom,
-            //  center: latlng,
-            //  mapTypeId: google.maps.MapTypeId.ROADMAP
-            //}
-
-            //var map = new google.maps.Map(document.getElementById("map"), myOptions);
-            document.getElementById("location").innerHTML = location;
-          }
-
-          function getFormattedLocation() {
-            if (google.loader.ClientLocation.address.country_code == "US" &&
-              google.loader.ClientLocation.address.region) {
-              return google.loader.ClientLocation.address.city + ", " 
-                  + google.loader.ClientLocation.address.region.toUpperCase();
-            } else {
-              return  google.loader.ClientLocation.address.city + ", "
-                  + google.loader.ClientLocation.address.country_code;
-            }
-          }
-      {% endif %}
-      {% endcomment %}
 
       </script> 
 
