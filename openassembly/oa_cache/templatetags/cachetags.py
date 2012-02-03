@@ -8,7 +8,7 @@ from pirate_forum.models import get_pretty_url, reverse_pretty_url
 
 from BeautifulSoup import BeautifulSoup
 
-from settings import DEBUG
+from settings import DEBUG, DOMAIN
 
 import string, re
 
@@ -75,6 +75,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
         ret['content'] = soup.prettify()
 
         namespace['data'] = ret
+        namespace['DOMAIN'] = DOMAIN
         namespace['object'] = obj
         namespace['rendered_list'] = None
     namespace['nojs'] = True

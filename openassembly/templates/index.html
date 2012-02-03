@@ -30,9 +30,9 @@
         <meta property="og:locale" content="og:locale:alternate"/>
         {% pp_current_image object=pp_cache.object %}
             {% if pp_source.current_image %}
-            <meta property="og:image" content="{{pp_source.current_image}}"/>
+            <meta property="og:image" content="{{pp_cache.DOMAIN}}{{pp_source.current_image}}"/>
             {% else %}
-            <meta property="og:image" content="/static/img/openassembly_logo_new.png"/>
+            <meta property="og:image" content="{{pp_cache.DOMAIN}}/static/img/openassembly_logo_new.png"/>
             {% endif %}
         {% endpp_current_image %}
         <meta property="og:site_name" content="OpenAssembly"/>
