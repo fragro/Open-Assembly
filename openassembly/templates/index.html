@@ -25,18 +25,30 @@
 
         
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
+        {% if pp_cache.object %}
         <meta property="og:title" content="{{pp_cache.object.summary|title}}{{pp_cache.object.username}}"/>
+        {% else %}
+            {% if pp_cache.rendertype != 'landing' %}
+                <meta property="og:title" content="Open Assembly {{pp_cache.rendertype|title}}"/>
+            {% else %}
+                <meta property="og:title" content="Open Assembly">
+            {% endif %}
+        {% endif %}
         {% pp_current_image object=pp_cache.object %}
-            {% if pp_source.current_image %}
-            <meta property="og:image" content="{{pp_cache.DOMAIN}}{{pp_source.current_image}}"/>
+            {% if pp_source.current_img %}
+            <meta property="og:image" content="{{pp_cache.DOMAIN}}/{{pp_source.current_img.thumbnail_large}}"/>
             {% else %}
             <meta property="og:image" content="{{pp_cache.DOMAIN}}/static/img/openassembly_logo_new.png"/>
             {% endif %}
         {% endpp_current_image %}
         <meta property="og:site_name" content="OpenAssembly"/>
+        {% if pp_cache.object %}
         <meta property="og:description"
               content="{{pp_cache.object.description}}"/>
+        {% else %}
+        <meta property="og:description"
+              content="Open Assembly is an evolutionary leap in democratic decision making for the crowd. Join us."/>
+        {% endif %}
 
         <link href="/static/favicon.ico" rel="icon" type="image/x-icon"> 
 

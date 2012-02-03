@@ -48,6 +48,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
                 raise
         #get object for the cache
         key, rtype, paramdict = interpret_hash(hashed)
+        namespace['rendertype'] = rtype
         obj = None
         if 'STR_KEY' in paramdict:
             ctype_pk, obj_pk = reverse_pretty_url(paramdict['STR_KEY'])
