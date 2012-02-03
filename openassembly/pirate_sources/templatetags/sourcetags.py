@@ -87,7 +87,7 @@ def pp_get_pad(context, nodelist, *args, **kwargs):
 def pp_current_image(context, nodelist, *args, **kwargs):
     """
     Retrieves the current image for this object id.
-    """    
+    """
     context.push()
     namespace = get_namespace(context)
 
@@ -99,14 +99,14 @@ def pp_current_image(context, nodelist, *args, **kwargs):
             namespace['current_img'] = imgsource
         except:
             imgsource = IMGSource.objects.filter(object_pk=obj.pk)
-            if len(imgsource) > 1:
+            if len(imgsource) > 0:
                 namespace['current_img'] = imgsource
-
 
     output = nodelist.render(context)
     context.pop()
 
     return output
+
 
 @block
 def pp_get_contenttype_id(context, nodelist, *args, **kwargs):
