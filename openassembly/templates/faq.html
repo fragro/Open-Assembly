@@ -5,126 +5,67 @@
 
         <div class="faq">
 
-       <h2>What is Open Assembly?</h2>
+        <h2>What is Open Assembly?</h2>
 
-        <div style="width:15%;float:right;text-align:center;font-style:italic;">
-            <img style=""src="/static/oa_agent/oa_agent_happy.png">
-        </div>
-
-
-        <p>OpenAssembly is a non-partisan site that looks to revolutionize the collaborative power of the internet. OA allows users to brainstorm a democratic platform, argue the ideal course of action, and reach consensus on those actions. </p>
-
-        <ul>
-
-        <li><b> Discuss and Debate:</b> OpenAssembly features a forum where you can discuss issues that are of interest to you and deliberate over the pros and cons of those issues </li>
-
-        <li><b>Vote:</b> Express yourself by declaring both your subjective agreement on an idea and your opinion on the objective quality. No longer must you upvote a poorly written idea that you agree with.
-
-        <li><b> Verify Yourself: </b> Open Assembly features an innovative verification technique. Your vote only counts if you get out there and become active in the community. Sockpuppets, your days are numbered.</li>
-
-        </ul>
-
-{% comment %}
+                <div style="width:15%;float:right;text-align:center;font-style:italic;">
+                    <img style=""src="/static/oa_agent/oa_agent_happy.png">
+                </div>
 
 
-        <h2>Advantages of Open Assembly</h2>
+                <p>OpenAssembly is a non-partisan site that looks to revolutionize the collaborative power of the internet. OA allows users to brainstorm a democratic platform, argue the ideal course of action, and reach consensus on those actions. </p>
 
-        <ul>
-
-        <li><b>Scalable Architecture: </b> Open Assembly is built to scale to the needs of the movement. It is 
-        built on the AppEngine infrastructure which allows for the system to quickly adapt to an increase in activity, a feature critical for active political movements. Computationally expensive decision algorithms and
-        voting calculations are offloaded to the <a href="http://code.google.com/p/openassembly-congresscritter/">Open Assembly Congress Critter</a></li>
-
-        </ul>
-
-
-        <div style="padding-bottom:5%;">
-        <p><a class="button" style="font-size:150%;float:left;margin-left:35%;" href="{% pp_url template='register.html' %}">Register Now!</a>
-        </div>
-        </p>
-
-         <h2>On the Horizon.</h2>
-        <p>
-        <ul>
-
-        <li><b>Polling:</b> 
-        <p>
-
-                A polling system will allow the people on the ground to
-                quickly create polls and react to events occurring around them in a decentralized manner. 
-                Small working groups on the ground and on the internet can focus their effort and make decisions 
-                quickly.
                 <ul>
-                        <li>A user initiates a poll by inputing an email list or sending a Polling request to their followers.</li>
 
-                        <li>Activists that receive the requests can browse existing choices or add their own.</li>
+                <li><b> Discuss: </b> Open Assembly features a forum where you can discuss issues that are of interest to you and deliberate over the pros and cons of those issues </li>
 
-                        <li>After a time limit, or all activists have responded with choices or no addition, a one-time voting token is sent to activists.</li>
+                <li><b>Vote: </b> Express yourself by declaring both your subjective agreement on an idea and your opinion on the objective quality. No longer must you upvote a poorly written idea that you agree with. Write arguemtns for 
 
-                        <li>Activists can vote by ranking the choices according to preference.</li>
+                <li><b> Decide: </b> You can make timed decisions or poll the group. Rank the nominated proposals to identify and focus on the best or accept all the solutions the group suggests</li>
+
+                <li><b> Configure: </b> Set the consent and reporting requirement that works best for your group, from traditional majority rule
+                or complete consenus.</li>
                 </ul>
 
-        </p>
+        <h2>How does the Consenus Engine work?</h2>
 
-        <li><b>Mobile:</b> We are working hard to adapt Open Assembly to better work on mobile devices.</li>
+                <p>
+                To facilitate a new participatory democracy OA employs modern voting methods. OA uses the proposal and response model, where citizens send proposals to the group. These proposals can be accepted or denied and responses can be accepted or denied. This allows the users to make the proposals as specific or general as they want and experiment with what the meaning and content of the response.
+                </p>
+                <p>
+                Users set a period for responding to the proposal, and a timed period for voting where responses can no longer be submitted. The proposal must pass the consensus and reporting requirements of the group and the reponses must pass the consensus requirement. In the future we may optionally apply the quorum or reporting requirement to the responses as well.
+                </p>
+                <p>
+                During the voting phase users may optionally rank the responses in the order of their preference. This gives
+                </p>
 
-        <li><b>Virtual Representative:</b> Our adaptive platform learns your preferences to improve your experience. Each user is assigned a personalized representative that finds content you would be interested in, helps you find interesting people to connect with, and allows for detailed analysis of the opinions in the community.</li>
-
-        <li><b> Organize:</b> Join coalitions of citizens that focus on issues you are most passionate about. Attend events or actions with other users to influence the real world. Photos and reputation reports will confirm your activism and persuade others to trust you. Only through trust can we ensure cooperation! </li>
-
-        </ul>
-        </li>
-        </ul>
-        </p>
-
-        <h3>Projects Underway:</h3>
-            <ul>
         
-        <li class="inner"><b>Occupy The Internet:</b> The General Assembly meets Open Assembly. The Occupy Movement desperately needs an advanced decision forum to identify goals and actions nationally. If it cannot identify unifying issues, the movement risks fracturing apart. Open Assembly is an open source project dedicated to
-        direct democracy efforts.
-                {% pp_get_topic topicname='Occupy The Internet' %}
-                        <p><a href="{% pp_url template='issues.html' object=pp_topic.topic start=0 end=20 dimension='hn' %}"><img style="width:95%;" src="/static/img/promo/occupy_the_internet.png"></a></p>
-                {% endpp_get_topic %}
-        <li class="inner"><b> Tulsa Film Genome Project:</b> Join the collaborative film today! Using the crowdsourced ideas of the masses and number crunching capabilities of machines we are developing an <i> evolutionary documentary </i>. Your votes alone drive the evolution of this film, so join us in the first ever evolutionary crowdsourced documentary!
-                {% pp_get_topic topicname='Tulsa Film Genome Project' %}
-                        <p><a href=href="{% pp_url template='issues.html' object=pp_topic.topic start=0 end=20 dimension='hn' %}"><img style="width:95%;" src="/static/img/promo/filmstrip_promo.png"></a></p>
-                {% endpp_get_topic %}
-        <li class="inner"><b> Online Government Experiment:</b> Open Assembly looks to change the way we discuss politics and organize online. Using OA we can create a knowledgebase of political ideas and activities that are honed through deliberation and voting. With the help of our AI overlords, we can determine the most important policies of the community and work together to make a difference.
-        </li>
-        </ul>
-        </ul>
-        </p>
+        <h2>Who's Behind Open Assembly?</h2>
 
-{% endcomment %}
-        
-       <h2>Who's Behind Open Assembly?</h2>
+                <p>Open Assembly is developed by founder fragro[at]gmail[dot]com and with the help of the open source community. Support for Open Assembly is funded by the National Science Foundation GRFP and the University of Tulsa.</p>
 
-       <p>Open Assembly is developed by founder fragro[at]gmail[dot]com and with the help of the open source community. Support for Open Assembly is funded by the National Science Foundation GRFP and the University of Tulsa. Design help by <a href="http://pressedweb.com/">PressedWeb</a>.</p>
+                <p>
+                <a href="http://www.utulsa.edu"><img style="margin-left:20%;" src="/static/img/TU.gif"></a><a href="http://www.nsf.gov/funding/pgm_summ.jsp?pims_id=6201"><img style="margin-left:20%;" src="/static/img/nsf.jpg"></a>
 
-        <p>
-        <a href="http://www.utulsa.edu"><img style="margin-left:20%;" src="/static/img/TU.gif"></a><a href="http://www.nsf.gov/funding/pgm_summ.jsp?pims_id=6201"><img style="margin-left:20%;" src="/static/img/nsf.jpg"></a>
-
-        </p>
+                </p>
 
         <h2>Our Philosophy</h2>
-        <p>
-        The developers of Open Assembly are dedicated to the ideals of democracy and self-governance. If a government
-        no longer operates for the People, and by the People, that government must be removed. To truly seek a new
-        model of democratic discourse and governance we must explore new models of democracy within our communities online and in the real world.
 
-        Together we can non-violently overthrow the suboptimal democracies of the world and liberate all of mankind through a truly global human Republic.
-        </p>
+                <p>
+                The developers of Open Assembly are dedicated to the ideals of democracy and self-governance. If a government
+                no longer operates for the People, and by the People, that government must be dissolved. To truly seek a new
+                model of democratic discourse and governance we must explore new models of democracy within our communities online and in the real world. Once these new models are proven superior we can non-violently overthrow the suboptimal regimes of the world and liberate all of mankind through a truly Global Human Republic.
+                </p>
 
-</div>
+                </div>
 
-<div style="margin-left:5%;">
-    <iframe width="560" height="315" src="http://www.youtube.com/embed/RZ69lgQ_Nxc" frameborder="0" allowfullscreen></iframe>
-</div>
+                <div style="margin-left:5%;">
+                <iframe width="560" height="315" src="http://www.youtube.com/embed/RZ69lgQ_Nxc" frameborder="0" allowfullscreen></iframe>
+                </div>
 
 
-<p>
- We would appreciate support from developers, web designers or graphic designers. OpenAssembly is located on <a href="http://openassemblycode.org">openassemblycode</a> and licensed under New BSD. The site runs on <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a>.
-</p>
+                <p>
+                We would appreciate support from developers, web designers or graphic designers. OpenAssembly is located on <a href="http://openassemblycode.org">openassemblycode</a> and licensed under New BSD. The site runs on <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a>.
+                </p>
 
 
 
