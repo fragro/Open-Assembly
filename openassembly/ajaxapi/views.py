@@ -514,8 +514,11 @@ def spectrumvote(request):
 
         pk = request.POST[u'pk']
         vote_str = int(request.POST[u'vote'])
+        consensus = Consensus.objects.get(object_pk=pk)
 
-        vote(request, pk, vote_str, UpDownVote, 'subjective')
+        register = not consensus.content_object.user.pk == request.user.pk
+
+        vote(request, pk, vote_str, UpDownVote, 'subjective', register)
 
         if vote_str > 6:
             vt = 'Consent'
@@ -523,7 +526,8 @@ def spectrumvote(request):
             vt = 'Stand Aside'
         else:
             vt = 'Dissent'
-        results = {'FAIL': False, 'vote_str': vote_str, 'votetype': vt}
+        results = {'FAIL': False, 'vote_str': vote_str, 'votetype': vt, 'conspk': consensus.content_object.user.pk, 'reqpk': request.user.pk,
+                    'equal': consensus.content_object.user.pk == request.user.pk}
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
             return HttpResponse(simplejson.dumps(results),
                                 mimetype='application/json')
@@ -549,7 +553,10 @@ def starvote(request):
         pk = request.POST[u'pk']
         vote_str = int(request.POST[u'vote'])
 
-        vote(request, pk, vote_str, RatingVote, 'objective')
+        consensus = Consensus.objects.get(object_pk=pk)
+        register = not consensus.content_object.user.pk == request.user.pk
+
+        vote(request, pk, vote_str, RatingVote, 'objective', register)
 
         results = {'FAIL': False, 'vote_str': vote_str}
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
@@ -557,7 +564,7 @@ def starvote(request):
                                 mimetype='application/json')
 
 
-def vote(request, pk, vote, votemodel, vote_type_str):
+def vote(request, pk, vote, votemodel, vote_type_str, register):
     consensus = Consensus.objects.get(object_pk=pk)
     cnt = ContentType.objects.get_for_model(User)
     user_cons, is_new = Consensus.objects.get_or_create(content_type=cnt,
@@ -569,12 +576,12 @@ def vote(request, pk, vote, votemodel, vote_type_str):
         user_cons.spectrum.get_list()
     if vote == -99:
         st = votemodel.objects.get(user=request.user, object_pk=pk)
-        aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user,
+        # register reputation for voting
+        if register:
+            user_cons.register_vote(st, 'delete', old_vote=st.vote)
+            aso_rep_delete.send(sender=request.user, event_score=1, user=consensus.content_object.user,
                             initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
                             related_object=st, is_vote=True)
-        # register reputation for voting
-        if consensus.content_object.user.pk != request.user.pk:
-            user_cons.register_vote(st, 'delete', old_vote=st.vote)
         consensus.register_vote(st, 'delete', old_vote=st.vote)
 
         update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])
@@ -587,21 +594,20 @@ def vote(request, pk, vote, votemodel, vote_type_str):
                 old_vote_pos = old.vote
                 old.vote = vote
                 old.save()
-                if consensus.content_object.user.pk != request.user.pk:
+                if register:
                     user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
                 vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
                 consensus.register_vote(old, 'change', old_vote=old_vote_pos)
-
         except:
             st, is_new = votemodel.objects.get_or_create(user=request.user, parent=consensus, vote=vote, object_pk=pk, parent_pk=consensus.parent_pk)
             st.save()
             check_badges(consensus.content_object.user, votemodel, pk)
-            aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user,
-                                initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
-                                related_object=st, is_vote=True)
             # register reputation for voting
             vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
-            if consensus.content_object.user.pk != request.user.pk:
+            if register:
+                aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user,
+                                initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
+                                related_object=st, is_vote=True)
                 user_cons.register_vote(st, 'register')
             consensus.register_vote(st, 'register')
             update_agent.send(sender=user_cons, type="vote", params=[vote_type_str, st.pk])

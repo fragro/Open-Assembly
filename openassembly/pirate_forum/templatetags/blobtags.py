@@ -10,6 +10,8 @@ from oa_cache.models import ListCache
 import datetime
 import pytz
 
+from django.shortcuts import redirect
+
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
@@ -27,7 +29,7 @@ from pirate_consensus.models import UpDownVote, Consensus, Phase, PhaseLink
 from pirate_consensus.tasks import initiate_nextphase, local_tz_to_utc
 
 from pirate_reputation.models import ReputationDimension
-from pirate_forum.models import ForumBlob, Question, Edit
+from pirate_forum.models import ForumBlob, Question, Edit, Search
 from pirate_forum.models import  BlobEditForm
 from pirate_core.forms import ComboFormFactory
 from pirate_topics.models import Topic
@@ -474,10 +476,24 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
                                     return output
                                 else:
+                                    err = None
                                     tz = pytz.timezone(form.cleaned_data['timezone'])
-                                    phase_change_dt = local_tz_to_utc(tz, form.cleaned_data['end_of_nomination_phase'])
-                                    decision_dt = local_tz_to_utc(tz, form.cleaned_data['decision_time'])
-                                    if phase_change_dt < now or decision_dt < now:
+                                    try:
+                                        phase_change_dt = local_tz_to_utc(tz, form.cleaned_data['end_of_nomination_phase'])
+                                    except:
+                                        err = 'End of Nomination Phase Invalid, Make Sure each Field is Correct'
+                                    try:
+                                        decision_dt = local_tz_to_utc(tz, form.cleaned_data['decision_time'])
+                                    except:
+                                        err = 'Decision Time Invalid, Make Sure each Field is Correct'
+                                    if err is not None:
+                                        namespace['errors'] = err
+                                        namespace['form'] = form
+                                        namespace['POST'] = POST, parent
+                                        output = nodelist.render(context)
+                                        context.pop()
+                                        return output
+                                    elif phase_change_dt < now or decision_dt < now:
                                         namespace['errors'] = "Cannot Set Decision or End of Nomination Time in the Past."
                                         namespace['form'] = form
                                         namespace['POST'] = POST, parent
@@ -657,6 +673,9 @@ def pp_blob_edits(context, nodelist, *args, **kwargs):
     if obj is not None:
         edits = Edit.objects.filter(object_pk=obj.pk).order_by('time')
         namespace['edits'] = edits
+        cnt = len(edits)
+        namespace['count'] = cnt
+        namespace['height'] = cnt * 16
 
     output = nodelist.render(context)
     context.pop()
@@ -774,16 +793,18 @@ def pp_search_form(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     POST = kwargs.get('POST', None)
+    user = kwargs.get('user', None)
 
     if POST:
         form = SearchForm(POST)
-        results = {}
+
         if form.is_valid():
             search_key = form.cleaned_data['search']
-            path = "/index.html#search_results/_r" + str(search_key)
-            namespace['path'] = path
-            #provide context with extension path
-            raise HttpRedirectException(HttpResponseRedirect(path))
+            s = Search(search_key=search_key, time=datetime.datetime.now(), user=user)
+            s.save()
+            namespace['search_pk'] = s.pk
+            ctype = ContentType.objects.get_for_model(s)
+            namespace['content_type'] = ctype.pk
 
     else:
         form = SearchForm()
@@ -808,11 +829,15 @@ def pp_get_object(context, nodelist, *args, **kwargs):
 
     try:
         obj = model.get_object_for_this_type(pk=object_pk)
-    except:
-        obj = None
-
+    except Exception, e:
+        obj = str(e)
+        #try to see if this is a ctype_pk
+        try:
+            ctype = ContentType.objects.get(pk=model)
+            obj = ctype.get_object_for_this_type(pk=object_pk)
+        except:
+            pass
     namespace['content_object'] = obj
-
     output = nodelist.render(context)
     context.pop()
 
@@ -826,17 +851,21 @@ def pp_get_search_items(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     search_key = kwargs.get('search_key', None)
+
     num = 0
     failed = []
     if search_key is not None:
         results = {}
+        registered = {}
         for fd in get_models():
             try:
                 mod = fd.get_model()
-                ctype_pk = ContentType.objects.get_for_model(mod).pk
-                s = search(mod, search_key)
-                results[str(ctype_pk)] = s
-                num += len(s)
+                if mod not in registered:
+                    ctype_pk = ContentType.objects.get_for_model(mod).pk
+                    s = search(mod, search_key)
+                    results[str(ctype_pk)] = s
+                    num += len(s)
+                    registered[mod] = True
             except:
                 failed.append(mod)
 

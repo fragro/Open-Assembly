@@ -240,6 +240,7 @@ class Edit(models.Model):
         return str(self.object_pk) + ' : ' + str(self.time)
 
 
+#needs to be registered each time the page is loaded
 class View(models.Model):
     object_pk = models.IntegerField()
     num = models.IntegerField(default=0)
@@ -248,6 +249,19 @@ class View(models.Model):
 
     def __unicode__(self):
         return str(self.object_pk) + ' : ' + str(self.num)
+
+
+#
+class Search(models.Model):
+    search_key = models.CharField(max_length=200)
+    user = models.ForeignKey(User)
+    time = models.DateTimeField()
+
+    def __unicode__(self):
+        return str(self.search_key)
+
+    def get_absolute_url(self):
+        return '/p/search_results/r-' + str(self.search_key)
 
 
 def create_view(username, addr, obj_id):

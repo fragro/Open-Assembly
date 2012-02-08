@@ -292,13 +292,7 @@
 
                         <!-- Search -->
                         <div id="id_search">
-                            {% pp_search_form user=request.user POST=request.POST %}
-                                <form method="post" action="" class="searchbox">
-                             {% csrf_token %}
-                             <span class="light_gray">Search:</span> {{ pp_blob.form.search }}
-                                  {#<input type="submit" value="Search posts"/>#}
-                                </form>
-                            {% endpp_search_form %}
+                            {% include 'pp_search_form.html' %}
                          </div>
                     </div>
                 </div>

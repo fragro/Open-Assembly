@@ -66,8 +66,8 @@
             
               <div>
                 <p>
-                {% pp_slice obj=object.content_object.description %}
-                    {% if pp_tag.sliced|length > 200 %}
+                {% pp_slice obj=object.content_object.description amt=200 %}
+                    {% if object.content_object.description|length > 200 %}
                         {{pp_tag.sliced|markdown}}[...]
                     {% else %}
                         {{pp_tag.sliced|markdown}}

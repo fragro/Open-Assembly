@@ -1,4 +1,5 @@
 {% load topictags %}
+{% load tag_helpers %}
 
 <!--topic source -->
 
@@ -41,7 +42,15 @@
                                
                 <div>
                 <p>
-                    <span class="re">{{object.description|safe}}</span>
+                <span class="re">
+                {% pp_slice obj=object.description amt=200 %}
+                    {% if object.description|length > 200 %}
+                        {{pp_tag.sliced|markdown}}[...]
+                    {% else %}
+                        {{pp_tag.sliced|markdown}}
+                    {% endif %}
+                {% endpp_slice %}
+                </span>
                 </p>
                 <p>
                     {% pp_get_topic_list topic=object %}

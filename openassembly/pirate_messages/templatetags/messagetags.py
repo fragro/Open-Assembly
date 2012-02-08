@@ -31,19 +31,26 @@ def pp_get_messages(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
 
+    sender = kwargs.get('sender')
     user = kwargs.get('user', None)
     start = kwargs.get('start', 0)
     end = kwargs.get('end', 20)
+    newest = kwargs.get('newest', None)
 
     read = Message.objects.filter(read=True, receiver=user)
-    rcount = read.count()
 
     unread = Message.objects.filter(read=False, receiver=user)
-    count = unread.count()
 
-    for mes in unread:
-        mes.read = True
-        mes.save()
+    if sender is not None:
+        read = read.filter(sender=sender)
+        unread = unread.filter(sender=sender)
+        read = read.order_by('-created_dt')
+        for mes in unread:
+            mes.read = True
+            mes.save()
+
+    count = unread.count()
+    rcount = read.count()
 
     if count == 0:
         has_mail = False
@@ -74,7 +81,6 @@ def pp_message_form(context, nodelist, *args, **kwargs):
     sender = kwargs.get('sender', None)
     receiver = kwargs.get('receiver', None)
     POST = kwargs.get('POST', None)
-    
 
     if ContentType.objects.get_for_model(receiver) == ContentType.objects.get_for_model(Message):
         namespace['reply'] = receiver.description
@@ -82,24 +88,25 @@ def pp_message_form(context, nodelist, *args, **kwargs):
     else:
         namespace['reply'] = None
         namespace['user'] = receiver
-            
+
     if POST and POST.get("form_id") == "pp_message_form":
         form = MessageForm(POST)
-        if form.is_valid(): 
-            mes=form.save(commit=False)
+        if form.is_valid():
+            mes = form.save(commit=False)
             mes.sender = sender
             mes.receiver = namespace['user']
             mes.read = False
             mes.save()
-            c_type = ContentType.objects.get_for_model(User)
-            raise HttpRedirectException(HttpResponseRedirect("/user_profile.html?_t=" + str(c_type.pk) + "&_o=" + str(namespace['user'].pk)))
-        
-    else: 
+            #raise HttpRedirectException(HttpResponseRedirect(receiver.get_absolute_url()))
+            form = MessageForm()
+            namespace['complete'] = True
+
+    else:
         form = MessageForm()
-    
+
     namespace['form'] = form
     namespace['errors'] = form.errors
-    
+
     output = nodelist.render(context)
     context.pop()
 

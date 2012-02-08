@@ -234,7 +234,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
             cached_list, tot_items = l.get_or_create_list(key, paramdict, forcerender=forcerender)
             for li in cached_list:
                 #render each object in the list
-                html = lm.render({'object': li, 'dimension': dimension}, forcerender=forcerender)
+                html = lm.render({'object': li, 'dimension': dimension, 'user': user}, forcerender=forcerender)
                 renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
 
             memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))

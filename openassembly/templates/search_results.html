@@ -3,13 +3,11 @@
 
 {% block content %}
 
-search:{{search}}
-
 {% pp_get_search_items search_key=search %}
     
     {% if request.user.is_staff %}
 
-        {{ pp_blob.failed }}
+       Failed: {{ pp_blob.failed }}
 
     {% endif %}
 
@@ -20,24 +18,26 @@ search:{{search}}
     {% else %}
 
     <h2>Search For "{{search}}"</h2>
-    <h3>{{pp_blob.num_topics}} Groups and {{pp_blob.num_results}} Ideas</h3>
-
+<div>
         {% for object_pk in pp_blob.topics.query %}
 
-            {% pp_get_topic object_pk=object_pk.pk %}
-            
-                {% include 'topic_search.html' %}
+           {% pp_get_topic object_pk=object_pk.pk %}
+
+                {% if pp_topic.object.summary  %}
+
+                    {% include 'topic_search.html' %}
+
+                {% endif %}
 
             {% endpp_get_topic %}
 
         {% endfor %}
-    
 
     {% for key,objs in pp_blob.results.items %}
 
         {% for obj_pk in objs.query %}
 
-            {% pp_get_object model=key object_pk=obj_pk.pk %}
+        {% pp_get_object model=key object_pk=obj_pk.pk %}
 
                     {% pp_consensus_get object=pp_blob.content_object.pk %}
 
@@ -46,13 +46,12 @@ search:{{search}}
                 {% endpp_consensus_get %}
 
             {% endpp_get_object %}
-        
         {% endfor %}
 
     {% endfor %}
 
     {% endif %}
-
+</div>
 {% endpp_get_search_items %}
 
 {% endblock %}

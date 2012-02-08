@@ -87,30 +87,35 @@ def pp_get_topic(context, nodelist, *args, **kwargs):
     object_pk = kwargs.pop('object_pk', None)
     topicname = kwargs.pop('topicname', None)
 
-    if topicname is not None:
-        try:
-            topic = Topic.objects.get(summary=topicname)
-        except:
-            topic = None
-    else:
-        topic = None
-    parent = None
-    if obj is not None:
-        try:
-            if obj.get_child_blob_key():
-                parent = obj
-        except:
+    try:
+        if topicname is not None:
             try:
-                if obj.parent.summary != '__NULL__':
-                    parent = obj.parent
-                else:
+                topic = Topic.objects.get(summary=topicname)
+            except:
+                topic = None
+        else:
+            topic = None
+        parent = None
+        if obj is not None:
+            try:
+                if obj.get_child_blob_key():
                     parent = obj
             except:
-                pass
+                try:
+                    if obj.parent.summary != '__NULL__':
+                        parent = obj.parent
+                    else:
+                        parent = obj
+                except:
+                    pass
 
-    if object_pk is not None:
-        top = Topic.objects.get(pk=int(object_pk))
-    else:
+        if object_pk is not None:
+            top = Topic.objects.get(pk=object_pk)
+        else:
+            top = None
+    except:
+        parent = None
+        topic = None
         top = None
 
     namespace['parent'] = parent

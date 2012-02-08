@@ -23,6 +23,12 @@ class Message(models.Model):
     created_dt = models.DateTimeField()
     read = models.BooleanField()
 
+    def __unicode__(self):
+        if len(self.description) > 100:
+            return str(self.description[0:100] + '[...]')
+        else:
+            return str(self.description)
+
 
 class Notification(models.Model):
     receiver = models.ForeignKey(User, related_name="notification_receiver")

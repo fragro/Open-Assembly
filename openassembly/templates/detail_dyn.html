@@ -284,18 +284,21 @@
                                 </tbody>
                             </table>
 
-                            <div id="summary">
+                            <div class="edits">
 
-                                        {% pp_blob_edits object=object %}
-                                            {% for edit in pp_blob.edits %}
+                                {% pp_blob_edits object=object %}
+                                    <h4 style="cursor:pointer;"><a onClick="toggleSlide('edits');">{{pp_blob.count}} Edits [+]</a></h4>
+                                    <div id="edits" style='display:none; overflow:hidden; height:{{pp_blob.height}}px;width:100%;'>
+                                        {% for edit in pp_blob.edits %}
 
-                                                <b><span class="meta">({{forloop.counter}}) Edit by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ edit.user.username }}</a> - {{edit.time}}</span><br></b>
+                                            <b><span class="meta">({{forloop.counter}}) Edit by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{ edit.user.username }}</a> - {{edit.time}}</span><br></b>
 
-                                            {% endfor %}
-
-                                        {% endpp_blob_edits %}
-
+                                        {% endfor %}
                                     </div>
+
+                                {% endpp_blob_edits %}
+
+                            </div>
                     {% if pp_consensus.ranked_decision %}
                                 {% if pp_topic.settings.consensus_percentage > pp_consensus.ranked_decision.consensus_percent or pp_topic.settings.percent_reporting > pp_consensus.ranked_decision.reporting_percent %}
                             <div style="width:32px;float:left;"><img src="/static/img/failed.jpg"></div>

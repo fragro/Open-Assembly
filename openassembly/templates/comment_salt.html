@@ -2,9 +2,9 @@
 {% load pp_url %}
 
 {% if not object.is_deleted %}
-        
+
     <ul id="comment_links{{object.pk}}" class="comment_links">
-    {% if request.user.is_authenticated %}
+    {% if user.is_authenticated %}
             <li>
                 <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');">reply</a>
             </li>
@@ -12,7 +12,7 @@
                 <a href="{{object.get_absolute_url}}">permalink</a>
             </li>
 
-            {% if request.user == object.user %}
+            {% if user == object.user %}
             <li>
                 <a href="javascript:;" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');">edit</a>
             </li>
@@ -35,7 +35,7 @@
         </ul>
         <p>
 
-    {% if request.user.is_authenticated %}
+    {% if user.is_authenticated %}
 
         <div class='reply_comment' id='pp_reply_form{{object.pk}}' style='display:none; overflow:hidden; height:290px;width:100%;'>
                 {% include "pp_reply_form.html" %}
@@ -43,7 +43,7 @@
 
     {% endif %}
 
-    {% if request.user == object.user %}
+    {% if user == object.user %}
 
 
         <div class='reply_comment' id='pp_edit_form{{object.pk}}' style='display:none; overflow:hidden; height:290px;width:100%;'>

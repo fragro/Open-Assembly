@@ -18,6 +18,11 @@
                            text: 'Consensus'
                         }
                      },
+                     tooltip: {
+                        formatter: function() {
+                           return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                        }
+                     },
                      plotOptions: {
                         pie: {
                            allowPointSelect: true,

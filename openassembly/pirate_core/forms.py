@@ -8,6 +8,7 @@ from django.utils.datastructures import SortedDict
 
 from pirate_core import HttpRedirectException
 
+
 class FormMixin(object):
 
     @classmethod
@@ -20,7 +21,7 @@ class FormMixin(object):
         Form = type(self.__name__, (self,), {})
         form_id = self.form_id(instance)
         Form.base_fields["form_id"] = self.form_id_field(form_id)
-    
+
         if POST is not None:
 
             if not self.post_has_id(POST, form_id):
@@ -45,7 +46,7 @@ class FormMixin(object):
         if instance is None:
             instance_id = ""
         else:
-            instance_id = "__" + instance.__module__ + "__" + instance.__class__.__name__ 
+            instance_id = "__" + instance.__module__ + "__" + instance.__class__.__name__
             if hasattr(instance, "pk"):
                 instance_id += "__" + str(instance.pk)
 
@@ -66,6 +67,7 @@ class FormMixin(object):
                 if POST[key] == form_id:
                     return True
         return False
+
 
 class ComboFormFactory(object):
 
@@ -91,19 +93,19 @@ class ComboFormFactory(object):
             self._add_fields_for_form(form, base_fields)
         self._generate_class()
         self._render(base_fields)
-        
+
     def _render(self, base_fields):
-        for name, field in base_fields.items():   
-            base_fields[name].rendered = field.widget.render(name, self._initial[name], {'id':hashlib.md5(name).hexdigest()})
+        for name, field in base_fields.items():
+            base_fields[name].rendered = field.widget.render(name, self._initial[name], {'id': hashlib.md5(name).hexdigest()})
 
     def _add_fields_for_form(self, form, base_fields):
         """
-        The purpose of this method is to allow one field name to be reliably 
-        used by two forms only in the narrow case that it actually is the 
-        same data being repeated in two places.  In other words, two forms 
-        sharing a field name may only be combined if that field is of the same 
+        The purpose of this method is to allow one field name to be reliably
+        used by two forms only in the narrow case that it actually is the
+        same data being repeated in two places.  In other words, two forms
+        sharing a field name may only be combined if that field is of the same
         type in both forms, uses the same widget in both forms, has the same
-        initial value in both forms, has the same choices (if it is a choice 
+        initial value in both forms, has the same choices (if it is a choice
         field) in both forms, and is not a form id.
         """
 
@@ -121,7 +123,7 @@ class ComboFormFactory(object):
             elif name not in base_fields:
                 # The initial value of the form should be preserved, even if it is not default
                 self._initial[name] = form.__getitem__(name).value()
-                base_fields[name] = field 
+                base_fields[name] = field
 
             elif base_fields[name].__class__ is not field.__class__:
                 raise ValueError("Fields with the same name '%s' are of different "
@@ -131,23 +133,20 @@ class ComboFormFactory(object):
                                      "widgets." % name)
             #elif self._initial[name] != form.initial[name]:
             #    raise ValueError("The initial values of two fields with the same "
-            #                     "name '%s' do not match ('%s' vs. '%s')" 
+            #                     "name '%s' do not match ('%s' vs. '%s')"
             #                     % (name, self._initial[name], form.initial[name]))
             elif hasattr(base_fields[name], 'choices') and \
                  hasattr(field, 'choices') and \
                  set(base_fields[name].choices) != set(field.choices):
                 raise ValueError("Choice fields with same name '%s' have different "
                                  "choices." % name)
-                
-            
-            
 
     def _generate_class(self):
         if not hasattr(self, 'ComboForm'):
 
             ComboBaseForm = type('ComboBaseForm', (forms.BaseForm,), self._fields)
-        
-            class ComboForm(ComboBaseForm, FormMixin): 
+
+            class ComboForm(ComboBaseForm, FormMixin):
 
                 @classmethod
                 def form_id(self, instance=None):
@@ -164,7 +163,7 @@ class ComboFormFactory(object):
                 @classmethod
                 def form_id_field(self, form_id):
                     widgets = [forms.HiddenInput(),]
-                    initial = [form_id,] 
+                    initial = [form_id,]
                     fields  = [forms.CharField(widget=widgets[0],initial=initial[0])]
 
                     for field in self._form_ids:

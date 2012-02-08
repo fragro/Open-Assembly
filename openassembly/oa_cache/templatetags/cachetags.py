@@ -60,6 +60,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
         soup = BeautifulSoup()
         ret = {}
+        #err = []
         #need to iterate through the list and build the html with the corresponding divs and html content, requires magic
         for data in props['rendered_list']:
             if data['div'] == '#content':
@@ -68,19 +69,25 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
                 txt_list = soup.findAll('span', {'id': re.compile(data['div'][1:])})
                 txt_list.extend(soup.findAll('div', {'id': re.compile(data['div'][1:])}))
                 txt_list.extend(soup.findAll('td', {'id': re.compile(data['div'][1:])}))
+                txt_list.extend(soup.findAll('ul', {'id': re.compile(data['div'][1:])}))
                 for txt in txt_list:
                     txt.insert(0, data['html'])
                 if len(txt_list) == 0:
-                    #raise ValueError(data['div'][1:] + soup.prettify())
+                    #err.append(data['div'])
+                    #raise ValueError([i['div'] for i in props['rendered_list']])
+                    #raise ValueError(data['div'] + )
                     ret[data['div'][1:]] = data['html']
+
+        #if len(err) > 0:
+        #raise ValueError(err)
         ret['content'] = soup.prettify()
 
         namespace['data'] = ret
         namespace['DOMAIN'] = DOMAIN
         namespace['object'] = obj
         namespace['rendered_list'] = None
-    namespace['nojs'] = True
 
+    namespace['nojs'] = True
     output = nodelist.render(context)
     context.pop()
 

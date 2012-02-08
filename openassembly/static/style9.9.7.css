@@ -369,7 +369,7 @@ small {
     font-size:80%;
 }
 .recent_activity .icon {
-    width:10px;
+    width:13px;
     padding:0 5px;
     text-shadow:0 1px 0 rgba(0,0,0,.2);
     float:left;
@@ -725,7 +725,7 @@ small {
     margin-bottom:10px;
 }
 .profile_activity .icon {
-    width:60px;
+    width:62px;
     padding:0 5px;
     text-shadow:0 1px 0 rgba(0,0,0,.2);
     float:left;
@@ -751,7 +751,7 @@ small {
 .profile_activity .user_activity p {
     display:block;
     float:left;
-    width:254px;
+    width:250px;
     font-size:11px;
     line-height:15px;
     text-align:justify;
@@ -1078,7 +1078,6 @@ select {
 	width:30px;
 	height:30px;
 	text-indent:-99999em;
-	cursor:pointer;
 	cursor:hand;
 }
 .ie7 #close_simplebox {
@@ -1593,8 +1592,8 @@ h2.active {background-position: left bottom;}
 }
 
 #user_activity_chart {
-    height:150px;
-    width:100px;
+    height:200px;
+    width:200px;
     float:right;
 }
 
@@ -1656,4 +1655,13 @@ h2.active {background-position: left bottom;}
 }
 #id_end_of_nomination_phase_1, #id_end_of_nomination_phase_2, #id_decision_time_1, #id_decision_time_2 {
     width:25px;
+}
+
+.edits {
+    width:100%;
+    float:left;
+    line-height:15px;
+    float:left;
+    margin-bottom:4px;
+    margin-top:4px;
 }

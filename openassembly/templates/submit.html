@@ -19,6 +19,12 @@
                 {% include 'pp_blobedit_form.html' %}
 
         {% else %}
+
+            {% if dimension == 'mes' %}
+
+            {% include 'pp_message_form.html' %}
+
+            {% else %}
             
                 {% pp_get_blob_subcontext dimension=dimension %}
 
@@ -49,6 +55,8 @@
                     {% endpp_show_blobchoices %}
 
                 {% endpp_get_blob_subcontext %}
+
+            {% endif %}
                
         {% endif %}
 

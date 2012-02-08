@@ -122,7 +122,7 @@ def pp_argument_form(context, nodelist, *args, **kwargs):
         parent = arg.parent
     else:
         arg, parent = (None, obj)
-
+    form = None
     if POST and user != None:
         if POST.get("form_id") == "pp_argument_form_nay":
             stance, created = Stance.objects.get_or_create(arg='nay')

@@ -1,15 +1,24 @@
-        {% pp_message_form POST=request.POST receiver=request.object sender=user %}
-                {% if pp_messages.reply %} 
-                Reply To: {{pp_messages.reply}}
-                <br>
-                {% endif %}
-                <br>To: {{pp_messages.user}}
-                {{ pp_messages.form.errors }}
-                <form method="post" action="">
-                    <br>{{pp_messages.form.description}}<br>
-                        {{pp_messages.form.form_id}}
-                        {% csrf_token %}
-               <input type="submit" value="Send Message">
-                </form>
+{% pp_message_form POST=request.POST receiver=object sender=user %}
+        <h1>To: <a style="text-decoration:none;" href="{% pp_url template='user_profile.html' object=pp_messages.user %}">{{pp_messages.user}}</a></h1>
+        {{ pp_messages.form.errors }}
+        <form id='pp_message_form' method="post" action="">
+            <br>{{pp_messages.form.description}}<br>
+                {{pp_messages.form.form_id}}
+                {% csrf_token %}
+       <input type="submit" value="Send Message"><span>{% if pp_messages.complete %} <b>Message Sent!</b>{% endif %}</span>
 
-        {% endpp_message_form %}
+       <div style="margin-top:25px;">
+       {% if pp_messages.complete %} <a class="button" href="{% pp_url template='user_profile.html' object=user %}">Return to My Profile</a>{% endif %}
+        </form>
+
+
+        <script>
+         
+             $("form#pp_message_form").submit(function(e){
+                $("#submit_pp_message_form").html("<b>Submitting...</b>")
+                addObject(e);
+            });
+        </script>
+
+
+{% endpp_message_form %}

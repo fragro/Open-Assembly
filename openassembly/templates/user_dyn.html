@@ -73,13 +73,14 @@
 
                         {% endpp_get_avatar %}
 
-                        <h2>{{object.username}}</h2> 
-                        
                         {% if user == object %}
                             {% pp_consensus_get object=object.pk %}
                                 {% include 'user_activity.html' %}
                             {% endpp_consensus_get %}
                         {% endif %}
+
+                        <h2>{{object.username}}</h2> 
+                    
 
                         <table class="user_data" cellspacing="0">
                             <tbody>
@@ -168,12 +169,8 @@
                     <!--Interactions between users -->
                         <div class="profile_overview">
                         <!-- messaging offline until it works -->
-                        {% comment %}
-                           <a class="button" href="{% pp_url template='submit.html' dimension='mes' object=object %}">Send Message</a>
-                        {% endcomment %}
-
-
-                         {% pp_has_subscription subscriber=user subscribee=object %}
+                        <a class="button" href="{% pp_url template='submit.html' dimension='mes' object=object %}">Send Message</a>
+                        {% pp_has_subscription subscriber=user subscribee=object %}
                                 {% if not pp_subscription.has_subscription %}
                                     <a class="button" href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
                                 {% else %}
@@ -202,9 +199,9 @@
                                     {% if note.related_object.user != object %}
                                             {% cycle "<tr>" "" %}
                                                 {% cycle "<td class='left'>" "<td>" %}
-                                                    
+                                                    <a href="{{note.get_absolute_url}}">
                                                         <span class="icon">{{note.dimension|title}}</span>
-                                                    <p><a href="{{note.get_absolute_url}}">
+                                                    <p>
                                                         {% if note.related_object.content_object.summary %}                                                
                                                             {{note.related_object.content_object.summary}}
                                                         {% else %}
@@ -215,7 +212,8 @@
                                                             {% endif %}  
                                                         {% endif %}
 
-                                                    <br></a></p>
+                                                    <br></p>
+                                                    </a>
 
                                                 </td>
                                             {% cycle "" "</tr>" %}
@@ -254,7 +252,7 @@
                             <div class="profile_activity">
                             {% pp_get_messages start=start end=end user=user %}
 
-                                <b>Messages{% if unreadcount > 0 %} ({{pp_message.unreadcount}} New){% endif %}</b>
+                                <b>Messages{% if pp_messages.unreadcount > 0 %} ({{pp_messages.unreadcount}} New){% endif %}</b>
 
                                 <table class="user_activity" cellspacing="0">
                                     <tbody> 
@@ -271,7 +269,7 @@
                                             {% cycle "<tr>" "" %}
                                                 {% cycle "<td class='left'>" "<td>" %}
                                                    <span class="icon"><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a></span> 
-                                                   <p><a href="{% pp_url object=note template='submit.html' dimension='mes' %}">{{note.description|title }}<br></a></p>
+                                                   <p><a href="{% pp_url object=note.sender template='messages.html' %}">{{note.description|title }}<br></a></p>
                                                 </td>
                                             {% cycle "" "</tr>" %}
                                         {% endfor %}      

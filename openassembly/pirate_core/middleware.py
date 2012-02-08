@@ -1,6 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
 from django.template import add_to_builtins
-from django.core.cache import cache
 
 
 TYPE_KEY = "t-"
@@ -9,9 +8,9 @@ START_KEY = "s-"
 END_KEY = "e-"
 DIM_KEY = "d-"
 SCROLL_KEY = "c-"
-RETURN_KEY = "r-"
+RETURN_KEY = "z-"
 SIMPLEBOX_KEY = "i-"
-SEARCH_KEY = "sc-"
+SEARCH_KEY = "r-"
 CTYPE_KEY = "l-"
 PHASE_KEY = "p-"
 S_KEY = "i-"
@@ -46,6 +45,7 @@ class UrlMiddleware(object):
         returnurl = request.GET.get(RETURN_KEY)
         simplebox = request.GET.get(SIMPLEBOX_KEY)
         search = request.GET.get(SEARCH_KEY)
+        str_key = request.GET.get(STR_KEY)
 
         if search is not None:
             request.search = search
@@ -59,6 +59,12 @@ class UrlMiddleware(object):
                 request.object = content_type.get_object_for_this_type(pk=obj_id)
             except:
                 pass
+        if str_key is not None:
+            cached_type = ContentType.objects.get(app_label="pirate_ranking", model="cached_url")
+            cached_model = cached_type.model_class()
+            cached = cached_model.objects.get(slug=str_key)
+            content_type = ContentType.objects.get(pk=cached.ctype_pk)
+            request.object = content_type.get_object_for_this_type(pk=cached.obj_pk)
 
         if start is not None and end is not None:
             request.start = int(start)

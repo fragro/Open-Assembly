@@ -22,17 +22,9 @@
             </span>
         <span id="comment_text{{object.pk}}">
         <p>
-        DELETED
+        [DELETED]
         </p>
         </span>
-        <span id="comment_links{{object.pk}}">
-
-        </span>
-
-        {% if salted %}
-        </ul>
-        {% endif %}
-
 
     {% else %}
 
@@ -59,17 +51,10 @@
             </span>
             <span id="comment_links{{object.pk}}">
 
-            {% if salted %}
-
                 {% include 'comment_salt.html' %}
 
-            {% endif %}
-
             </span>
-
-            {% if salted %}
             </ul>
-            {% endif %}
 
 
     {% endif %}

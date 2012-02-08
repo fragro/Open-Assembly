@@ -22,11 +22,13 @@
         </a></b> <span class="meta">by <a href="{% pp_url template='user_profile.html' object=object.content_object.user %}">{{ object.content_object.user.username }}</a> - {{object.content_object.created_dt}}</span><br>
               <div>
                 <p>
-                {% if object.content_object.description|length > 200 %}
-                    {{object.content_object.description|slice:":200" }}[..]
-                {% else %}
-                    {{object.content_object.description}}
-                {% endif %}
+                {% pp_slice obj=object.content_object.description amt=200 %}
+                    {% if object.content_object.description|length > 200 %}
+                        {{pp_tag.sliced|markdown}}[...]
+                    {% else %}
+                        {{pp_tag.sliced|markdown}}
+                    {% endif %}
+                {% endpp_slice %}
                 </p>
               </div>
         <div class="info">

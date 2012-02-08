@@ -30,10 +30,6 @@
   $("form#pp_blob_child").submit(function(e){
         $("#submit_pp_blob_child").html("<b>Submitting...</b>")
         success = addObject(e);
-        if(success){
-            alert('load header');
-            load_usersaltcache('#proposal_header', '{{user.pk}}', '{{pp_blob.object.pk}}', '{{pp_source.ctype_pk}}');
-        }
     });
 
 </script>  
