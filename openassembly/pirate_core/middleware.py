@@ -29,7 +29,7 @@ def human_readable_dim(d):
 class UrlMiddleware(object):
     """
     This class works in conjunction with the pp_url tag to populate requests with
-    a model instance and/or a numerical range that can be used in pagination. 
+    a model instance and/or a numerical range that can be used in pagination.
     This also maintains a queue of recently visited urls, that can be used as 'breadcrumbs'
         for ease in navigation.
     """
