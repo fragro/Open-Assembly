@@ -1,0 +1,38 @@
+ <div class="profile_activity">
+{% pp_get_messages start=start end=end user=user sender=object %}
+
+    <h1>Messages{% if pp_messages.readcount > 0 %} ({{pp_messages.readcount}} Total){% endif %}</h1>
+    {% pp_get_sources object=object type='img' %}
+        {% if pp_source.cur_img %}
+            <img style="float:right;" src="{{pp_source.cur_img.thumbnail.url}}" alt="{{object.content_object.summary}}">
+            <a class="button" href="{% pp_url template='submit.html' dimension='mes' object=object %}">Reply To Message</a>
+
+        {% endif %}
+    {% endpp_get_sources %}
+
+            {% for note in pp_messages.read %}
+                <div class="listing">
+
+                    <div class="summary">
+
+                        <b><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}
+
+                        </a></b>
+                            
+                              <div>
+                                <p>
+                                    {{note.description}}
+                                </p>
+                              </div>
+                        <div class="info">
+
+                        </div>
+                    </div>
+                </div>
+                                               
+            {% endfor %}      
+{% endpp_get_messages %} 
+
+
+
+</div>

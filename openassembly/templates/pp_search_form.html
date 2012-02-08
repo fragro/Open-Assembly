@@ -1,0 +1,22 @@
+{% pp_search_form user=request.user POST=request.POST %}
+    <form method="post" action="" id="pp_search_form" class="searchbox">
+
+    <div style='display:none'><input type='hidden' name='form_id' value='pp_search_form' /></div>
+
+ {% csrf_token %}
+ <span class="light_gray">Search:</span> {{ pp_blob.form.search }}
+      {#<input type="submit" value="Search posts"/>#}
+    </form>
+
+
+        <script>
+         
+             $("form#pp_search_form").submit(function(e){
+                $("#submit_pp_search_form").html("<b>Submitting...</b>")
+                addObject(e);
+            });
+        </script>
+
+<span id="id_search_side_effect" style="display:none;">["{{pp_blob.search_pk}}", "{{pp_blob.content_type}}"]</span>
+
+{% endpp_search_form %}
