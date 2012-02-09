@@ -3,9 +3,10 @@
 {% load profiletags %}
 {% load markup %}
 
-    {% if object.is_deleted or object == None %}
+    {% if object.is_deleted and not object.is_leaf %}
 
 
+    {{object.is_leaf}}
         {% if salted %}
         <ul id="comment{{object.pk}}" class="comment">
         {% endif %}
@@ -16,9 +17,7 @@
         
         <li>
         
-        <span class="author"> none </span> 
             <span class="meta">
-                inf time
             </span>
         <span id="comment_text{{object.pk}}">
         <p>
@@ -27,6 +26,10 @@
         </span>
 
     {% else %}
+
+            {% if object.is_deleted or object == None %}
+
+            {% else %}
 
             {% if salted %}
             <ul id="comment{{object.pk}}" class="comment">
@@ -56,5 +59,5 @@
             </span>
             </ul>
 
-
+    {% endif %}
     {% endif %}
