@@ -37,14 +37,25 @@
         {% pp_current_image object=pp_cache.object %}
             {% if pp_source.current_img %}
             <meta property="og:image" content="{{pp_cache.DOMAIN}}/media/{{pp_source.current_img.thumbnail_large}}"/>
+            <!-- if there is no image for this object, check the root -->
             {% else %}
-            <meta property="og:image" content="{{pp_cache.DOMAIN}}/static/img/openassembly_logo_new.png"/>
+                {% pp_get_root object=object %} 
+                    {% if pp_topic.root %}
+                        {% pp_current_image object=pp_topic.root %}
+                            <meta property="og:image" content="{{pp_cache.DOMAIN}}/media/{{pp_source.current_img.thumbnail_large}}"/>
+                        {% endpp_current_image %}
+                    {% else %}
+                        <meta property="og:image" content="{{pp_cache.DOMAIN}}/static/img/openassembly_logo_new.png"/>
+                    {% endif %}
+                {% endpp_get_root %}
+
             {% endif %}
+
         {% endpp_current_image %}
         <meta property="og:site_name" content="OpenAssembly"/>
         {% if pp_cache.object %}
         <meta property="og:description"
-              content="{{pp_cache.object.description}}"/>
+              content="{{pp_cache.object.description|markdown}}"/>
         {% else %}
         <meta property="og:description"
               content="Open Assembly is an evolutionary leap in democratic decision making for the crowd. Join us."/>
