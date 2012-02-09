@@ -1646,13 +1646,13 @@ h2.active {background-position: left bottom;}
     list-style:none;
 }
 .landinglist li h3 {
-    margin-bottom:5px;
+    margin-top:5px;
     font-size:120%;
     font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, Tahoma, Verdana, sans-serif;
 }
 .landinglist li p {
-    margin-bottom:5px;
-    margin-left:10px;
+    margin-bottom:10px;
+    margin-left:0px;
 }
 #id_end_of_nomination_phase_1, #id_end_of_nomination_phase_2, #id_decision_time_1, #id_decision_time_2 {
     width:25px;
