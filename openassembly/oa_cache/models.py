@@ -46,15 +46,26 @@ def interpret_hash(h):
         rendertype = l[1]
         #rendertype = rendertype[1:]
         key = str(rendertype)
+        num_fields = len(l[2:])
+        itr = 1
         for dim in l[2:]:
-            int_key = key + '/' + dim[0:2] + dim[2:]
+            #if this is the last field, check for hashes and remove them
+            if itr == num_fields:
+                try:
+                    idx = dim.index('#')
+                    val = dim[2:idx]
+                except:
+                    val = dim[2:]
+            else:
+                val = dim[2:]
+            int_key = key + '/' + dim[0:2] + val
             int_key = DIMS[dim[0:2]]
             if int_key == 'STR_KEY':
-                ctype_pk, obj_pk = reverse_pretty_url(dim[2:])
+                ctype_pk, obj_pk = reverse_pretty_url(val)
                 retdict['OBJ_KEY'] = obj_pk
                 retdict['TYPE_KEY'] = ctype_pk
             else:
-                retdict[int_key] = dim[2:]
+                retdict[int_key] = val
     else:
         rendertype = ''
         retdict = {}

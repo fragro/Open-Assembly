@@ -196,28 +196,56 @@
                                     {% pp_get_reputation_events user=object start=start end=end %}
                                     <tbody>
                                     {% for note in pp_reputation.reputation_events %}
-                                    {% if note.related_object.user != object %}
                                             {% cycle "<tr>" "" %}
                                                 {% cycle "<td class='left'>" "<td>" %}
                                                     <a href="{{note.get_absolute_url}}">
                                                         <span class="icon">{{note.dimension|title}}</span>
                                                     <p>
-                                                        {% if note.related_object.content_object.summary %}                                                
-                                                            {{note.related_object.content_object.summary}}
-                                                        {% else %}
-                                                            {% if note.related_object %}
-                                                            {{note.related_object}}  
-                                                            {% else %}
-                                                                {{note.pk}}
-                                                            {% endif %}  
-                                                        {% endif %}
+                                                        <a href="{{note.get_absolute_url}}">
+                                                        {{note.created_dt}} -
+                                                        {% if note.related_object.text %}
 
+                                                            {% pp_slice obj=note.related_object.text amt=30 %}
+                                                                {% if note.related_object.text|length > 30 %}
+                                                                    {{pp_tag.sliced}}[...]
+                                                                {% else %}
+                                                                    {{pp_tag.sliced}}
+                                                                {% endif %}
+                                                            {% endpp_slice %}
+                
+                                                        {% else %}
+
+                                                            {% if note.related_object.content_object.summary %}
+                                                            
+                                                            {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
+                                                                {% if note.related_object.content_object.summary|length > 30 %}
+                                                                    {{pp_tag.sliced}}[...]
+                                                                {% else %}
+                                                                    {{pp_tag.sliced}}
+                                                                {% endif %}
+                                                            {% endpp_slice %}      
+                                                                                                      
+                                                            {% else %}
+                                                                {% if note.related_object %}
+
+                                                                    {% pp_slice obj=note.related_object amt=30 %}
+                                                                        {% if note.related_object|length > 30 %}
+                                                                            {{pp_tag.sliced}}[...]
+                                                                        {% else %}
+                                                                            {{pp_tag.sliced}}
+                                                                        {% endif %}
+                                                                    {% endpp_slice %}  
+                                                                {% else %}
+                                                                  ERR
+                                                                {% endif %}  
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        </a>    
                                                     <br></p>
                                                     </a>
 
                                                 </td>
                                             {% cycle "" "</tr>" %}
-                                        {% endif %}
 
                                     {% endfor %} 
                                     <tr>
@@ -261,7 +289,7 @@
                                             {% cycle "<tr>" "" %}
                                                 {% cycle "<td class='left'>" "<td>" %}
                                                    <span class="icon orange_bg"><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a></span> 
-                                                        <p><a href="{% pp_url object=note template='submit.html' dimension='mes' %}">{{note.description|title }}<br></a></p>
+                                                        <p><a href="{% pp_url template='messages.html' object=note.sender dimension='mes' %}">{{note.description|title }}<br></a></p>
                                                         {% cycle "" "</tr>" %}
                                         {% endfor %}   
                                         

@@ -105,11 +105,11 @@ class ReputationManager(models.Manager):
         initiator = user if initiator is None else initiator
 
         if related_object is not None:
-           obj_id = related_object.pk
-           content_type = ContentType.objects.get_for_model(related_object)
+            obj_id = related_object.pk
+            content_type = ContentType.objects.get_for_model(related_object)
         else:
-           obj_id = None
-           content_type = None
+            obj_id = None
+            content_type = None
 
         reputation_event = ReputationEvent(user=user, score=reputation,
                                            score_delta=score_delta, aggregation=aggregation,

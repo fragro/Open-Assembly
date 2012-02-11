@@ -15,10 +15,9 @@
 
                     <div class="summary">
 
-                        <b><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}
+                <b><a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a></b> 
 
-                        </a></b>
-                            
+                         <span style="float:right;" class="meta">{{note.created_dt}}</span><br>
                               <div>
                                 <p>
                                     {{note.description}}

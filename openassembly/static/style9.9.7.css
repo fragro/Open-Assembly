@@ -178,7 +178,12 @@ small {
     bottom:0;
     height:60px;
     width:100%;
+    font-size:120%;
     overflow:hidden;
+}
+#footer li a {
+    color:#81868C;
+    text-shadow:0 -1px 0 rgba(0,0,0,.2);    
 }
 #footer ul {
     float:left;
@@ -187,9 +192,10 @@ small {
     list-style:none;
     float:left;
     margin-right:20px;
+    margin-top:15px;
     color:#81868C;
     text-shadow:0 -1px 0 rgba(0,0,0,.2);
-    line-height:60px;
+    line-height:25px;
 }
 .btn_gen {
     background:#a0b2c0;

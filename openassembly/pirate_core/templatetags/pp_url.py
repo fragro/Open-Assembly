@@ -173,8 +173,6 @@ def get_reverse(pattern, kwargs, content_type_id=None,
         qs.append(DIM_KEY + inter + str(dimension))
     if sort_type is not None:
         qs.append(CTYPE_KEY + inter + str(sort_type))
-    if scroll_to is not None:
-        qs.append(SCROLL_KEY + inter + str(scroll_to))
     if phase is not None:
         qs.append(PHASE_KEY + inter + str(phase))
     if len(qs) > 0:
@@ -183,6 +181,9 @@ def get_reverse(pattern, kwargs, content_type_id=None,
         qs = ''
     if htmlsafe is not None:
         qs = qs.replace("&", "%26")
+    #last because we use hashes now
+    if scroll_to is not None:
+        qs += '#' + str(scroll_to)
     if url == "/None":
         url = '/'
     return url + qs

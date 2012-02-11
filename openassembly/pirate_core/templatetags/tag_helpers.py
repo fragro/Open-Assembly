@@ -51,7 +51,7 @@ def pp_slice(context, nodelist, *args, **kwargs):
     amt = kwargs.get('amt', None)
 
     amt = int(amt)
-    namespace['sliced'] = obj[0:amt]
+    namespace['sliced'] = str(obj)[0:amt]
     output = nodelist.render(context)
     context.pop()
 
