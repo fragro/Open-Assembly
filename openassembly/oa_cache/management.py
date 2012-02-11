@@ -85,7 +85,6 @@ ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_b
 
 ppprofileformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_profile_form.html", div_id="#pp_profile_form", jquery_cmd="html")
 
-oaaddgroupcache, is_new = UserSaltCache.objects.get_or_create(model_cache=tcache.pk, template="oa_addgroup_form.html", div_id="#addgroup", jquery_cmd="html", object_specific=True)
 oaaddgroupitemcache, is_new = UserSaltCache.objects.get_or_create(model_cache=mcache.pk, template="oa_addgroup_form.html", div_id="#addgroup", jquery_cmd="html")
 
 

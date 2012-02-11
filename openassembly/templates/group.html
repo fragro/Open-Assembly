@@ -6,7 +6,7 @@
 
    {# {% include 'facilitator.html' %} #}
 
-    <h1>{{object.summary}}</h1><span id="addgroup"><h3>{% include 'oa_addgroup_form.html' %}</h3></span>
+    <h1>{{object.summary}}</h1>
     <span class="image">
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
@@ -50,6 +50,7 @@
                 <div id="info">
                 <h2>Mission</h2>
                 <p>{{object.description|markdown }}</p>
+
             {% cani object=object user=user %}
                 {% if pp_permissions.permission %}
 
@@ -58,7 +59,7 @@
                 {% endif %}
             {% endcani %}
                 <span style="float:left;margin-right:10px;"><a class="button" href="{% pp_url template='submit.html' object=object %}">
-                    Ask a Question to the Group</a></span>
+                    Ask a Question</a></span>
 
                 <span style="float:left;margin-right:10px;"><a class="button" href="{% pp_url template='issues.html' object=object start=0 end=20 dimension='n' %}">
                     Decisions</a></span>
@@ -74,8 +75,12 @@
                 {% endif %}
 
             {% endpp_getcreate_setting %}
+    
+            <span class="button2" id="addgroup" style="float:left;margin-right:10px;">{% include 'oa_addgroup_form.html' %}</span>
 
         {% endpp_get_contenttype_id %}
+                
+
                 </div>
 
 

@@ -114,7 +114,7 @@ function remove_group(topic, user){
 $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
-        $(data.group).html('');
+        $(data.group).remove();
       }
  }, "json");
 }

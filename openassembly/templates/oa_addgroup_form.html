@@ -1,24 +1,26 @@
 {% load topictags %}
+{% pp_get_contenttype_id object=object %}
 
-{% oa_ingroup object=object user=user %}
-    {% if pp_topic.in_group %}
-        {% cani object=object user=user %}
-        {% if not pp_permissions.permission %}
+    {% oa_ingroup object=object user=user %}
+        {% if pp_topic.in_group %}
+            {% cani object=object user=user %}
+            {% if not pp_permissions.permission %}
 
-            <a href="javascript:;" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> -Remove From MyGroups</a>
+                <a href="javascript:;" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');load_usersaltcache('#addgroup', '{{user.pk}}', '{{object.pk}}', '{{pp_source.ctype_pk}}');"> - Leave</a>
 
-        {% endif %}
-    {% endcani %}		
-    {% else %}
-        {% oa_get_group_settings object=object %}
-        	{% if pp_topic.settings.open_group and user.is_authenticated %}
-				<a href="javascript:;" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');"> +Add to MyGroups</a>
-			{% endif %}
-            {% if not user.is_authenticated %}
-                <a class="nobbq" href="/register.html?"> +Add to MyGroups</a>
             {% endif %}
+        {% endcani %}		
+        {% else %}
+            {% oa_get_group_settings object=object %}
+            	{% if pp_topic.settings.open_group and user.is_authenticated %}
+    				<a href="javascript:;" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');load_usersaltcache('#addgroup', '{{user.pk}}', '{{object.pk}}', '{{pp_source.ctype_pk}}');"> + Join</a>
+    			{% endif %}
+                {% if not user.is_authenticated %}
+                    <a class="nobbq" href="/register.html?"> + Join</a>
+                {% endif %}
 
-        {% endoa_get_group_settings %}
-    {% endif %}
-{% endoa_ingroup %}
+            {% endoa_get_group_settings %}
+        {% endif %}
+    {% endoa_ingroup %}
 
+{% endpp_get_contenttype_id %}
