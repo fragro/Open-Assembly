@@ -27,7 +27,7 @@ def pp_get_reputation_events_graph(context, nodelist, *args, **kwargs):
        Do stuff with {{ pp_reputation.graph_html }}
     {% endpp_get_reputation %}
 
-    This template tag dynamically generates the html required for a (x,y) graph 
+    This template tag dynamically generates the html required for a (x,y) graph
     where x is the activity rate and y is the time dimension. This graph shows
     users a basic idea of the user's activity rate.
     '''
@@ -147,7 +147,7 @@ def pp_get_reputation(context, nodelist, *args, **kwargs):
                 pass
                 #rep does not yet exist
     else:
-        scores ={}
+        scores = {}
         tot_score = 0
 
     namespace['reputation_keys'] = scores.items()
@@ -191,7 +191,7 @@ def grab_graph(reps, x, y, days, min_days):
         mcheck = False
 
     html = generate_graph_html(x,y,dayslots,mtrx,mcheck,False,'1px', None)
-        
+
     return html, rate_list, mtrx, min_rate, max_rate, mean
 
 #generates dynamic html using pixels to create a graph

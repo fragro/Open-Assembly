@@ -77,19 +77,18 @@ def create_notification(obj, reply_to, **kwargs):
     user_type = ContentType.objects.get_for_model(User)
     if content_type is not user_type and rep_type is not user_type:
         if obj.user != reply_to.user:
-            path = "/index.html#item" + "/_t" + str(rep_type.pk) + "/_o" + str(reply_to.pk)
+            path = reply_to.get_absolute_url()
             #if this notification is a comment_reply
             if str(content_type) == 'comment':
                 if str(rep_type) == 'comment':
                     summ = str(reply_to.text)
                 else:
                     summ = str(reply_to.summary)
-                path = reply_to.get_absolute_url()                
-                if send_email:
-                    notification.send([reply_to.user], "comment_reply", {"from_user": obj.user,
-                    "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
-                    "reply": str(obj.text), "path": settings.DOMAIN_NAME + path})
-
+                path = reply_to.get_absolute_url()
+                if send_email and not settings.DEBUG:
+                        notification.send([reply_to.user], "comment_reply", {"from_user": obj.user,
+                        "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
+                        "reply": str(obj.text), "path": settings.DOMAIN_NAME + path})
                 if len(obj.text) > 30:
                     tt = str(obj.text)[0:30] + "..."
                 else:
@@ -99,32 +98,33 @@ def create_notification(obj, reply_to, **kwargs):
 
             #if notification is an action_reply
             elif str(content_type) == 'action taken':
-                if send_email:
-                    notification.send([reply_to.user], "action_reply", {"from_user": obj.user,
-                    "notice_message": str(obj.user.username) + " acted on your " + str(rep_type) + " : " + str(reply_to.summary),
-                    "path": settings.DOMAIN_NAME + path})
+                if send_email and not settings.DEBUG:
+                        notification.send([reply_to.user], "action_reply", {"from_user": obj.user,
+                        "notice_message": str(obj.user.username) + " acted on your " + str(rep_type) + " : " + str(reply_to.summary),
+                        "path": settings.DOMAIN_NAME + path})
+
                 text = str(obj.user.username) + " acted on your " + str(rep_type)
                 link = reply_to.get_absolute_url()
 
             elif str(content_type) == 'argument':
-                if send_email:
-                    notification.send([reply_to.user], "argument_reply", {"from_user": obj.user,
-                    "notice_message": "New argument received for your: " + str(rep_type) + " : " + str(reply_to.summary),
-                    "path": settings.DOMAIN_NAME + path})
+                if send_email and not settings.DEBUG:
+                        notification.send([reply_to.user], "argument_reply", {"from_user": obj.user,
+                        "notice_message": "New argument received for your: " + str(rep_type) + " : " + str(reply_to.summary),
+                        "path": settings.DOMAIN_NAME + path})
                 text = str(obj.user.username) + " created an argument for your " + str(rep_type)
                 link = reply_to.get_absolute_url()
 
             #if notification is badge_received
 
-        elif str(content_type) == 'badge':
-            content_type = ContentType.objects.get_for_model(User)
-            path = "/index.html#user/_t" + str(content_type.pk) + "/_o" + str(obj.user.pk)
-            if send_email:
-                    notification.send([reply_to.user], "badge_received", {"from_user": obj.user,
-                "notice_message": str(obj.user.username) + ", you've received a " + str(rep_type) + " '" + str(reply_to.dimension.name) + "':",
-                "path": settings.DOMAIN_NAME + path})
-            text = "you received a " + str(reply_to.dimension.name) + " badge"
-            link = reply_to.get_absolute_url()
+        #elif str(content_type) == 'badge':
+        #    content_type = ContentType.objects.get_for_model(User)
+        #    path = "/index.html#user/t-" + str(content_type.pk) + "/o-" + str(obj.user.pk)
+        #    if send_email:
+        #            notification.send([reply_to.user], "badge_received", {"from_user": obj.user,
+        #        "notice_message": str(obj.user.username) + ", you've received a " + str(rep_type) + " '" + str(reply_to.dimension.name) + "':",
+        #        "path": settings.DOMAIN_NAME + path})
+        #    text = "you received a " + str(reply_to.dimension.name) + " badge"
+        #    link = reply_to.get_absolute_url()
 
             #if notification is a child_reply
 
