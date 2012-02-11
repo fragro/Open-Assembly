@@ -18,7 +18,7 @@ setup_django() {
     fi
 
     python $app_name/manage.py collectstatic --noinput
-
+    python waitfordb.py
     python $app_name/manage.py syncdb --noinput
 }
 
