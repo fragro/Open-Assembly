@@ -25,3 +25,4 @@ setproctitle
 pytz
 git+https://github.com/bradbeattie/python-vote-core.git#egg=pyvotecore
 johnny-cache
+django-notification

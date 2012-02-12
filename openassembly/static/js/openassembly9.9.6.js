@@ -93,7 +93,7 @@ $.post("/add_tag/", {tag: tag, obj: obj_id, c_type:c_type, app_type:app_type },
  }, "json");
 }
 
-function add_platform(ctype, object_pk){ 
+function add_platform(ctype, object_pk){
 $.post("/add_platform/", {ctype: ctype, object_pk: object_pk},
   function(data) {
       if(data.FAIL !== true){
@@ -101,7 +101,7 @@ $.post("/add_platform/", {ctype: ctype, object_pk: object_pk},
  }, "json");
 }
 
-function add_group(topic, user){ 
+function add_group(topic, user){
 $.post("/add_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
@@ -110,7 +110,7 @@ $.post("/add_group/", {topic: topic, user: user},
  }, "json");
 }
 
-function remove_group(topic, user){ 
+function remove_group(topic, user){
 $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
@@ -119,7 +119,7 @@ $.post("/remove_group/", {topic: topic, user: user},
  }, "json");
 }
 
-function del_tag(tag, obj_id, c_type, app_type){ 
+function del_tag(tag, obj_id, c_type, app_type){
 $.post("/del_tag/", {tag: tag, obj: obj_id, c_type:c_type, app_type:app_type },
   function(data) {
       if(data.FAIL !== true){

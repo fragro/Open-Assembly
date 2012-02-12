@@ -5,9 +5,10 @@
     {% pp_get_sources object=object type='img' %}
         {% if pp_source.cur_img %}
             <img style="float:right;" src="{{pp_source.cur_img.thumbnail.url}}" alt="{{object.content_object.summary}}">
-            <a class="button" href="{% pp_url template='submit.html' dimension='mes' object=object %}">Reply To Message</a>
 
         {% endif %}
+        <a class="button" href="{% pp_url template='submit.html' dimension='mes' object=object %}">Reply To Message</a>
+
     {% endpp_get_sources %}
 
             {% for note in pp_messages.read %}
