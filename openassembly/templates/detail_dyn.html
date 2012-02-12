@@ -73,6 +73,12 @@
 
 
 {% block content %}
+
+    {% pp_get_root object=object %} 
+        {% oa_get_group_settings object=pp_topic.root %}
+        
+        {% oa_ingroup object=pp_topic.root user=user %}
+
                    {% pp_consensus_get object=object.pk user=user %}
                        <div class="listing">
                             <div class="interest">
@@ -181,11 +187,13 @@
                         {% endpp_get_flags %}
                     </ul>   
                  {% endcomment %}
+
                             <table cellspacing="0" class="rating">
                                 <tbody>
                                     <tr>
                                         <td id="temp_check">
                                         </td>
+                                        {% if pp_topic.in_group %}
                                         <td>
                                             <h2>Vote <span style="font-size:80%;" id="spectrum_vote"></span></h2>
                                             <b>Agreement: <span id="stars-cap-spec"></span></b><br>
@@ -226,7 +234,12 @@
                                             </form>
                                             {% endpp_rating_form %}
                                         </td>
+                                        {% else %}
                                         <td>
+                                        {{pp_topic.root}}
+                                        </td>
+                                        {% endif %}
+                                        <td>                
                                          {% comment %}
                                             <b><abbr title="Add other Flags to this submission to call out hyperbole, logical fallacies, or other erroneous issues.">Flag</abbr>:</b><br>
                                             {% if user.is_authenticated and user.is_active %}
@@ -451,12 +464,7 @@
                                     </div>
                                 </div>
 
-                        {% pp_get_root object=object %} 
-                            {% oa_get_group_settings object=pp_topic.root %}
-                            
-                            {% oa_ingroup object=object user=user %}
-  
-                                {% if pp_topic.settings.open_group or pp_topic.in_group %}
+                                {% if pp_topic.in_group %}
            
                                     <h2 class="acc_trigger"><a href="#"><img src="/static/img/agree.jpg">Write an Argument Supporting</a></h2>
                                     <div class="acc_container">
@@ -508,10 +516,6 @@
                                 {% endif %}
 
                             {% endif %}
-                            {% endoa_ingroup %}
-
-                            {% endoa_get_group_settings %}
-                        {% endpp_get_root %}
 
                 {% endif %}
                                 </div>
@@ -568,4 +572,9 @@
 {% comment %}
     <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4e743d0b5609a737"></script>
 {% endcomment %}
+
+    {% endoa_ingroup %}
+
+    {% endoa_get_group_settings %}
+{% endpp_get_root %}
 {% endblock %}
