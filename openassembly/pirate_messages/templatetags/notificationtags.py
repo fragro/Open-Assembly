@@ -58,7 +58,6 @@ def pp_notification_unread_list_get(context, nodelist, *args, **kwargs):
 
     user = kwargs.get('user', None)
     reset = kwargs.get('reset', None)
-    
     notes = Notification.objects.all()
     notes = notes.filter(receiver=user,is_read=False)
     notes = notes.order_by('-submit_date')
@@ -66,10 +65,9 @@ def pp_notification_unread_list_get(context, nodelist, *args, **kwargs):
         for i in notes:
             i.is_read = True
             i.save()
-    
     namespace['notifications'] = notes
     namespace['count'] = len(notes)
-    
+
     output = nodelist.render(context)
     context.pop()
 

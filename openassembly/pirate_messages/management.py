@@ -17,9 +17,7 @@ if "notification" in settings.INSTALLED_APPS:
         notification.create_notice_type("support_created", _("Support Added"), _("someone now supports you"))
         notification.create_notice_type("badge_received", _("Badge Recieved"), _("you received a new badge"))
         notification.create_notice_type("message_received", _("Message Recieved"), _("someone sent you a message"))
-    
 
     signals.post_syncdb.connect(create_notice_types, sender=notification)
 else:
     print "Skipping creation of NoticeTypes as notification app not found"
-
