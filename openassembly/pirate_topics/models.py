@@ -32,7 +32,7 @@ class Topic(models.Model):
     is_featured = models.BooleanField(default=False)
     location = models.CharField(max_length=200, blank=True, null=True)
     slug = models.CharField(max_length=200, blank=True, null=True)
-    group_members = models.IntegerField(default=0)
+    group_members = models.IntegerField(default=1)
     objects = NullManager()
     clean_objects = TopicManager()
 

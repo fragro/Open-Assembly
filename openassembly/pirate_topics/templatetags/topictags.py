@@ -17,6 +17,9 @@ from customtags.decorators import block_decorator
 register = template.Library()
 block = block_decorator(register)
 
+from pirate_forum.models import get_rangelist
+
+
 get_namespace = namespace_get('pp_topic')
 
 
@@ -261,13 +264,21 @@ def oa_mygroup_users(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     obj = kwargs.get('object', None)
+    start = kwargs.get('start', None)
+    end = kwargs.get('end', None)
 
     try:
         mygroups = MyGroup.objects.filter(topic=obj)
         cnt = mygroups.count()
+
     except:
         mygroups = None
         cnt = 0
+
+    if start is not None and end is not None and mygroups is not None:
+        mygroups = mygroups[int(start):int(end)]
+
+    namespace['rangelist'] = get_rangelist(start, end, cnt)
 
     namespace['groups'] = mygroups
     namespace['count'] = cnt

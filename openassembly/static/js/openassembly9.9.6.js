@@ -105,7 +105,8 @@ function add_group(topic, user){
 $.post("/add_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
-        $('#mygroup').append(data.group);
+        //$('#mygroup').append(data.group);
+        js_redirect(data.redirect);
       }
  }, "json");
 }
@@ -114,7 +115,8 @@ function remove_group(topic, user){
 $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
-        $(data.group).remove();
+        //$(data.group).remove();
+        js_redirect(data.redirect);
       }
  }, "json");
 }

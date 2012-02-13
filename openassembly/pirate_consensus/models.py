@@ -172,7 +172,7 @@ class Consensus(models.Model):
     winners = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
-        return str(self.content_type) + ' object:' + str(self.object_pk) + ' self.pk:' + str(self.pk) + ' phase: ' + str(self.phasename)
+        return str(self.content_type) + ' object:' + str(self.content_object) + ' self.pk:' + str(self.pk) + ' phase: ' + str(self.phasename)
 
     def register_vote(self, vote, dtype, old_vote=None):
         vtype = ContentType.objects.get_for_model(vote)

@@ -3,12 +3,14 @@ from django import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 import datetime
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from pirate_core import HttpRedirectException, namespace_get
 from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate, login
 from django.core.validators import validate_email
+from tracking.models import utils, Visitor
 
 from pirate_topics.models import MyGroup
 
@@ -39,6 +41,34 @@ class KeyGenerator(forms.Form):
     """Form for generating a new key for registration."""
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_key_generator")
     user = forms.CharField(label=_(u'Username'))
+
+
+@block
+def is_online(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+    timeout = kwargs.get('timeout', None)
+
+    """
+    Retrieves only visitors who have been active within the timeout
+    period.
+    """
+    if not timeout:
+        timeout = utils.get_timeout()
+
+    now = datetime.datetime.now()
+    cutoff = now - datetime.timedelta(minutes=timeout)
+
+    visit = Visitor.objects.filter(user=user, last_update__gte=cutoff)
+    online = visit.count() > 0
+    namespace['online'] = online
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
 
 
 @block

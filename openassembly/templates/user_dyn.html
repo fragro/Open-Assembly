@@ -186,92 +186,7 @@
 
                     {% endif %}
 
-                        {% if not dimension or dimension == 'activity' %}
-
-                        <div class="profile_activity">             
-                                
-                                <b>Recent Activity</b>
-                                
-                                <table class="user_activity" cellspacing="0">
-                                    {% pp_get_reputation_events user=object start=start end=end %}
-                                    <tbody>
-                                    {% for note in pp_reputation.reputation_events %}
-                                            {% cycle "<tr>" "" %}
-                                                {% cycle "<td class='left'>" "<td>" %}
-                                                    <a href="{{note.get_absolute_url}}">
-                                                        <span class="icon">{{note.dimension|title}}</span>
-                                                    <p>
-                                                        <a href="{{note.get_absolute_url}}">
-                                                        {{note.created_dt}} -
-                                                        {% if note.related_object.text %}
-
-                                                            {% pp_slice obj=note.related_object.text amt=30 %}
-                                                                {% if note.related_object.text|length > 30 %}
-                                                                    {{pp_tag.sliced}}[...]
-                                                                {% else %}
-                                                                    {{pp_tag.sliced}}
-                                                                {% endif %}
-                                                            {% endpp_slice %}
-                
-                                                        {% else %}
-
-                                                            {% if note.related_object.content_object.summary %}
-                                                            
-                                                            {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
-                                                                {% if note.related_object.content_object.summary|length > 30 %}
-                                                                    {{pp_tag.sliced}}[...]
-                                                                {% else %}
-                                                                    {{pp_tag.sliced}}
-                                                                {% endif %}
-                                                            {% endpp_slice %}      
-                                                                                                      
-                                                            {% else %}
-                                                                {% if note.related_object %}
-
-                                                                    {% pp_slice obj=note.related_object amt=30 %}
-                                                                        {% if note.related_object|length > 30 %}
-                                                                            {{pp_tag.sliced}}[...]
-                                                                        {% else %}
-                                                                            {{pp_tag.sliced}}
-                                                                        {% endif %}
-                                                                    {% endpp_slice %}  
-                                                                {% else %}
-                                                                  ERR
-                                                                {% endif %}  
-                                                            {% endif %}
-                                                        {% endif %}
-                                                        </a>    
-                                                    <br></p>
-                                                    </a>
-
-                                                </td>
-                                            {% cycle "" "</tr>" %}
-
-                                    {% endfor %} 
-                                    <tr>
-                                        <td class="left" colspan="2"><small><a href="{% pp_url template='user_profile.html' dimension='activity' object=object start=0 end=20 %}">(view all)</a></small></td>
-                                    </tr>   
-                                    </tbody>
-                                </table>
-                    
-                            </div>
-
-                                {% if dimension == 'activity' %}
-                                    <ul class="pagination">
-                                        {% for s,e,n in pp_reputation.rangelist %}
-                                           {% if not s > pp_reputation.count %}
-                                            <li><a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-
-                            {% endpp_get_reputation_events %}
-
-                        
-                        {% endif %}
-
-                    {% if user == object %}
+    {% if user == object %}
 
                         </div>
 
@@ -458,10 +373,97 @@
                                 
                             </div>
                             <!-- end .profile_follows -->
-
-                            <!-- Here is where we paginate followers/followees/notifications/etc based on the request.dimension  -->
-                            </div>
                     
             {% endif %}
 
+
+                        {% if not dimension or dimension == 'activity' %}
+
+                        <div style="width:100%;"class="profile_activity">             
+                                
+                                <b>Recent Activity</b>
+                                
+                                <table class="user_activity" cellspacing="0">
+                                    {% pp_get_reputation_events user=object start=start end=end %}
+                                    <tbody>
+                                    {% for note in pp_reputation.reputation_events %}
+                                            {% cycle "<tr>" "" %}
+                                                {% cycle "<td class='left'>" "<td>" %}
+                                                    <a href="{{note.get_absolute_url}}">
+                                                        <span class="icon">{{note.dimension|title}}</span>
+                                                    <p>
+                                                        <a href="{{note.get_absolute_url}}">
+                                                        {{note.created_dt}} -
+                                                        {% if note.related_object.text %}
+
+                                                            {% pp_slice obj=note.related_object.text amt=30 %}
+                                                                {% if note.related_object.text|length > 30 %}
+                                                                    {{pp_tag.sliced}}[...]
+                                                                {% else %}
+                                                                    {{pp_tag.sliced}}
+                                                                {% endif %}
+                                                            {% endpp_slice %}
+                
+                                                        {% else %}
+
+                                                            {% if note.related_object.content_object.summary %}
+                                                            
+                                                            {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
+                                                                {% if note.related_object.content_object.summary|length > 30 %}
+                                                                    {{pp_tag.sliced}}[...]
+                                                                {% else %}
+                                                                    {{pp_tag.sliced}}
+                                                                {% endif %}
+                                                            {% endpp_slice %}      
+                                                                                                      
+                                                            {% else %}
+                                                                {% if note.related_object %}
+
+                                                                    {% pp_slice obj=note.related_object amt=30 %}
+                                                                        {% if note.related_object|length > 30 %}
+                                                                            {{pp_tag.sliced}}[...]
+                                                                        {% else %}
+                                                                            {{pp_tag.sliced}}
+                                                                        {% endif %}
+                                                                    {% endpp_slice %}  
+                                                                {% else %}
+                                                                  ERR
+                                                                {% endif %}  
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        </a>    
+                                                    <br></p>
+                                                    </a>
+
+                                                </td>
+                                            {% cycle "" "</tr>" %}
+
+                                    {% endfor %} 
+                                    <tr>
+                                        <td class="left" colspan="2"><small><a href="{% pp_url template='user_profile.html' dimension='activity' object=object start=0 end=20 %}">(view all)</a></small></td>
+                                    </tr>   
+                                    </tbody>
+                                </table>
+                    
+                            </div>
+
+                                {% if dimension == 'activity' %}
+                                    <ul class="pagination">
+                                        {% for s,e,n in pp_reputation.rangelist %}
+                                           {% if not s > pp_reputation.count %}
+                                            <li><a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                            {% endpp_get_reputation_events %}
+
+                        
+                        {% endif %}
+
+              
+                            <!-- Here is where we paginate followers/followees/notifications/etc based on the request.dimension  -->
+                            </div>
+                </div>  
 {% endblock %}

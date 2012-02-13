@@ -795,6 +795,12 @@ small {
 .profile_follows td span {
     vertical-align:middle;
 }
+.profile_follows {
+    width:100%;
+    overflow:hidden;
+    border-bottom:1px solid #E4E4E4;
+    margin-bottom:10px;
+}
 .profile_followers {
     width:334px;
     margin-right:10px;
@@ -1448,6 +1454,7 @@ h2 {
     margin-left:20px;
 }
 .group_user {
+    min-height:45px;
     margin-bottom:10px;
     margin-top:10px;
     border-bottom:1px #e4e4e4 solid;

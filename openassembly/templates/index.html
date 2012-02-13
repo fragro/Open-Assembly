@@ -403,9 +403,13 @@
                                     <ul id="mygroup" class="recent_activity">
                                         <span><b>MyGroups - <a href="{% pp_url template='create_group.html' %}">Create New</a></b></span>
                                          {% pp_mygroups user=request.user %}
-                                            {% for group in pp_topic.mygroups %}  
-                                                {% include 'mygroup.html' %}
-                                            {% endfor %}
+                                            {% if pp_topic.mygroups|length == 0 %}
+                                                <span style="text-align:center;font-weight:bold;margin-top:25px;">Visit the Assembly or <br>Search to find Groups to Join</span>
+                                            {% else %}
+                                                {% for group in pp_topic.mygroups %}  
+                                                    {% include 'mygroup.html' %}
+                                                {% endfor %}
+                                            {% endif %}
                                         {% endpp_mygroups %}
                                     </ul>
 
@@ -424,10 +428,10 @@
             <div id="footer">
                 <div class="center">
                     <ul>
-                        <li><img src="/static/img/oa-small.png"></li>
                         <li>Open Assembly</li>
-                        <li><a href="http://openassemblycode.org"><img src="/static/img/open_source_small.png"></a></li>
+                        <li><img src="/static/img/oa-small.png"></li>
                         <li>Join Us and Help Build a Global Human Republic</li>
+                        <li><a href="http://openassemblycode.org"><img src="/static/img/open_source_small.png"></a></li>
                         <li><img src="/static/img/ghr.png"></li>
                         <li><a href="{% pp_url template='consent.html' %}">Privacy and Consent Policy</a></li>
                     </ul>

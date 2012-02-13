@@ -77,18 +77,17 @@ def create_notification(obj, reply_to, **kwargs):
     user_type = ContentType.objects.get_for_model(User)
     if content_type is not user_type and rep_type is not user_type:
         if obj.user != reply_to.user:
-            path = reply_to.get_absolute_url()
+            path = obj.get_absolute_url()
             #if this notification is a comment_reply
             if str(content_type) == 'comment':
                 if str(rep_type) == 'comment':
                     summ = str(reply_to.text)
                 else:
                     summ = str(reply_to.summary)
-                path = reply_to.get_absolute_url()
-                if send_email and not settings.DEBUG:
-                        notification.send([reply_to.user], "comment_reply", {"from_user": obj.user,
+                if send_email:
+                        notification.send([reply_to.user], "comment_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
                         "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
-                        "reply": str(obj.text), "path": settings.DOMAIN_NAME + path})
+                        "reply": str(obj.text), "path": settings.DOMAIN + path})
                 if len(obj.text) > 30:
                     tt = str(obj.text)[0:30] + "..."
                 else:
@@ -99,18 +98,18 @@ def create_notification(obj, reply_to, **kwargs):
             #if notification is an action_reply
             elif str(content_type) == 'action taken':
                 if send_email and not settings.DEBUG:
-                        notification.send([reply_to.user], "action_reply", {"from_user": obj.user,
+                        notification.send([reply_to.user], "action_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
                         "notice_message": str(obj.user.username) + " acted on your " + str(rep_type) + " : " + str(reply_to.summary),
-                        "path": settings.DOMAIN_NAME + path})
+                        "path": settings.DOMAIN + path})
 
                 text = str(obj.user.username) + " acted on your " + str(rep_type)
                 link = reply_to.get_absolute_url()
 
             elif str(content_type) == 'argument':
-                if send_email and not settings.DEBUG:
-                        notification.send([reply_to.user], "argument_reply", {"from_user": obj.user,
-                        "notice_message": "New argument received for your: " + str(rep_type) + " : " + str(reply_to.summary),
-                        "path": settings.DOMAIN_NAME + path})
+                if send_email:
+                        notification.send([reply_to.user], "argument_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
+                        "notice_message": "New argument received for your " + str(rep_type) + " " + str(reply_to.summary),
+                        "path": settings.DOMAIN + path})
                 text = str(obj.user.username) + " created an argument for your " + str(rep_type)
                 link = reply_to.get_absolute_url()
 

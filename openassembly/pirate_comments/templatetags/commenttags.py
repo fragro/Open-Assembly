@@ -291,10 +291,10 @@ def pp_comment_form(context, nodelist, *args, **kwargs):
                 namespace['object_pk'] = newcomment.pk
                 namespace['content_type'] = ContentType.objects.get_for_model(newcomment).pk
                 cvt = ContentType.objects.get_for_model(UpDownVote)
-                cons, is_new = Consensus.objects.get_or_create(content_type=c_type,
-                                    object_pk=newcomment.pk,
-                                    vote_type=cvt,
-                                    parent_pk=reply_to.pk)
+                #cons, is_new = Consensus.objects.get_or_create(content_type=c_type,
+                #                    object_pk=newcomment.pk,
+                #                    vote_type=cvt,
+                #                    parent_pk=reply_to.pk)
                 notification_send.send(sender=newcomment, obj=newcomment, reply_to=newcomment.content_object)
                 relationship_event.send(sender=newcomment, obj=newcomment, parent=newcomment.content_object)
                 aso_rep_event.send(sender=newcomment.user, event_score=1, user=newcomment.content_object.user,
@@ -322,10 +322,10 @@ def pp_comment_form(context, nodelist, *args, **kwargs):
             namespace['object_pk'] = newcomment.pk
             namespace['content_type'] = ContentType.objects.get_for_model(newcomment).pk
             cvt = ContentType.objects.get_for_model(UpDownVote)
-            cons, is_new = Consensus.objects.get_or_create(content_type=reply_to.content_type,
-                                    object_pk=newcomment.pk,
-                                    vote_type=cvt,
-                                    parent_pk=reply_to.object_pk)
+            #cons, is_new = Consensus.objects.get_or_create(content_type=reply_to.content_type,
+            #                        object_pk=newcomment.pk,
+            #                        vote_type=cvt,
+            #                        parent_pk=reply_to.object_pk)
             if comment is None:
                 #if comment is new and not editted
                 notification_send.send(sender=newcomment, obj=newcomment, reply_to=newcomment.reply_to)

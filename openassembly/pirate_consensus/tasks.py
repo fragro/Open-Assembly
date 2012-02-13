@@ -76,12 +76,33 @@ def initiate_nextphase(consensus):
         passes = False
         #if we accept all winners no need for ranking
         if consensus.winners is not None:
+            #get nominations and ranked votes
+            nominations = Consensus.objects.filter(parent_pk=consensus.content_object.pk)
             #currently supports single winner, in the future we check here for multiple winner or single winner
             confirmed = ConfirmRankedVote.objects.filter(parent=consensus, confirm=True)
             ballot_dict = defaultdict(int)
+            user_has_ranked = []
             for conf in confirmed:
+                user_has_ranked.append(conf.user)
                 rv = tuple([i.nom_cons.pk for i in RankedVote.objects.filter(user=conf.user, parent=consensus).order_by('ranked_vote')])
                 ballot_dict[rv] += 1
+            #for those that didnt rank vote, we can sample from their updownvotes
+            for user in [i.user for i in UpDownVote.objects.filter(parent=consensus)]:
+                if user not in user_has_ranked:
+                    user_ranks = []
+                    print nominations
+                    for nom in nominations:
+                        try:
+                            vote = UpDownVote.objects.get(parent=nom, user=user)
+                            user_ranks.append(vote)
+                        except:
+                            print 'novote: ' + str(nom)
+                    user_ranks = sorted(user_ranks, key=lambda x: x.vote)
+                    user_ranks.reverse()
+                    rv = tuple([i.parent.pk for i in user_ranks])
+                    ballot_dict[rv] += 1
+
+            #load up the vote dict for python-vote-core
             blist = []
             for k, v in ballot_dict.items():
                 ballot = [[i] for i in k]
@@ -93,12 +114,16 @@ def initiate_nextphase(consensus):
             if blist != []:
                 #scz = SchulzeMethod(blist, ballot_notation="grouping").as_dict()
                 scz = SchulzeSTV(blist, required_winners=consensus.winners, ballot_notation="grouping").as_dict()
+                print scz
                 schulze_winners = scz['winners']
                 #make sure it passes consensus also
                 for schulze_winner in schulze_winners:
-                    nom = Consensus.objects.get(pk=schulze_winner)
+                    try:
+                        nom = Consensus.objects.get(pk=schulze_winner)
+                    except:
+                        print 'nom failed: ' + str(schulze_winner)
                     nom.consensus_percent = get_consensus(nom)
-                    nom.reporting_percent = UpDownVote.objects.filter(parent=nom).count() / num_members
+                    nom.reporting_percent = float(UpDownVote.objects.filter(parent=nom).count()) / float(num_members)
                     nom.save()
                     noms_passed = test_if_passes(nom.consensus_percent, nom.reporting_percent, settings, ignore_reporting=True)
                     if noms_passed == True:
@@ -108,7 +133,6 @@ def initiate_nextphase(consensus):
             #there was no ranked winner or the ranked winner failed to consense (weird side case), cycle through all and choose
         if passes == False:
             #if this is None, accept all winners
-            nominations = [i for i in Consensus.objects.filter(parent_pk=consensus.content_object.pk)]
             if consensus.winners == None:
                 num_winners = len(nominations)
             else:
@@ -118,7 +142,7 @@ def initiate_nextphase(consensus):
                 val = (get_consensus(nom), nom)
                 consensii.append(val)
                 nom.consensus_percent = val[0]
-                nom.reporting_percent = UpDownVote.objects.filter(parent=nom).count() / num_members
+                nom.reporting_percent = float(UpDownVote.objects.filter(parent=nom).count()) / float(num_members)
                 nom.save()
             consensii = sorted(consensii, key=lambda x: x[0])
             consensii.reverse()

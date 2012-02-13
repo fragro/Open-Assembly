@@ -4,6 +4,6 @@
 
 {{notice_message}}
 
-<a href="{{path}}">Check it</a>
+<a href="{{path}}">Check it out here</a>
 
 {% endblocktrans %}

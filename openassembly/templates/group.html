@@ -125,7 +125,7 @@
             {% endcomment %}
 
                 <div class="platform">
-                    {% oa_mygroup_users object=object %}
+                    {% oa_mygroup_users object=object start=start end=end %}
 
                         <h2>{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</h2>
                         <p>
@@ -133,7 +133,15 @@
                                 {% include 'group_user.html' %}
                             {% endfor %}
                         </p>
-                    {% endoa_mygroup_users %}       
+                         <ul class="pagination">
+                            {% for s,e,n in pp_topicrangelist %}
+                               {% if not s > pp_topic.count %}
+                                <li><a href="{% pp_url template='group.html' object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>       
+                    {% endoa_mygroup_users %}
+
                 </div>
                 <div class="platform">
                     {% has_permissions object=object name='facilitator-permission' %}
