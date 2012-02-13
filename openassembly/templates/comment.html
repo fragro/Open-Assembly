@@ -5,8 +5,6 @@
 
     {% if object.is_deleted and not object.is_leaf %}
 
-
-    {{object.is_leaf}}
         {% if salted %}
         <ul id="comment{{object.pk}}" class="comment">
         {% endif %}
@@ -57,7 +55,8 @@
                 {% include 'comment_salt.html' %}
 
             </span>
+            {% if salted %}
             </ul>
-
+            {% endif %}
     {% endif %}
     {% endif %}
