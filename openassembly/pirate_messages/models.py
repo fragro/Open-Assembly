@@ -85,7 +85,7 @@ def create_notification(obj, reply_to, **kwargs):
                 else:
                     summ = str(reply_to.summary)
                 path = reply_to.get_absolute_url()
-                if send_email:
+                if send_email and not settings.DEBUG:
                         notification.send([reply_to.user], "comment_reply", {"from_user": obj.user,
                         "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
                         "reply": str(obj.text), "path": settings.DOMAIN_NAME + path})
