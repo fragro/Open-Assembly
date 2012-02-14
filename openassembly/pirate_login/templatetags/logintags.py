@@ -14,6 +14,8 @@ from tracking.models import utils, Visitor
 
 from pirate_topics.models import MyGroup
 
+from pirate_forum.models import View
+
 from settings import DOMAIN_NAME
 
 from oa_verification.models import Referral
@@ -41,6 +43,31 @@ class KeyGenerator(forms.Form):
     """Form for generating a new key for registration."""
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_key_generator")
     user = forms.CharField(label=_(u'Username'))
+
+
+@block
+def pp_last_visit(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+    obj = kwargs.get('object', None)
+
+    if obj is not None:
+        obj_pk = obj.pk
+    else:
+        obj_pk = None
+
+    view = View.objects.filter(user=user, object_pk=obj_pk, rendertype='list')
+
+    num = view.count()
+
+    namespace['num_since_last_visit'] = num
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
 
 
 @block

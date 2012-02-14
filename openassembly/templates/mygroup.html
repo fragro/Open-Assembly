@@ -2,7 +2,9 @@
 
 <li id="{{group.topic.pk}}" class="blue">
         <p>
-         <span><a style="width:100%;font-size:100%;" href="{{group.topic.get_absolute_list_url}}">{{group.topic.shortname}}</a></span>
+        {# {% pp_last_visit object=group.topic user=user %} #}
+         <span><a style="width:100%;font-size:100%;" href="{{group.topic.get_absolute_list_url}}">{{group.topic.shortname}}{# [{{pp_login.num_since_last_visit}}] #}</a> </span>
+        {# {% endpp_last_visit %} #}
          </p>
          <div>
 		    {% cani object=group.topic user=request.user %}
@@ -15,7 +17,6 @@
         <span style="float:right;"><a class="tooltip" href="{% pp_url template='submit.html' object=group.topic %}">
 <img src="/static/img/question.jpg"><span>Click here to ask a question for a temp. check or a timed decision</span></a></span>
 
-
         <span style="float:right;"><a class="tooltip" href="{{group.topic.get_absolute_url}}"><img src="/static/img/home.jpg"><span>See the group information and consensus requirements</span></a></span>
 
     	{% pp_get_contenttype_id object=group.topic %}	
@@ -23,7 +24,7 @@
 
 				{% if pp_topic.settings.stream %}
 
-				<span style="float:right;"><a class="tooltip" href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{group.topic.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" ><img src="/static/img/media.jpg"><span>Click to open the Stream in the sidebar</span></a></span>
+					<span style="float:right;"><a class="tooltip" href="javascript:;" onClick="load_usersaltcache('#livestream_small', '{{user.pk}}', '{{group.topic.pk}}', '{{pp_source.ctype_pk}}');$('#non_livestream_sidebar').hide('slow');" ><img src="/static/img/media.jpg"><span>Click to open the Stream in the sidebar</span></a></span>
 
 				{% endif %}
 

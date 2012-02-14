@@ -117,16 +117,12 @@ def initiate_nextphase(consensus):
                 print scz
                 schulze_winners = scz['winners']
                 #make sure it passes consensus also
-                for schulze_winner in schulze_winners:
-                    try:
-                        nom = Consensus.objects.get(pk=schulze_winner)
-                    except:
-                        print 'nom failed: ' + str(schulze_winner)
+                for nom in nominations:
                     nom.consensus_percent = get_consensus(nom)
                     nom.reporting_percent = float(UpDownVote.objects.filter(parent=nom).count()) / float(num_members)
                     nom.save()
                     noms_passed = test_if_passes(nom.consensus_percent, nom.reporting_percent, settings, ignore_reporting=True)
-                    if noms_passed == True:
+                    if noms_passed == True and nom.pk in schulze_winners:
                         passes = True
                         winner.append(nom.pk)
                         print 'set winner via schulze and passing'

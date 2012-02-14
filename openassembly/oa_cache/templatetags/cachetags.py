@@ -4,7 +4,7 @@ from pirate_core import namespace_get
 from settings import DOMAIN
 from oa_cache.views import get_cache_or_render, get_object_or_none
 from oa_cache.models import interpret_hash
-from pirate_forum.models import get_pretty_url, reverse_pretty_url
+from pirate_forum.models import get_pretty_url, reverse_pretty_url, create_view
 
 from BeautifulSoup import BeautifulSoup
 
@@ -57,6 +57,9 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
             ctype_pk = paramdict['TYPE_KEY']
             obj_pk = paramdict['OBJ_KEY']
             obj = get_object_or_none(ctype_pk, obj_pk)
+        else:
+            obj_pk = None
+        create_view.apply_async(args=[request.user, request.META.get('REMOTE_ADDR'), obj_pk, hashed, rtype])
 
         soup = BeautifulSoup()
         ret = {}

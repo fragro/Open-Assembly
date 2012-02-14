@@ -11,6 +11,8 @@ from djangotoolbox.fields import ListField
 from django.db.models import get_model, get_app
 from pirate_core.middleware import TYPE_KEY, OBJ_KEY
 from django.template import Context, Template
+from celery.task import task
+from django.contrib.auth.models import AnonymousUser
 
 
 from django import forms
@@ -242,10 +244,13 @@ class Edit(models.Model):
 
 #needs to be registered each time the page is loaded
 class View(models.Model):
-    object_pk = models.IntegerField()
+    object_pk = models.CharField(max_length=24, blank=True, null=True)
     num = models.IntegerField(default=0)
-    ips = ListField(models.CharField(max_length=16))
-    users = ListField(models.CharField(max_length=30))
+    ip = models.CharField(max_length=16)
+    user = models.ForeignKey(User)
+    path = models.CharField(max_length=120)
+    rendertype = models.CharField(max_length=20)
+    modified_dt = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return str(self.object_pk) + ' : ' + str(self.num)
@@ -264,19 +269,19 @@ class Search(models.Model):
         return '/p/search_results/r-' + str(self.search_key)
 
 
-def create_view(username, addr, obj_id):
+@task(ignore_result=True)
+def create_view(user, addr, obj_id, path, rendertype):
     #defers creating view to optimize
-    if obj_id is not None:
-        v, is_new = View.objects.get_or_create(object_pk=obj_id)
-        if not is_new:
-            v.num += 1
-            v.ips.append(addr)
-            v.users.append(username)
-        else:
-            v.ips.append(addr)
-            v.users.append(username)
-            v.num = 1
-        v.save()
+    if isinstance(user, AnonymousUser):
+        user = None
+    v, is_new = View.objects.get_or_create(object_pk=obj_id, ip=addr, user=user,
+                path=path, rendertype=rendertype)
+    if not is_new:
+        v.num += 1
+    else:
+        v.num = 1
+    v. modified_dt = datetime.datetime.now()
+    v.save()
 
     '''
     This form is used to allow creation and modification of issue objects.

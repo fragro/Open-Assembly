@@ -315,7 +315,7 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
                     'dimension': dimension, 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
             rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     rendered_list.extend(load_last)
-    return {'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to}
+    return {'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to, 'rendertype': rendertype}
 
 
 """
@@ -384,7 +384,11 @@ decreased the latency of the system.
                 props['rendered_list'].insert(0, {'div': '#content', 'type': 'html', 'html': ''})
             for d in props['rendered_list']:
                 data['output'].append(d)
-            #deferred.defer(create_view, request.user.username, request.META.get('REMOTE_ADDR'), props['paramdict'].get('OBJ_ID', None), _countdown=10)
+            if 'OBJ_KEY' in props['paramdict']:
+                obj_pk = props['paramdict']['OBJ_KEY']
+            else:
+                obj_pk = None
+            create_view.apply_async(args=[request.user, request.META.get('REMOTE_ADDR'), obj_pk, hashed, props['rendertype']])
             data['FAIL'] = False
             if 'SCROLL_KEY' in props['paramdict']:
                 data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
