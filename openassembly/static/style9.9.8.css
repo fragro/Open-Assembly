@@ -591,7 +591,7 @@ small {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5d6974', endColorstr='#4d5a66',GradientType=0 );
     background: linear-gradient(top, #5d6974 10%,#4d5a66 100%);
     color:#fff;
-    padding:5px 12px;
+    padding:3px 2px;
     display:inline-block;
     text-decoration:none;
     -webkit-border-radius: 3px;
@@ -1678,4 +1678,18 @@ h2.active {background-position: left bottom;}
     float:left;
     margin-bottom:4px;
     margin-top:4px;
+}
+
+table.markhelp {
+    background-color: white;
+    margin: 3px 0;
+    width: 60%;
+}
+.markhelp, .markhelp td, .markhelp tr {
+    border: 1px solid #C0C0C0;
+    margin: 0;
+    padding: 4px;
+}
+.markhelp .spaces {
+    background-color: #C0C0C0;
 }

@@ -17,16 +17,29 @@
                             {{pp_comment.form.form_id}}
                             {{csrf_string|safe}}
                     {% if user.is_authenticated and user.is_active %}                                                            
-                        <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_reply_form{{object.pk}}"></span>
+                        <input type="submit" class='button' value="Submit">
+
+                        <a class="button2" href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
+                        <span style="color:grey;" id="submit_pp_reply_form{{object.pk}}">
+                            
+                        <a style="float:right;" href="javascript:;" onmousedown="toggleSlide('pp_formatting_help{{object.pk}}');">formatting help</a>
+
+                        </span>
                 </form>
+
+
                         {% else %} 
                             <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
+
+
         <script>
 
           $("form#pp_reply_form{{object.pk}}").submit(function(e){
                 $("#submit_pp_reply_form{{object.pk}}").html("<b>Submitting...</b>")
+                slideup('pp_formatting_help{{object.pk}}');
                 addObject(e);
+
             });
 
         </script>

@@ -1,5 +1,5 @@
 var timerlen = 5;
-var slideAniLen = 250;
+var slideAniLen = 125;
 
 var timerID = new Array();
 var startTime = new Array();

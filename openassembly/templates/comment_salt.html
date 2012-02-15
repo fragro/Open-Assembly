@@ -6,7 +6,7 @@
     <ul id="comment_links{{object.pk}}" class="comment_links">
     {% if user.is_authenticated %}
             <li>
-                <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');">reply</a>
+                <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">reply</a>
             </li>
             <li>
                 <a href="{{object.get_absolute_url}}">permalink</a>
@@ -14,7 +14,7 @@
 
             {% if user == object.user %}
             <li>
-                <a href="javascript:;" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');">edit</a>
+                <a href="javascript:;" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">edit</a>
             </li>
                 <li>
                     <a style="color:red;" href="javascript:;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');">delete</a>
@@ -35,16 +35,7 @@
         </ul>
         <p>
 
-    {% if user.is_authenticated %}
-
-        <div class='reply_comment' id='pp_reply_form{{object.pk}}' style='display:none; overflow:hidden; height:290px;width:100%;'>
-                {% include "pp_reply_form.html" %}
-        </div>
-
-    {% endif %}
-
     {% if user == object.user %}
-
 
         <div class='reply_comment' id='pp_edit_form{{object.pk}}' style='display:none; overflow:hidden; height:290px;width:100%;'>
 
@@ -55,6 +46,21 @@
         <div class='reply_comment' id='pp_delete_form{{object.pk}}' style='display:none; overflow:hidden; height:100px;width:100%;'>
 
            {% include "pp_delete_form.html" %}
+
+        </div>
+
+    {% endif %}
+
+    {% if user.is_authenticated %}
+
+        <div class='reply_comment' id='pp_reply_form{{object.pk}}' style='display:none; overflow:hidden; height:290px;width:100%;'>
+                {% include "pp_reply_form.html" %}
+ 
+        </div>
+
+        <div class='reply_comment' id='pp_formatting_help{{object.pk}}' style='display:none; overflow:hidden; height:290px;width:100%;'>
+
+            {% include "help.html" %}
 
         </div>
 
