@@ -94,7 +94,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.markup',
-    'django.contrib.sites'
+    'django.contrib.sites',
     'customtags',
     'tagging',
     'filetransfers',
