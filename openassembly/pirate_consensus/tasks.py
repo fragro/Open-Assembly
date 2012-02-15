@@ -5,7 +5,7 @@ from pyvotecore.schulze_method import SchulzeMethod
 from pyvotecore.schulze_stv import SchulzeSTV
 from pirate_consensus.models import ConfirmRankedVote, RankedVote, RankedDecision, Consensus, UpDownVote
 from collections import defaultdict
-from pirate_topics.models import GroupSettings
+from pirate_topics.models import GroupSettings, MyGroup
 
 
 """
@@ -58,8 +58,8 @@ def initiate_nextphase(consensus):
     consensus.phase.curphase = consensus.phase.curphase.nextphase
     consensus.phasname = consensus.phase.curphase.phasename
 
-    num_members = consensus.content_object.parent.group_members
-
+    mygroups = MyGroup.objects.filter(topic=consensus.content_object.parent)
+    num_members = mygroups.count()
     if consensus.phase.curphase.nextphase == None:
         #get the group settings
         settings, is_new = GroupSettings.objects.get_or_create(topic=consensus.content_object.parent)
