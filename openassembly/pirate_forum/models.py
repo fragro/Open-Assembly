@@ -272,7 +272,7 @@ class Search(models.Model):
 @task(ignore_result=True)
 def create_view(user, addr, obj_id, path, rendertype):
     #defers creating view to optimize
-    if not isinstance(user, AnonymousUser):
+    if not isinstance(user, AnonymousUser) and obj_id is not None:
         try:
             v, is_new = View.objects.get_or_create(object_pk=obj_id, ip=addr, user=user,
                     path=path, rendertype=rendertype)
