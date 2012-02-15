@@ -56,10 +56,11 @@ def initiate_nextphase(consensus):
     logger.info('Initiating Next Phase for: {0}'.format(consensus.content_object.summary))
 
     consensus.phase.curphase = consensus.phase.curphase.nextphase
-    consensus.phasname = consensus.phase.curphase.phasename
+    consensus.phasename = consensus.phase.curphase.phasename
 
     mygroups = MyGroup.objects.filter(topic=consensus.content_object.parent)
     num_members = mygroups.count()
+
     if consensus.phase.curphase.nextphase == None:
         #get the group settings
         settings, is_new = GroupSettings.objects.get_or_create(topic=consensus.content_object.parent)
