@@ -13,6 +13,7 @@ from markitup.widgets import MarkItUpWidget
 from notification import models as notification
 import settings
 from pirate_comments.models import Comment
+from celery.task import task
 
 
 class Message(models.Model):
@@ -63,8 +64,10 @@ class MessageForm(forms.ModelForm):
     description = forms.CharField(widget=MarkItUpWidget(), label="Description")
 
 
-def create_notification(obj, reply_to, **kwargs):
-    #obj specifies the obj being replied to, new_obj specifies the new object
+@task(ignore_result=True)
+def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
+    ctype = ContentType.objects.get(pk=ctype_pk)
+    obj = ctype.get_object_for_this_type(pk=obj_pk)
     try:
         profile = Profile.objects.get(user=reply_to.user)
         send_email = profile.receive_emails
@@ -72,8 +75,6 @@ def create_notification(obj, reply_to, **kwargs):
         send_email = True
     content_type = ContentType.objects.get_for_model(obj)
     rep_type = ContentType.objects.get_for_model(reply_to)
-    link = kwargs.get('link', None)
-    text = kwargs.get('text', None)
     user_type = ContentType.objects.get_for_model(User)
     if content_type is not user_type and rep_type is not user_type:
         if obj.user != reply_to.user:
@@ -139,6 +140,16 @@ def create_notification(obj, reply_to, **kwargs):
         else:
             notif = Notification(receiver=reply_to, sender=obj, text=text, link=link, content_type=rep_type, object_pk=reply_to.pk, is_read=False, submit_date=datetime.datetime.now())
         notif.save()
+
+
+def create_notification(obj, reply_to, **kwargs):
+    #obj specifies the obj being replied to, new_obj specifies the new object
+
+    link = kwargs.get('link', None)
+    text = kwargs.get('text', None)
+    obj_pk = obj.pk
+    ctype_pk = ContentType.objects.get_for_model(obj).pk
+    create_notice_email.apply_async(args=[obj_pk, ctype_pk, reply_to, link, text])
 
 notification_send.connect(create_notification)
 admin.site.register(Notification)
