@@ -98,7 +98,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
 
             #if notification is an action_reply
             elif str(content_type) == 'action taken':
-                if send_email and not settings.DEBUG:
+                if send_email:
                         notification.send([reply_to.user], "action_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
                         "notice_message": str(obj.user.username) + " acted on your " + str(rep_type) + " : " + str(reply_to.summary),
                         "path": settings.DOMAIN + path})

@@ -591,7 +591,7 @@ small {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5d6974', endColorstr='#4d5a66',GradientType=0 );
     background: linear-gradient(top, #5d6974 10%,#4d5a66 100%);
     color:#fff;
-    padding:3px 2px;
+    padding:5px 3px;
     display:inline-block;
     text-decoration:none;
     -webkit-border-radius: 3px;

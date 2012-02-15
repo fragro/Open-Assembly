@@ -94,7 +94,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.markup',
-    'django.contrib.sites',
     'customtags',
     'tagging',
     'filetransfers',
@@ -270,3 +269,10 @@ CELERY_QUEUES = {
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
+
+DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
+EMAIL_HOST_PASSWORD = 'diversity of strength'
+EMAIL_PORT = 587
