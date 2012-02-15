@@ -6,7 +6,7 @@
     <ul id="comment_links{{object.pk}}" class="comment_links">
     {% if user.is_authenticated %}
             <li>
-                <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">reply</a>
+                <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">reply</a>
             </li>
             <li>
                 <a href="{{object.get_absolute_url}}">permalink</a>
@@ -14,10 +14,10 @@
 
             {% if user == object.user %}
             <li>
-                <a href="javascript:;" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">edit</a>
+                <a href="javascript:;" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_delete_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">edit</a>
             </li>
                 <li>
-                    <a style="color:red;" href="javascript:;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');">delete</a>
+                    <a style="color:red;" href="javascript:;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">delete</a>
                 </li>
             {% endif %}
 

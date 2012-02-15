@@ -16,14 +16,17 @@
                 {{csrf_string|safe}}
 
                 {% if user.is_authenticated and user.is_active %}                                                            
-                <input type="submit" class='button' value="Delete Comment!"><span style="color:red;" id="submit_pp_delete_form{{pp_comment.object_pk}}"></span>
+                <input type="submit" class='button' value="Delete Comment!">
+
+                <a class="button2" href="javascript:;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');">Cancel</a>
+
+                <span style="color:red;" id="submit_pp_delete_form{{pp_comment.object_pk}}"></span>
         </form>
                         {% else %} 
-                            <a class='button' href="{% pp_url template='register.html' %}">Submit</a> 
+                            <a class='button' href="{% pp_url template='register.html' %}">Submit</a>  
 
                         {% endif %}
 
-                        <a class="button" style="color:red;" href="javascript:;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');">Cancel</a>
         <script>
 
           $("form#pp_delete_form{{pp_comment.object_pk}}").submit(function(e){

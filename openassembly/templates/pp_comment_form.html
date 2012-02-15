@@ -10,15 +10,28 @@
                     {{pp_comment.form.form_id}}
                     {{csrf_string|safe}}
                 {% if user.is_authenticated and user.is_active %}                                                            
-                <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_comment_form"></span>
+                <input type="submit" class='button' value="Submit">
+
+                <span style="color:grey;" id="submit_pp_reply_form{{object.pk}}">
+                    
+                <a style="float:right;" href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>
+
+                <span style="color:grey;" id="submit_pp_comment_form"></span>
         </form>
                 {% else %} 
                     <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
                 {% endif %}
+
+        <div class='reply_comment' id='pp_formatting_help' style='display:none; overflow:hidden; height:290px;width:100%;'>
+
+            {% include "help.html" %}
+
+        </div>
 <script>
 
   $("form#pp_comment_form").submit(function(e){
         $("#submit_pp_comment_form").html("<b>Submitting...</b>")
+        slideup('pp_formatting_help');
         addObject(e);
     });
 
