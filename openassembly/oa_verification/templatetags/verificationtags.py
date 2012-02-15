@@ -168,7 +168,7 @@ def oa_activate_referral(context, nodelist, *args, **kwargs):
     try:
         ref = Referral.objects.get(key=key)
 
-        if ref.email == user.email:
+        if ref.email == user.email or user.email.lower() == ref.email.lower():
             ref.referred_user = user
             ref.accepted_dt = datetime.datetime.now()
             ref.accepted = True
