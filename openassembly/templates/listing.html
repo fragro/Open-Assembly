@@ -90,25 +90,18 @@
 
 {% pp_get_ranked_decision object=object %}
 
+
+{% if object.phasename != 'pass' %}
     {% pp_get_questions object=object.content_object dimension="r" start=0 end=5 phase="Nomination" %}
        {% if object.content_object.children > 0 %}
-{% if object.phasename != 'pass' %}
-        <h4>{{object.content_object.children}} {{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</h4>
-{% else %}
-        <h4>Winner:</h4>
+    
+            <h4>{{object.content_object.children}} {{object.content_object.child|title}}{{object.content_object.children|pluralize}}:</h4>
 
-{% endif %}
-        <ul class="solutions">
+            <ul class="solutions">
                 {% for child in pp_blob.blob_list %}
                     {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
 
-                      {% if object.phasename != 'pass' %}  <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
-
-                      {% else %} 
-                        {% if child.pk in pp_consensus.ranked_decision.winner %}
-                        <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
-                        {% endif %}
-                      {% endif %}
+                      <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
                         
                     {% endpp_get_object %}
 
@@ -118,9 +111,34 @@
                 <li>...</li>
             {% endif %}
            </ul>   
-                {% endif %}
-           {% endpp_get_questions %}
-    {% endpp_get_ranked_decision %}
+        {% endif %}
+   {% endpp_get_questions %}
+
+{% else %}
+
+    {% pp_get_questions object=object.content_object dimension="cns" start=0 end=pp_consensus.consensus.winners phase="Nomination" %}
+        {% if object.content_object.children > 0 %}
+
+            <h4>Winner:</h4>
+            <ul class="solutions">
+                {% for child in pp_blob.blob_list %}
+                    {% pp_get_object model=object.content_object.child object_pk=child.object_pk %}
+
+                        {% if child.pk in pp_consensus.ranked_decision.winner %}
+                            <li style="font-size:80%;"><a style="color:black;" href="{% pp_url template='detail.html' object=pp_blob.content_object %}">{{pp_blob.content_object.summary}}</a></li>
+                        {% endif %}
+                        
+                    {% endpp_get_object %}
+
+                {% endfor %}
+           </ul>   
+        {% endif %}
+    {% endpp_get_questions %}
+
+{% endif %}
+
+
+{% endpp_get_ranked_decision %}
 
 
         <ul class="tags" style="line-height:32px;">
