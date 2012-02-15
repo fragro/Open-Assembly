@@ -25,4 +25,4 @@ setproctitle
 pytz
 git+https://github.com/bradbeattie/python-vote-core.git#egg=pyvotecore
 johnny-cache
-git+http://github.com/fragro/django-notification.git#egg=notification
+git+https://github.com/fragro/django-notification.git#egg=notification
