@@ -269,3 +269,10 @@ CELERY_QUEUES = {
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
+
+
+
+
+
+
+
