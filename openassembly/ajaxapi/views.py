@@ -11,7 +11,7 @@ from pirate_flags.models import Flag, UserFlag
 from django.contrib.auth.models import User
 from pirate_badges.models import check_badges
 
-from pirate_topics.models import Topic, MyGroup
+from pirate_topics.models import Topic, MyGroup, del_group_tag, add_group_tag
 from pirate_messages.models import Notification
 
 from pirate_reputation.models import ReputationEvent
@@ -455,16 +455,19 @@ def add_tag(request):
         tag = str(request.POST[u'tag'])
         c_type = str(request.POST['c_type'])
         app_type = str(request.POST['app_type'])
-        
+
         model_type = ContentType.objects.get(app_label=app_type, model=c_type)
         obj = model_type.get_object_for_this_type(pk=obj_id)
-        
+
         Tag.objects.add_tag(obj, tag)
+        add_group_tag.apply_async(args=[obj_id, c_type, tag])
+
         new_tag = Tag.objects.get(name=tag)
-        
-        try:relationship_event.send(sender=new_tag,obj=new_tag,parent=obj,initiator=request.user)
-        except:pass
-        results = {'linktaglist': get_link_tag_list(request.user,obj,get_links=True),'taglist':get_recommended_tag_list(obj, get_links=True),'FAIL':False}
+        try:
+            relationship_event.send(sender=new_tag, obj=new_tag, parent=obj, initiator=request.user)
+        except:
+            pass
+        results = {'linktaglist': get_link_tag_list(request.user, obj, get_links=True), 'taglist': get_recommended_tag_list(obj, get_links=True), 'FAIL': False}
         return HttpResponse(simplejson.dumps(results),
                     mimetype='application/json')
 
@@ -483,6 +486,7 @@ def del_tag(request):
 
         model_type = ContentType.objects.get(app_label=app_type, model=c_type)
         obj = model_type.get_object_for_this_type(pk=obj_id)
+        del_group_tag.apply_async(args=[obj_id, c_type, tag])
 
         tagobj = Tag.objects.get(name=tag)
         taggedobj = TaggedItem.objects.get(tag_name=tag, object_id=obj.pk)

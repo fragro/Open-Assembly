@@ -6,6 +6,8 @@ from django.utils import simplejson
 from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 
+from pirate_topics.models import MyGroup
+
 from django.db.models import Q
 
 from pirate_core.views import HttpRedirectException, namespace_get
@@ -136,8 +138,9 @@ def pp_get_reporting_percentage(context, nodelist, *args, **kwargs):
     topic = kwargs.pop('group', None)
 
     votes = UpDownVote.objects.filter(object_pk=obj.pk)
+    groups = MyGroup.objects.filter(topic=topic)
 
-    namespace['reporting'] = votes.count() / float(topic.group_members)
+    namespace['reporting'] = votes.count() / float(groups.count())
     output = nodelist.render(context)
     context.pop()
 

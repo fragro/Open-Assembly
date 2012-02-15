@@ -65,6 +65,7 @@
 
     {% pp_get_ranked_decision object=pp_consensus.consensus %}
         {% if pp_consensus.consensus.phasename == 'pass' or pp_consensus.consensus.phasename == 'fail' %}
+        {% if object.pk in pp_consensus.ranked_decision.winner or not pp_consensus.consensus.winners %}
             {% oa_get_group_settings object=object.content_object.parent.parent %}
                 <!--- if this was a winner, etc. -->
                     <span style="margin-left:10px;font-size:100%;">
@@ -91,6 +92,7 @@
                     </span>
 
                 {% endoa_get_group_settings %}
+        {% endif %}
         {% endif %}
     {% endpp_get_ranked_decision %}
     </div>

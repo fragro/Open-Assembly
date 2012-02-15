@@ -8,6 +8,7 @@ from django.db.models import get_model
 from pirate_consensus.models import Consensus
 from settings import DOMAIN_NAME, DOMAIN
 
+from pirate_topics.models import add_group_tag
 from pirate_forum.templatetags.blobtags import get_form
 
 from pirate_core.helpers import clean_html
@@ -111,7 +112,6 @@ def pp_datetime_less_than_2(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
-
 
 
 @block
@@ -422,7 +422,7 @@ def pp_tag_form(context, nodelist, *args, **kwargs):
        Do stuff with {{ pp_tag.form }}.
     {% endpp_tag_form %}
     '''
-    
+
     context.push()
     namespace = get_namespace(context)
 
@@ -431,8 +431,12 @@ def pp_tag_form(context, nodelist, *args, **kwargs):
     tag = kwargs.get('tag', None)
     user = kwargs.get('user', None)
 
+    obj_pk = obj.content_object.pk
+    ctype_pk = ContentType.objects.get_for_model(obj.content_object).pk
+
     #obj = Consensus.objects.get(object_pk=content_obj.pk)
     if POST and POST.get("form_id") == "pp_tag_form":
+
         if tag != None:
             Tag.objects.add_tag(obj, tag.name)
         else:
@@ -448,6 +452,7 @@ def pp_tag_form(context, nodelist, *args, **kwargs):
                             tag = TaggedItem._default_manager.get(tag_name=clean_tag, object_id=obj.pk)
                             new_tag = tag.tag
                             try:
+                                add_group_tag.apply_async(args=[obj_pk, ctype_pk, clean_tag])
                                 relationship_event.send(sender=new_tag, obj=new_tag, parent=obj, initiator=user)
                                 form = TagForm()
                             except:

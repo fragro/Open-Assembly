@@ -274,8 +274,12 @@ def create_view(user, addr, obj_id, path, rendertype):
     #defers creating view to optimize
     if isinstance(user, AnonymousUser):
         user = None
-    v, is_new = View.objects.get_or_create(object_pk=obj_id, ip=addr, user=user,
+    try:
+        v, is_new = View.objects.get_or_create(object_pk=obj_id, ip=addr, user=user,
                 path=path, rendertype=rendertype)
+    except:
+        v = View.objects.filter(object_pk=obj_id, ip=addr, user=user,
+                path=path, rendertype=rendertype)[0]
     if not is_new:
         v.num += 1
     else:

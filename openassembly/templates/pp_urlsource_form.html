@@ -12,7 +12,7 @@
 
  <div class="addsources">
       <div class="inner"><b>Add Sources</b></div>
-           {% pp_urlsource_form POST=request.POST object=object user=user %}
+           {% pp_urlsource_form POST=request.POST object=object user=user  %}
             <div id="errors" class="errors">{{ pp_source.errors }}</div>
                   <form id="pp_urlsource_form" method="post" action="">
                       {{ pp_source.urlform.url}}

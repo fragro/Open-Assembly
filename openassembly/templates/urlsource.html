@@ -12,7 +12,7 @@
 
                     <li><b>Tags:</b></li>
                      {% for name, t_id, c_type_id, count in pp_tag.tags %}
-                        <li><a href="/index.html#list/_t{{c_type_id}}/_o{{t_id}}/_dhn">{{name|replace_w_space}}({{count}})</a></li>
+                        <li><a href="/p/list/t-{{c_type_id}}/o-{{t_id}}/d-hn">{{name|replace_w_space}}({{count}})</a></li>
                     {% endfor %}
                 {% endif %}
 

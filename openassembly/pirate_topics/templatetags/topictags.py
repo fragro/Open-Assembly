@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from markitup.widgets import MarkItUpWidget
 
-from pirate_topics.models import Topic, MyGroup, GroupSettings
+from pirate_topics.models import Topic, MyGroup, GroupSettings, get_root
 from pirate_core.views import namespace_get
 
 from django.utils.html import urlize
@@ -54,24 +54,7 @@ def pp_get_root(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
     root = kwargs.pop('object', None)
-    #try:
-    if root is not None:
-        try:
-            parent = root.parent
-        except:
-            try:
-                parent = root.content_object
-            except:
-                namespace['root'] = None
-                output = nodelist.render(context)
-                context.pop()
-                return output
-        while parent is not None:
-            if parent.summary == '__NULL__':
-                break
-            root = parent
-            parent = parent.parent
-
+    root = get_root(root)
     namespace['root'] = root
     #except:
     #    namespace['root'] = None
