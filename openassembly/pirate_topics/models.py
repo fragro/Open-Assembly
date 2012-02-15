@@ -54,7 +54,7 @@ class Topic(models.Model):
         return t.render(c)
 
     def get_absolute_list_url(self):
-        t = Template("{% load pp_url%}{% pp_url template='issues.html' object=object start=0 end=20 dimension='n' %}")
+        t = Template("{% load pp_url%}{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}")
         c = Context({"object": self})
         return t.render(c)
 
