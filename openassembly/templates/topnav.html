@@ -11,7 +11,7 @@
 
 				        {% oa_get_group_settings object=pp_topic.root%}
 				        	{% if pp_topic.settings.stream %}
-										<li><a href="{% pp_url template='livestream.html' object=object %}">Stream</a></li>
+										<li><a href="{% pp_url template='livestream.html' object=pp_topic.root %}">Stream</a></li>
 				            {% endif %}
 				        {% endoa_get_group_settings %}
 
