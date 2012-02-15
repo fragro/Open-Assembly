@@ -272,20 +272,24 @@ class Search(models.Model):
 @task(ignore_result=True)
 def create_view(user, addr, obj_id, path, rendertype):
     #defers creating view to optimize
-    if isinstance(user, AnonymousUser):
-        user = None
-    try:
-        v, is_new = View.objects.get_or_create(object_pk=obj_id, ip=addr, user=user,
-                path=path, rendertype=rendertype)
-    except:
-        v = View.objects.filter(object_pk=obj_id, ip=addr, user=user,
-                path=path, rendertype=rendertype)[0]
-    if not is_new:
-        v.num += 1
-    else:
-        v.num = 1
-    v. modified_dt = datetime.datetime.now()
-    v.save()
+    if not isinstance(user, AnonymousUser):
+        try:
+            v, is_new = View.objects.get_or_create(object_pk=obj_id, ip=addr, user=user,
+                    path=path, rendertype=rendertype)
+            if not is_new:
+                v.num += 1
+            else:
+                v.num = 1
+            v. modified_dt = datetime.datetime.now()
+            v.save()
+        except:
+            v = View.objects.filter(object_pk=obj_id, ip=addr, user=user,
+                    path=path, rendertype=rendertype)
+            if v.count() > 0:
+                v = v[0]
+            v.num += 1
+            v. modified_dt = datetime.datetime.now()
+            v.save()
 
     '''
     This form is used to allow creation and modification of issue objects.
