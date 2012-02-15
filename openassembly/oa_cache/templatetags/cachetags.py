@@ -42,7 +42,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
         try:
             props = get_cache_or_render(request.user, hashed, False, request=request, forcerender=True)
         except:
-            if not DEBUG:
+            if not DEBUG and not request.user.is_staff:
                 props = get_cache_or_render(request.user, '/p/404', False, request=request, forcerender=True)
             else:
                 raise

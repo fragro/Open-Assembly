@@ -162,13 +162,10 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
     dimension = paramdict.get('DIM_KEY', None)
     scroll_to = paramdict.get('SCROLL_KEY', None)
     phase = paramdict.get('PHASE_KEY', None)
-    if user.is_staff:
+    try:
         obj = get_object_or_none(ctype_id, obj_id)
-    else:
-        try:
-            obj = get_object_or_none(ctype_id, obj_id)
-        except:
-            return {'rendered_list': [{'html': render_to_string('dead_link.html'), 'ctype_id': ctype_id, 'obj_id': obj_id, 'div': '#content', 'type': 'html'}],
+    except:
+        return {'rendered_list': [{'html': render_to_string('dead_link.html'), 'ctype_id': ctype_id, 'obj_id': obj_id, 'div': '#content', 'type': 'html'}],
                      'paramdict': {}, 'render': True}
     if dimension is not None and not empty:
         render = False
