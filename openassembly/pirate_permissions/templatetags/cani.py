@@ -6,6 +6,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
+from pirate_forum.models import Question, Nomination
 
 from pirate_permissions.models import Permission
 
@@ -36,12 +37,18 @@ def cani(context, nodelist, *args, **kwargs):
         raise ValueError("tag requires that a object pair be passed "
                              "to it assigned to the 'object=' argument, and that the str "
                              "be assigned the string value 'issue'.")
+    cnt_obj = ContentType.objects.get_for_model(obj)
+    cnt_q = ContentType.objects.get_for_model(Question)
+    cnt_n = ContentType.objects.get_for_model(Nomination)
 
-    try:
-        perm = Permission.objects.get(user=user, object_pk=obj.pk)
+    if cnt_q == cnt_obj or cnt_n == cnt_obj and user.is_authenticated():
         namespace['permission'] = True
-    except:
-        namespace['permission'] = False
+    else:
+        try:
+            perm = Permission.objects.get(user=user, object_pk=obj.pk)
+            namespace['permission'] = True
+        except:
+            namespace['permission'] = False
 
     namespace['issue'] = obj
 
