@@ -7,6 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from pirate_core.middleware import TYPE_KEY, OBJ_KEY, START_KEY, END_KEY, DIM_KEY
 from django.template import Context, Template
 
+from celery.task import task
+from tagging.models import Tag, TaggedItem
+
 # First, define the Manager subclass.
 class TopicManager(models.Manager):
     def get_query_set(self):
@@ -93,6 +96,42 @@ def get_topics(parent, start, end, dimension, ctype_list):
     if start is not None and end is not None:
         topic_list = topic_list[int(start):int(end)]
     return topic_list, count
+
+
+@task(ignore_result=True)
+def add_group_tag(obj_pk, ctype_pk, tag):
+    ctype = ContentType.objects.get(pk=ctype_pk)
+    obj = ctype.get_object_for_this_type(pk=obj_pk)
+    root = get_root(obj)
+    #also add to the objects group so we can display group specific tags
+    Tag.objects.add_tag(root, tag)
+
+
+@task(ignore_result=True)
+def del_group_tag(obj_pk, ctype_pk, tag):
+    ctype = ContentType.objects.get(pk=ctype_pk)
+    obj = ctype.get_object_for_this_type(pk=obj_pk)
+    root = get_root(obj)
+    #also add to the objects group so we can display group specific tags
+    taggedobj = TaggedItem.objects.get(tag_name=tag, object_id=root.pk)
+    taggedobj.delete()
+
+
+
+def get_root(root):
+    if root is not None:
+        try:
+            parent = root.parent
+        except:
+            try:
+                parent = root.content_object
+            except:
+                return None
+        while parent is not None:
+            if parent.summary == '__NULL__':
+                return root
+            root = parent
+            parent = parent.parent
 
 admin.site.register(Topic)
 admin.site.register(MyGroup)

@@ -407,29 +407,47 @@
                     </ul>
                     </div>
                     {% else %}
-                    {% if pp_consensus.consensus.phase.curphase.phasename == 'nom' or pp_consensus.consensus.phasename == 'fail'  or pp_consensus.consensus.phasename == 'pass' or object.children == 1 %}
+                        {% if pp_consensus.consensus.phase.curphase.phasename == 'nom' or object.children == 1 %}
                             {% pp_get_questions object=object dimension="r" phase="Nomination" %}
 
-                    <div id="proposal_header">
-                    <h3>{{object.forumdimension.name}} Response{{object.children|pluralize}} ({{object.children}})</h3>
-                        
-                    </div>
+                                <div id="proposal_header">
+                                <h3>{{object.forumdimension.name}} Response{{object.children|pluralize}} ({{object.children}})</h3>
+                                    
+                                </div>
 
-                    {% if pp_consensus.consensus.winners %}<h4 style="color:#c9c4c4;">Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}</h4>{% else %}<h4 style="color:#c9c4c4;">Accepting All Responses With Consent</h4>{% endif %}
+                                {% if pp_consensus.consensus.winners %}<h4 style="color:#c9c4c4;">Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}</h4>{% else %}<h4 style="color:#c9c4c4;">Accepting All Responses With Consent</h4>{% endif %}
 
 
-                                <div id="children_details" class="children_details">
-                                    {% for object in pp_blob.blob_list %}
-                                        {% include 'listing_child.html' %}
-                                    {% endfor %}
+                                            <div id="children_details" class="children_details">
+                                                {% for object in pp_blob.blob_list %}
+                                                    {% include 'listing_child.html' %}
+                                                {% endfor %}
                             {% endpp_get_questions %}
-                            </div>
-
-                            {% endif %}
+                                            </div>
                         {% endif %}
-                    {% endoa_get_group_settings %}
+                        {% if pp_consensus.consensus.phasename == 'fail'  or pp_consensus.consensus.phasename == 'pass' %}
+                            {% pp_get_questions object=object dimension="cns" phase="Nomination" %}
 
-                {% endpp_get_ranked_decision %}
+                                <div id="proposal_header">
+                                <h3>{{object.forumdimension.name}} Response{{object.children|pluralize}} ({{object.children}})</h3>
+                                    
+                                </div>
+
+                                {% if pp_consensus.consensus.winners %}<h4 style="color:#c9c4c4;">Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}</h4>{% else %}<h4 style="color:#c9c4c4;">Accepting All Responses With Consent</h4>{% endif %}
+
+
+                                            <div id="children_details" class="children_details">
+                                                {% for object in pp_blob.blob_list %}
+                                                    {% include 'listing_child.html' %}
+                                                {% endfor %}
+                            {% endpp_get_questions %}
+                                            </div>
+
+                        {% endif %}
+                {% endif %}
+            {% endoa_get_group_settings %}
+
+    {% endpp_get_ranked_decision %}
                             <div class="forms">
                                {% comment %}
                                 <div class="socialhooks">

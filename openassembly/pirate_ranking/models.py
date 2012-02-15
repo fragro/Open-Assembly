@@ -157,6 +157,10 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
             #must support random
             order_by = '-random'
             next_issue_list = issue_list.order_by(order_by)
+        elif dimension == "cns":
+            #must support random
+            order_by = '-consensus_percent'
+            next_issue_list = issue_list.order_by(order_by)
             #next_issue_list = sorted(next_issue_list, key=lambda x: x.submit_date, reverse=True)
         elif dimension == "h":
             order_by = '-interest'
