@@ -5,9 +5,20 @@
 
 {% block content%}
 
-<div class="email_reset">
-<img src="/static/oa_agent/oa_agent_happy.png"><br>
-<h1> Email Confirmed. Login to join in on the Collective Decisions.</h1>
+
+<img style="float:left;" src="/static/oa_agent/oa_agent_happy.png"><br>
+
+<div style="width:80%;float:right;"class="email_reset">
+<h1> Email Confirmed</h1>
+<h2><a href="/register.html?" class="nobbq">Login</a></h2>
+<h2>to get started</h2>
+
+<h3 style="margin-top:50px;"> or </h3>
+
+<h1 style="margin-top:50px;">Check out the Tutorials</h1>
+
+{% include 'tutorials.html' %}
+
 </div>
 
 {% endblock %}
