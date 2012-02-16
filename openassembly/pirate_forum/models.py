@@ -79,7 +79,7 @@ def get_rangelist(start, end, count):
             multiple = round(div, 0)
             start_range = int(count * multiple)
             n = 1
-            for itr in range(0, start_range + count, 20):
+            for itr in range(0, start_range + count, (end - start)):
                 if itr < count:
                     rangelist.append([itr, itr + cnt, n])
                     n += 1
