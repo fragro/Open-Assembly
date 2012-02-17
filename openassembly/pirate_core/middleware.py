@@ -59,12 +59,16 @@ class UrlMiddleware(object):
                 request.object = content_type.get_object_for_this_type(pk=obj_id)
             except:
                 pass
+
         if str_key is not None:
-            cached_type = ContentType.objects.get(app_label="pirate_ranking", model="cached_url")
-            cached_model = cached_type.model_class()
-            cached = cached_model.objects.get(slug=str_key)
-            content_type = ContentType.objects.get(pk=cached.ctype_pk)
-            request.object = content_type.get_object_for_this_type(pk=cached.obj_pk)
+            try:
+                cached_type = ContentType.objects.get(app_label="pirate_ranking", model="cached_url")
+                cached_model = cached_type.model_class()
+                cached = cached_model.objects.get(slug=str_key)
+                content_type = ContentType.objects.get(pk=cached.ctype_pk)
+                request.object = content_type.get_object_for_this_type(pk=cached.obj_pk)
+            except:
+                raise ValueError(str_key)
 
         if start is not None and end is not None:
             request.start = int(start)
