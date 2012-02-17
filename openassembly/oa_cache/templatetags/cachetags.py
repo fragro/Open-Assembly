@@ -29,7 +29,10 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
     request = kwargs.get('request', None)
 
-    hashed = request.META['PATH_INFO']
+    try:
+        hashed = request.META['PATH_INFO']
+    except:
+        hashed = None
 
     #we only consider certain items to be
 
