@@ -68,7 +68,7 @@ class UrlMiddleware(object):
                 content_type = ContentType.objects.get(pk=cached.ctype_pk)
                 request.object = content_type.get_object_for_this_type(pk=cached.obj_pk)
             except:
-                raise ValueError(str_key)
+                pass
 
         if start is not None and end is not None:
             request.start = int(start)
