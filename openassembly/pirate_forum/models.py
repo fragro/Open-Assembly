@@ -45,7 +45,7 @@ def get_pretty_url(ctype_pk, obj_pk):
             val.save()
         #cache.set('/' + key, (ctype_pk, obj_pk))
     except:
-        raise
+        raise ValueError(key)
     return val.slug
 
 
