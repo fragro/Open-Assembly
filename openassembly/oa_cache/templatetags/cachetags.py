@@ -35,10 +35,9 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
         hashed = None
 
     #we only consider certain items to be
-
+    if hashed is None:
+        hashed = '/p/404'
     if string.find(hashed, '.html') == -1 and hashed[0:3] == '/p/' or hashed == '/':
-        if hashed is None:
-            hashed = ''
         if hashed == '/' or hashed == '':
             hashed = '/p/landing'
             #need to make this some sort of home feed for user
