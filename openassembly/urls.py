@@ -6,7 +6,7 @@ from django.views.generic.create_update import delete_object
 from django.views.decorators.csrf import csrf_protect
 from django.conf.urls.defaults import *
 from django.contrib import admin
-from pirate_core import redirectable, home_page, welcome_page
+from pirate_core import redirectable, welcome_page
 from ajaxapi.views import vote, generate_vote_content, delete_source, add_tag, starvote, spectrumvote, add_group, remove_group
 from ajaxapi.views import flagvote, set_loc_by_ip, del_tag, add_video_vote, update_video_votes, remove_platform
 from ajaxapi.views import setup_admin, confirm, add_platform, change_hash_dim, change_hash_ctype, delete_object

@@ -15,18 +15,12 @@ from django.template import Context, loader
 @detect_mobile
 def welcome_page(request):
     #if request.mobile:
+    print request
     #    return HttpResponseRedirect('mobile.html')
     t = loader.get_template('index.html')
     c = Context({'request': request})
     return HttpResponse(t.render(c))
-    return HttpResponseRedirect('index.html')
-
-
-def home_page(request):
-    from pirate_topics.models import Topic
-    topic, is_new = Topic.objects.get_or_create(summary="Tulsa Film Genome Project", description="A collaborative film experiment. First we can collaboratively determine the best places to shoot short scenes in Tulsa. Then we will edit different variations using the scene ideas you have given us, and you can vote on the variation you like most. Then we apply a <a href='http://en.wikipedia.org/wiki/Genetic_algorithm'>genetic algorithm</a> to evolve the best montage using your votes as the natural selection.",parent=Topic.objects.null_dimension())
-    content_type = ContentType.objects.get_for_model(topic)
-    return HttpResponseRedirect('/issues.html?_t=' + str(content_type.pk) + '&_o=' + str(topic.pk) + '&_s=0&_e=20&_d=hn')
+    #return HttpResponseRedirect('index.html')
 
 
 def redirectable(func):
