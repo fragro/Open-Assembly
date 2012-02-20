@@ -22,7 +22,7 @@ try:
     DOMAIN_NAME = 'http://openassembly1-fragro.dotcloud.com/'
     DOMAIN = 'http://openassembly1-fragro.dotcloud.com'
 
-    DEBUG = False
+    DEBUG = True
     TEMPLATE_DEBUG = DEBUG
 
     DATABASES = {
