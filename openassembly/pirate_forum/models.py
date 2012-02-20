@@ -50,9 +50,10 @@ def get_pretty_url(ctype_pk, obj_pk):
 
 
 def reverse_pretty_url(obj_str):
-    val, is_new = cached_url.objects.get_or_create(slug=obj_str)
-    if is_new == True:
-        raise ValueError(obj_str)
+    try:
+        val = cached_url.objects.get(slug=obj_str)
+    except:
+        raise
     return val.ctype_pk, val.obj_pk
 
 
