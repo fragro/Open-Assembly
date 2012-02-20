@@ -171,16 +171,6 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         render = False
     else:
         render = True
-    #allows hardlinking to slugs: TEMP
-    if rendertype == 'community':
-        t = Topic.objects.get(slug=dimension)
-        obj_id = t.pk
-        ctype_id = ContentType.objects.get_for_model(t).pk
-        dimension = 'n'
-        rendertype = 'list'
-        key = '%s/_o%s/_t%s/_dn/_s0/_e20' % (rendertype, obj_id, ctype_id)
-        key, rendertype, paramdict = interpret_hash(key)
-        obj = get_object_or_none(ctype_id, obj_id)
 
     #model specific code: if this is an item or user render that obj first
     try:

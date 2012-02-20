@@ -34,7 +34,7 @@ def pp_get_messages(context, nodelist, *args, **kwargs):
     sender = kwargs.get('sender')
     user = kwargs.get('user', None)
     start = kwargs.get('start', 0)
-    end = kwargs.get('end', 20)
+    end = kwargs.get('end', 10)
     newest = kwargs.get('newest', None)
 
     read = Message.objects.filter(read=True, receiver=user)
