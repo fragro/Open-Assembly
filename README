@@ -1,17 +1,43 @@
-GETTING YOUR OA DEV INSTANCE UP:
+UBUNTU INSTRUCTIONS FOR INSTALLING DEV VERSION
 
-DOWNLOAD FROM GIT
+Make Sure you have all the requirements installed to run a development server.
 
-SETUP VIRTUALENV, ENTER OA ENV
+The RabbitMQ broker and MongoDB server.
 
-$ pip install -r requirements.txt
+sudo apt-get install rabbitmq-server
+sudo apt-get install mongodb-server
 
-$ python manage.py syncdb (will fail the first time, run twice. TODO: Fix This Bug)
+Of course this project requires PIP and VirtualEnv.
 
-$ python manage.py collectstatic
+sudo apt-get install python-pip
+sudo pip install virtualenv
 
-$ python manage.py runserver
+Now setup the structure of the development folder and create the OA virtualenv
 
-SETTING UP OA ON DOTCLOUD:
+mkdir OA
+cd OA
+git clone git://github.com/fragro/Open-Assembly.git
+mkdir OA_ENV
+virtualenv OA_ENV
+source OA_ENV/bin/activate
+cd Open-Assembly
+pip install -R requirements.txt
+cd openassembly
 
-Etc.
+Now Open Two Terminals and Run the Django/Celery Servers Concurrently
+
+python manage.py syncdb (if this fails try it until it succeeds)
+python manage.py runserver
+
+python manage.py celeryd
+
+Go To:
+
+http://localhost:8000/setup_admin/
+
+To create an administrative account with the username 'admin' and password 'password'. Now you can begin to create groups and
+test content to develop on. Soon we will release an anonymized exported database to experiment with.
+
+For more debug information in Celery, include:
+
+python manage.py celeryd -l DEBUG
