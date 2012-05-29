@@ -62,6 +62,7 @@ class Topic(models.Model):
 class MyGroup(models.Model):
     topic = models.ForeignKey(Topic, blank=True, null=True)
     user = models.ForeignKey(User)
+    created_dt = models.DateTimeField(blank=True, null= True)
 
     def __unicode__(self):
         return str(self.topic) + " : " + str(self.user.username)
@@ -77,6 +78,21 @@ class GroupSettings(models.Model):
 
     def __unicode__(self):
         return str(self.topic)
+
+
+def get_users(parent, start, end, dimension, ctype_list):
+
+    #if this object is a topic, get group members
+    if parent != None and isinstance(parent, Topic):
+        user_list = MyGroup.objects.filter(topic=parent)
+        if dimension == 'n':
+            user_list = user_list.order_by('-created_dt')
+        count = user_list.count()
+        if start is not None and end is not None:
+            user_list = user_list[int(start):int(end)]
+        return user_list, count
+    else:
+        return [], 0
 
 
 def get_topics(parent, start, end, dimension, ctype_list):
@@ -95,6 +111,7 @@ def get_topics(parent, start, end, dimension, ctype_list):
     count = topic_list.count()
     if start is not None and end is not None:
         topic_list = topic_list[int(start):int(end)]
+    print topic_list
     return topic_list, count
 
 

@@ -78,6 +78,7 @@ def pp_url(*args, **kwargs):
     #argument for javascript scroll_to function
     scroll_to = kwargs.pop('scroll_to', None)
     return_path = kwargs.pop('return_path', None)
+    panel = kwargs.pop('panel', None)
     return_query = kwargs.pop('return_query', None)
     htmlsafe = kwargs.pop('htmlsafe', None)
     #need to change ampersand for facebook edge case

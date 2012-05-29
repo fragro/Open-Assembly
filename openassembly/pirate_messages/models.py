@@ -14,6 +14,7 @@ from notification import models as notification
 import settings
 from pirate_comments.models import Comment
 from celery.task import task
+from pirate_topics.models import Topic, get_root
 
 
 class Message(models.Model):
@@ -43,6 +44,7 @@ class Notification(models.Model):
     content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     is_read = models.BooleanField()
     submit_date = models.DateTimeField("date_sent")
+    group = models.ForeignKey(Topic, blank=True, null=True)
 
     def __unicode__(self):
         return str(self.content_type) + ':' + str(self.object_pk)
@@ -136,9 +138,12 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
 
     if link is not None and text is not None:
         if user_type != rep_type:
-            notif = Notification(receiver=reply_to.user, sender=obj.user, text=text, link=link, content_type=rep_type, object_pk=reply_to.pk, is_read=False, submit_date=datetime.datetime.now())
+            notif = Notification(receiver=reply_to.user, sender=obj.user, text=text,
+                link=link, content_type=rep_type, object_pk=reply_to.pk, is_read=False, submit_date=datetime.datetime.now())
         else:
-            notif = Notification(receiver=reply_to, sender=obj, text=text, link=link, content_type=rep_type, object_pk=reply_to.pk, is_read=False, submit_date=datetime.datetime.now())
+            root = get_root(obj)
+            notif = Notification(receiver=reply_to, sender=obj, text=text, group=root,
+                link=link, content_type=rep_type, object_pk=reply_to.pk, is_read=False, submit_date=datetime.datetime.now())
         notif.save()
 
 

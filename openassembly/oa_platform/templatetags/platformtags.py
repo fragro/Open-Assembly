@@ -44,8 +44,7 @@ def oa_get_platform(context, nodelist, *args, **kwargs):
     if user is not None:
         #get platform for this contenttype and user
         if platdim is not None:
-            pl, is_new = Platform.objects.get_or_create(user=user,
-                                content_type=platdim.content_type, dimension=platdim)
+            pl, is_new = Platform.objects.get_or_create(user=user)
 
             if get_cons is None:
                 namespace['planks'] = [platdim.content_type.get_object_for_this_type(pk=obj_id) for obj_id in pl.planks]

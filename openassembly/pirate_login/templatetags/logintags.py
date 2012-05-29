@@ -217,7 +217,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                         mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                         ref.topic.group_members += 1
                                         ref.topic.save()
-                                    raise HttpRedirectException(HttpResponseRedirect(ref.topic.get_absolute_url()))
+                                    return HttpResponseRedirect('/p/check_key')
                                     #except:
                                     #    namespace['errors'] = "Illegal Referral Key"
                                 else:
@@ -238,8 +238,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                               email_body,
                                               'fragro@gmail.com',
                                               [user.email])
-
-                        raise HttpRedirectException(HttpResponseRedirect('/p/check_key'))
+                                    return HttpResponseRedirect('/p/check_key')
                     else:
                         namespace['errors'] = "Passwords are not the same. Try again."
             except HttpRedirectException, e:
@@ -318,10 +317,10 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                             mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                             ref.topic.group_members += 1
                             ref.topic.save()
-                            raise HttpRedirectException(HttpResponseRedirect('/'))
+                            return HttpResponseRedirect('/')
                         except:
                             namespace['errors'] = "Illegal Referral Key"
-                    raise HttpRedirectException(HttpResponseRedirect(path))
+                    return HttpResponseRedirect(path)
                 else:
                     namespace['errors'] = "Inactive Account. Reply to the Confirmation Email!"
 

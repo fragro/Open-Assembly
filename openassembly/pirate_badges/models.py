@@ -12,7 +12,7 @@ from pirate_signals.models import notification_send
 
 class BadgeType(models.Model):
     name = models.CharField(max_length=30)
-    
+
     def __unicode__(self):
         return self.name
       

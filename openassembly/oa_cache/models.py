@@ -6,10 +6,12 @@ from django.core.cache import cache as memcache
 from pirate_ranking.models import get_ranked_list
 from pirate_comments.models import get_comments
 from pirate_deliberation.models import get_argument_list
-from pirate_topics.models import get_topics
+from pirate_topics.models import get_topics, get_users
 from pirate_forum.models import get_children
 from django.contrib import admin
 from django.core.context_processors import csrf
+
+from settings import DOMAIN
 
 from pirate_core.middleware import TYPE_KEY, OBJ_KEY, CTYPE_KEY, PHASE_KEY, SEARCH_KEY, S_KEY, STR_KEY
 from pirate_core.middleware import START_KEY, END_KEY, DIM_KEY, SCROLL_KEY, RETURN_KEY, SIMPLEBOX_KEY
@@ -161,10 +163,10 @@ class ListCache(models.Model):
     def get_or_create_list(self, key, paramdict, forcerender=True):
         #returns list of rendered objs
         cache = memcache.get(key)
-        if cache is not None and not forcerender == True:
+        if cache is not None and not forcerender:
             cached_list = cache[0]
             tot_items = cache[1]
-        elif cache is None or forcerender == True:
+        elif cache is None or forcerender:
             if paramdict == {}:
                 key, rtype, paramdict = interpret_hash(key)
             ctype_id = paramdict.get('TYPE_KEY', None)
@@ -183,10 +185,10 @@ class ListCache(models.Model):
 
             if start is None or end is None:
                 paramdict['START_KEY'] = 0
-                paramdict['END_KEY'] = 20
+                paramdict['END_KEY'] = 10
 
             if dimension is None:
-                dimension = 'hn'
+                dimension = 'h'
                 paramdict['DIM_KEY'] = 'hn'
 
             #later these functions can be rendered via some loosely coupled method
@@ -210,9 +212,16 @@ class ListCache(models.Model):
             elif self.template == 'topics':
                 func = get_topics
                 update = True
+            elif self.template == 'users':
+                func = get_users
+                update = True
             else:
                 func = get_ranked_list
                 update = False
+            #TODO
+            #elif self.template == 'users':
+            #    func = get_topics
+            #    update = True
 
             kwr = {'parent': parent, 'start': paramdict['START_KEY'],
                                 'end': paramdict['END_KEY'], 'dimension': dimension, 'ctype_list': ctype_list}

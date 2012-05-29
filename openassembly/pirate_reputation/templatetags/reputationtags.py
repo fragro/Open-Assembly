@@ -97,7 +97,7 @@ def pp_get_reputation_events(context, nodelist, *args, **kwargs):
 
     user = kwargs.get('user', None)
     start = kwargs.get('start', 0)
-    end = kwargs.get('end', 20)
+    end = kwargs.get('end', 10)
 
     if user is not None and isinstance(user, User):
         #get argument score

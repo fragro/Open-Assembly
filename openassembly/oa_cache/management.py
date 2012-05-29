@@ -1,7 +1,7 @@
 from oa_cache.models import ModelCache, UserSaltCache, ListCache, SideEffectCache
 
 ###Gets or creates the cache keys in a hierarchical fashion
-
+"""
 #####MODEL CACHES
 
 emptycache, is_new = ModelCache.objects.get_or_create(template="model.html", div_id="#content", content_type="empty_class", main=True)
@@ -136,3 +136,109 @@ ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppu
 ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppcommentcache.pk, template="comment.html", div_id="#content_children", jquery_cmd="prepend")
 
 ppblobchildeffectcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="pp_blob_child_effect.html", div_id="#pp_blob_child", jquery_cmd="html", scroll_to=False)
+"""
+
+####USER PROFILE
+usercache, is_new = ModelCache.objects.get_or_create(template="user/user.html",
+                div_id="#pages", content_type="user", main=True, jquery_cmd="append")
+user_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=usercache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+inboxcache, is_new = ModelCache.objects.get_or_create(template="inbox.html",
+                div_id="#pages", content_type="inbox", main=True, jquery_cmd="append")
+inbox_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=inboxcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+##USER LISTS
+shortusercache, is_new = ModelCache.objects.get_or_create(template="user/user_short.html",
+            div_id="#panels", content_type="members", jquery_cmd="append")
+userlistcache, is_new = ListCache.objects.get_or_create(model_cache=shortusercache.pk,
+         template="users", div_id="#panels", content_type="members", default=True)
+
+#GROUPS AND LISTING
+mcache, is_new = ModelCache.objects.get_or_create(template="group/group.html",
+                div_id="#pages", content_type="group", main=True, jquery_cmd="append")
+group_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=mcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+tcache, is_new = ModelCache.objects.get_or_create(template="topic.html",
+            div_id="#panels", content_type="groups", jquery_cmd="append")
+topiclistcache, is_new = ListCache.objects.get_or_create(model_cache=tcache.pk,
+         template="topics", div_id="#panels", content_type="topics", default=True)
+
+###PROPOSALS
+propcache, is_new = ModelCache.objects.get_or_create(template="content/listing.html",
+            div_id="#panels", content_type="proposals", jquery_cmd="append")
+proplistcache, is_new = ListCache.objects.get_or_create(model_cache=propcache.pk,
+         template="issues", div_id="#panels", content_type="proposals", default=True)
+
+detailcache, is_new = ModelCache.objects.get_or_create(template="content/detail.html",
+                div_id="#pages", content_type="item", main=True, jquery_cmd="append")
+content_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+ppcommentcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
+                                div_id="#pp_comment_form", jquery_cmd="html")
+
+comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.html",
+    div_id="#content_children", content_type="item", is_recursive=True, jquery_cmd="append")
+commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache.pk,
+        template="comments", div_id="#content_children", content_type="item", default=True)
+
+##FORMS
+ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
+                        div_id="#pp_comment_form", jquery_cmd="html", is_toggle=True, load_last=True)
+ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
+    template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
+    is_toggle=True, object_specific=True, load_last=True)
+
+ppreplysdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppreplycache.pk,
+        template="content/comment.html", div_id="#comment_links", jquery_cmd="append", object_specific=True)
+
+
+pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="create_group.html",
+                        div_id="#pages", jquery_cmd="append", redirect=True)
+pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pptopiccache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blob_form.html",
+                                                    div_id="#pp_blob_form", jquery_cmd="html")
+
+
+
+#LISTCACHE FOR CHILDREN
+questionslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk,
+    template="Question", div_id="#questions", content_type="item", default=False)
+nominationsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk,
+    template="Nomination", div_id="#nominations", content_type="item", default=False)
+decisionsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk,
+    template="Decision", div_id="#decisions", content_type="item", default=False)
+
+
+
+
+
+# #FORMS
+# pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_topic_form.html",
+#                         div_id="#content_right", jquery_cmd="html", redirect=True)
+# ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
+#                         div_id="#content_right", jquery_cmd="html")
+
+
+# ##CONTENT AND LISTING
+# listcache, is_new = ModelCache.objects.get_or_create(template="listing.html",
+#                     div_id="#content_right", content_type="panel_list", jquery_cmd="append")
+# issuescache, is_new = ListCache.objects.get_or_create(model_cache=listcache.pk,
+#                 template="issues", div_id="#content_right", content_type="panel_list", default=True)
+
+# detailrightcache, is_new = ModelCache.objects.get_or_create(template="content/detail_right.html",
+#                     div_id="#content_right", content_type="item", main=True, jquery_cmd="html")
+# detailleftcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailrightcache.pk,
+#                 template="content/detail_left.html", div_id="#content_left", jquery_cmd="html")
+
+
+# ##COMMENTS
+# comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.html",
+#         div_id="#content_right", content_type="item", is_recursive=True, jquery_cmd="append")
+# commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache.pk,
+#         template="comments", div_id="#content_right", content_type="item", default=True)

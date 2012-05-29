@@ -10,6 +10,9 @@ from pirate_topics.models import Topic
 from django.contrib.auth.models import User
 from settings import DOMAIN
 from oa_cache.tasks import track_visitors
+import random
+import BeautifulSoup
+from collections import defaultdict
 
 
 def get_object_or_none(ctype_id, obj_id):
@@ -97,7 +100,7 @@ as a reference for the template, div, and other necessary inforamtion.
     if key is not None:
         key, rendertype, paramdict = interpret_hash(key)
         rendered_list = []
-        u = UserSaltCache.objects.filter(template=div + '.html')
+        u = UserSaltCache.objects.filter(div_id='#' + div)
 
         csrf_val = request.COOKIES.get('csrftoken', None)
         csrf_t = "<div style='display:none'><input type='hidden' value='" + str(csrf_val) + "' name='csrfmiddlewaretoken'></div>"
@@ -133,7 +136,7 @@ as a reference for the template, div, and other necessary inforamtion.
         return rendered_list, paramdict
 
 
-def get_cache_or_render(user, key, empty, forcerender=False, request=None):
+def get_cache_or_render(user, key, empty, forcerender=True, request=None, extracontext={}):
     """
     get_cache_or_render is required for objects to be returned by
     AJAX requests based on the type of object. This pre-renders
@@ -155,6 +158,8 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         key, rendertype, paramdict = interpret_hash(key)
     rendered_list = []
     load_last = []
+
+    extracontext.update({'template': rendertype, 'user': user})
 
     #get the obj if it exists
     ctype_id = paramdict.get('TYPE_KEY', None)
@@ -191,10 +196,14 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
             contextual['object'] = obj
         else:
             contextual['object'] = user
-
-        rendered_list.append({'div': m.div_id,
-            'type': 'html', 'html': m.render(contextual,
+        contextual.update(extracontext)
+        rendered_list.append({'obj_pk': contextual['object'].pk, 'div': m.div_id,
+            'type': m.jquery_cmd, 'html': m.render(contextual,
                     forcerender=True)})
+        usc = UserSaltCache.objects.filter(model_cache=m.pk, load_last=False)
+        for usc in u:
+           rendered_list.append({'obj_pk': obj.pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+                       usc.render(RequestContext(request, contextual))})
 
     if request is not None:
         csrf_val = request.COOKIES.get('csrftoken', None)
@@ -225,7 +234,9 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
             cached_list, tot_items = l.get_or_create_list(key, paramdict, forcerender=forcerender)
             for li in cached_list:
                 #render each object in the list
-                html = lm.render({'object': li, 'dimension': dimension, 'user': user}, forcerender=forcerender)
+                context = {'obj_pk': li.pk, 'object': li, 'dimension': dimension}
+                context.update(extracontext)
+                html = lm.render(context, forcerender=forcerender)
                 renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
 
             memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))
@@ -237,41 +248,53 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         if request is not None:
             #Get Dybamic inputs not linked to a user
             lu = UserSaltCache.objects.filter(model_cache=lm.pk, opposite=False, load_last=False, **kwargs)
+            context = {'dimension': paramdict.get('DIM_KEY', None),
+                                    'user': user, 'phase': phase,
+                                    'sort_type': paramdict.get('CTYPE_KEY', '')}
+            if obj is not None:
+                context.update({'object': obj, 'obj_pk': obj.pk})
+            context.update(extracontext)
             for usc in lu:
                 rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
-                                    usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
-                                    'object': obj, 'user': user, 'phase': phase, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                                    usc.render(RequestContext(request, context))})
 
             sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
             for li in cached_list:
+                context = {'dimension': paramdict.get('DIM_KEY', 'n'),
+                            'object': li, 'obj_pk': li.pk, 'user': user,
+                            'phase': phase, 'csrf_string': csrf_t,
+                            'sort_type': paramdict.get('CTYPE_KEY', '')}
+                context.update(extracontext)
                 #user requested this, not auto-update. generate user specific html
                 for usc in sp:
                     if not usc.is_recursive:
                         try:
                             rendered_list.append({'div': usc.div_id + str(li.pk), 'type': usc.jquery_cmd, 'html':
-                            usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),
-                            'object': li, 'user': user, 'phase': phase, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                            usc.render(RequestContext(request, context))})
                         except:
                             raise ValueError(str(li) + ' : ' + str(usc))
                     else:
                         #if it's recursive we need to also render all the children USCs
-                        recursive_list = usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),
-                                'object': li, 'user': user, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
+                        recursive_list = usc.render(RequestContext(request, context))
                         for html, pk in recursive_list:
                             rendered_list.append({'div': usc.div_id + str(pk), 'type': usc.jquery_cmd, 'html': html})
 
             #now add all the UserSaltCache objects from this page
             #THIS REQUIRES A REQUEST OBJECT FO' CSRF
-            for usc in u:
-                rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
-                            usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
-                                'object': obj, 'user': user, 'phase': phase, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+            context = {'dimension': paramdict.get('DIM_KEY', None),
+                                'user': user, 'phase': phase,
+                                'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}
+            if obj is not None:
+                context.update({'object': obj, 'obj_pk': obj.pk})
+            context.update(extracontext)
+            #for usc in u:
+            #    rendered_list.append({'test': 'test', 'obj_pk': obj.pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+            #                usc.render(RequestContext(request, context))})
             #load last for list caches
             lu = UserSaltCache.objects.filter(model_cache=lm.pk, load_last=True, **kwargs)
             for usc in lu:
-                load_last.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
-                                    usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
-                                    'object': obj, 'user': user, 'phase': phase, 'sort_type': paramdict.get('CTYPE_KEY', '')}))})
+                load_last.append({'obj_pk': obj.pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+                                    usc.render(RequestContext(request, context))})
 
         #USER SALT CACHCES WITH DYNAMIC RESPONSES ARE DONE
         if tot_items is not None:
@@ -281,15 +304,29 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
                 html = usc.render(RequestContext(request, {'rangelist': rangelist,
                         'start': paramdict.get('START_KEY', 0), 'end': paramdict.get('END_KEY', 20),
                         'dimension': paramdict.get('DIM_KEY', None), 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
-                rendered_list.append({'div': '#content', 'phase': phase, 'type': usc.jquery_cmd, 'html': html})
+                rendered_list.append({'div': '#pages', 'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     if rendered_list == []:
-        context = RequestContext(request, {'search': paramdict.get('SEARCH_KEY', ''),
+        context = {'search': paramdict.get('SEARCH_KEY', ''),
                             'dimension': paramdict.get('DIM_KEY', None),
-                             'user': user, 'csrf_string': csrf_t})
+                             'user': user, 'csrf_string': csrf_t, 'template': rendertype}
+        context.update(extracontext)
+        context = RequestContext(request, context)
         if obj is not None:
             context['object'] = obj
-        val = render_to_string(rendertype + '.html', context)
-        rendered_list = [{'div': '#content', 'html': val, 'type': 'html'}]
+        if rendertype != '':
+            #first try for free floating usersaltcache forms...
+            usc = UserSaltCache.objects.filter(template=rendertype + '.html')
+            for u in usc:
+                obj_pk = random.randint(-1000, 10000)
+                rendered_list.append({'div': u.div_id, 'type': u.jquery_cmd, 'obj_pk': obj_pk, 'html':
+                            u.render(RequestContext(request, {'template': rendertype, 'obj_pk': obj_pk, 'user': user}))})
+                cached = UserSaltCache.objects.filter(model_cache=u.pk)
+                for c in cached:
+                    rendered_list.append({'div': c.div_id, 'type': c.jquery_cmd, 'obj_pk': obj_pk, 'html':
+                            c.render(RequestContext(request, {'template': rendertype, 'obj_pk': obj_pk, 'user': user}))})
+            if rendered_list == []:
+                val = render_to_string(rendertype + '.html', context)
+                rendered_list = [{'div': '#pages', 'html': val, 'type': 'append', 'obj_pk': obj.pk}]
     #render all the user salt caches associated with this listindex.html#topics/_s0/_e20/_dh
     #i.e. the Sort By: is a user salt cache
     lu = UserSaltCache.objects.filter(opposite=True, **kwargs)
@@ -297,13 +334,15 @@ def get_cache_or_render(user, key, empty, forcerender=False, request=None):
         #exclude if model is available
         lu = lu.exclude(model_cache=m.pk)
     for usc in lu:
-        rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
+        rendered_list.append({'div': usc.div_id, 'obj_pk': obj.pk,  'phase': phase, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
     if m is not None:
         r = UserSaltCache.objects.filter(model_cache=m.pk, load_last=True, **kwargs)
+        context = {'dimension': dimension, 'object': obj,
+            'obj_pk': obj.pk, 'sort_type': paramdict.get('CTYPE_KEY', '')}
+        context.update(extracontext)
         for usc in r:
-            html = usc.render(RequestContext(request, {
-                    'dimension': dimension, 'object': obj, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
-            rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
+            html = usc.render(RequestContext(request, context))
+            rendered_list.append({'renderytype': 'loadlast', 'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     rendered_list.extend(load_last)
     return {'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to, 'rendertype': rendertype}
 
@@ -369,9 +408,6 @@ decreased the latency of the system.
             #need to make this some sort of home feed for user
         if hashed[0:2] == '/p':
             props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
-            if props['render']:
-                #if the c
-                props['rendered_list'].insert(0, {'div': '#content', 'type': 'html', 'html': ''})
             for d in props['rendered_list']:
                 data['output'].append(d)
             if 'OBJ_KEY' in props['paramdict']:
@@ -380,6 +416,7 @@ decreased the latency of the system.
                 obj_pk = None
             create_view.apply_async(args=[request.user, request.META.get('REMOTE_ADDR'), obj_pk, hashed, props['rendertype']])
             data['FAIL'] = False
+            data['rendertype'] = props['rendertype']
             if 'SCROLL_KEY' in props['paramdict']:
                 data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
         else:
@@ -449,6 +486,34 @@ decreased the latency of the system.
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
                 return HttpResponse(simplejson.dumps(data),
                                     mimetype='application/json')
+
+
+def render_hashed(request, key, user, extracontext={}):
+    ###Need to get all of the rendered html
+    ###and integrate via Beautiful
+    if key is None:
+        key = request.META['PATH_INFO']
+    empty = True
+    if user is None:
+        user = request.user
+    retdict = get_cache_or_render(user, key, empty, forcerender=True, request=request, extracontext=extracontext)
+    rendered_list = retdict['rendered_list']
+    ret = defaultdict(list)
+    for i in rendered_list:
+        soup = BeautifulSoup.BeautifulSoup(i['html'])
+        if i['type'] == 'html':
+            ret[i['div']] = [soup]
+        elif i['type'] == 'append':
+            ret[i['div']].append(soup)
+    rendertype = retdict['rendertype']
+    final = {}
+    for k, v in ret.items():
+        r = ''
+        for val in v:
+            r += val.prettify()
+        final[k] = r
+
+    return final, None, rendertype
 
 
 def load_page_ret(request, ts, url, c):

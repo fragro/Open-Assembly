@@ -123,7 +123,7 @@ INSTALLED_APPS = (
     'oa_suggest',
     'tracking',
     'djcelery',
-    'oa_platform',
+    'oa_dashboard',
     'oa_cache',
     'django_mongodb_engine'
 )
@@ -138,7 +138,7 @@ MARKITUP_FILTER = ('markdown.markdown', {'safe_mode': True, 'previewParserPath':
 MARKITUP_SET = 'markitup/sets/markdown'
 MARKITUP_SKIN = 'simple'
 
-JQUERY_URL = '/static/jquery-1.4.2.min.js'
+JQUERY_URL = '/static/js/jquery-1.7.1.min.js'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = ''
@@ -150,7 +150,7 @@ TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
 ROOT_URLCONF = 'urls'
 
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'oa_template2'),)
 
 FAIL_SILENTLY = True
 

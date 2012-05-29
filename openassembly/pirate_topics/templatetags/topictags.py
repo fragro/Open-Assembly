@@ -301,10 +301,16 @@ def pp_mygroups(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     user = kwargs.get('user', None)
+    start = kwargs.get('start', None)
+    end = kwargs.get('end', None)
 
-    mygroups = MyGroup.objects.filter(user=user)
+    if user.is_authenticated():
+        mygroups = MyGroup.objects.filter(user=user)[int(start):int(end)]
 
-    namespace['mygroups'] = mygroups
+        namespace['mygroups'] = mygroups
+
+        namespace['count'] = mygroups.count()
+        namespace['half'] = (mygroups.count() / 2) + 1
 
     output = nodelist.render(context)
     context.pop()
@@ -365,7 +371,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
     root = kwargs.get('root', Topic.objects.null_dimension())
     user = kwargs.get('user', None)
 
-    if POST and (POST.get("form_id") == "pp_topic_form" or POST.get("form_id") == "pp_edittopic_form")and user is not None:
+    if POST and (POST.get("form_id") == "create_group" or POST.get("form_id") == "pp_edittopic_form")and user is not None:
         form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
             new_topic = form.save(commit=False)
@@ -479,21 +485,20 @@ class TopicForm(forms.ModelForm):
         model = Topic
         exclude = ('parent', 'children', 'is_featured', 'slug', 'group_members', 'decisions', 'solutions')
 
-    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
-    summary = forms.CharField( max_length=100,
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="create_group")
+    summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
-                attrs={'size':'50', 'class':'inputText'}),label="Comprehensive Name of the Group")
-    shortname = forms.CharField( max_length=23,
+                attrs={'size': '50', 'class': 'inputText'}),  label="Comprehensive Name of the Group")
+    shortname = forms.CharField(max_length=23,
               widget=forms.TextInput(
-                attrs={'size':'50', 'class':'inputText'}),label="Short Name (20 Characters or Less)")
+                attrs={'size': '50', 'class': 'inputText'}), label="Short Name (20 Characters or Less)")
     more_info = forms.CharField(required=False, max_length=100,
               widget=forms.TextInput(
-                attrs={'size':'50', 'class':'inputText'}),label="Link to Group Website") 
-    description = forms.CharField(widget=MarkItUpWidget(),label="Group Description")
+                attrs={'size': '50', 'class': 'inputText'}), label="Link to Group Website")
+    description = forms.CharField(label="Group Description")
     location = forms.CharField(label="Location", max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}),required=False)
-    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
+                attrs={'size': '50', 'class': 'inputText'}), required=False)
 
 
 #hack to get around markitup selecting divs and

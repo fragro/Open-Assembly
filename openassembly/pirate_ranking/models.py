@@ -3,6 +3,7 @@ from pirate_consensus.models import Consensus, UpDownVote
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 import datetime
+from celery.task import task
 from django.utils.translation import ugettext as _
 from django.contrib import admin
 from pirate_signals.models import vote_created
@@ -174,14 +175,13 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
             order_by = 'votes'
             next_issue_list = issue_list.order_by(order_by)
             #next_issue_list = sorted(next_issue_list, key=lambda x: int(x.votes), reverse=True)
-        elif dimension == "hn":
-            dt = datetime.datetime.now()
-            next_issue_list = sorted(next_issue_list, key=lambda x: (getattr(x, 'votes') * (96000.0 / (dt - (getattr(x, 'submit_date'))).seconds)) , reverse=True )
+        #elif dimension == "hn":
+        #    dt = datetime.datetime.now()
+        #    next_issue_list = sorted(next_issue_list, key=lambda x: (getattr(x, 'votes') * (96000.0 / (dt - (getattr(x, 'submit_date'))).seconds)) , reverse=True )
         else:
             raise ValueError("Illegal sorting dimension " + str(dimension))
 
         return_list = next_issue_list[int(start):int(end)]
-
 
     #else: #catch all for no dimension grabs new objects
     #    issue_lists = Consensus.objects.all().order_by('-submit_date')[int(start):int(end)]
@@ -203,25 +203,9 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
     return return_list, tot_items
 
 
-#When a vote is created via the consensus engine, this callback updates
-#the issue ranked score, for each dimension    
-def vote_created_callback(sender, **kwargs):
-    #udpate hot
-    cons = kwargs.pop('parent', None)
+@task(ignore_result=True)
+def update_rankings(cons):
     pis = cons.content_object
-    #parent of the consensus object
-    #For the HOT dimension
-    ##
-#TODO: Only should rerank when a unique user creates a vote. If a user
-    ### has created a vote before it should not be counted toward the reranking.
-    ### This closes a process that allows users to maliciously inflate hot ranking
-
-    #if cons.spectrum is None:
-        #add rating to consensus if first rating
-    #rt = Spectrum()
-    #cons.spectrum = rt
-    #rt.save()
-    #cons.save()
     spectrum = cons.spectrum.get_list()
     try:
         rating = cons.rating.get_list()
@@ -253,6 +237,14 @@ def vote_created_callback(sender, **kwargs):
                 newrank = Ranking(content_object=pis, dimension=dim, score=sc,
                             consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
                 newrank.save()
+
+
+#When a vote is created via the consensus engine, this callback updates
+#the issue ranked score, for each dimension
+def vote_created_callback(sender, **kwargs):
+    #udpate hot
+    cons = kwargs.pop('parent', None)
+    update_rankings.apply_async(args=[cons])
 
 
 vote_created.connect(vote_created_callback)
