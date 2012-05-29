@@ -1,0 +1,3 @@
+<a href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a>
+
+<a href="{% pp_url template='messages.html' object=note.sender dimension='mes' %}">{{note.description|title }}</a>

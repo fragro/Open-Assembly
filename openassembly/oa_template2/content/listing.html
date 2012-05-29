@@ -1,0 +1,13 @@
+{% extends 'etc/panel_listing.html' %}
+
+{% block li_id %}
+
+<li id="{{object.pk}}">
+
+{% endblock %}
+
+{% block listing %}
+    <a href="{% pp_url object=object.content_object template='detail.html' %}" data-href="{% pp_url object=object.content_object template='detail.html' %}">
+        {{object.content_object.summary }}
+    </a>
+{% endblock %}

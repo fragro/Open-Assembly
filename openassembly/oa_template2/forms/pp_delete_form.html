@@ -1,0 +1,37 @@
+
+{% load sourcetags %}
+
+
+{% pp_comment_delete POST=request.POST object=object user=user %}
+
+        <form id="pp_delete_form{{pp_comment.object_pk}}" method="post" action="">
+
+            <input type="hidden" name="form_id" value="pp_delete_form" id="id_form_id"/>
+
+            <input type="hidden" name="object_pk" value="{{pp_comment.object_pk}}" id="object_pk"/>
+            {% pp_get_contenttype_id object=object %}
+
+                <input type="hidden" name="content_type" value="{{pp_source.ctype_pk}}" id="content_type"/>
+            {% endpp_get_contenttype_id %}
+
+                {{csrf_string|safe}}
+
+                {% if user.is_authenticated and user.is_active %}                                                            
+                <input type="submit" class='button' value="Delete Comment!">
+
+                <a class="button2" href="javascript:;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');">Cancel</a>
+
+                <span style="color:red;" id="submit_pp_delete_form{{pp_comment.object_pk}}"></span>
+        </form>
+                {% else %} 
+                    <a class='button' href="{% pp_url template='register.html' %}">Submit</a>  
+
+                {% endif %}
+
+
+{% pp_get_contenttype_id object=object %}
+    <span id="pp_delete_form{{pp_comment.object_pk}}_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>          
+{% endpp_get_contenttype_id %}
+
+
+{% endpp_comment_delete %}

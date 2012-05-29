@@ -1,0 +1,14 @@
+{% ifequal object.user user %}
+
+<a href="{% pp_url template='submit.html' object=object dimension='edit' %}">Edit</a>
+{% endifequal %}
+{% if object.user == user or user.is_staff %}
+
+<span onClick="checkDelete('{{pp_consensus.consensus.content_type.pk}}', '{{object.pk}}');">
+  	Delete</span>
+
+    <input id="nukecheck" type="checkbox" name="vehicle" value="Deleted" />Sure?
+
+</span>
+
+{% endif %}

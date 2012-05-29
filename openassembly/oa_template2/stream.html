@@ -1,0 +1,14 @@
+
+{% oa_get_group_settings object=object %}
+	{% if pp_topic.settings.stream %}
+		{% if pp_topic.settings.stream_provider = 'L' %}
+    	<iframe class="iframe{{dashobj.pk}}" src="http://cdn.livestream.com/embed/{{pp_topic.settings.stream}}?layout=4&autoPlay=true&width={% include 'stream/stream_width.html' %}&height={% include 'stream/stream_height.html' %}" width="{% include 'stream/stream_width.html' %}" height="{% include 'stream/stream_height.html' %}" style="border:0;outline:0" frameborder=0 scrolling=no></iframe>
+    	{% endif %}
+		{% if pp_topic.settings.stream_provider = 'U' %}
+
+    	<iframe class="iframe{{dashobj.pk}}" height="{% include 'stream/stream_height.html' %}" width="{% include 'stream/stream_width.html' %}" height="{% include 'stream/stream_height.html' %}" src="http://www.ustream.tv/{{pp_topic.settings.stream}}" scrolling="no" frameborder="0" style="border: 0px none transparent;">    </iframe>
+    	{% endif %}
+    {% else %}
+    <h1>No Livestream Active</h1>
+    {% endif %}
+{% endoa_get_group_settings %}

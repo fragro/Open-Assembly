@@ -1,0 +1,12 @@
+ <li>
+    <a href="#"><img src="http://lorempixel.com/25/25" alt=""></a>
+    <div class="group_preview">
+        <a class="group_title" href="{% pp_url template='group.html' object=group.topic %}"><h4>{{group.topic|title}}</h4></a>
+        <div class="group_preview_meta">
+            <a href="javascript:;" onClick="push_dashboard('{% pp_url template='members.html' object=group.topic %}', 1, 'Members');">{{group.topic.group_members}} Members <i class="icon-list-alt icon-white"></i></a> |
+            <a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' object=group.topic %}', 1, 'Proposals');">{{group.topic.children}} Proposals<i class="icon-list-alt icon-white"></i></a> |
+            <a href="javascript:;" onClick="push_dashboard('{% pp_url template='chat.html' object=group.topic %}', 1, 'Chat');">Chat <i class="icon-list-alt icon-white"></i></a> |
+            <a href="javascript:;" onClick="push_dashboard('{% pp_url template='stream.html' object=group.topic %}', 1, 'Stream');">Stream <i class="icon-list-alt icon-white"></i></a>
+        </div>
+    </div>
+</li>

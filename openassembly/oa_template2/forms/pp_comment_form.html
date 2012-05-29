@@ -1,0 +1,44 @@
+
+{% load commenttags %}
+{% load pp_url %}
+
+    {% pp_comment_form POST=request.POST path=request.path user=user object=object%}
+        <form id="pp_comment_form" method="post" action="">
+            <div id="errors" class="errors">{{ pp_comment.errors }}</div>
+                    <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
+                    {{ pp_comment.form.text }}
+                    {{ pp_comment.form.parent}}
+                    {{pp_comment.form.form_id}}
+                    {{csrf_string|safe}}
+                {% if user.is_authenticated and user.is_active %}                                                            
+                <input type="submit" class='button' value="Submit">
+
+                <span id="submit_pp_reply_form{{object.pk}}">
+                    
+                <a href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>
+
+                <span id="submit_pp_comment_form"></span>
+        </form>
+                {% else %} 
+                    <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                {% endif %}
+
+        <div class='reply_comment' id='pp_formatting_help' style='display:none; overflow:hidden; height:290px;width:100%;'>
+
+            {% include "etc/help.html" %}
+
+        </div>
+
+        <span id="pp_comment_form_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
+
+        {% endpp_comment_form %}
+
+<script>
+
+  $("form#pp_comment_form").submit(function(e){
+        $("#submit_pp_comment_form").html("<b>Submitting...</b>")
+        //slideup('pp_formatting_help');
+        addObject(e);
+    });
+
+</script>

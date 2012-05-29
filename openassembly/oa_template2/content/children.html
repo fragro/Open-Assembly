@@ -1,0 +1,23 @@
+
+    {% pp_comment_count object=object.id %}
+        <img src="/static/img/comment.jpg"><a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>  | 
+
+    {% endpp_comment_count %}
+
+    {% pp_get_argument_count object=object arg_type='yea' %}
+
+        <img src="/static/img/agree.jpg"><a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
+
+    {% endpp_get_argument_count %}
+
+    {% pp_get_argument_count object=object arg_type='nay' %}
+
+        <img src="/static/img/disagree.jpg"><a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+
+    {% endpp_get_argument_count %}
+
+
+    <div id="content_children" class= "content_children">
+                                
+                               
+    </div>

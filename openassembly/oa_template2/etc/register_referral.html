@@ -1,0 +1,21 @@
+{% if request.dimension and request.user.is_authenticated %}
+    {% oa_activate_referral key=request.dimension user=request.user %}
+        {% if oa_ver.referral %}
+             {% if not oa_ver.errors %}
+                You Joined the Group "{{oa_ver.referral.topic}}"
+            {% else %}
+                {{oa_ver.errors}}
+            {% endif %}
+        {% else %}
+        Referral Not Found
+        {% endif %}
+     {% endoa_activate_referral %}
+{% endif %}
+{% if request.dimension and not request.user.is_authenticated %}
+
+    {% oa_get_referral key=request.dimension %}
+        {% if oa_ver.referral %}
+            You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!
+        {% endif %}
+    {% endoa_get_referral %}
+{% endif %}

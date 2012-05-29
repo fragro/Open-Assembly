@@ -1,0 +1,15 @@
+<ul class="panel_controls">
+    <li ><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1);"><i class="icon-refresh"></i></a></li>
+    <li {% if dashobj.zoom_y == 3 %}class="disabled"{% endif %}><a href="javascript:;" onClick="downzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-down"></i></a></li>
+    <li {% if dashobj.zoom_y == 0 %}class="disabled"{% endif %}><a href="javascript:;" onClick="upzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-up"></i></a></li>
+    <li {% if dashobj.zoom_x == 0 %}class="disabled"{% endif %}><a href="javascript:;" onClick="leftzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-left"></i></a></li>
+    <li {% if dashobj.zoom_x == 4 %}class="disabled"{% endif %}><a href="javascript:;" onClick="rightzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-right"></i></a></li>
+    <li class="panel_dropdown">
+        <i class="icon-cog"></i>
+        <ul>
+            <li><a href="#">Order by Date</a></li>
+            <li><a href="#">Order by Activity</a></li>
+            <li class="delete_panel"><a href="javascript:;" onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
+        </ul>
+    </li>
+</ul>

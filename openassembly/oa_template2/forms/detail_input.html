@@ -1,0 +1,47 @@
+<!-- need all the DIV IDs in this html template -->
+
+{% if user.is_authenticated and pp_topic.in_group %}
+
+       
+    {% if object.child and pp_consensus.consensus.phase.curphase.phasename == 'nom' %}
+        Proposal Response
+            <div id="pp_blob_child">
+                {% include 'forms/pp_blob_child.html'%}
+            </div>
+
+    {% endif %}
+
+
+    Comment
+
+        <div id="pp_comment_form">
+                {% include 'forms/pp_comment_form.html'%}
+        </div>
+
+    Argue For
+
+        <div id="pp_argument_form_yea">
+
+        </div>
+
+    Argue Against
+
+        <div id="pp_argument_form_nay">
+
+        </div>
+    
+    Add Sources/Citations or Tags
+
+        <div id="pp_tagsource_form">
+
+        </div>
+        <div id="pp_tag_form">
+
+        </div>
+        <div id="pp_urlsource_form">
+ 
+        </div>
+
+{% endif %}
+
+  

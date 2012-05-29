@@ -1,0 +1,44 @@
+<h1 class="page_title">{{object.username}}</h1>
+
+
+{% pp_get_avatar user=object %}
+
+    {% pp_get_contenttype_id object=object %}
+
+        {% if user = object and user.is_authenticated %}
+            <a id="avatar" href="{% url pirate_sources.views.upload_handler user.id pp_source.ctype_pk %}">
+            <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{object.username}}"></a>
+            {% else %}
+            <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{object.username}}">
+        {% endif %}
+
+    {% endpp_get_contenttype_id %}
+
+{% endpp_get_avatar %}
+
+{% if user == object %}
+    {% pp_consensus_get object=object.pk %}
+        {% include 'user/user_activity.html' %}
+    {% endpp_consensus_get %}
+{% endif %}
+
+{{object.username}}
+
+
+{% if user == object %}
+
+    Member Since: {{object.date_joined|date:"d/m/y"}}
+
+     {% pp_get_reputation user=object %}
+        Contribution: {{pp_reputation.reputation}}
+     {% endpp_get_reputation %}
+
+    {% pp_subscriber_count user=object %}                
+        Trust You: {{pp_subscription.count}}
+    {% endpp_subscriber_count %}
+
+    {% pp_subscribee_count user=object %}                
+        You Trust: {{pp_subscription.count}}
+    {% endpp_subscribee_count %}                
+
+{% endif %}

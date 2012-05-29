@@ -1,0 +1,48 @@
+{% extends 'skeleton/page.html' %}
+
+{% load topictags %}
+{% load pp_url %}
+
+{% block content %}
+
+    {% pp_topic_form POST=request.POST user=user root=object %}
+
+            {% if pp_topic.complete %}
+
+            Topic Created
+
+            {% endif %}
+
+                <form id="create_group" method="post" action="">
+                            {{ pp_topic.form.form_id}}
+                            
+                            Name of Group:<br>{{ pp_topic.form.summary}}<br>
+                            Short Name (less than 20 char):<br>{{ pp_topic.form.shortname}}<br>
+
+                            Purpose of Group:<br>{{ pp_topic.form.description}}<br>
+                            Link to Outside Website:<br>{{ pp_topic.form.more_info}}<br>
+
+                            {{csrf_string|safe}}
+                        {% if user.is_authenticated and user.is_active %}   
+                        <div id="errors" class="errors">{{ pp_topic.errors }}</div>
+                                                         
+                        <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_create_group"></span>
+                </form>
+                        {% else %} 
+                            <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                        {% endif %}
+                <script>
+
+                  $("form#create_group").submit(function(e){
+                        $("#submit_create_group").html("<b>Submitting...</b>")
+                        addObject(e);
+                    });
+
+                </script>
+
+            {% if pp_topic.complete %}
+                <span id="content_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
+            {% endif %}
+    {% endpp_topic_form %}
+
+{% endblock %}

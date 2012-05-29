@@ -1,0 +1,62 @@
+{% extends 'skeleton/page.html' %}
+
+{% load messagetags %}
+{% load pp_url %}
+{% load notificationtags %}
+
+{% block content %}
+    {% pp_get_messages start=start end=end user=user %}
+
+        Messages{% if pp_messages.unreadcount > 0 %} ({{pp_messages.unreadcount}} New){% endif %}
+
+                {% for note in pp_messages.unread %}
+                   
+                   {% include 'etc/message.html' %}
+
+                {% endfor %}   
+                
+                {% for note in pp_messages.read %}
+                           
+                    {% include 'etc/message.html' %}
+
+                {% endfor %}      
+            {% endpp_get_messages %} 
+            <a href="{% pp_url template='user_profile.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
+
+    <ul class="pagination">
+        {% for s,e,n in pp_messages.rangelist %}
+           {% if not s > pp_messages.count %}
+            <li><a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+
+    {% pp_notification_list_get start=start end=end user=user get_new='True' %}
+
+        Notifications{% if unreadcount > 0 %} ({{pp_message.unreadcount}} New){% endif %}
+
+                {% for note in pp_messages.unreadnotifications %}
+                      
+                        {% include 'etc/notice.html'%}
+
+                {% endfor %}   
+                
+                {% for note in pp_messages.notifications %}
+
+                        {% include 'etc/notice.html'%}
+
+                {% endfor %}      
+                <a href="{% pp_url template='user_profile.html' object=user dimension='notifications' start=0 end=20 %}">(view all)</a>
+
+       <ul class="pagination">
+            {% for s,e,n in pp_messages.rangelist %}
+               {% if not s > pp_messages.count %}
+                <li><a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}({{n}}){% else %}{{n}}{% endif %}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+    {% endpp_notification_list_get %} 
+
+{% endblock %}

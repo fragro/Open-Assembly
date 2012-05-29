@@ -1,0 +1,55 @@
+{% load logintags %}
+{% load verificationtags %}
+
+
+<!-- Register/Login -->
+<div style="display: none;">
+
+    <div class="modal" id="mode">
+
+        {% include 'etc/register_referral.html' %}
+
+        <div class="modal-header">
+            <h3>Register</h3>
+        </div>
+        {% pp_user_registration_form request=request dimension=request.dimension user=request.user %}
+            <div class="modal-body">
+                <form id="login_form" action="" method="post">
+                <input type="text" name="name" id="id_name" class="input-medium" placeholder="Username">
+                <input type="text" name="email" id="id_email" class="input-medium" placeholder="Email">
+                <input type="password" name="password1" id="id_password1" class="input-medium" placeholder="Password">
+                <input type="password" name="password2" id="id_password2" class="input-medium" placeholder="Confirm Password">
+                {{ pp_login.form.form_id}}
+                {% csrf_token %}
+            </div>
+            <div class="modal-footer" style="border-bottom:1px solid #ddd; border-radius:0;">
+                <button type="submit" class="btn btn-primary"><i class="icon-user icon-white"></i> Register</button>
+                {{pp_login.errors}}<br>{{ pp_login.form.errors }}
+                </form>
+            </div>
+        {% endpp_user_registration_form %}
+
+        <div class="modal-header">
+            <h3>Login</h3>
+        </div>
+        {% pp_user_login_form request=request dimension=request.dimension %}
+
+            <div class="modal-body">
+                <form id="login_form" action="" method="post">
+                <input type="text"  name="name" id="id_name" class="input-medium" placeholder="Username or Email">
+                <input type="password"  name="password" id="id_password" class="input-medium" placeholder="Password">
+                {{ pp_login.form.form_id}}
+                {% csrf_token %}
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Login</button>
+                {# <label class="checkbox"><input type="checkbox"> Remember?</label> #}
+                {{pp_login.errors}}<br>{{ pp_login.form.errors }}
+                </form>
+            </div>
+                        
+        {% endpp_user_login_form %}
+
+    </div>
+</div>
+<!-- /#myModal -->

@@ -1,0 +1,17 @@
+<!-- Page1 -->
+{% if object %}
+  <div id="page{{template}}{{object.pk}}" class="page">
+{% else %}
+  <div id="page{{template}}{{obj_pk}}" class="page">
+{% endif %}
+
+      <div class="sink">
+
+      {% block content %}
+
+
+      {% endblock %}
+
+      </div>
+      
+  </div>

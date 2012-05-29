@@ -1,0 +1,49 @@
+
+ {% load commenttags %}
+ {% load sourcetags %}
+
+ {% pp_comment_form POST=request.POST path=request.path user=user object=object %}
+                <form id="pp_reply_form{{object.pk}}" method="post" action="">
+                    <div id="errors">{{ pp_comment.errors }}</div>
+                    <input type="hidden" name="form_id" value="pp_reply_form" id="id_form_id"/>
+
+                    <input type="hidden" name="object_pk" value="{{object.pk}}" id="object_pk"/>
+                    {% pp_get_contenttype_id object=object %}
+
+                        <input type="hidden" name="content_type" value="{{pp_source.ctype_pk}}" id="content_type"/>
+                    {% endpp_get_contenttype_id %}
+
+                            {{ pp_comment.form.text }}
+                            {{ pp_comment.form.parent}}
+                            {{pp_comment.form.form_id}}
+                            {{csrf_string|safe}}
+                    {% if user.is_authenticated and user.is_active %}                                                            
+                        <input type="submit" class='button' value="Submit">
+
+                        <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
+                        <span id="submit_pp_reply_form{{object.pk}}">
+                            
+                        <a style="float:right;" href="javascript:;" onmousedown="toggleSlide('pp_formatting_help{{object.pk}}');">formatting help</a>
+
+                        </span>
+                </form>
+
+
+                        {% else %} 
+                            <a href="{% pp_url template='register.html' %}">Submit</a>
+                        {% endif %}
+
+
+<script>
+          $("form#pp_reply_form{{object.pk}}").submit(function(e){
+                $("#submit_pp_reply_form{{object.pk}}").html("<b>Submitting...</b>")
+                slideup('pp_formatting_help{{object.pk}}');
+                addObject(e);
+
+            });
+</script>
+
+        <!--- I NEEDS THIS, I NEEDS IT -->
+        <span id="pp_reply_form{{object.pk}}_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
+
+    {% endpp_comment_form %}

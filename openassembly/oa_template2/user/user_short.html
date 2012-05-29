@@ -1,0 +1,15 @@
+{% extends 'etc/panel_listing.html' %}
+
+<!--topic source -->
+{% block li_id %}
+
+<li id="{{object.pk}}">
+
+{% endblock %}
+
+
+{% block listing %}
+            
+	<a href="{% pp_url object=object.user template='user_profile.html'%}" data-href="{% pp_url object=object.user template='user_profile.html'%}">{{object.user}}</a>
+	                        
+{% endblock %}

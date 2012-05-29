@@ -1,0 +1,108 @@
+<script>
+
+    function toggleMinMax(t){
+        var curtab = $('#current_tab').html();
+        var keepif = (curtab == '');
+        var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
+        var nempty = $('#pages').find('.current').length == 0;
+
+        if(nempty && is_add){
+            $('#overlay').show();
+        }
+
+        if(!nempty && !is_add){
+            $('#overlay').hide();
+            $("html").css("overflow", "auto");
+
+        }
+
+        if(t != curtab){
+            //add new page
+            $('#page' + t).show();
+            $('#minmax' + t).addClass('current-icon');
+            $('#page' + t).addClass('current');
+            $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+            $("html").css("overflow", "hidden");
+
+
+            //set the current div
+            $('#current_tab').html(t);
+        }
+        else{
+            $('#current_tab').html('');
+        }
+        if(!keepif){
+            //remove the old page
+            $('#page' + curtab).removeClass('current');
+            $('#page' + curtab).hide();
+            $('#minmax' + curtab).removeClass('current-icon');
+            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+        }
+    };
+
+    // Closes/removes Page/Tab
+    function tabRemove(tab){
+        tabobj = $('#tab' + tab);
+        tabobj.fadeOut(600, function(){
+            tabobj.remove();
+            $('#page' + tab).remove();
+        });
+        var window_width = $(window).width();
+            ruler = $('#tab_ruler');
+            ruler_width = ruler.width();
+            min_win = window_width - 157;
+            num_tabs = $('#pages .page').length;
+            old_width = $('#tab_width').text();
+        
+        num_of_times_to_fire = Math.ceil( num_tabs - ( Math.abs(old_width - window_width) / 162 ) );
+        
+            for (i=-1; i<=num_of_times_to_fire; i++) {
+                var window_width = $(window).width();
+                ruler = $('#tab_ruler');
+                ruler_width = ruler.width();
+                min_win = window_width - 157;
+                num_tabs = $('#the_queue .tab').length;
+                tab_iter = $('#tab_queue .tab_iterate');
+            
+            // check to see if the tabs are being overlapped by the queue
+            if (ruler_width > min_win) {
+                // move tabs to queue
+                var last_tab = $('#tab_ruler .tab').last();
+                $('#the_queue').append(last_tab);
+            } else if ( (min_win - 162 ) > ruler_width) {
+                // move tabs back to taskbar
+                var last_tab = $('#the_queue .tab').last();
+                $('#tab_ruler').append(last_tab);
+            }
+            
+            if (num_tabs > 0) {
+                tab_iter.text(num_tabs);
+            } else {
+                tab_iter.text('No');
+            }
+        }
+        //remove page or not?
+    };
+
+</script>
+{% if object %}
+<ul class="tab" id="tab{{template}}{{object.pk}}">
+    <li>
+        <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
+        <ul>
+            <li id="minmax{{object.pk}}"class="min_max"><a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');"><i class="icon-plus-sign icon-white"></i></a></li>
+            <li><a href="javascript:;" onClick="tabRemove('{{template}}{{object.pk}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+        </ul>
+    </li>
+</ul>
+{% else %}
+<ul class="tab" id="tab{{template}}{{obj_pk}}">
+    <li>
+        <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
+        <ul>
+            <li id="minmax{{obj_pk}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');"><i class="icon-plus-sign icon-white"></i></a></li>
+            <li><a href="javascript:;" onClick="tabRemove('{{template}}{{obj_pk}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+        </ul>
+    </li>
+</ul>
+{% endif %}

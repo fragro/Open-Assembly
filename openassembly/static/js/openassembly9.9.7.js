@@ -361,7 +361,7 @@ function sort_dashboard(sorted){
   }, "json");
 }
 
-function increase_zoom(obj_pk, dim){
+function increase_zoom(obj_pk, dim, path, dash_id){
   
   $.post("/increase_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
@@ -372,12 +372,12 @@ function increase_zoom(obj_pk, dim){
           //});
       }
       if(data.FAIL === false){
-
+          refresh_dashboard(path, dash_id);
       }
   }, "json");
 }
 
-function decrease_zoom(obj_pk, dim){
+function decrease_zoom(obj_pk, dim, path, dash_id){
   
   $.post("/decrease_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
@@ -388,7 +388,7 @@ function decrease_zoom(obj_pk, dim){
           //});
       }
       if(data.FAIL === false){
-
+          refresh_dashboard(path, dash_id);
       }
   }, "json");
 }
@@ -405,7 +405,6 @@ function refresh_dashboard(path, dash_id){
       }
       if(data.FAIL === false){
           $('#' + data.dashpk).replaceWith(data.html);
-          alert(data.dashpk);
       }
   }, "json");
 }
@@ -449,4 +448,90 @@ function allowPush(e, url, that) {
     return (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey &&
         url != ''  && url.indexOf('#')==-1 && url.indexOf('javascript') == -1 && url.indexOf('http://') == -1 && url.indexOf('https://') == -1 && (typeof that.attr('target') == 'undefined' || that.attr('target') == '') 
         && !that.hasClass('nobbq') && typeof $.data(that.get(0), 'events') == 'undefined' && typeof disablePush == 'undefined')
+}
+
+// Panel resizing
+// Down
+function downzoom(dashpk, path, dash_id){
+    var p = $('#' + dashpk);
+    if (p.hasClass('ptall3')) {
+        return false;
+    } else if (p.hasClass('ptall2')) {
+        p.removeClass('ptall2').addClass('ptall3');
+        p.find('icon-chevron-down').closest('li').addClass('disabled');
+        increase_zoom(p.attr('id'), 'Y', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else {
+        p.find('.icon-chevron-up').closest('li').removeClass('disabled');
+        p.addClass('ptall2');
+        increase_zoom(p.attr('id'), 'Y', path, dash_id);
+        $('#panels').masonry('reload');
+    }
+}
+// Up
+function upzoom(dashpk, path, dash_id){
+    var p = $('#' + dashpk);
+    if (p.hasClass('ptall3')) {
+        p.find('.icon-chevron-down').closest('li').removeClass('disabled');
+        p.removeClass('ptall3').addClass('ptall2');
+        decrease_zoom(p.attr('id'), 'Y', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else if (p.hasClass('ptall2')) {
+        p.removeClass('ptall2');
+        p.find('.icon-chevron-up').closest('li').addClass('disabled');
+        decrease_zoom(p.attr('id'), 'Y', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else {
+        return false;
+    }
+}
+// Right
+function rightzoom(dashpk, path, dash_id){
+    var p = $('#' + dashpk);
+    if (p.hasClass('pwide4')) {
+        return false;
+    } else if (p.hasClass('pwide3')) {
+        p.removeClass('pwide3').addClass('pwide4');
+        p.find('.icon-chevron-right').closest('li').addClass('disabled');
+        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else if (p.hasClass('pwide2')) {
+        p.removeClass('pwide2').addClass('pwide3');
+        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else {
+        p.addClass('pwide2');
+        p.find('.icon-chevron-left').closest('li').removeClass('disabled');
+        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        $('#panels').masonry('reload');
+    }
+}
+// Left
+function leftzoom(dashpk, path, dash_id){
+    var p = $('#' + dashpk);
+    if (p.hasClass('pwide4')) {
+        p.find('.icon-chevron-right').closest('li').removeClass('disabled');
+        p.removeClass('pwide4').addClass('pwide3');
+        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else if (p.hasClass('pwide3')) {
+        p.removeClass('pwide3').addClass('pwide2');
+        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else if (p.hasClass('pwide2')) {
+        p.removeClass('pwide2');
+        p.find('icon-chevron-left').closest('li').addClass('disabled');
+        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        $('#panels').masonry('reload');
+
+    } else {
+        return false;
+    }
 }

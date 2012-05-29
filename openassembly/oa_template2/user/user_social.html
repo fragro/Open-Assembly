@@ -1,0 +1,40 @@
+                                
+{% pp_get_subscribers_for_user user=object start=start end=end %}
+  {{pp_subscription.count}} Trust You
+   
+    {% for i in pp_subscription.subscribers %}
+        {% pp_get_avatar user=i.subscriber %}
+
+                <a href="{% pp_url template='user_profile.html' object=i.subscriber %}">
+                    <img src="{{pp_profile.thumbnail_small}}" alt="{{i.subscriber.username}}">
+                </a>
+                <a href="{% pp_url template='user_profile.html' object=i.subscriber %}">
+                    {{i.subscriber.username}}
+                </a>
+
+        {% endpp_get_avatar %}
+    {% endfor %}
+{% endpp_get_subscribers_for_user %}
+
+<a href="{% pp_url template='user_profile.html' dimension='followers' start=0 end=20 object=object %}">(view all)</a>
+
+{% pp_get_subscribees_for_user user=object start=start end=end %}
+
+    You Trust {{pp_subscription.count}}
+        {% for i in pp_subscription.subscribees %}
+            {% pp_get_avatar user=i.subscribee %}
+
+                <a href="{% pp_url template='user_profile.html' object=i.subscribee %}">
+                    <img src="{{pp_profile.thumbnail_small}}" alt="{{i.subscribee.username}}">
+                </a>
+                <a href="{% pp_url template='user_profile.html' object=i.subscribee %}">
+                    {{i.subscribee.username}}
+                </a>
+
+            {% endpp_get_avatar %}
+
+        {% endfor %}
+{% endpp_get_subscribees_for_user %}
+<a href="{% pp_url template='user_profile.html' dimension='followees' start=0 end=20 object=object %}">(view all)</a>
+
+<!-- end .profile_follows -->

@@ -1,0 +1,48 @@
+
+<!--Requires a consensus object -->
+{% pp_consensus_get object=object.pk %}
+    {% pp_consensus_chart object=pp_consensus.consensus %}
+         {% if pp_consensus.chart %}
+               <script>
+               var chart1; // globally available
+               $(document).ready(function() {
+                     chart1 = new Highcharts.Chart({
+                        chart: {
+                           renderTo: 'user_activity_chart',
+                           type: 'pie',
+                        },
+                        title: {
+                           text: 'Reputation'
+                        },
+                        yAxis: {
+                           title: {
+                              text: 'Consensus'
+                           }
+                        },
+                        tooltip: {
+                           formatter: function() {
+                              return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                           }
+                        },
+                        plotOptions: {
+                           pie: {
+                              allowPointSelect: true,
+                              cursor: 'pointer',
+                              dataLabels: {
+                                 enabled: false
+                              },
+                           }
+                        },
+                       credits: {
+                           enabled: false
+                       },
+                     series:{{pp_consensus.chart_data|safe}}
+                     });
+                  });
+                  </script>
+                  
+               <div id='user_activity_chart'> Chart will be rendered here </div>
+
+         {% endif %}
+    {% endpp_consensus_chart %}
+{% endpp_consensus_get %}

@@ -1,0 +1,459 @@
+{% load pp_url %}
+{% load topictags %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+    {% pp_get_cached_data request=request %}
+
+        {% include 'etc/meta.html' %}
+
+        <title>Open Assembly</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9">
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
+        <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
+
+    </head>
+    <body>
+
+        {% include 'etc/register.html' %}
+        
+        <div id="rail" class="clearfix">
+            <a class="nobbq" href="http://google.com" id="logo"><img src="/static/img/logo.png" alt=""></a>
+            <ul id="nav">
+                <!-- Dashboard -->
+                <li><a href="/"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
+                <!-- Inbox -->
+                {% if request.user.is_authenticated %}<li><a href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>{% endif %}
+                <!-- Browse -->
+                <li class="dropdown">
+                    <a href="#"><i class="icon-white icon-list-alt icon-left"></i> Browse <i class="icon-white  icon-chevron-down icon-right"></i></a>
+                    <div class="dropdown_menu shortpad">
+                        <div class="col col3">
+                            <h3>Groups</h3>
+                            <ul>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                {% comment %}
+
+                                <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by Age</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by Category</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by Popularity</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by Rating</a><i class="icon-list-alt icon-white"></i></li>
+                                {% endcomment %}
+
+                            </ul>
+                        </div>
+                        <div class="col col3">
+                            <h3>Proposals</h3>
+                            {% comment %}
+                            <ul>
+                                <li><a href="#">Age</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by # of Comments</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by # of Votes</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">by Time Left</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Category</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Controversial</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Least Popular</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Most Popular</a><i class="icon-list-alt icon-white"></i></li>
+                            </ul>
+                            {% endcomment %}
+                        </div>
+                        <div class="col col3 last">
+                            <h3>Members</h3>
+                            <ul>
+                                <li><a href="#">Age</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Belongs to the Most Groups</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Is Mod of the Most Groups</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Least Active</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Least Popular</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Least Trusted</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Member Since</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Most Active</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Most Controversial</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Most Popular</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Most Trusted</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="#">Most Trusting</a><i class="icon-list-alt icon-white"></i></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <!-- Bookmarks -->
+                <!--Will develop this feature in the next version -->
+                {% if request.user.is_authenticated %}
+                {% comment %}
+                <li class="dropdown bookmark_dropdown">
+                    <a href="#"><i class="icon-white icon-bookmark icon-left"></i> Bookmarks <i class="icon-white  icon-chevron-down icon-right"></i></a>
+                    <div class="dropdown_menu">
+                        <div class="col col3">
+                            <h3>Groups</h3>
+                            <ul class="thumbnail_list">
+                                <li>
+                                    <a href="#">
+                                        <img src="http://lorempixel.com/25/25" alt="">
+                                        <p>
+                                            Lorem ipsum dolor sit amet consectetur...
+                                        </p>
+                                    </a>
+                                    <i class="icon-remove-sign icon-white"></i>
+                                </li>
+                                <li><a href="#">View All</a></li>
+                            </ul>
+                        </div>
+                        <div class="col col3">
+                            <h3>Proposals</h3>
+                            <ul class="thumbnail_list">
+                                <li>
+                                    <a href="#">
+                                        <img src="http://lorempixel.com/25/25" alt="">
+                                        <p>
+                                            Lorem ipsum dolor sit amet consectetur...
+                                        </p>
+                                    </a>
+                                    <i class="icon-remove-sign icon-white"></i>
+                                </li>
+                                <li><a href="#">View All</a></li>
+                            </ul>
+                        </div>
+                        <div class="col col3 last">
+                            <h3>Members</h3>
+                            <ul class="thumbnail_list">
+                                <li>
+                                    <a href="#">
+                                        <img src="http://lorempixel.com/25/25" alt="">
+                                        <p>
+                                            Lorem ipsum dolor sit amet consectetur...
+                                        </p>
+                                    </a>
+                                    <i class="icon-remove-sign icon-white"></i>
+                                </li>
+                                <li><a href="#">View All</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                {% endcomment %}
+                <!-- My Groups -->
+                <li class="dropdown">
+                    <a href="#"><i class="icon-white icon-user icon-left"></i> My Groups <i class="icon-white  icon-chevron-down icon-right"></i></a>
+                    <div class="dropdown_menu">
+                        <div class="col col2">
+                            <ul class="thumbnail_list">
+
+                                {% pp_mygroups user=request.user start=0 end=10 %}
+                                            
+                                    {% for group in pp_topic.mygroups %}  
+                                        {% include 'nav/mygroup.html' %}
+
+                                        {% if pp_topic.half == forloop.counter %}
+                                            </ul>
+                                            </div>
+                                            <div class="col col2 last">
+                                                <ul class="thumbnail_list">
+                                        {% endif %}
+                                    {% endfor %}
+
+                                     <li>
+                                        <a href="#"><img src="http://lorempixel.com/25/25" alt=""></a>
+                                        <div class="group_preview">
+                                            <a class="group_title" href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
+                                        </div>
+                                    </li>
+
+                                    {% if pp_topic.count > 10 %}<li><a href="#">View All</a></li>{% endif %}
+                                {% endpp_mygroups %}
+
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                {% endif %}
+                <!-- Settings -->
+                <li class="dropdown">
+                    <a href="#"><i class="icon-white icon-cog icon-left"></i> Settings <i class="icon-white  icon-chevron-down icon-right"></i></a>
+                    <div class="dropdown_menu col1 shortpad">
+                        <div class="col last">
+                            <ul>
+                                {% if request.user.is_authenticated %}
+                                <li><a href="{% pp_url template='user.html' object=request.user %}">Edit Profile</a></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="/logout/">Logout</a></li>
+                                <li><a href="#">Report Abuse</a></li>
+                                <li><a href="#">View Profile</a></li>
+                                {% else %}
+                                <li><a class="nobbq" id="register" href="#mode">Register</a></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="#">Report Abuse</a></li>
+
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <!-- end #nav -->
+        </div>
+        
+        <!-- Pages -->
+        <div id="pages">
+            
+            <!-- Page1 -->  
+            {{pp_cache.data.pages|safe}}
+
+        </div>
+        
+        <!-- Panels -->
+        <div id="panels">
+            <!-- use ptall3 pwide4 -->
+            {% include 'board.html' %}
+            
+        </div>
+        
+        <div id="overlay"></div>
+        
+        <!-- Tabs -->
+        <div id="tabs" class="clearfix">
+            <div id="current_tab"></div>
+            <div id="tab_ruler"></div>
+
+            {{pp_cache.data.tab_ruler|safe}}
+
+            <div id="tab_queue">
+                <h3><i class="icon-white icon-align-justify icon-left"></i> <span class="tab_iterate"></span> more tabs <i class="icon-white icon-chevron-up icon-right"></i></h3>
+                <div id="the_queue"></div>
+            </div>
+            <div id="tab_width"></div> 
+        </div>
+        
+        <!-- Scripts -->
+        <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+
+        <script type="text/javascript" src="/static/js/openassembly9.9.9.js"></script>
+        
+        <script type="text/javascript" src="/static/js/jquery-ui-1.8.18.custom.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.masonry.min.js"></script>
+
+        <script type="text/javascript" src="/static/js/highcharts.js"></script>
+
+        <script type="text/javascript" src="/static/js/jquery.ui.stars.js"></script>
+
+        <script type="text/javascript" src="/static/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+        <script type="text/javascript" src="/static/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+        <script type="text/javascript" src="/static/js/motionpack.js"></script>
+        <script type="text/javascript" src="/static/js/slideto.min.js"></script>
+
+        <script type='text/javascript' src='/static/markitup/jquery.markitup.js'></script>
+        <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                    //modal register
+                $("#register").fancybox();              
+                // Delete panel
+                $('.delete_panel').click(function(){
+                    $(this).closest('.panel').remove();
+                    $('#panels').masonry('reload');
+                });
+                
+                // fire this every time a page is added or removed
+                hrefLess();
+                
+                // Creates Tabs
+                // $.each($('#pages .page'), function(){
+                //     var $this = $(this);
+                //         page_id = $this.attr('id');
+                //         $tabs = $('#tabs');
+                //         $template = $('.tab_template');
+                //         $tab_ruler = $('#tab_ruler');
+                //         page_title = $this.find('.page_title').html();
+                    
+                //     $template.find('.tab_title').html(page_title);
+                //     $template.find('.min_max').attr('id', page_id);
+                //     $tab_ruler.append($template.html());
+                // });
+                
+                
+                // Removes Bookmark
+                $('.bookmark_dropdown .icon-remove-sign').click(function(){
+                    var $bookmark = $(this).closest('li');
+                    $bookmark.fadeOut(600, function(){
+                        $bookmark.remove();
+                    });
+                });
+                
+                function tabQueue() {
+                    var window_width = $(window).width();
+                        ruler = $('#tab_ruler');
+                        ruler_width = ruler.width();
+                        min_win = window_width - 157;
+                        num_tabs = $('#the_queue .tab').length;
+                        tab_iter = $('#tab_queue .tab_iterate');
+                    
+                    // check to see if the tabs are being overlapped by the queue
+                    if (ruler_width > min_win) {
+                        // move tabs to queue
+                        var last_tab = $('#tab_ruler .tab').last();
+                        $('#the_queue').append(last_tab);
+                    } else if ( (min_win - 162 ) > ruler_width) {
+                        // move tabs back to taskbar
+                        var last_tab = $('#the_queue .tab').last();
+                        $('#tab_ruler').append(last_tab);
+                    }
+                    
+                    if (num_tabs > 0) {
+                        tab_iter.text(num_tabs);
+                    } else {
+                        tab_iter.text('No');
+                    }
+                    
+                };
+
+                rememberTabs();
+
+                // fire every time window is resized
+                $(window).resize(function(){
+                    var window_width = $(window).width();
+                        ruler = $('#tab_ruler');
+                        ruler_width = ruler.width();
+                        min_win = window_width - 157;
+                        num_tabs = $('#pages .page').length;
+                        old_width = $('#tab_width').text();
+                    
+                    num_of_times_to_fire = Math.ceil( num_tabs - ( Math.abs(old_width - window_width) / 162 ) );
+                    
+                    for (i=-1; i<=num_of_times_to_fire; i++) {
+                        tabQueue()
+                    }
+                    
+                });
+
+                // Closes/removes Page/Tab
+                function tabRemove(tab){
+                    tabobj = $('#tab' + tab);
+                    tabobj.fadeOut(600, function(){
+                        tabobj.remove();
+                        $('#page' + tab).remove();
+                    });
+                    //remove page or not?
+                };
+                
+                // Sort Panels
+                $('#panels').sortable({
+                    handle: '.panel_header',
+                    scroll: false,
+                    cursor: 'move',
+                    helper: 'clone'
+                });
+                
+                // Masonry Hack - http://jsfiddle.net/desandro/XMfwZ/1/
+                var t = $('#panels');
+                
+                t.masonry({
+                    itemSelector: '.panel',
+                    isResizable: true,
+                    columnWidth: 1
+                })
+                
+                t.sortable({
+                    distance: 12,
+                    forcePlaceholderSize: true,
+                    items: '.panel',
+                    placeholder: 'placeholder panel',
+                    tolerance: 'pointer',
+                    start: function(event, ui) {
+                        ui.item.addClass('dragging').removeClass('panel');
+                        if ( ui.item.hasClass('panel') ) {
+                            ui.placeholder.addClass('panel');
+                        }
+                        ui.item.parent().masonry('reload')
+                        },
+                        change: function(event, ui) {
+                            ui.item.parent().masonry('reload');
+
+                        },
+                        stop: function(event, ui) { 
+                        ui.item.removeClass('dragging').addClass('panel');
+                        var result = String(t.sortable('toArray'));
+                        sort_dashboard(result);
+                        ui.item.parent().masonry('reload');
+
+
+                    }
+                });
+
+                //This lets us load chunk by chunk with AJAX
+                $(window).bind("popstate", function(evt) {
+                  var state = evt.originalEvent.state;
+                      if (state && state.module === "leave") {
+                            getContent();
+                      }
+                      if (state && state.module === "nobbq") {
+                            js_redirect(state.url);
+                      }
+                });
+                //we're popping states for nobbq events that should be loaded the usual way...
+
+                if (history.pushState) {
+                    var that = $(this);
+                    if(!that.hasClass('nobbq')){
+                        history.replaceState({load:true, module:'nobbq', url: that.data('href')}, '');
+                    }
+                    $('body').delegate('a', 'click', function (e) {
+                        var that = $(this);
+                        var url = (typeof that.data('href') != 'undefined') ? that.data('href').replace('{{DOMAIN}}', '') : '';
+                        console.log(that.data('href'));
+                        if (allowPush(e, url, that)) {
+                            e.preventDefault();
+                            history.pushState({load:true, module:'leave'}, '', url);
+                            getContent();            
+                            //this is for the overlay
+                            //var curtab = $('#current_tab').html();
+                            //toggleMinMax(curtab);
+                        }
+                        else{ 
+                            //need to load some error msg
+                        }
+                    });
+                };
+                //press escape to remove content
+                function keyDown(e) {
+                    var keycode = e.which
+                    if(keycode == 27){
+                        $('#overlay').hide();
+                        $("html").css("overflow", "auto");
+                        //remove the old page
+                        var curtab = $('#current_tab').html();
+                        $('#current_tab').html('');
+                        $('#page' + curtab).removeClass('current');
+                        $('#page' + curtab).hide();
+                        $('#min_max' + curtab).removeClass('current-icon');
+                        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+                    }
+                }
+
+                document.onkeydown = keyDown
+                document.captureEvents(Event.KEYDOWN)
+
+                //If we have an object in mind we need to show the overlay
+                {% if pp_cache.object %}
+                    toggleMinMax('{{pp_cache.object.pk}}');
+                {% endif %}
+            });
+    
+            $(window).load(function(){
+                $('#panels').masonry('reload');
+            });
+        </script>        
+    </body>
+
+    {% endpp_get_cached_data %}
+</html>

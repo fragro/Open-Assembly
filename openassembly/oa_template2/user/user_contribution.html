@@ -1,0 +1,67 @@
+   
+User Contributions
+
+{% pp_get_reputation_events user=object start=start end=end %}
+    <ul>
+    {% for note in pp_reputation.reputation_events %}
+        <li>
+            <a href="{{note.get_absolute_url}}">
+                {{note.created_dt}} -
+
+                <!-- this bunch of junk just turns out to be a piece of text -->
+                {% if note.related_object.text %}
+
+                    {% pp_slice obj=note.related_object.text amt=30 %}
+                        {% if note.related_object.text|length > 30 %}
+                            {{pp_tag.sliced}}[...]
+                        {% else %}
+                            {{pp_tag.sliced}}
+                        {% endif %}
+                    {% endpp_slice %}
+
+                {% else %}
+
+                    {% if note.related_object.content_object.summary %}
+                    
+                    {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
+                        {% if note.related_object.content_object.summary|length > 30 %}
+                            {{pp_tag.sliced}}[...]
+                        {% else %}
+                            {{pp_tag.sliced}}
+                        {% endif %}
+                    {% endpp_slice %}      
+                                                              
+                    {% else %}
+                        {% if note.related_object %}
+
+                            {% pp_slice obj=note.related_object amt=30 %}
+                                {% if note.related_object|length > 30 %}
+                                    {{pp_tag.sliced}}[...]
+                                {% else %}
+                                    {{pp_tag.sliced}}
+                                {% endif %}
+                            {% endpp_slice %}  
+                        {% else %}
+                          ERR
+                        {% endif %}  
+                    {% endif %}
+                {% endif %}
+            </a>
+        </li>
+    {% endfor %} 
+    </ul>
+    <a href="{% pp_url template='user_profile.html' dimension='activity' object=object start=0 end=20 %}">(view all)</a>
+
+    {% if dimension == 'activity' %}
+        <ul>
+            {% for s,e,n in pp_reputation.rangelist %}
+               {% if not s > pp_reputation.count %}
+                <li>
+                    <a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endpp_get_reputation_events %}

@@ -1,0 +1,54 @@
+{% extends 'etc/panel_listing.html' %}
+
+{% load topictags %}
+{% load tag_helpers %}
+
+<!--topic source -->
+{% block li_id %}
+
+<li id="{{object.pk}}">
+
+{% endblock %}
+
+
+{% block listing %}
+        <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.children }}</a>
+
+        <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.group_members}}</a>
+
+        <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> 
+
+
+    {% cani object=object user=user %}
+        {% if pp_permissions.permission %}
+          {% pp_get_contenttype_id object=object %}
+            <a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
+          {% endpp_get_contenttype_id %}
+
+        {% else %}
+
+            <a>
+
+        {% endif %}
+    {% endcani %}  
+        {% pp_get_sources object=object type='img' %}
+
+            {% if pp_source.cur_img %}
+                <img src="/media/{{pp_source.cur_img.thumbnail}}" alt="{{object.content_object.summary}}">
+            {% else %}
+               {# <img src="/static/img/group_header.jpg" alt="{{object.summary}}"> #}
+            {% endif %}
+        {% endpp_get_sources %}
+    </a>
+
+
+
+    {% pp_slice obj=object.description amt=200 %}
+        {% if object.description|length > 200 %}
+            {{pp_tag.sliced|markdown}}[...]
+        {% else %}
+            {{pp_tag.sliced|markdown}}
+        {% endif %}
+    {% endpp_slice %}
+
+{% endblock %}

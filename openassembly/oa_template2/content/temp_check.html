@@ -1,0 +1,64 @@
+<!--Requires a consensus object -->
+ <script type="text/javascript" src="/static/js/highcharts.js"></script>
+
+{% load consensustags %}
+
+{% pp_consensus_get object=object.pk %}
+
+          {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
+             {{pp_consensus.consensus.chart_data }}
+
+               {% if pp_consensus.chart %}
+                  <script>
+                  var chart1; // globally available
+                  $(document).ready(function() {
+                        chart1 = new Highcharts.Chart({
+                           chart: {
+                              renderTo: 'chart',
+                              type: 'pie',
+                           },
+                           title: {
+                              text: 'Temperature Check'
+                        },
+                           tooltip: {
+                              formatter: function() {
+                                 return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                              }
+                           },
+                           yAxis: {
+                              title: {
+                                 text: 'Consensus'
+                              }
+                           },
+                           plotOptions: {
+                              pie: {
+                                 allowPointSelect: true,
+                                 cursor: 'pointer',
+                                 dataLabels: {
+                                    enabled: false
+                                 },
+                              }
+                           },
+                          credits: {
+                              enabled: false
+                          },
+                           series: {{pp_consensus.chart_data|safe}},
+                        });
+                     });
+                     </script>
+
+                     <!-- NEED THIS ID -->
+                      <div id='chart'> {{pp_consensus.chart_data|safe}} </div>
+
+                           Avg. Quality Rating:
+
+                           {% if pp_consensus.mean_information %}
+                              {{pp_consensus.mean_information|floatformat:"1"}}
+                           {% else %}
+                           N/A 
+                           {% endif %}
+
+                  {% endif %}
+          {% endpp_consensus_chart %}
+
+{% endpp_consensus_get %}

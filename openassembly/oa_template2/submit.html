@@ -1,0 +1,43 @@
+{% extends 'skeleton/page.html'%}
+
+{% load pp_url %}
+{% load blobtags %}
+{% load argumenttags %}
+{% load messagetags %}
+
+{% block content%}
+
+    {% if user.is_authenticated %}
+        
+        {% if dimension == 'edit' %}
+
+            <h2>Editing {{object.get_verbose_name|title}} submitted on {{object.created_dt|date:"(d/m/Y"}})</h2>
+
+                {% include 'forms/pp_blobedit_form.html' %}
+
+        {% else %}
+        
+            {% pp_get_blob_subcontext dimension='tem' %}
+
+                {% pp_show_blobchoices object=object dimension='tem' user=user%}
+                   
+                        <span id="pp_blob_form">
+
+                            {% include 'forms/pp_blob_form.html' %}
+                        
+                        </span>
+
+                {% endpp_show_blobchoices %}
+
+            {% endpp_get_blob_subcontext %}
+               
+        {% endif %}
+
+    {% else %}
+
+    <h2><a class="nobbq" href="{% pp_url template='register.html' %}" >Login or Register to Submit Content!</a></h2>
+
+    {% endif %}
+
+{% endblock content %}
+

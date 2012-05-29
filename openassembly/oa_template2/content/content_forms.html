@@ -1,0 +1,65 @@
+                                {% if user.is_authenticated %}
+                                <h2 class="acc_trigger"><a href="#"><img src="/static/img/comment.jpg">Comment</a></h2>
+                                <div class="acc_container">
+                                    <div class="block">
+                                       <div id="pp_comment_form" class="reply_comment">
+                                
+
+                                       </div>
+                                    </div>
+                                </div>
+
+                                {% if pp_topic.in_group %}
+           
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/agree.jpg">Write an Argument Supporting</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_argument_form_yea" class="reply_comment>">
+                                                
+                                        
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/disagree.jpg">Write an Argument Against</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_argument_form_nay" class="reply_comment">
+                                                
+                  
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/info.jpg">Add Sources/Citations or Tags</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_tagsource_form" class="reply_comment">
+
+                                            </div>
+                                            <div id="pp_tag_form">
+                              
+                                            </div>
+                                            <div id="pp_urlsource_form">
+                                     
+                                            </div>
+                                        </div>
+                                    </div>
+                                 {% if object.child and pp_consensus.consensus.phase.curphase.phasename == 'nom' %}
+                                    <h2 class="acc_trigger"><a href="#"><img src="/static/img/idea.jpg">Nominate a {{object.forumdimension.name|title}} To Be Voted On</a></h2>
+                                    <div class="acc_container">
+                                        <div class="block">
+                                            <div id="pp_blob_child" class="reply_comment">
+                                                <noscript>
+                                                    {% include 'forms/pp_blob_child.html'%}
+                                               </noscript>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                            {% endif %}
+
+                {% endif %}
