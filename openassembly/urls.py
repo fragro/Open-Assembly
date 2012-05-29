@@ -13,6 +13,8 @@ from ajaxapi.views import setup_admin, confirm, add_platform, change_hash_dim, c
 from pirate_login.views import logout_view
 from pirate_consensus.views import set_ranked_vote, confirm_ranked_vote, del_confirm_ranked_vote
 
+from oa_dashboard.views import del_board, add_board, sort_board, increase_zoom, decrease_zoom
+
 from oa_cache.views import load_page, nuke_memcache, update_ranks, side_effect, load_usersaltcache
 from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm
 
@@ -99,6 +101,16 @@ urlpatterns += patterns('ajaxapi.views',
     (r'^live_search/$', 'live_search'),
 )
 
+urlpatterns += parser.patterns('',
+    (r'^add_board/', add_board),
+    (r'^sort_board/', sort_board),
+    (r'^del_board/', del_board),
+    (r'^increase_zoom/', increase_zoom),
+    (r'^decrease_zoom/', decrease_zoom),
+
+)
+
+
 #tracking
 urlpatterns += patterns('',
     (r'^tracking/', include('tracking.urls')),
@@ -108,7 +120,6 @@ urlpatterns += patterns('',
 urlpatterns += patterns('',
    # all my other url mappings
    (r'^api/', include('api.urls')),
-    #welcome page goes absolutely last!
 )
 
 
