@@ -204,6 +204,9 @@ ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.
     template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
     is_toggle=True, object_specific=True, load_last=True)
 
+pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_topic_form.html",
+                         div_id="#create_group", jquery_cmd="html", redirect=True)
+
 ppreplysdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppreplycache.pk,
         template="content/comment.html", div_id="#comment_links", jquery_cmd="append", object_specific=True)
 

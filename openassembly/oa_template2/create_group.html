@@ -13,7 +13,7 @@
 
             {% endif %}
 
-                <form id="create_group" method="post" action="">
+                <form id="pp_topic_form" method="post" action="">
                             {{ pp_topic.form.form_id}}
                             
                             Name of Group:<br>{{ pp_topic.form.summary}}<br>
@@ -26,15 +26,15 @@
                         {% if user.is_authenticated and user.is_active %}   
                         <div id="errors" class="errors">{{ pp_topic.errors }}</div>
                                                          
-                        <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_create_group"></span>
+                        <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_topic_form"></span>
                 </form>
                         {% else %} 
                             <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
                 <script>
 
-                  $("form#create_group").submit(function(e){
-                        $("#submit_create_group").html("<b>Submitting...</b>")
+                  $("form#pp_topic_form").submit(function(e){
+                        $("#submit_pp_topic_form").html("<b>Submitting...</b>")
                         addObject(e);
                     });
 
