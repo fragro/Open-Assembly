@@ -7,8 +7,21 @@
     <li class="panel_dropdown">
         <i class="icon-cog"></i>
         <ul>
-            <li><a href="#">Order by Date</a></li>
-            <li><a href="#">Order by Activity</a></li>
+            {% if dashobj.boardname == 'Proposals' %}
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Activity</a></li>
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'cns')">Order by Agreement</a></li>
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Controversy</a></li>
+            {% endif %}
+            {% if dashobj.boardname == 'Groups' %}
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Proposals</a></li>
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Members</a></li>
+            {% endif %}
+            {% if dashobj.boardname == 'Members' %}
+                <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Joined Date</a></li>
+            {% endif %}
+
             <li class="delete_panel"><a href="javascript:;" onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
         </ul>
     </li>

@@ -1,11 +1,13 @@
 {% load pp_url %}
 {% load topictags %}
 
+    {% pp_get_cached_data request=request %}
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
     <head>
 
-    {% pp_get_cached_data request=request %}
 
         {% include 'etc/meta.html' %}
 
@@ -16,6 +18,7 @@
         <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
         <link rel="stylesheet" type="text/css" href="/static/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
+        <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
 
     </head>
     <body>
@@ -216,11 +219,12 @@
             
         </div>
         
-        <div id="overlay"></div>
+        <div id="overlay" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="display:auto;"{% else %}style="display:none;"{% endif %}></div>
         
         <!-- Tabs -->
         <div id="tabs" class="clearfix">
-            <div id="current_tab"></div>
+
+            <div id="current_tab">{{pp_cache.rendertype}}{{pp_cache.object.pk}}</div>
             <div id="tab_ruler"></div>
 
             {{pp_cache.data.tab_ruler|safe}}
@@ -249,6 +253,8 @@
 
         <script type="text/javascript" src="/static/js/motionpack.js"></script>
         <script type="text/javascript" src="/static/js/slideto.min.js"></script>
+
+        <script type="text/javascript" src="/static/js/etherpad.js"></script>
 
         <script type='text/javascript' src='/static/markitup/jquery.markitup.js'></script>
         <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
@@ -443,10 +449,6 @@
                 document.onkeydown = keyDown
                 document.captureEvents(Event.KEYDOWN)
 
-                //If we have an object in mind we need to show the overlay
-                {% if pp_cache.object %}
-                    toggleMinMax('{{pp_cache.object.pk}}');
-                {% endif %}
             });
     
             $(window).load(function(){

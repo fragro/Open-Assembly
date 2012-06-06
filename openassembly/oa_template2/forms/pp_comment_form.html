@@ -3,7 +3,7 @@
 {% load pp_url %}
 
     {% pp_comment_form POST=request.POST path=request.path user=user object=object%}
-        <form id="pp_comment_form" method="post" action="">
+        <form id="pp_comment_form{{object.pk}}" method="post" action="">
             <div id="errors" class="errors">{{ pp_comment.errors }}</div>
                     <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
                     {{ pp_comment.form.text }}
@@ -35,7 +35,7 @@
 
 <script>
 
-  $("form#pp_comment_form").submit(function(e){
+  $("form#pp_comment_form{{object.pk}}").submit(function(e){
         $("#submit_pp_comment_form").html("<b>Submitting...</b>")
         //slideup('pp_formatting_help');
         addObject(e);

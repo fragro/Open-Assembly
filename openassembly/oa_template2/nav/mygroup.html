@@ -6,7 +6,8 @@
             <a href="javascript:;" onClick="push_dashboard('{% pp_url template='members.html' object=group.topic %}', 1, 'Members');">{{group.topic.group_members}} Members <i class="icon-list-alt icon-white"></i></a> |
             <a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' object=group.topic %}', 1, 'Proposals');">{{group.topic.children}} Proposals<i class="icon-list-alt icon-white"></i></a> |
             <a href="javascript:;" onClick="push_dashboard('{% pp_url template='chat.html' object=group.topic %}', 1, 'Chat');">Chat <i class="icon-list-alt icon-white"></i></a> |
-            <a href="javascript:;" onClick="push_dashboard('{% pp_url template='stream.html' object=group.topic %}', 1, 'Stream');">Stream <i class="icon-list-alt icon-white"></i></a>
+            <a href="javascript:;" onClick="push_dashboard('{% pp_url template='stream.html' object=group.topic %}', 1, 'Stream');">Stream <i class="icon-list-alt icon-white"></i></a> | 
+            <a data-href="{% pp_url template='interact.html' object=group.topic %}" href="{% pp_url template='interact.html' object=group.topic %}">Interact <i class="icon-list-alt icon-white"></i></a>
         </div>
     </div>
 </li>

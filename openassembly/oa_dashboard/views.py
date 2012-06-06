@@ -4,6 +4,7 @@ import BeautifulSoup
 from oa_dashboard.tasks import async_sort_board, async_del_board, save_board
 from oa_cache.views import render_hashed
 from oa_dashboard.models import DashboardPanel
+from oa_cache.models import interpret_hash, build_hash
 from django.template.loader import render_to_string
 
 
@@ -95,6 +96,29 @@ def sort_board(request):
         sorted_list = sorted_str.split(',')
         async_sort_board.apply_async(args=[sorted_list])
         results = {'FAIL': False}
+
+        return HttpResponse(simplejson.dumps(results),
+                    mimetype='application/json')
+
+
+def resort_board(request):
+    if not request.user.is_authenticated()  or not request.user.is_active:
+        #needs to popup registration dialog instead
+        return HttpResponse(simplejson.dumps({'FAIL': True}),
+                                mimetype='application/json')
+
+    if request.method == 'POST':
+        d_id = request.POST[u'dashboard_id']
+        dim = request.POST[u'sort_key']
+
+        dash = DashboardPanel.objects.get(pk=d_id)
+        key, rendertype, paramdict = interpret_hash(dash.plank)
+        paramdict['DIM_KEY'] = dim
+        key = build_hash(rendertype, paramdict, add_domain=False)
+        dash.plank = key
+        dash.save()
+
+        results = {'FAIL': False, 'dash_id': dash.dashboard_id, 'plank': dash.plank}
 
         return HttpResponse(simplejson.dumps(results),
                     mimetype='application/json')

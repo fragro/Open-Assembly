@@ -569,7 +569,6 @@ iframe {
     position:fixed;
     top:0;
     left:0;
-    display:none;
 }
 #tab_ruler {
     overflow:hidden;

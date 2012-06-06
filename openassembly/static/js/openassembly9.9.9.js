@@ -410,6 +410,23 @@ function decrease_zoom(obj_pk, dim, path, dash_id){
   }, "json");
 }
 
+function resort_dashboard(dash_id, sort_key){
+  
+  $.post("/resort_board/", {dashboard_id: dash_id, sort_key: sort_key},
+  function(data) {
+      if(data.FAIL === true){
+         //$(ui.item).fadeOut('slow', function() {
+          //    $(ui.sender).append(ui.item);
+          //    $(ui.item).fadeIn('slow');
+          //});
+      }
+      if(data.FAIL === false){
+          //chat window should be resized
+         refresh_dashboard(data.plank, data.dash_id);
+      }
+  }, "json");
+}
+
 function refresh_dashboard(path, dash_id){
   
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null},
@@ -607,10 +624,6 @@ function toggleMinMax(t){
     var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
     var nempty = $('#pages').find('.current').length === 0;
 
-    if(nempty && is_add){
-        $('#overlay').show();
-    }
-
     if(!nempty && !is_add){
         $('#overlay').hide();
         $("html").css("overflow", "auto");
@@ -618,6 +631,7 @@ function toggleMinMax(t){
     }
 
     if(t != curtab){
+        $('#overlay').show();
         //add new page
         $('#page' + t).show();
         $('#minmax' + t).addClass('current-icon');
@@ -634,7 +648,7 @@ function toggleMinMax(t){
         //remove the old page
         $('#page' + curtab).removeClass('current');
         $('#page' + curtab).hide();
-        $('#min_max' + curtab).removeClass('current-icon');
+        $('#minmax' + curtab).removeClass('current-icon');
         $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
     }
 };

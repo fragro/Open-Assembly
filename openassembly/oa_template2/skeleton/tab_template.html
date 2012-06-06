@@ -19,6 +19,7 @@
         if(t != curtab){
             //add new page
             $('#page' + t).show();
+            $('#overlay').show();
             $('#minmax' + t).addClass('current-icon');
             $('#page' + t).addClass('current');
             $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
@@ -46,6 +47,7 @@
         tabobj.fadeOut(600, function(){
             tabobj.remove();
             $('#page' + tab).remove();
+            $('#overlay').hide();
         });
         var window_width = $(window).width();
             ruler = $('#tab_ruler');

@@ -22,7 +22,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
     request = kwargs.get('request', None)
 
-    ret, obj, rtype = render_hashed(request, None, None)
+    ret, obj, rtype = render_hashed(request, None, None, extracontext={'TYPE': 'HTML'})
 
     namespace['rendertype'] = rtype
     namespace['data'] = ret

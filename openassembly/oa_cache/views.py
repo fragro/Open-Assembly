@@ -12,6 +12,7 @@ from settings import DOMAIN
 from oa_cache.tasks import track_visitors
 import random
 import BeautifulSoup
+from types import ListType
 from collections import defaultdict
 
 
@@ -237,8 +238,10 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                 context = {'obj_pk': li.pk, 'object': li, 'dimension': dimension}
                 context.update(extracontext)
                 html = lm.render(context, forcerender=forcerender)
-                renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
-
+                if lm.object_specific:
+                    renders.append({'div': lm.div_id + str(obj.pk), 'html': html, 'type': lm.jquery_cmd})
+                else:
+                    renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
             memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))
         else:
             renders, cached_list, tot_items = renders
@@ -342,9 +345,9 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         context.update(extracontext)
         for usc in r:
             html = usc.render(RequestContext(request, context))
-            rendered_list.append({'renderytype': 'loadlast', 'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
+            rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     rendered_list.extend(load_last)
-    return {'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to, 'rendertype': rendertype}
+    return {'object': obj, 'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to, 'rendertype': rendertype}
 
 
 """
@@ -491,6 +494,10 @@ decreased the latency of the system.
 def render_hashed(request, key, user, extracontext={}):
     ###Need to get all of the rendered html
     ###and integrate via Beautiful
+    if 'TYPE' in extracontext:
+        htmlrender = extracontext['TYPE'] == 'HTML'
+    else:
+        htmlrender = 'JS'
     if key is None:
         key = request.META['PATH_INFO']
     empty = True
@@ -500,20 +507,36 @@ def render_hashed(request, key, user, extracontext={}):
     rendered_list = retdict['rendered_list']
     ret = defaultdict(list)
     for i in rendered_list:
-        soup = BeautifulSoup.BeautifulSoup(i['html'])
-        if i['type'] == 'html':
-            ret[i['div']] = [soup]
-        elif i['type'] == 'append':
-            ret[i['div']].append(soup)
+        if type(i['html']) == ListType:
+            for v, k in i['html']:
+                soup = BeautifulSoup.BeautifulSoup(v)
+                if i['type'] == 'html':
+                    ret[i['div']] = [soup]
+                elif i['type'] == 'append':
+                    ret[i['div']].append(soup)
+        else:
+            print i['div'] + ' : ' + i['type']
+            soup = BeautifulSoup.BeautifulSoup(i['html'])
+            if '#pages' in ret and i['div'] != '#tab_ruler':
+                text = ret['#pages'][0].findAll('div', id=i['div'][1:], limit=1)
+                #print text
+                for i in text:
+                    i.insert(0, soup)
+            elif i['type'] == 'html':
+                ret[i['div']] = [soup]
+            elif i['type'] == 'append':
+                ret[i['div']].append(soup)
     rendertype = retdict['rendertype']
     final = {}
     for k, v in ret.items():
         r = ''
         for val in v:
             r += val.prettify()
-        final[k] = r
-
-    return final, None, rendertype
+        if htmlrender:
+            final[k[1:]] = r
+        else:
+            final[k] = r
+    return final, retdict['object'], rendertype
 
 
 def load_page_ret(request, ts, url, c):

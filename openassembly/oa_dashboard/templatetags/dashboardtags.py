@@ -31,7 +31,7 @@ def oa_get_dashboard(context, nodelist, *args, **kwargs):
         #for each board, render the respective information
         dash = []
         for board in boards:
-            ret, obj, rtype = render_hashed(request, board.plank, user, extracontext={'dashobj': board})
+            ret, obj, rtype = render_hashed(request, board.plank, user, extracontext={'dashobj': board, 'TYPE': 'HTML'})
             print board
             dash.append((ret, obj, board, rtype))
         namespace['boards'] = dash

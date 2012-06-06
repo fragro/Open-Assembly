@@ -22,6 +22,7 @@
 
     <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="/static/js/etherpad.js"></script>
 
     <script type="text/javascript" src="/static/js/jquery.ui.stars.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
@@ -48,9 +49,16 @@
             {% endif %}
 
         {% endpp_consensus_get %}
+
+        $('#pad{{object.pk}}').pad({'padId':'{{object.pk}}', 'host':'http://notes.occupy.net','showChat':'true','baseUrl':'/p/', 'showControls':'true', 'showLineNumbers':'false','userName' : '{{user.username}}'});
+
+
     });
 
     </script>
+
+    <div id="pad{{object.pk}}"></div>
+   
     {% pp_get_root object=object %} 
         {% oa_get_group_settings object=pp_topic.root %}
         
@@ -243,8 +251,7 @@
 
     {% endpp_get_argument_count %}
 
-    <div id="content_children">
-                                
+    <div id="content_children{{object.pk}}">                                
                                
     </div>
 
