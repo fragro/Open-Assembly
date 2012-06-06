@@ -1,0 +1,34 @@
+{% load verificationtags %}
+
+ {% oa_facilitators_form POST=request.POST object=object %}
+    <form id="oa_facilitators_form" method="post" action="">
+                {{ oa_ver.form.form_id }}
+                <b>Account Name:</b><br>{{ oa_ver.form.username }}
+                <p>
+                <i>Add a Facilitator for this Group. Facilitator privileges cannot currently be removed so be cautious. In the future facilitator recall and more sophisticated ways to ensure trust will be provided.</i>
+                </p>
+                {{csrf_string|safe}}
+            {% if user.is_authenticated and user.is_active %}                                                            
+            <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_oa_facilitators_form">
+                
+                {% for err in oa_ver.errors %}
+                    {{err}}<br>
+                {% endfor %}
+                <span style="color:red;">{{oa_ver.error}}</span>
+                <span style="color:black;">{{oa_ver.done}}</span>
+            </span>
+    </form>
+            {% else %} 
+                <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+            {% endif %}
+
+
+        <script>
+          $("form#oa_facilitators_form").submit(function(e){
+                $("#submit_oa_facilitators_form").html("<b>Submitting...</b>");
+                addObject(e);
+                $("#submit_oa_facilitators_form").html("<b>Sent!</b>");
+          });
+        </script>
+
+    {% endoa_facilitators_form %}

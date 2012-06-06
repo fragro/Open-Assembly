@@ -1,0 +1,31 @@
+
+ {% load verificationtags %}
+
+ {% oa_referral_form POST=request.POST user=user object=object %}
+    <form id="oa_referral_form" method="post" action="">
+        <input type="hidden" name="form_id" value="oa_referral_form" id="id_form_id"/>
+                <i>Add new members via email. Insert emails delimited by comma.</i>
+                {{ oa_ver.form.as_p }}
+
+                {{csrf_string|safe}}
+            {% if user.is_authenticated and user.is_active %}                                                            
+            <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_oa_referral_form">
+                
+                {% for err in oa_ver.errors %}
+                    {{err}}<br>
+                {% endfor %}
+            </span>
+    </form>
+            {% else %} 
+                <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+            {% endif %}
+
+        <script>
+          $("form#oa_referral_form").submit(function(e){
+                $("#submit_oa_referral_form").html("<b>Sending...</b>");
+                addObject(e);
+            });
+        </script>
+
+    {% endoa_referral_form %}
+

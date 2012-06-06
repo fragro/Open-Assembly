@@ -1,0 +1,45 @@
+
+{% load topictags %}
+{% load pp_url %}
+
+{% block content %}
+
+    {% pp_topic_form POST=request.POST user=user topic=object %}
+
+                <form id="pp_edittopic_form" method="post" action="">
+                    <div id="errors" class="errors">{{ pp_topic.errors }}</div>
+                            {{ pp_topic.form.form_id}}
+                            
+                            Name of Group:<br>{{ pp_topic.form.summary}}<br>
+                            Short Name (less than 20 char):<br>{{ pp_topic.form.shortname}}<br>
+
+                            Purpose of Group:<br>{{ pp_topic.form.description}}<br>
+                            Link to Outside Website:<br>{{ pp_topic.form.more_info}}<br>
+
+                            {{csrf_string|safe}}
+                        {% if user.is_authenticated and user.is_active %}                                                            
+                        <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_edittopic_form"></span>
+                </form>
+                        {% else %} 
+                            <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                        {% endif %}
+
+                        {% if pp_topic.complete %}
+
+                            Changes Submitted ({% now "jS F Y H:i:s" %})
+                        
+                        {% endif %}
+                <script>
+
+                  $("form#pp_edittopic_form").submit(function(e){
+                        addObject(e);
+                        $("#submit_pp_edittopic_form").html("<b>Submitting...</b>")
+
+                    });
+
+                </script>
+
+                <span id="content_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
+    {% endpp_topic_form %}
+
+{% endblock %}

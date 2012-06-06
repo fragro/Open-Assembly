@@ -1,0 +1,23 @@
+ {% load topictags %}
+
+  <script>
+
+  $("form#submitform5").submit(function(e){
+        $("#submit_submitform5").html("<b>Submitting...</b>")
+        addObject(e);
+        $("#submit_submitform5").html("<b>Complete!</b>")
+
+    });
+
+</script>
+
+{% pp_getcreate_setting topic=object %}
+   {% pp_setting_form POST=request.POST object=pp_topic.settings %}
+         {{ pp_source.form.errors }}
+          <form id="submitform5" method="post" action="">
+              {{pp_topic.form.as_p}}
+            <input type="submit" class="button" value="Submit">{% if pp_topic.complete %}Changes Submitted ({% now "jS F Y H:i:s" %}){% endif %}
+          </form>
+      {% endpp_setting_form %}
+{% endpp_getcreate_setting %}
+
