@@ -74,8 +74,9 @@ def interpret_hash(h):
     return h, rendertype, retdict
 
 
-def build_hash(rendertype, paramdict):
+def build_hash(rendertype, paramdict, add_domain=True):
     l = '/p/' + rendertype
+    obj_pk = None
     for k, v in paramdict.items():
         if k == 'OBJ_KEY':
             obj_pk = v
@@ -83,13 +84,15 @@ def build_hash(rendertype, paramdict):
             ctype_pk = v
         else:
             l += '/' + OPP_DIMS[k] + v
-    try:
-        obj_str = get_pretty_url(ctype_pk, obj_pk)
-        l += '/' + OPP_DIMS['STR_KEY'] + obj_str
-    except:
-        l += '/' + OPP_DIMS['OBJ_KEY'] + obj_pk
-        l += '/' + OPP_DIMS['TYPE_KEY'] + ctype_pk
-    l = DOMAIN + l
+    if obj_pk != None:
+        try:
+            obj_str = get_pretty_url(ctype_pk, obj_pk)
+            l += '/' + OPP_DIMS['STR_KEY'] + obj_str
+        except:
+            l += '/' + OPP_DIMS['OBJ_KEY'] + obj_pk
+            l += '/' + OPP_DIMS['TYPE_KEY'] + ctype_pk
+    if add_domain:
+        l = DOMAIN + l
     return l
 
 
@@ -105,6 +108,7 @@ it is a ListCache, or a detailed content item/user if otherwise.
     main = models.BooleanField(default=False)
     is_recursive = models.BooleanField(default=False)
     jquery_cmd = models.CharField(max_length=200, blank=True, null=True)
+    object_specific = models.BooleanField(default=False)
 
     def recursive_render(self, tree, context, forcerender):
         ret_html = ""
