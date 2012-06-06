@@ -233,6 +233,8 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             renders = []
             #get list of objects to be rendered
             cached_list, tot_items = l.get_or_create_list(key, paramdict, forcerender=forcerender)
+            if len(cached_list) == 0:
+                renders.append({'div': lm.div_id, 'html': '', 'type': lm.jquery_cmd})
             for li in cached_list:
                 #render each object in the list
                 context = {'obj_pk': li.pk, 'object': li, 'dimension': dimension}
