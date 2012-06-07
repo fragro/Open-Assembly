@@ -1,5 +1,16 @@
 <script>
 
+    function minimizeAll(){
+        var curtab = $('#current_tab').html();
+        $('#page' + curtab).removeClass('current');
+        $('#page' + curtab).hide();
+        $('#tab' + curtab).removeClass('current-icon');
+        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+        $('#overlay').hide();
+
+
+    }
+
     function toggleMinMax(t){
         var curtab = $('#current_tab').html();
         var keepif = (curtab == '');
@@ -20,11 +31,10 @@
             //add new page
             $('#page' + t).show();
             $('#overlay').show();
-            $('#minmax' + t).addClass('current-icon');
+            $('#tab' + t).addClass('current-icon');
             $('#page' + t).addClass('current');
             $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
             $("html").css("overflow", "hidden");
-
 
             //set the current div
             $('#current_tab').html(t);
@@ -36,8 +46,8 @@
             //remove the old page
             $('#page' + curtab).removeClass('current');
             $('#page' + curtab).hide();
-            $('#minmax' + curtab).removeClass('current-icon');
-            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+            $('#tab' + curtab).removeClass('current-icon');
+            $('#minmax' + curtab).find('i').toggleClass('icon-plus-sign icon-minus-sign');
         }
     };
 
@@ -88,21 +98,26 @@
 
 </script>
 {% if object %}
-<ul class="tab" id="tab{{template}}{{object.pk}}">
-    <li>
+<ul class="tab">
+    <li id="tab{{template}}{{object.pk}}">
         <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{object.pk}}"class="min_max"><a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');"><i class="icon-plus-sign icon-white"></i></a></li>
+            <li id="minmax{{template}}{{object.pk}}"class="min_max">
+                <a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');">
+                    <i class="icon-minus-sign icon-white"></i>
+                </a>
+            </li>
+
             <li><a href="javascript:;" onClick="tabRemove('{{template}}{{object.pk}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>
 </ul>
 {% else %}
-<ul class="tab" id="tab{{template}}{{obj_pk}}">
-    <li>
+<ul class="tab">
+    <li  id="tab{{template}}{{obj_pk}}">
         <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{obj_pk}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');"><i class="icon-plus-sign icon-white"></i></a></li>
+            <li id="minmax{{template}}{{obj_pk}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');"><i class="icon-minus-sign icon-white"></i></a></li>
             <li><a href="javascript:;" onClick="tabRemove('{{template}}{{obj_pk}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>

@@ -634,7 +634,7 @@ function toggleMinMax(t){
         $('#overlay').show();
         //add new page
         $('#page' + t).show();
-        $('#minmax' + t).addClass('current-icon');
+        $('#tab' + t).addClass('current-icon');
         $('#page' + t).addClass('current');
         $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
         $("html").css("overflow", "hidden");
@@ -648,7 +648,7 @@ function toggleMinMax(t){
         //remove the old page
         $('#page' + curtab).removeClass('current');
         $('#page' + curtab).hide();
-        $('#minmax' + curtab).removeClass('current-icon');
+        $('#tab' + curtab).removeClass('current-icon');
         $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
     }
 };

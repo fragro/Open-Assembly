@@ -644,3 +644,6 @@ a {
 #current_tab {
     display:none;
 }
+.current-icon {
+    background: red;
+}

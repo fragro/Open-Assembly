@@ -29,7 +29,7 @@
             <a class="nobbq" href="http://google.com" id="logo"><img src="/static/img/logo.png" alt=""></a>
             <ul id="nav">
                 <!-- Dashboard -->
-                <li><a href="/"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
+                <li><a href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
                 <!-- Inbox -->
                 {% if request.user.is_authenticated %}<li><a href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>{% endif %}
                 <!-- Browse -->
