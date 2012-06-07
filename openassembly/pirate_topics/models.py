@@ -106,6 +106,8 @@ def get_topics(parent, start, end, dimension, ctype_list):
         topic_list = topic_list.order_by('-children')
     elif dimension == 'n':
         topic_list = topic_list.order_by('-submit_date')
+    elif dimension == 'o':
+        topic_list = topic_list.order_by('submit_date')
     elif dimension == 'h':
         topic_list = topic_list.order_by('-group_members')
     count = topic_list.count()

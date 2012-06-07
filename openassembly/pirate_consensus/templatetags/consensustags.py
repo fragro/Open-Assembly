@@ -140,7 +140,10 @@ def pp_get_reporting_percentage(context, nodelist, *args, **kwargs):
     votes = UpDownVote.objects.filter(object_pk=obj.pk)
     groups = MyGroup.objects.filter(topic=topic)
 
-    namespace['reporting'] = votes.count() / float(groups.count())
+    try:
+        namespace['reporting'] = votes.count() / float(groups.count())
+    except:
+        namespace['reporting'] = 0.0
     output = nodelist.render(context)
     context.pop()
 

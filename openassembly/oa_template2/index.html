@@ -40,6 +40,10 @@
                             <h3>Groups</h3>
                             <ul>
                                 <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
                                 {% comment %}
 
                                 <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
@@ -55,6 +59,13 @@
                             <h3>Proposals</h3>
                             {% comment %}
                             <ul>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
+
+                                {% comment %}
                                 <li><a href="#">Age</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a href="#">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a href="#">by # of Comments</a><i class="icon-list-alt icon-white"></i></li>

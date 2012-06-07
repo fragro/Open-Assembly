@@ -192,7 +192,7 @@ content_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=deta
                          div_id="#tab_ruler", jquery_cmd="append")
 
 groupsettingsform, is_new = UserSaltCache.objects.get_or_create(is_toggle=False,
-    template="form/oa_group_settings_form.html", div_id="#oa_group_settings_form", jquery_cmd="html", load_last=True)
+    template="forms/oa_group_settings_form.html", div_id="#oa_group_settings_form", jquery_cmd="html", load_last=True)
 
 
 comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.html",
