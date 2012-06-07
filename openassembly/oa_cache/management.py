@@ -191,13 +191,16 @@ detailcache, is_new = ModelCache.objects.get_or_create(template="content/detail.
 content_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
+groupsettingsform, is_new = UserSaltCache.objects.get_or_create(is_toggle=False,
+    template="form/oa_group_settings_form.html", div_id="#oa_group_settings_form", jquery_cmd="html", load_last=True)
+
 
 comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.html",
     div_id="#content_children", content_type="item", is_recursive=True, object_specific=True, jquery_cmd="append")
 commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache.pk,
         template="comments", div_id="#content_children", content_type="item", default=True)
 
-##FORMS
+##FORMSvo
 ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
                         div_id="#pp_comment_form", jquery_cmd="html", is_toggle=True, load_last=True)
 ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
