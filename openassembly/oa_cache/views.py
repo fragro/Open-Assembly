@@ -331,7 +331,11 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                             c.render(RequestContext(request, {'template': rendertype, 'obj_pk': obj_pk, 'user': user}))})
             if rendered_list == []:
                 val = render_to_string(rendertype + '.html', context)
-                rendered_list = [{'div': '#pages', 'html': val, 'type': 'append', 'obj_pk': obj.pk}]
+                if obj is not None:
+                    rendered_list = [{'div': '#pages', 'html': val, 'type': 'append', 'obj_pk': obj.pk}]
+                else:
+                    rendered_list = [{'div': '#pages', 'html': val, 'type': 'append'}]
+
     #render all the user salt caches associated with this listindex.html#topics/_s0/_e20/_dh
     #i.e. the Sort By: is a user salt cache
     lu = UserSaltCache.objects.filter(opposite=True, **kwargs)
