@@ -352,7 +352,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
     if m is not None:
         r = UserSaltCache.objects.filter(model_cache=m.pk, load_last=True, **kwargs)
         context = {'dimension': dimension, 'object': obj,
-            'obj_pk': obj.pk, 'sort_type': paramdict.get('CTYPE_KEY', '')}
+            'obj_pk': obj_pk, 'sort_type': paramdict.get('CTYPE_KEY', '')}
         context.update(extracontext)
         for usc in r:
             html = usc.render(RequestContext(request, context))
