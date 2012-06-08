@@ -235,7 +235,12 @@ submit_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=submi
                          div_id="#tab_ruler", jquery_cmd="append")
 
 
-####EMAIL CONFIRMATION
+####REGISTRATION STUFF
+registercache, is_new = ModelCache.objects.get_or_create(template="etc/register.html",
+                div_id="#pages", content_type="register", main=True, jquery_cmd="append")
+register_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=registercache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
 confirmcache, is_new = ModelCache.objects.get_or_create(template="confirm.html",
                 div_id="#pages", content_type="confirm", main=True, jquery_cmd="append")
 confirmation_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=confirmcache.pk, template="skeleton/tab_template.html",

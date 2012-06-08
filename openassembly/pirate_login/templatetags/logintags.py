@@ -146,7 +146,7 @@ def pp_generate_key(context, nodelist, *args, **kwargs):
 
     else:
         form = KeyGenerator()
-    
+
     namespace['form'] = form
     output = nodelist.render(context)
     context.pop()    
@@ -217,7 +217,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                         mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                         ref.topic.group_members += 1
                                         ref.topic.save()
-                                    return HttpResponseRedirect('/p/check_key')
+                                    namespace['errors'] = 'Check your email for confirmation!'
                                     #except:
                                     #    namespace['errors'] = "Illegal Referral Key"
                                 else:
@@ -238,7 +238,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                               email_body,
                                               'fragro@gmail.com',
                                               [user.email])
-                                    return HttpResponseRedirect('/p/check_key')
+                                    namespace['errors'] = 'Check your email for confirmation!'
                     else:
                         namespace['errors'] = "Passwords are not the same. Try again."
             except HttpRedirectException, e:
