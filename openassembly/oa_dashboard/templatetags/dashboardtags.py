@@ -1,9 +1,8 @@
 from django import template
-from oa_platform.models import Platform, PlatformDimension
 from pirate_core import namespace_get
-from django.contrib.contenttypes.models import ContentType
 from oa_dashboard.models import DashboardPanel
 from oa_cache.views import render_hashed
+from oa_cache.models import interpret_hash
 
 from customtags.decorators import block_decorator
 
@@ -31,9 +30,14 @@ def oa_get_dashboard(context, nodelist, *args, **kwargs):
         #for each board, render the respective information
         dash = []
         for board in boards:
+            key, rendertype, paramdict = interpret_hash(board.plank)
             ret, obj, rtype = render_hashed(request, board.plank, user, extracontext={'dashobj': board, 'TYPE': 'HTML'})
+            if 'DIM_KEY' in paramdict:
+                dim = paramdict['DIM_KEY']
+            else:
+                dim = ''
             print board
-            dash.append((ret, obj, board, rtype))
+            dash.append((ret, obj, board, rtype, dim))
         namespace['boards'] = dash
     output = nodelist.render(context)
     context.pop()

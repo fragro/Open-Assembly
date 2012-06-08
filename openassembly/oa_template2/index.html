@@ -44,8 +44,8 @@
                                 <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
+            
                                 {% comment %}
-
                                 <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a href="#">by Age</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a href="#">by Category</a><i class="icon-list-alt icon-white"></i></li>
@@ -57,44 +57,18 @@
                         </div>
                         <div class="col col3">
                             <h3>Proposals</h3>
-                            {% comment %}
                             <ul>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
-
-                                {% comment %}
-                                <li><a href="#">Age</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">by # of Comments</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">by # of Votes</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">by Time Left</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Category</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Controversial</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Least Popular</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Most Popular</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' dimension='n' %}', 1, 'Proposals');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' dimension='h' %}', 1, 'Proposals');">by Hot</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li>                           
                             </ul>
-                            {% endcomment %}
                         </div>
                         <div class="col col3 last">
                             <h3>Members</h3>
                             <ul>
-                                <li><a href="#">Age</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Belongs to the Most Groups</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Is Mod of the Most Groups</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Least Active</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Least Popular</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Least Trusted</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Member Since</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Most Active</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Most Controversial</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Most Popular</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Most Trusted</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="#">Most Trusting</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' dimension='n' %}', 1, 'Proposals');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' dimension='h' %}', 1, 'Proposals');">by Hot</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li>  
                             </ul>
                         </div>
                     </div>
