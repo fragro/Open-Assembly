@@ -92,7 +92,11 @@ def get_users(parent, start, end, dimension, ctype_list):
             user_list = user_list[int(start):int(end)]
         return user_list, count
     else:
-        return [], 0
+        user_list = User.objects.all()
+        count = user_list.count()
+        if start is not None and end is not None:
+            user_list = user_list[int(start):int(end)]
+        return user_list, count
 
 
 def get_topics(parent, start, end, dimension, ctype_list):

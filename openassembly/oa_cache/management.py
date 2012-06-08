@@ -155,6 +155,12 @@ shortusercache, is_new = ModelCache.objects.get_or_create(template="user/user_sh
 userlistcache, is_new = ListCache.objects.get_or_create(model_cache=shortusercache.pk,
          template="users", div_id="#panels", content_type="members", default=True)
 
+##USER LISTS
+memberlistcache, is_new = ModelCache.objects.get_or_create(template="user/member_short.html",
+            div_id="#panels", content_type="users", jquery_cmd="append")
+largeuserlistcache, is_new = ListCache.objects.get_or_create(model_cache=memberlistcache.pk,
+         template="users", div_id="#panels", content_type="users", default=True)
+
 #GROUPS AND LISTING
 mcache, is_new = ModelCache.objects.get_or_create(template="group/group.html",
                 div_id="#pages", content_type="group", main=True, jquery_cmd="append")
