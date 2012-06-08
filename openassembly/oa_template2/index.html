@@ -170,11 +170,11 @@
                                 {% if request.user.is_authenticated %}
                                 <li><a href="{% pp_url template='user.html' object=request.user %}">Edit Profile</a></li>
                                 <li><a href="#">Help</a></li>
-                                <li><a class="nobbq" href="/logout/">Logout</a></li>
+                                <li><a class="nobbq" data-href="/logout/" href="/logout/">Logout</a></li>
                                 <li><a href="#">Report Abuse</a></li>
                                 <li><a href="#">View Profile</a></li>
                                 {% else %}
-                                <li><a class="nobbq" id="register" href="#mode">Register</a></li>
+                                <li><a class="nobbq" id="register" href="#mode" data-href="#mode">Register</a></li>
                                 <li><a href="#">Help</a></li>
                                 <li><a href="#">Report Abuse</a></li>
 
@@ -392,11 +392,12 @@
                 //we're popping states for nobbq events that should be loaded the usual way...
 
                 if (history.pushState) {
-                    var that = $(this);
-                    if(!that.hasClass('nobbq')){
-                        history.replaceState({load:true, module:'nobbq', url: that.data('href')}, '');
-                    }
                     $('body').delegate('a', 'click', function (e) {
+                        var that = $(this);
+                        if(that.hasClass('nobbq')){
+                            history.replaceState({load:true, module:'nobbq', url: that.data('href')}, '');
+                            js_redirect(that.data('href'));
+                        }
                         var that = $(this);
                         var url = (typeof that.data('href') != 'undefined') ? that.data('href').replace('{{DOMAIN}}', '') : '';
                         console.log(that.data('href'));
