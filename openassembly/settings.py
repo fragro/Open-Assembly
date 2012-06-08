@@ -269,8 +269,9 @@ ABSOLUTE_URL_OVERRIDES = {
 }
 
 
-
-
-
-
-
+DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
+EMAIL_HOST_PASSWORD = 'unicorns are sexy'
+EMAIL_PORT = 587
