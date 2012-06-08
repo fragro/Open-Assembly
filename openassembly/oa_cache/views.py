@@ -198,12 +198,17 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         else:
             contextual['object'] = user
         contextual.update(extracontext)
-        rendered_list.append({'obj_pk': contextual['object'].pk, 'div': m.div_id,
+        #set obj pk
+        try:
+            obj_pk = contextual['object'].pk
+        except:
+            obj_pk = None
+        rendered_list.append({'obj_pk': obj_pk, 'div': m.div_id,
             'type': m.jquery_cmd, 'html': m.render(contextual,
                     forcerender=True)})
         usc = UserSaltCache.objects.filter(model_cache=m.pk, load_last=False)
         for usc in u:
-           rendered_list.append({'obj_pk': obj.pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+            rendered_list.append({'obj_pk': obj_pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                        usc.render(RequestContext(request, contextual))})
 
     if request is not None:
