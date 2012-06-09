@@ -304,7 +304,6 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                 if user.is_active:
                     login(request, user)
                     #check the user's current location
-                    path = '/'
                     if dimension is not None:
                         try:
                             ref = Referral.objects.get(key=dimension, accepted=False)
@@ -320,7 +319,7 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                             return HttpResponseRedirect('/')
                         except:
                             namespace['errors'] = "Illegal Referral Key"
-                    return HttpResponseRedirect(path)
+                    namespace['complete'] = True
                 else:
                     namespace['errors'] = "Inactive Account. Reply to the Confirmation Email!"
 

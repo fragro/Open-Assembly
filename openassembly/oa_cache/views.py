@@ -196,13 +196,16 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         if obj is not None:
             contextual['object'] = obj
         else:
-            contextual['object'] = user
+            if user.is_authenticated():
+                contextual['object'] = user
+            else:
+                contextual['object'] = str(m.content_type)
         contextual.update(extracontext)
         #set obj pk
         try:
             obj_pk = contextual['object'].pk
         except:
-            obj_pk = None
+            obj_pk = m.content_type
         rendered_list.append({'obj_pk': obj_pk, 'div': m.div_id,
             'type': m.jquery_cmd, 'html': m.render(RequestContext(request, contextual))})
         usc = UserSaltCache.objects.filter(model_cache=m.pk, load_last=False)

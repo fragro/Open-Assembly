@@ -672,3 +672,19 @@ function hrefLess() {
     //     }
     // });
 };
+
+    function minimizeAll(){
+        var curtab = $('#current_tab').html();
+        if(curtab !== ''){
+            if($('#page' + curtab).hasClass('current')){
+                $('#page' + curtab).removeClass('current');
+                $('#page' + curtab).hide();
+            }
+            if($('#tab' + curtab).hasClass('current-icon')){
+                $('#tab' + curtab).removeClass('current-icon');
+            }
+            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+            $('#overlay').hide();
+            $('#current_tab').html('');
+        }
+    }

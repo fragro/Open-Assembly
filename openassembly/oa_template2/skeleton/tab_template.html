@@ -1,16 +1,5 @@
 <script>
 
-    function minimizeAll(){
-        var curtab = $('#current_tab').html();
-        $('#page' + curtab).removeClass('current');
-        $('#page' + curtab).hide();
-        $('#tab' + curtab).removeClass('current-icon');
-        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-        $('#overlay').hide();
-
-
-    }
-
     function toggleMinMax(t){
         var curtab = $('#current_tab').html();
         var keepif = (curtab == '');
@@ -99,7 +88,7 @@
 </script>
 {% if object %}
 <ul class="tab">
-    <li id="tab{{template}}{{object.pk}}">
+    <li id="tab{{template}}{{object.pk}}" class="current-icon">
         <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{template}}{{object.pk}}"class="min_max">
@@ -114,7 +103,7 @@
 </ul>
 {% else %}
 <ul class="tab">
-    <li  id="tab{{template}}{{obj_pk}}">
+    <li  id="tab{{template}}{{obj_pk}}" class="current-icon">
         <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{template}}{{obj_pk}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');"><i class="icon-minus-sign icon-white"></i></a></li>
