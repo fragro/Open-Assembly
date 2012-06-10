@@ -656,7 +656,7 @@ function toggleMinMax(t){
         $('#tab' + curtab).removeClass('current-icon');
         $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
     }
-};
+}
 
 // Remove's href from anchors and adds them as data attr (so browser status bars don't cover up OA's taskbar)
 function hrefLess() {
@@ -676,20 +676,20 @@ function hrefLess() {
     // //        window.location = $(this).data('href');
     //     }
     // });
-};
+}
 
-    function minimizeAll(){
-        var curtab = $('#current_tab').html();
-        if(curtab !== ''){
-            if($('#page' + curtab).hasClass('current')){
-                $('#page' + curtab).removeClass('current');
-                $('#page' + curtab).hide();
-            }
-            if($('#tab' + curtab).hasClass('current-icon')){
-                $('#tab' + curtab).removeClass('current-icon');
-            }
-            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-            $('#overlay').hide();
-            $('#current_tab').html('');
+function minimizeAll(){
+    var curtab = $('#current_tab').html();
+    if(curtab !== ''){
+        if($('#page' + curtab).hasClass('current')){
+            $('#page' + curtab).removeClass('current');
+            $('#page' + curtab).hide();
         }
+        if($('#tab' + curtab).hasClass('current-icon')){
+            $('#tab' + curtab).removeClass('current-icon');
+        }
+        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+        $('#overlay').hide();
+        $('#current_tab').html('');
     }
+}
