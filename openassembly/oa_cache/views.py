@@ -160,7 +160,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
     rendered_list = []
     load_last = []
 
-    extracontext.update({'template': rendertype, 'user': user})
+    extracontext.update({'template': rendertype, 'user': user, 'key': key.replace('/', '')})
 
     #get the obj if it exists
     ctype_id = paramdict.get('TYPE_KEY', None)
@@ -417,6 +417,7 @@ decreased the latency of the system.
             hashed = ''
         empty = request.GET.get('empty', None)
         hashed = hashed.replace(DOMAIN, '')
+        data['key'] = hashed.replace('/', '')
         if hashed == '/' and empty != 'false' and not request.user.is_authenticated():
             hashed = '/p/landing'
         elif hashed == '/' and empty != 'false' and request.user.is_authenticated():

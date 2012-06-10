@@ -43,11 +43,20 @@
     // Closes/removes Page/Tab
     function tabRemove(tab){
         tabobj = $('#tab' + tab);
-        tabobj.fadeOut(600, function(){
-            tabobj.remove();
-            $('#page' + tab).remove();
+        
+        //for whatever reason this stopped working...
+        //tabobj.fadeTo(600, 0, function(){
+        //    tabobj.remove();
+        //});
+        tabobj.remove();
+        $('#page' + tab).remove();
+        sessionStorage.removeItem(tab);
+        var curtab = $('#current_tab').html();
+        if (curtab == tab){
+            $('#current_tab').html('');
             $('#overlay').hide();
-        });
+        }
+
         var window_width = $(window).width();
             ruler = $('#tab_ruler');
             ruler_width = ruler.width();
@@ -88,26 +97,26 @@
 </script>
 {% if object %}
 <ul class="tab">
-    <li id="tab{{template}}{{object.pk}}" class="current-icon">
-        <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
+    <li id="tab{{key}}" class="current-icon">
+        <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{template}}{{object.pk}}"class="min_max">
-                <a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{template}}{{object.pk}}');">
+            <li id="minmax{{key}}"class="min_max">
+                <a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">
                     <i class="icon-minus-sign icon-white"></i>
                 </a>
             </li>
 
-            <li><a href="javascript:;" onClick="tabRemove('{{template}}{{object.pk}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+            <li><a href="javascript:;" data-href="javascript:;" onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>
 </ul>
 {% else %}
 <ul class="tab">
-    <li  id="tab{{template}}{{obj_pk}}" class="current-icon">
-        <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
+    <li  id="tab{{key}}" class="current-icon">
+        <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{template}}{{obj_pk}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{template}}{{obj_pk}}');"><i class="icon-minus-sign icon-white"></i></a></li>
-            <li><a href="javascript:;" onClick="tabRemove('{{template}}{{obj_pk}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+            <li id="minmax{{key}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>
+            <li><a href="javascript:;" data-href="javascript:;" onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>
 </ul>

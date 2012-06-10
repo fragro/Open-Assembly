@@ -24,6 +24,7 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
     ret, obj, rtype = render_hashed(request, None, None, extracontext={'TYPE': 'HTML'})
 
+    namespace['key'] = request.META['PATH_INFO'].replace('/', '')
     namespace['rendertype'] = rtype
     namespace['data'] = ret
     namespace['DOMAIN'] = DOMAIN
