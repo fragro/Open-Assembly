@@ -204,7 +204,7 @@
         <!-- Tabs -->
         <div id="tabs" class="clearfix">
 
-            <div id="current_tab">{{pp_cache.rendertype}}{{pp_cache.object.pk}}</div>
+            <div id="current_tab">{{pp_cache.key}}</div>
             <div id="tab_ruler"></div>
 
             {{pp_cache.data.tab_ruler|safe}}
@@ -242,8 +242,13 @@
         <script type="text/javascript">
             $(document).ready(function(){
 
-                    //modal register
-                $("#register").fancybox();              
+                try{
+                    sessionStorage.clear();
+                }
+                catch(err){
+                    alert(err);
+                }
+
                 // Delete panel
                 $('.delete_panel').click(function(){
                     $(this).closest('.panel').remove();
@@ -402,9 +407,6 @@
                             e.preventDefault();
                             history.pushState({load:true, module:'leave'}, '', url);
                             getContent();            
-                            //this is for the overlay
-                            //var curtab = $('#current_tab').html();
-                            //toggleMinMax(curtab);
                         }
                         else{ 
                             //need to load some error msg
@@ -415,20 +417,33 @@
                 function keyDown(e) {
                     var keycode = e.which
                     if(keycode == 27){
-                        $('#overlay').hide();
-                        $("html").css("overflow", "auto");
                         //remove the old page
                         var curtab = $('#current_tab').html();
-                        $('#current_tab').html('');
-                        $('#page' + curtab).removeClass('current');
-                        $('#page' + curtab).hide();
-                        $('#min_max' + curtab).removeClass('current-icon');
-                        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+                        if(curtab !== ''){
+                            $('#overlay').hide();
+                            $("html").css("overflow", "auto");
+                            $('#current_tab').html('');
+                            $('#page' + curtab).removeClass('current');
+                            $('#page' + curtab).hide();
+                            $('#min_max' + curtab).removeClass('current-icon');
+                            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+                            $('#tab' + curtab).removeClass('current-icon');
+                        }
                     }
                 }
 
                 document.onkeydown = keyDown
                 document.captureEvents(Event.KEYDOWN)
+
+                {% if request.user.is_authenticated %}
+                    try{
+                        tabRemove('register');
+                        $('#overlay').hide()
+                    }
+                    catch(err){
+                        alert(err);
+                    }
+                {% endif %}
 
             });
     
