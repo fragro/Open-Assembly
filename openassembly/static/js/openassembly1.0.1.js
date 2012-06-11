@@ -324,9 +324,10 @@ function getContent(){
     d['hash'] = location.href;
       
     d['empty'] = ($('#content').is(':empty'));
+    sessionStorage.getItem(OAdata.key) !== 'True'
     $.get("/load_page/", d,
       function(OAdata) {
-          if(OAdata.FAIL !== true && sessionStorage.getItem(OAdata.key) !== 'True'){
+          if(OAdata.FAIL !== true && ){
                 for(var item in OAdata.output){
                     if(OAdata.output[item].type == 'prepend'){
                       $(OAdata.output[item].div).prepend(OAdata.output[item].html);

@@ -244,7 +244,10 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                 renders.append({'div': lm.div_id, 'html': '', 'type': lm.jquery_cmd})
             for li in cached_list:
                 #render each object in the list
-                context = {'obj_pk': li.pk, 'object': li, 'dimension': dimension}
+                try:
+                    context = {'obj_pk': li.pk, 'object': li, 'dimension': dimension}
+                except:
+                    raise ValueError(cached_list)
                 context.update(extracontext)
                 html = lm.render(context, forcerender=forcerender)
                 if lm.object_specific:
