@@ -42,7 +42,7 @@
 
     // Closes/removes Page/Tab
     function tabRemove(tab){
-        tabobj = $('#tab' + tab);
+        tabobj = $('#tabholdertab' + tab);
         
         //for whatever reason this stopped working...
         //tabobj.fadeTo(600, 0, function(){
@@ -56,50 +56,15 @@
             $('#current_tab').html('');
             $('#overlay').hide();
             $("html").css("overflow", "auto");
-            rememberTabs();
-
         }
+        rememberTabs();
 
-        var window_width = $(window).width();
-            ruler = $('#tab_ruler');
-            ruler_width = ruler.width();
-            min_win = window_width - 157;
-            num_tabs = $('#pages .page').length;
-            old_width = $('#tab_width').text();
-        
-        num_of_times_to_fire = Math.ceil( num_tabs - ( Math.abs(old_width - window_width) / 162 ) );
-        
-            for (i=-1; i<=num_of_times_to_fire; i++) {
-                var window_width = $(window).width();
-                ruler = $('#tab_ruler');
-                ruler_width = ruler.width();
-                min_win = window_width - 157;
-                num_tabs = $('#the_queue .tab').length;
-                tab_iter = $('#tab_queue .tab_iterate');
-            
-            // check to see if the tabs are being overlapped by the queue
-            if (ruler_width > min_win) {
-                // move tabs to queue
-                var last_tab = $('#tab_ruler .tab').last();
-                $('#the_queue').append(last_tab);
-            } else if ( (min_win - 162 ) > ruler_width) {
-                // move tabs back to taskbar
-                var last_tab = $('#the_queue .tab').last();
-                $('#tab_ruler').append(last_tab);
-            }
-            
-            if (num_tabs > 0) {
-                tab_iter.text(num_tabs);
-            } else {
-                tab_iter.text('No');
-            }
-        }
         //remove page or not?
     };
 
 </script>
 {% if object %}
-<ul class="tab">
+<ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
         <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
@@ -114,8 +79,8 @@
     </li>
 </ul>
 {% else %}
-<ul class="tab">
-    <li  id="tab{{key}}" class="current-icon">
+<ul class="tab" id="tabholdertab{{key}}">
+    <li id="tab{{key}}" class="current-icon">
         <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{key}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>

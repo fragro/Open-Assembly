@@ -251,6 +251,33 @@ function addObject(e){
         }, "json");
   }
 
+function tabQueue() {
+    var window_width = $(window).width();
+        ruler = $('#tab_ruler');
+        ruler_width = ruler.width();
+        min_win = window_width - 157;
+        num_tabs = $('#the_queue .tab').length;
+        tab_iter = $('#tab_queue .tab_iterate');
+    
+    // check to see if the tabs are being overlapped by the queue
+    if (ruler_width > min_win) {
+        // move tabs to queue
+        var last_tab = $('#tab_ruler .tab').last();
+        $('#the_queue').append(last_tab);
+    } else if ( (min_win - 162 ) > ruler_width) {
+        // move tabs back to taskbar
+        var last_tab = $('#the_queue .tab').last();
+        $('#tab_ruler').append(last_tab);
+    }
+    
+    if (num_tabs > 0) {
+        tab_iter.text(num_tabs);
+    } else {
+        tab_iter.text('No');
+    }
+    
+}
+
 // remember how many tabs were in queue on doc load
 function rememberTabs() {
     var window_width = $(window).width();
@@ -259,13 +286,14 @@ function rememberTabs() {
         min_win = window_width - 157;
         num_tabs = $('#pages .page').length;
         old_width = $('#tab_width').text();
+
     
     num_of_times_to_fire = Math.ceil( num_tabs - ( Math.abs(old_width - window_width) / 162 ) );
     
     for (i=-1; i<=num_of_times_to_fire; i++) {
         tabQueue();
     }
-};
+}
 
 function load_usersaltcache(div, user, obj_pk, ctype_pk){
     $.get("/load_usersaltcache/", {div: div, hash: location.href, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
