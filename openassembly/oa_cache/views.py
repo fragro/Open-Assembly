@@ -272,8 +272,14 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                                             
             sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
             for li in cached_list:
-                context = {'dimension': paramdict.get('DIM_KEY', 'n'),
+                try:
+                    context = {'dimension': paramdict.get('DIM_KEY', 'n'),
                             'object': li, 'obj_pk': li.pk, 'user': user,
+                            'phase': phase, 'csrf_string': csrf_t,
+                            'sort_type': paramdict.get('CTYPE_KEY', '')}
+                except:
+                        context = {'dimension': paramdict.get('DIM_KEY', 'n'),
+                            'object': li, 'obj_pk': li[0].pk, 'user': user,
                             'phase': phase, 'csrf_string': csrf_t,
                             'sort_type': paramdict.get('CTYPE_KEY', '')}
                 context.update(extracontext)
