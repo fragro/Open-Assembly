@@ -12,9 +12,10 @@
                   <script>
                   var chart1; // globally available
                   $(document).ready(function() {
+
                         chart1 = new Highcharts.Chart({
                            chart: {
-                              renderTo: 'chart',
+                              renderTo: 'chart{{object.pk}}',
                               type: 'pie',
                            },
                            title: {
@@ -48,7 +49,7 @@
                      </script>
 
                      <!-- NEED THIS ID -->
-                      <div id='chart'> {{pp_consensus.chart_data|safe}} </div>
+                      <div id='chart{{object.pk}}'> {{pp_consensus.chart_data|safe}} </div>
 
                            Avg. Quality Rating:
 

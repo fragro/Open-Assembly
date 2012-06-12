@@ -269,7 +269,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             for usc in lu:
                 rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                                     usc.render(RequestContext(request, context))})
-                                            
+
             sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
             for li in cached_list:
                 try:
