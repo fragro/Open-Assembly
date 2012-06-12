@@ -55,6 +55,9 @@
         if (curtab == tab){
             $('#current_tab').html('');
             $('#overlay').hide();
+            $("html").css("overflow", "auto");
+            rememberTabs();
+
         }
 
         var window_width = $(window).width();
