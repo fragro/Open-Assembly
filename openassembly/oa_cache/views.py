@@ -244,10 +244,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                 renders.append({'div': lm.div_id, 'html': '', 'type': lm.jquery_cmd})
             for li in cached_list:
                 #render each object in the list
-                try:
-                    context = {'obj_pk': li.pk, 'object': li, 'dimension': dimension}
-                except:
-                    raise ValueError(cached_list)
+                context = {'div': lm.div_id, 'object': li, 'dimension': dimension}
                 context.update(extracontext)
                 html = lm.render(context, forcerender=forcerender)
                 if lm.object_specific:
@@ -272,7 +269,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             for usc in lu:
                 rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                                     usc.render(RequestContext(request, context))})
-
+                                            
             sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
             for li in cached_list:
                 context = {'dimension': paramdict.get('DIM_KEY', 'n'),
