@@ -7,53 +7,58 @@
 
 {% oa_get_group_settings object=object %}
 
-
     <a data-href="{% pp_url template='submit.html' object=object %}" href="{% pp_url template='submit.html' object=object %}">submit a new propsal</a>
 
 
-    <a href="#">Settings for Facilitators (Welcome Facilitator!)</a>
 
-                {% include 'forms/oa_group_settings_form.html' %}
+    {% cani object=object user=user %}
+        {% if pp_permissions.permission %}
 
-    <a href="#">Invite Members</a>
 
-                    {% include 'forms/oa_referral_form.html' %}
+            <a href="#">Settings for Facilitators (Welcome Facilitator!)</a>
 
-    <a href="#">Add Facilitators</a>
+                        {% include 'forms/oa_group_settings_form.html' %}
 
-                    {% include 'forms/oa_facilitators_form.html' %}
-        
-{% comment %}
-    <a href="#">Create Working Group</a>
+            <a href="#">Invite Members</a>
 
-                <div id="pp_topic_form">
-                {% include 'forms/pp_topic_form.html' %}
-                </div>
-{% endcomment %}
+                            {% include 'forms/oa_referral_form.html' %}
 
-    <a href="#">Edit Group Info
-                <div id="pp_edittopic_form">
-                {% include 'forms/pp_edittopic_form.html' %}
-                </div>
+            <a href="#">Add Facilitators</a>
 
-    <a href="#">Change Image</a>
-        {% cani object=object user=user %}
-            {% if pp_permissions.permission %}
-              {% pp_get_contenttype_id object=object %}
-                    <a class="nobbq" style="margin-left:15px;text-decoration:none;text-align:center;" data-href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}" href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}"><b>Click to Upload a New Image</b><br><br>
-              {% endpp_get_contenttype_id %}
-            {% else %}
-                <a>
-            {% endif %}
-        {% endcani %}  
-            {% pp_get_sources object=object type='img' %}
-                {% if pp_source.cur_img %}
-                    <img  src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
-                {% else %}
-                    <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
-                {% endif %}
-            {% endpp_get_sources %}
+                            {% include 'forms/oa_facilitators_form.html' %}
+                
+        {% comment %}
+            <a href="#">Create Working Group</a>
 
+                        <div id="pp_topic_form">
+                        {% include 'forms/pp_topic_form.html' %}
+                        </div>
+        {% endcomment %}
+
+            <a href="#">Edit Group Info
+                        <div id="pp_edittopic_form">
+                        {% include 'forms/pp_edittopic_form.html' %}
+                        </div>
+
+            <a href="#">Change Image</a>
+                {% cani object=object user=user %}
+                    {% if pp_permissions.permission %}
+                      {% pp_get_contenttype_id object=object %}
+                            <a class="nobbq" style="margin-left:15px;text-decoration:none;text-align:center;" data-href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}" href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}"><b>Click to Upload a New Image</b><br><br>
+                      {% endpp_get_contenttype_id %}
+                    {% else %}
+                        <a>
+                    {% endif %}
+                {% endcani %}  
+                    {% pp_get_sources object=object type='img' %}
+                        {% if pp_source.cur_img %}
+                            <img  src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
+                        {% else %}
+                            <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
+                        {% endif %}
+                    {% endpp_get_sources %}
+        {% endif %}
+    {% endcani %}       
 
 {% endoa_get_group_settings %}
 
