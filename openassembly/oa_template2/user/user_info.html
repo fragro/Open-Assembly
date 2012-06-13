@@ -6,7 +6,7 @@
     {% pp_get_contenttype_id object=object %}
 
         {% if user = object and user.is_authenticated %}
-            <a id="avatar" href="{% url pirate_sources.views.upload_handler user.id pp_source.ctype_pk %}">
+            <a id="avatar" href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
             <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{object.username}}"></a>
             {% else %}
             <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{object.username}}">

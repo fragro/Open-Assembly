@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'tracking',
     'djcelery',
     'oa_dashboard',
+    'sorl.thumbnail',
     'oa_cache',
     'django_mongodb_engine'
 )

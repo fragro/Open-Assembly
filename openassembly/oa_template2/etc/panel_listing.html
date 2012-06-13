@@ -1,9 +1,20 @@
+{% load thumbnail %}
+{% load sourcetags %}
+
 {% block li_id %}<li>{% endblock%}
-    <a><img src="http://placehold.it/50x50" alt="Group Name"></a>
+	{% pp_get_sources object=object type='img' %}
+		{% if pp_source.cur_img %}
+			{% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}
+	    		<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+			{% endthumbnail %}
+	    {% else %}
+	    <a><img src="http://placehold.it/50x50" alt="Group Name"></a>
+	    {% endif %}
+    {% endpp_get_sources %}
     <a class="ov_hid">
         {% block listing %}
 
 
         {% endblock %}
     </a>
-</li>
+</li>object

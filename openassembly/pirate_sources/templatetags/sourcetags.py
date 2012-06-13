@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 import re
 from django.core.cache import cache
 from py_etherpad import EtherpadLiteClient
+import datetime
 
 from filetransfers.api import prepare_upload
 
@@ -267,23 +268,34 @@ def pp_imgsource_form(context, nodelist, *args, **kwargs):
 
     POST = kwargs.get('POST', None)
     FILE = kwargs.get('FILE', None)
-    source = kwargs.get('source', None)
     obj = kwargs.get('object', None)
-    user = kwargs.get('user', None)
     request = kwargs.get('request', None)
 
     content_type = ContentType.objects.get_for_model(obj)
 
-    view_url = reverse('pirate_sources.views.upload_handler')
+    view_url = reverse('pirate_sources.views.upload_handler', args=[obj.pk, content_type.pk])
     if POST:
         form = IMGSourceForm(POST, FILE)
         try:
             if form.is_valid():
                 img = form.save()
-                img.content_type = content_type
+                img.user = request.user
                 img.object_pk = obj.pk
-                img.current = None
-                #return HttpResponseRedirect(view_url)
+                img.content_type = ContentType.objects.get(pk=content_type.pk)
+                img.submit_date = datetime.datetime.now()
+
+                img.make(request.FILES['file'], img.file.name)
+                url = img.file.path
+                if img.private != True:
+                    try:
+                        oldimg = IMGSource.objects.get(object_pk=obj.pk, current=True)
+                        oldimg.current = False
+                        oldimg.save()
+                    except:
+                        pass
+                    img.current = True
+                img.url = url
+                img.save()
                 upload_url, upload_data = prepare_upload(request, view_url)
                 form = IMGSourceForm()
             else:

@@ -36,9 +36,6 @@ class IMGSource(models.Model):
     content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     user = models.ForeignKey(User, null=True, blank=True)
     file = models.ImageField(upload_to='static/%Y/%m/%d/%H/%M/%S/')
-    thumbnail = models.ImageField(upload_to='static/%Y/%m/%d/%H/%M/%S/')
-    thumbnail_small = models.ImageField(upload_to='static/%Y/%m/%d/%H/%M/%S/')
-    thumbnail_large = models.ImageField(upload_to='static/%Y/%m/%d/%H/%M/%S/')
 
     submit_date = models.DateTimeField(_('date/time submitted'), auto_now_add=True)
     url = models.CharField(max_length=200)
@@ -66,7 +63,7 @@ class IMGSource(models.Model):
         im_io = StringIO()
         im.thumbnail(small, Image.ANTIALIAS)
         im.save(im_io, im.format)
-
+        """
         thumbnail_small = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumbsmall.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
         im = PIL.Image.open(StringIO(''.join(image.chunks())))
 
@@ -83,12 +80,8 @@ class IMGSource(models.Model):
         im.save(im_io, im.format)
 
         thumbnail_large = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumblarge.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
-
+        """
         self.file = image
-        self.thumbnail_small = thumbnail_small
-
-        self.thumbnail = thumbnail
-        self.thumbnail_large = thumbnail_large
         self.save()
 
     def rescale(self, data, width, height, force=True):

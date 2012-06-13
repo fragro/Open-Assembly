@@ -26,3 +26,4 @@ pytz
 git+https://github.com/bradbeattie/python-vote-core.git#egg=pyvotecore
 git+https://github.com/fragro/django-notification.git#egg=notification
 johnny-cache
+git+https://github.com/sorl/sorl-thumbnail.git#egg=sorl
