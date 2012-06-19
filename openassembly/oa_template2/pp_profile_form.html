@@ -1,0 +1,50 @@
+{% extends 'skeleton/page.html'%}
+
+{% load profiletags %}
+{% load pp_url %}
+
+{% block content %}
+
+    {% pp_get_user_profile user=request.user %}
+
+        {% pp_profile_form POST=request.POST user=request.user profile=pp_profile.profile %}
+
+                    <form id="pp_profile_form" method="post" action="">
+
+                        <h2>Edit My Settings</h2>
+                        <div id="errors" class="errors">{{ pp_profile.errors }}</div>
+                                {{ pp_profile.form.form_id}}
+                                
+                                <b>About Me:</b><br>{{ pp_profile.form.about_me}}<br>
+
+                                <b>Time Zone:</b><br>{{ pp_profile.form.timezone}}<br>
+                                
+                                <br><b>Recieve Notification Emails:</b>{{ pp_profile.form.receive_emails}}<br><br>
+
+                                {{csrf_string|safe}}
+                            {% if user.is_authenticated and user.is_active %}                                                            
+                            <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_profile_form"></span>
+                    </form>
+                            {% else %} 
+                                <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                            {% endif %}
+                    <script>
+
+                      $("form#pp_profile_form").submit(function(e){
+                            $("#submit_pp_profile_form").html("<b>Submitting...</b>")
+                            addObject(e);
+                        });
+
+                    </script>
+
+                        {% if pp_profile.complete %}
+                            Update Complete ({% now "jS F Y H:i" %})
+                        {% endif %}
+
+
+                    <span id="content_side_effect" style="display:none;">["{{pp_profile.object_pk}}", "{{pp_profile.content_type}}"]</span>
+        {% endpp_profile_form %}
+
+    {% endpp_get_user_profile %}
+
+{% endblock %}  
