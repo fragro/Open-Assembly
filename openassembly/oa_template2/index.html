@@ -25,7 +25,7 @@
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
         
         <div id="rail" class="clearfix">
-            <a class="nobbq" href="http://google.com" id="logo"><img src="/static/img/logo.png" alt=""></a>
+            <a class="nobbq" href="http://openassembly.org" id="logo"><img src="/static/img/logo.png" alt=""></a>
             <ul id="nav">
                 <!-- Dashboard -->
                 <li><a href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
@@ -167,11 +167,11 @@
                         <div class="col last">
                             <ul>
                                 {% if request.user.is_authenticated %}
-                                <li><a href="{% pp_url template='user.html' object=request.user %}">Edit Profile</a></li>
+                                <li><a href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
                                 <li><a href="#">Help</a></li>
                                 <li><a class="nobbq" data-href="/logout/" href="/logout/">Logout</a></li>
                                 <li><a href="#">Report Abuse</a></li>
-                                <li><a href="#">View Profile</a></li>
+                                <li><a href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
                                 {% else %}
                                 <li><a href="/p/register">Register</a></li>
                                 <li><a href="#">Help</a></li>

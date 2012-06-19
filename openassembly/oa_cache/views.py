@@ -213,7 +213,11 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             'type': m.jquery_cmd, 'html': m.render(RequestContext(request, contextual))})
         usc = UserSaltCache.objects.filter(model_cache=m.pk, load_last=False)
         for usc in u:
-            rendered_list.append({'obj_pk': obj_pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+            if usc.object_specific:
+                rendered_list.append({'obj_pk': obj_pk, 'div': usc.div_id + obj_pk, 'type': usc.jquery_cmd, 'html':
+                       usc.render(RequestContext(request, contextual))})
+            else:
+                rendered_list.append({'obj_pk': obj_pk, 'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
                        usc.render(RequestContext(request, contextual))})
 
     if request is not None:
@@ -501,7 +505,11 @@ decreased the latency of the system.
         obj = get_object_or_none(ctype_id, obj_id)
 
         usc = UserSaltCache.objects.get(div_id=div)
-        render = {'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+        if usc.object_specific:
+            div_id = usc.div_id + obj_id
+        else:
+            div_id = usc.div_id
+        render = {'div': div_id, 'type': usc.jquery_cmd, 'html':
                     usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
                     'object': obj, 'user': user, 'sort_type': paramdict.get('CTYPE_KEY', '')}))}
 

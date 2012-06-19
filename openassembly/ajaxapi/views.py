@@ -184,7 +184,7 @@ def add_group(request):
             if not is_new:
                 results = {'FAIL': True}
             else:
-                results = {'FAIL': False, 'redirect': topic.get_absolute_url(), 'group': render_to_string('mygroup.html', {'group': my})}
+                results = {'FAIL': False, 'redirect': topic.get_absolute_url(), 'group': render_to_string('nav/mygroup.html', {'group': my})}
         else:
             results = {'FAIL:': True}
     else:

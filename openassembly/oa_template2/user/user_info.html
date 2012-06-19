@@ -7,9 +7,10 @@
 
         {% if user = object and user.is_authenticated %}
             <a id="avatar" href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
-            <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{object.username}}"></a>
+
+            {% include 'etc/object_img_100.html' %}</a>
             {% else %}
-            <img class="avatar" src="{{pp_profile.avatar_url}}" alt="{{object.username}}">
+            {% include 'etc/object_img_100.html' %}
         {% endif %}
 
     {% endpp_get_contenttype_id %}
@@ -23,6 +24,13 @@
 {% endif %}
 
 {{object.username}}
+
+{% pp_get_user_profile user=object %}
+    {% if pp_profile.profile.about_me %}
+            <h1>About Me:</h1>
+            {{pp_profile.profile.about_me}}
+    {% endif %}
+{% endpp_get_user_profile %}
 
 
 {% if user == object %}
@@ -39,6 +47,18 @@
 
     {% pp_subscribee_count user=object %}                
         You Trust: {{pp_subscription.count}}
-    {% endpp_subscribee_count %}                
+    {% endpp_subscribee_count %}   
+    
+    
+{% else %} 
+
+{% pp_has_subscription subscriber=user subscribee=object %}
+        {% if not pp_subscription.has_subscription %}
+            <a data-href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
+        {% else %}
+            <a data-href="{% url ajaxapi.views.remove_support object.id %}">Stop Trusting</a>
+        {% endif %}
+{% endpp_has_subscription %}
+            
 
 {% endif %}

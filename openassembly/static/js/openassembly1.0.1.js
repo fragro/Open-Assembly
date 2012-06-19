@@ -106,7 +106,9 @@ $.post("/add_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$('#mygroup').append(data.group);
-        js_redirect(data.redirect);
+        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        getContent();
+        $('.thumbnail_list').prepend(data.group);
       }
  }, "json");
 }
@@ -116,7 +118,9 @@ $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$(data.group).remove();
-        js_redirect(data.redirect);
+        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        getContent();
+        $(data.group).remove();
       }
  }, "json");
 }
@@ -224,7 +228,8 @@ function addObject(e){
                   function(data2) {
                       for(var item in data2.output){
                         if(data2.output[item].type == 'redirect'){
-                          js_redirect(data2.output[item].html);
+                            history.pushState({load:true, module:'leave'}, '', data2.output[item].html);
+                            getContent();
                         }
                         if(data2.output[item].type == 'after'){
                             $(data2.output[item].div).after(data2.output[item].html);
@@ -251,33 +256,6 @@ function addObject(e){
         }, "json");
   }
 
-function tabQueue() {
-    var window_width = $(window).width();
-        ruler = $('#tab_ruler');
-        ruler_width = ruler.width();
-        min_win = window_width - 157;
-        num_tabs = $('#the_queue .tab').length;
-        tab_iter = $('#tab_queue .tab_iterate');
-    
-    // check to see if the tabs are being overlapped by the queue
-    if (ruler_width > min_win) {
-        // move tabs to queue
-        var last_tab = $('#tab_ruler .tab').last();
-        $('#the_queue').append(last_tab);
-    } else if ( (min_win - 162 ) > ruler_width) {
-        // move tabs back to taskbar
-        var last_tab = $('#the_queue .tab').last();
-        $('#tab_ruler').append(last_tab);
-    }
-    
-    if (num_tabs > 0) {
-        tab_iter.text(num_tabs);
-    } else {
-        tab_iter.text('No');
-    }
-    
-}
-
 // remember how many tabs were in queue on doc load
 function rememberTabs() {
     var window_width = $(window).width();
@@ -286,14 +264,13 @@ function rememberTabs() {
         min_win = window_width - 157;
         num_tabs = $('#pages .page').length;
         old_width = $('#tab_width').text();
-
     
     num_of_times_to_fire = Math.ceil( num_tabs - ( Math.abs(old_width - window_width) / 162 ) );
     
     for (i=-1; i<=num_of_times_to_fire; i++) {
         tabQueue();
     }
-}
+};
 
 function load_usersaltcache(div, user, obj_pk, ctype_pk){
     $.get("/load_usersaltcache/", {div: div, hash: location.href, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
@@ -317,7 +294,8 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                       function(data2) {
                           for(var item in data2.output){
                             if(data2.output[item].type == 'redirect'){
-                              js_redirect(data2.output[item].html);
+                                  history.pushState({load:true, module:'leave'}, '', data2.output[item].html);
+                                  getContent();
                             }
                             if(data2.output[item].type == 'after'){
                                 $(data2.output[item].div).after(data2.output[item].html);
@@ -344,6 +322,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
         }, "json");
   }
 
+
 function getContent(){
 //            if (currentXhr != null && typeof currentXhr != 'undefined') {
 //                currentXhr.abort();
@@ -355,22 +334,35 @@ function getContent(){
     var tempkey = d['hash'].replace(dom, '');
     tempkey = tempkey.replace('http:', '');
     tempkey = tempkey.replace(/\//g,"");
-    if(sessionStorage.getItem(tempkey) !== 'True'){
+    var ss = sessionStorage.getItem(tempkey);
+    var state = history.state; data = state.data;
+
+    if(ss !== 'True' || state.module === 'Reload'){
       $.get("/load_page/", d,
         function(OAdata) {
            if(OAdata.FAIL !== true){
                   for(var item in OAdata.output){
-                      if(OAdata.output[item].type == 'prepend'){
-                        $(OAdata.output[item].div).prepend(OAdata.output[item].html);
+                      if((state.module === 'Reload' && OAdata.output[item].div == '#tab_ruler')){
+
                       }
-                      if(OAdata.output[item].type == 'append'){
-                          $(OAdata.output[item].div).append(OAdata.output[item].html);
-                      }
-                      if(OAdata.output[item].type == 'html'){
-                          $(OAdata.output[item].div).html(OAdata.output[item].html);
-                      }
-                      if(OAdata.output[item].div == '#pages'){
-                        toggleMinMax(OAdata.key);
+                      else{
+                          if(OAdata.output[item].div == '#pages' && state.module === 'Reload'){
+                              $(OAdata.output[item].div).html(OAdata.output[item].html);
+                          }
+                          else{
+                            if(OAdata.output[item].type == 'prepend'){
+                              $(OAdata.output[item].div).prepend(OAdata.output[item].html);
+                            }
+                            if(OAdata.output[item].type == 'append'){
+                                $(OAdata.output[item].div).append(OAdata.output[item].html);
+                            }
+                            if(OAdata.output[item].type == 'html'){
+                                $(OAdata.output[item].div).html(OAdata.output[item].html);
+                            }
+                            if(OAdata.output[item].div == '#pages' && state.module !== 'Reload'){
+                                toggleMinMax(OAdata.key);
+                            }
+                          }
                       }
                   }
                 //$("#content").append(data.POST);
@@ -382,7 +374,6 @@ function getContent(){
                 js_redirect('/404.html?');
             }
             sessionStorage.setItem(OAdata.key, 'True');
-            rememberTabs();
             hrefLess();
 
           //if(OAdata.scroll_to !== null){
@@ -394,11 +385,12 @@ function getContent(){
        }, "json");
 
     }
-    if (sessionStorage.getItem(tempkey) === 'True'){
+    if (ss === 'True' && state.module !== 'Reload'){
         toggleMinMax(tempkey);
+        rememberTabs();
     }
-
 }
+
 
 function sort_dashboard(sorted){
   
