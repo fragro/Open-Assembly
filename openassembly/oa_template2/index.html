@@ -132,7 +132,7 @@
                         <div class="col col2">
                             <ul class="thumbnail_list">
 
-                                {% pp_mygroups user=request.user start=0 end=10 %}
+                                {% pp_mygroups user=request.user start=0 end=15 %}
                                             
                                     {% for group in pp_topic.mygroups %}  
                                         {% include 'nav/mygroup.html' %}
@@ -223,7 +223,7 @@
 
         <script type="text/javascript" src="/static/js/openassembly1.0.1.js"></script>
         
-        <script type="text/javascript" src="/static/js/jquery-ui-1.8.18.custom.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery-ui-1.8.21.custom.min.js"></script>
         <script type="text/javascript" src="/static/js/jquery.masonry.min.js"></script>
 
         <script type="text/javascript" src="/static/js/highcharts.js"></script>
@@ -234,7 +234,7 @@
         <script type="text/javascript" src="/static/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
         <script type="text/javascript" src="/static/js/motionpack.js"></script>
-        <script type="text/javascript" src="/static/js/slideto.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.slideto.js"></script>
 
         <script type="text/javascript" src="/static/js/etherpad.js"></script>
 
@@ -250,6 +250,17 @@
                 catch(err){
                     alert(err);
                 }
+
+                //SET INITIAL PAGE LOAD ITEM AS TRUE
+                var hash = location.href;
+                var dom = $('#domain').html();
+                var tempkey = hash.replace(dom, '');
+                tempkey = tempkey.replace('http:', '');
+                tempkey = tempkey.replace(/\//g,"");
+                if(tempkey !== ''){
+                    sessionStorage.setItem(tempkey, 'True');
+                }
+
 
                 // Delete panel
                 $('.delete_panel').click(function(){

@@ -215,7 +215,7 @@ tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=propcac
 
 ##FORMS
 ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
-                        div_id="#pp_comment_form", jquery_cmd="html", is_toggle=True, load_last=True)
+                        div_id="#pp_comment_form", jquery_cmd="html", load_last=True)
 ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
     template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
     is_toggle=True, object_specific=True, load_last=True)
@@ -269,6 +269,10 @@ nominationsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcac
 decisionsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk,
     template="Decision", div_id="#decisions", content_type="item", default=False)
 
+
+###SIDE EFFECT FOR COMMENTS
+ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppcommentformcache.pk,
+                        template="content/comment.html", div_id="#content_children", jquery_cmd="prepend", object_specific=True)
 
 
 

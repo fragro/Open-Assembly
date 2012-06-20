@@ -5,13 +5,15 @@
 
 {% block content %}
 
+<div id="create_group">
+
     {% pp_topic_form POST=request.POST user=user root=object %}
 
             {% if pp_topic.complete %}
 
             Topic Created
 
-            {% endif %}
+            {% else %}
 
                 <form id="pp_topic_form" method="post" action="">
                             {{ pp_topic.form.form_id}}
@@ -40,9 +42,15 @@
 
                 </script>
 
+            {% endif %}
+
+
             {% if pp_topic.complete %}
-                <span id="content_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
+                <span id="create_group_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
             {% endif %}
     {% endpp_topic_form %}
 
+</div>
+
 {% endblock %}
+

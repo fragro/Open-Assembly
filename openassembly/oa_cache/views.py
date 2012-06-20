@@ -338,17 +338,19 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         context = RequestContext(request, context)
         if obj is not None:
             context['object'] = obj
+        else:
+            context['object'] = rendertype.replace('_', ' ')
         if rendertype != '':
             #first try for free floating usersaltcache forms...
             usc = UserSaltCache.objects.filter(template=rendertype + '.html')
             for u in usc:
                 obj_pk = random.randint(-1000, 10000)
                 rendered_list.append({'div': u.div_id, 'type': u.jquery_cmd, 'obj_pk': obj_pk, 'html':
-                            u.render(RequestContext(request, {'template': rendertype, 'obj_pk': obj_pk, 'user': user}))})
+                            u.render(context)})
                 cached = UserSaltCache.objects.filter(model_cache=u.pk)
                 for c in cached:
                     rendered_list.append({'div': c.div_id, 'type': c.jquery_cmd, 'obj_pk': obj_pk, 'html':
-                            c.render(RequestContext(request, {'template': rendertype, 'obj_pk': obj_pk, 'user': user}))})
+                            c.render(context)})
             if rendered_list == []:
                 val = render_to_string(rendertype + '.html', context)
                 if obj is not None:
