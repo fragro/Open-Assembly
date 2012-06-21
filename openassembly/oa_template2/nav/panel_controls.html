@@ -1,5 +1,5 @@
 <ul class="panel_controls">
-    <li ><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1);"><i class="icon-refresh"></i></a></li>
+    <li ><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start}}, {{end}});"><i class="icon-refresh"></i></a></li>
     <li {% if dashobj.zoom_y == 3 %}class="disabled"{% endif %}><a href="javascript:;" onClick="downzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-down"></i></a></li>
     <li {% if dashobj.zoom_y == 0 %}class="disabled"{% endif %}><a href="javascript:;" onClick="upzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-up"></i></a></li>
     <li {% if dashobj.zoom_x == 0 %}class="disabled"{% endif %}><a href="javascript:;" onClick="leftzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-left"></i></a></li>
@@ -7,6 +7,12 @@
     <li class="panel_dropdown">
         <i class="icon-cog"></i>
         <ul>
+            {% if start != 0 %}
+            <li><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'-20'}}, {{end|add:'-20'}});">Previous Page of Results </a></li>
+            {% endif %}
+            <li><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'20'}}, {{end|add:'20'}});">Next Page of Results</a></li>
+
+
             {% if dashobj.boardname == 'Proposals' %}
                 <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
                 <li><a href="javascript:;" onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Activity</a></li>

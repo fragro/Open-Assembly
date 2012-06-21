@@ -484,9 +484,9 @@ function resort_dashboard(dash_id, sort_key){
   }, "json");
 }
 
-function refresh_dashboard(path, dash_id){
+function refresh_dashboard(path, dash_id, start, end){
   
-  $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null},
+  $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null, start: start, end: end},
   function(data) {
       if(data.FAIL === true){
          //$(ui.item).fadeOut('slow', function() {

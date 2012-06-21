@@ -31,13 +31,15 @@ def oa_get_dashboard(context, nodelist, *args, **kwargs):
         dash = []
         for board in boards:
             key, rendertype, paramdict = interpret_hash(board.plank)
-            ret, obj, rtype = render_hashed(request, board.plank, user, extracontext={'dashobj': board, 'TYPE': 'HTML'})
+            #add start and end information for pagination
+            plank = board.plank + '/s-0/e-20'
+            ret, obj, rtype = render_hashed(request, plank, user, extracontext={'dashobj': board, 'TYPE': 'HTML', 'start': 0, 'end': 20})
             if 'DIM_KEY' in paramdict:
                 dim = paramdict['DIM_KEY']
             else:
                 dim = ''
             print board
-            dash.append((ret, obj, board, rtype, dim))
+            dash.append((ret, obj, board, rtype, dim, 0, 20))
         namespace['boards'] = dash
     output = nodelist.render(context)
     context.pop()

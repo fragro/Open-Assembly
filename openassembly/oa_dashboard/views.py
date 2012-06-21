@@ -65,15 +65,23 @@ def add_board(request):
         dashboard_id = request.POST[u'dashboard_id']
         functype = request.POST[u'type']
         boardname = request.POST[u'boardname']
+        start = request.POST.get('start', 0)
+        end = request.POST.get('end', 20)
+        #for pagination
 
-        dashobj = save_board(path, dashboard_id, request.user, boardname)
-        ret, obj, rtype = render_hashed(request, path, request.user, extracontext={'dashobj': dashobj})
+        if functype != 'refresh':
+            dashobj = save_board(path, dashboard_id, request.user, boardname)
+        else:
+            dashobj = DashboardPanel.objects.get(plank=path, dashboard_id=dashboard_id, user=request.user)
+        path += '/s-' + str(start) + '/e-' + str(end)
+
+        ret, obj, rtype = render_hashed(request, path, request.user, extracontext={'dashobj': dashobj, 'start': int(start), 'end': int(end)})
 
         if rtype == 'chat':
             width = render_to_string('stream/stream_width.html', {'dashobj': dashobj})
             height = render_to_string('stream/stream_height.html', {'dashobj': dashobj})
             results = {'width': width, 'height': height}
-        html = render_to_string('nav/board_template.html', {'board': ret, 'obj': obj, 'dashobj': dashobj})
+        html = render_to_string('nav/board_template.html', {'board': ret, 'obj': obj, 'dashobj': dashobj, 'start': int(start), 'end': int(end)})
         if functype == 'refresh':
             soup = BeautifulSoup.BeautifulSoup(html)
             v = soup.find("div", id='content' + str(dashobj.pk))

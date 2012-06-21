@@ -1,7 +1,7 @@
 {% load dashboardtags %}
 
 {% oa_get_dashboard request=request user=request.user dashboard_id=1 %}
-        {% for board, obj, dashobj, rendertype, dimension in oa_dashboard.boards %}
+        {% for board, obj, dashobj, rendertype, dimension, start, end in oa_dashboard.boards %}
 
             {% include 'nav/board_template.html' %}
 

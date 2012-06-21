@@ -1,23 +1,11 @@
 <div class="pwide{{dashobj.zoom_x|add:'1'}} ptall{{dashobj.zoom_y|add:'1'}} panel" id="{{dashobj.pk}}">
     <div class="panel_content" id="content{{dashobj.pk}}">
         <div class="panel_header">
-            <h3>
-
-            {% if dimension == 'n' and dashobj.boardname == 'Proposals' %}New{% endif %}
-            {% if dimension == 'h' and dashobj.boardname == 'Proposals' %}Hot{% endif %}
-            {% if dimension == 'c' and dashobj.boardname == 'Proposals' %}Cont.{% endif %}
-
-            {% if dimension == 'n' and dashobj.boardname == 'Groups' %}New{% endif %}
-            {% if dimension == 'o' and dashobj.boardname == 'Groups' %}Old{% endif %}
-
-            {{dashobj.boardname}} {% if dimension == 'c' and dashobj.boardname == 'Groups' %} by Members{% endif %}
- {% if obj.shortname %} - {{obj.shortname|title}} {% endif %}</h3>
-            
-
+            <h3>{{dashobj.boardname}} - {{obj.shortname|title}} {{start}} - {{end}}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
         <div class="panel_inner">
-            <p>
+            <p> 
             <ul id="panel_inner_list">
                 {% for k, b in board.items %}
                     {{b|safe}}
