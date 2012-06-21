@@ -12,6 +12,11 @@
 
 
 {% block listing %}
+
+        {% include 'etc/object_img_50.html' %}
+        <a class="ov_hid">
+
+
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.children }}</a>
 
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.group_members}}</a>

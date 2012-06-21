@@ -7,8 +7,10 @@
 
 {% endblock %}
 
-
 {% block listing %}
+
+	{% include 'etc/object_img_50_user.html' %}
+	<a class="ov_hid">
             
 	<a href="{% pp_url object=object.user template='user_profile.html'%}" data-href="{% pp_url object=object.user template='user_profile.html'%}">{{object.user}}</a>
 	                        

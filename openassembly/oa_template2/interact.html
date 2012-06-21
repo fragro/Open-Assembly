@@ -44,7 +44,9 @@
                 {% cani object=object user=user %}
                     {% if pp_permissions.permission %}
                       {% pp_get_contenttype_id object=object %}
-                            <a class="nobbq" style="margin-left:15px;text-decoration:none;text-align:center;" data-href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}" href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}"><b>Click to Upload a New Image</b><br><br>
+                            <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}"  href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
+
+                            {% include 'etc/object_img_100.html' %}</a>
                       {% endpp_get_contenttype_id %}
                     {% else %}
                         <a>
