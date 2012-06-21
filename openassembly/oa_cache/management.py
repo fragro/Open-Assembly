@@ -150,6 +150,11 @@ inboxcache, is_new = ModelCache.objects.get_or_create(template="inbox.html",
 inbox_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=inboxcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
+uploadcache, is_new = ModelCache.objects.get_or_create(template="upload.html",
+                div_id="#pages", content_type="upload", main=True, jquery_cmd="append")
+upload_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=uploadcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
 ##USER LISTS
 shortusercache, is_new = ModelCache.objects.get_or_create(template="user/user_short.html",
             div_id="#panels", content_type="members", jquery_cmd="append")
@@ -209,7 +214,7 @@ commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache
 
 
 ###VOTING AND SIDEEFFECTS
-tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=propcache.pk,
+tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk,
             template="content/temp_check.html", div_id="#temp_check", jquery_cmd="html", object_specific=True)
 
 
