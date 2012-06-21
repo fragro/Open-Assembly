@@ -9,10 +9,8 @@
         <ul id="comment{{object.pk}}" class="comment">
         {% endif %}
 
-        {% pp_get_avatar user=object.user %}
-            <span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
-        {% endpp_get_avatar %}
-        
+        <span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
+       
         <li>
         
             <span class="meta">
@@ -33,9 +31,7 @@
             <ul id="comment{{object.pk}}" class="comment">
             {% endif %}
 
-            {% pp_get_avatar user=object.user %}
-                <a href="{% pp_url template='user_profile.html' object=object.user%}" class="avatar"><img src="{{pp_profile.thumbnail_small}}" alt="{{object.user.username}}"></a>
-            {% endpp_get_avatar %}
+            {% include 'etc/object_img_25_user.html' %}
             
             <li>
             
