@@ -11,34 +11,38 @@
                     {{pp_comment.form.form_id}}
                     {{csrf_string|safe}}
                 {% if user.is_authenticated and user.is_active %}                                                            
-                <input type="submit" class='button' value="Submit">
+                <input id="commentsubmission{{object.pk}}" type="submit" class='button' value="Submit">
 
                 <span id="submit_pp_reply_form{{object.pk}}">
                     
                 <a href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>
 
-                <span id="submit_pp_comment_form"></span>
-        </form>
-                {% else %} 
-                    <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
-                {% endif %}
+                <span style="color:grey;" id="submit_pp_comment_form"></span>
 
-        <div class='reply_comment' id='pp_formatting_help' style='display:none; overflow:hidden; height:290px;width:100%;'>
+            </form>
+                    {% else %} 
+                        <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                    {% endif %}
 
-            {% include "etc/help.html" %}
+            <div class='reply_comment' id='pp_formatting_help' style='display:none; overflow:hidden; height:290px;width:100%;'>
 
-        </div>
+                {% include "etc/help.html" %}
 
-        <span id="pp_comment_form_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
+            </div>
 
-        {% endpp_comment_form %}
+            <span id="pp_comment_form_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
+
+            {% endpp_comment_form %}
 
 <script>
 
   $("form#pp_comment_form{{object.pk}}").submit(function(e){
-        $("#submit_pp_comment_form").html("<b>Submitting...</b>")
+        $("#submit_pp_comment_form").html("<b>Submitting, Please Wait.</b>")
+        $('#commentsubmission{{object.pk}}').css('display', 'none')
         //slideup('pp_formatting_help');
         addObject(e);
+        $('#commentsubmission{{object.pk}}').css('display', 'block')
+
     });
 
 </script>
