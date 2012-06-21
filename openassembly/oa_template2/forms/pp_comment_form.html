@@ -11,13 +11,13 @@
                     {{pp_comment.form.form_id}}
                     {{csrf_string|safe}}
                 {% if user.is_authenticated and user.is_active %}                                                            
-                <input id="commentsubmission{{object.pk}}" type="submit" class='button' value="Submit">
+                <span id="commentsubmission{{object.pk}}"><input type="submit" class='button' value="Submit"></span>
 
                 <span id="submit_pp_reply_form{{object.pk}}">
                     
                 <a href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>
 
-                <span style="color:grey;" id="submit_pp_comment_form"></span>
+                <span style="color:grey;" id="submit_pp_comment_form{{object.pk}}"></span>
 
             </form>
                     {% else %} 
@@ -37,7 +37,7 @@
 <script>
 
   $("form#pp_comment_form{{object.pk}}").submit(function(e){
-        $("#submit_pp_comment_form").html("<b>Submitting, Please Wait.</b>")
+        $("#submit_pp_comment_form{{object.pk}}").html("<b>Submitting, Please Wait.</b>")
         $('#commentsubmission{{object.pk}}').css('display', 'none')
         //slideup('pp_formatting_help');
         addObject(e);
