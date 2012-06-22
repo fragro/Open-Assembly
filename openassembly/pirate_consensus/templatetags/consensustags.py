@@ -365,7 +365,7 @@ def pp_rating_js(context, nodelist, *args, **kwargs):
                     $("#stars-wrapper-rate""" + str(obj.id) + """").stars({
                        inputType: "select",
                        callback: function(ui, type, value){
-                            js_redirect('/register.html?');
+                            js_redirect('/p/register');
                        },
                        captionEl: $("#stars-cap-rate"),
                        cancelTitle:'Cancel Rating',
@@ -416,7 +416,7 @@ def pp_spectrum_js(context, nodelist, *args, **kwargs):
                     $("#stars-wrapper-spec""" + str(obj.id) + """").stars({
                        inputType: "select",
                        callback: function(ui, type, value){
-                            js_redirect('/register.html?');
+                            js_redirect('/p/register');
                        },
                        spectrum:true,
                        captionEl: $("#stars-cap-spec"),

@@ -263,7 +263,7 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
                     email_subject = 'OpenAssembly Referral'
                     if obj:
                         email_subject += " to Group " + str(obj.shortname)
-                    email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\n%sregister.html?d-=%s" % (
+                    email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\n%sp/register/d-=%s" % (
                         user.username, DOMAIN_NAME,
                         ref.key)
                     send_mail(email_subject,

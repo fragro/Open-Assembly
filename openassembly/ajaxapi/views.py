@@ -73,7 +73,7 @@ def add_support(request, pk):
         obj_str = get_pretty_url(c_type.pk, pk)
         return redirect("/p/user/" + STR_KEY + str(obj_str))
     else:
-        return redirect('/register.html?')
+        return redirect('/p/register')
 
 
 def remove_support(request, pk):
@@ -86,7 +86,7 @@ def remove_support(request, pk):
         obj_str = get_pretty_url(c_type.pk, pk)
         return redirect("/p/user/" + STR_KEY + str(obj_str))
     else:
-        return redirect('/register.html?')
+        return redirect('/p/register')
 
 
 def change_hash_dim(request):
