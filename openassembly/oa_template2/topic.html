@@ -25,23 +25,6 @@
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> 
 
 
-    {% cani object=object user=user %}
-        {% if pp_permissions.permission %}
-          {% pp_get_contenttype_id object=object %}
-            <a href="{% url pirate_sources.views.upload_handler object.pk pp_source.ctype_pk %}">
-          {% endpp_get_contenttype_id %}
-
-        {% else %}
-
-            <a>
-
-        {% endif %}
-    {% endcani %}  
-
-    </a>
-
-
-
     {% pp_slice obj=object.description amt=200 %}
         {% if object.description|length > 200 %}
             {{pp_tag.sliced|markdown}}[...]
