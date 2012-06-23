@@ -1,6 +1,4 @@
 <!--Requires a consensus object -->
- <script type="text/javascript" src="/static/js/highcharts.js"></script>
-
 
 {% load consensustags %}
 
@@ -49,7 +47,7 @@
                      </script>
 
                      <!-- NEED THIS ID -->
-                      <span id='chart{{object.pk}}' class="temp_check_small"> </span>
+                      <div id='chart{{object.pk}}' class="temp_check_small"> </div>
 
                   {% endif %}
           {% endpp_consensus_chart %}

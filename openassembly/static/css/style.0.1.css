@@ -665,3 +665,8 @@ a {
     position:relative;
     float:left;
 }
+.panel_inner li{
+    width:100%;
+    display:block;
+    height:50px;
+}
