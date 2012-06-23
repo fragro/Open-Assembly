@@ -1,0 +1,57 @@
+<!--Requires a consensus object -->
+ <script type="text/javascript" src="/static/js/highcharts.js"></script>
+
+
+{% load consensustags %}
+
+{% pp_consensus_get object=object.content_object.pk %}
+
+          {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
+             {{pp_consensus.consensus.chart_data }}
+               {% if pp_consensus.chart %}
+                  <script>
+                  var chart1; // globally available
+                  $(document).ready(function() {
+
+                        chart1 = new Highcharts.Chart({
+                           chart: {
+                              renderTo: 'chart{{object.pk}}',
+                              type: 'pie',
+                           },
+                           title: {
+                              text: ''
+                        },
+                           tooltip: {
+                              formatter: function() {
+                                 return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                              }
+                           },
+                           yAxis: {
+                              title: {
+                                 text: 'Consensus'
+                              }
+                           },
+                           plotOptions: {
+                              pie: {
+                                 allowPointSelect: true,
+                                 cursor: 'pointer',
+                                 dataLabels: {
+                                    enabled: false
+                                 },
+                              }
+                           },
+                          credits: {
+                              enabled: false
+                          },
+                           series: {{pp_consensus.chart_data|safe}},
+                        });
+                     });
+                     </script>
+
+                     <!-- NEED THIS ID -->
+                      <span id='chart{{object.pk}}' class="temp_check_small"> </span>
+
+                  {% endif %}
+          {% endpp_consensus_chart %}
+
+{% endpp_consensus_get %}
