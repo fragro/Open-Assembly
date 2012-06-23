@@ -48,7 +48,8 @@
 
                      <!-- NEED THIS ID -->
                       <div id='chart{{object.pk}}' class="temp_check_small"> </div>
-
+                  {% else %}
+                      <div id='chart{{object.pk}}' class="temp_check_small"> <img src="/static/img/empty_temp.jpg"></div>
                   {% endif %}
           {% endpp_consensus_chart %}
 
