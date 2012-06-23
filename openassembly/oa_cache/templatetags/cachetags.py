@@ -22,16 +22,17 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
 
     request = kwargs.get('request', None)
 
-    ret, obj, rtype = render_hashed(request, None, None, extracontext={'TYPE': 'HTML'})
+    if request.META['PATH_INFO'][0:3] == '/p/':
+        ret, obj, rtype = render_hashed(request, None, None, extracontext={'TYPE': 'HTML'})
 
-    namespace['key'] = request.META['PATH_INFO'].replace('/', '')
-    namespace['rendertype'] = rtype
-    namespace['data'] = ret
-    namespace['DOMAIN'] = DOMAIN
-    namespace['object'] = obj
-    namespace['rendered_list'] = None
+        namespace['key'] = request.META['PATH_INFO'].replace('/', '')
+        namespace['rendertype'] = rtype
+        namespace['data'] = ret
+        namespace['DOMAIN'] = DOMAIN
+        namespace['object'] = obj
+        namespace['rendered_list'] = None
 
-    namespace['nojs'] = True
+        namespace['nojs'] = True
     output = nodelist.render(context)
     context.pop()
 
