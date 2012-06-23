@@ -13,17 +13,15 @@
 
 {% block listing %}
 
-        {% include 'etc/object_img_50.html' %}
+        <div class="panel_list_img">{% include 'etc/object_img_50.html' %}</div>
 
         <a class="ov_hid">
-
 
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.children }}</a>
 
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.group_members}}</a>
 
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> 
-
 
     {% pp_slice obj=object.description amt=200 %}
         {% if object.description|length > 200 %}
