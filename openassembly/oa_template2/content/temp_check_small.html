@@ -5,59 +5,57 @@
 {% if object.content_object.pk != None %}
 
 
-{% pp_consensus_get object=object.content_object.pk %}
+   {% pp_consensus_get object=object.content_object.pk %}
 
-          {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
-             {{pp_consensus.consensus.chart_data }}
-               {% if pp_consensus.chart %}
-                  <script>
-                  var chart1; // globally available
-                  $(document).ready(function() {
+             {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
+                {{pp_consensus.consensus.chart_data }}
+                  {% if pp_consensus.chart %}
+                     <script>
+                     var chart1; // globally available
+                     $(document).ready(function() {
 
-                        chart1 = new Highcharts.Chart({
-                           chart: {
-                              renderTo: 'chart{{object.pk}}{{key}}',
-                              type: 'pie',
-                           },
-                           title: {
-                              text: ''
-                        },
-                           tooltip: {
-                              formatter: function() {
-                                 return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
-                              }
-                           },
-                           yAxis: {
+                           chart1 = new Highcharts.Chart({
+                              chart: {
+                                 renderTo: 'chart{{object.pk}}{{key}}',
+                                 type: 'pie',
+                              },
                               title: {
-                                 text: 'Consensus'
-                              }
+                                 text: ''
                            },
-                           plotOptions: {
-                              pie: {
-                                 allowPointSelect: true,
-                                 cursor: 'pointer',
-                                 dataLabels: {
-                                    enabled: false
-                                 },
-                              }
-                           },
-                          credits: {
-                              enabled: false
-                          },
-                           series: {{pp_consensus.chart_data|safe}},
+                              tooltip: {
+                                 formatter: function() {
+                                    return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                                 }
+                              },
+                              yAxis: {
+                                 title: {
+                                    text: 'Consensus'
+                                 }
+                              },
+                              plotOptions: {
+                                 pie: {
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                       enabled: false
+                                    },
+                                 }
+                              },
+                             credits: {
+                                 enabled: false
+                             },
+                              series: {{pp_consensus.chart_data|safe}},
+                           });
                         });
-                     });
-                     </script>
+                        </script>
 
-                     <!-- NEED THIS ID -->
-                      <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> </div>
-                  {% else %}
-                      <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> <img src="/static/img/empty_temp.jpg"></div>
-                  {% endif %}
-          {% endpp_consensus_chart %}
+                        <!-- NEED THIS ID -->
+                         <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> </div>
+                     {% else %}
+                         <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> <img src="/static/img/empty_temp.jpg"></div>
+                     {% endif %}
+             {% endpp_consensus_chart %}
 
-{% endpp_consensus_get %}
+   {% endpp_consensus_get %}
 
-{% else %}
-{{object.content_object}}
 {% endif %}
