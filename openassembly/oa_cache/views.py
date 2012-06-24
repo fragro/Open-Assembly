@@ -122,15 +122,16 @@ as a reference for the template, div, and other necessary inforamtion.
             #if no ModelCache, then there are multiple elements on one page and we need to specify via div_id
             if usc.object_specific:
                 div_id += obj_id
+            retkey = key.replace('/', '')
             if not usc.is_recursive:
                 render = usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),
-                                'object': obj, 'user': user, 'csrf_string': csrf_t,
+                                'key': retkey, 'object': obj, 'user': user, 'csrf_string': csrf_t,
                                 'sort_type': paramdict.get('CTYPE_KEY', '')}))
                 rendered_list.append({'obj_pk': obj_id, 'usc_pk': usc.pk, 'toggle': usc.is_toggle,
                                         'div': div_id, 'type': usc.jquery_cmd, 'html': render})
             else:
                 #if it's recursive we need to also render all the children USCs
-                recursive_list = usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),
+                recursive_list = usc.render(RequestContext(request, {'key': retkey, 'dimension': paramdict.get('DIM_KEY', 'n'),
                         'object': obj, 'user': user, 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}))
                 for html, pk in recursive_list:
                     rendered_list.append({'obj_pk': obj_id, 'usc_pk': usc.pk, 'toggle': usc.is_toggle, 'div': div_id, 'type': usc.jquery_cmd, 'html': html})

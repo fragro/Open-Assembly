@@ -13,7 +13,7 @@
 
         <h1>Content Successfully Submitted</h1>
 
-        <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}">Check it out here</a></h3>
+        <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">Check it out here</a></h3>
 
         {% else %}
 
