@@ -22,8 +22,8 @@ try:
     #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
     #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
 
-    DOMAIN_NAME = 'http://openassembly.org/'
-    DOMAIN = 'http://openassembly.org'
+    DOMAIN_NAME = 'http://www.openassembly.org/'
+    DOMAIN = 'http://www.openassembly.org'
 
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
