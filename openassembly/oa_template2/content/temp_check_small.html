@@ -2,6 +2,9 @@
 
 {% load consensustags %}
 
+{% if object.content_object.pk != None %}
+
+
 {% pp_consensus_get object=object.content_object.pk %}
 
           {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
@@ -54,3 +57,7 @@
           {% endpp_consensus_chart %}
 
 {% endpp_consensus_get %}
+
+{% else %}
+{{object.content_object}}
+{% endif %}
