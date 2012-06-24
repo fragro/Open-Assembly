@@ -366,7 +366,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         #exclude if model is available
         lu = lu.exclude(model_cache=m.pk)
     for usc in lu:
-        rendered_list.append({'div': usc.div_id, 'obj_pk': obj.pk,  'phase': phase, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
+        rendered_list.append({'div': usc.div_id, 'obj_pk': obj_pk,  'phase': phase, 'type': usc.jquery_cmd, 'html': usc.render({'request': request, 'object': obj, 'user': user})})
     if m is not None:
         r = UserSaltCache.objects.filter(model_cache=m.pk, load_last=True, **kwargs)
         context = {'dimension': dimension, 'object': obj,
