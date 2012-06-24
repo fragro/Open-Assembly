@@ -237,6 +237,13 @@ pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="create_grou
 pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pptopiccache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
+
+errorcache, is_new = ModelCache.objects.get_or_create(template="404.html",
+            div_id="#pages", content_type="404", jquery_cmd="append")
+
+errortab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=errorcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blob_form.html",
                                                     div_id="#pp_blob_form", jquery_cmd="html", object_specific=True)
 
