@@ -1,5 +1,7 @@
 {% extends 'etc/panel_listing.html' %}
 
+{% if object != None %}
+
 {% block li_id %}
 
 <li id="{{object.pk}}">
@@ -15,3 +17,5 @@
         {{object.content_object.summary }}
     </a>
 {% endblock %}
+
+{% endif %}
