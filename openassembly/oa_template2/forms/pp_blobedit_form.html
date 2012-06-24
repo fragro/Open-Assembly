@@ -7,14 +7,14 @@
 
                 <h1>Content Successfully Edited</h1>
 
-                <h3><a href="{% pp_url object=object template='detail.html' %}">Check it out here</a></h3>
+                <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">Check it out here</a></h3>
 
             {% else %}
 
             {{pp_blob.errors}}
 
                 {{ pp_blob.form.media }}
-                <form id='pp_blobedit_form' method="post" action="">
+                <form id='pp_blobedit_form{{object.pk}}' method="post" action="">
                 <div style='display:none'><input type='hidden' name='form_id' value='pp_blobedit_form' /></div>
                     {% if pp_blob.parent_summary %}
                         <h2>Parent: {{object }}<h2/>
@@ -38,8 +38,8 @@
 
                 <script>
                  
-                     $("form#pp_blobedit_form").submit(function(e){
-                        $("#submit_pp_blobedit_form").html("<b>Submitting...</b>")
+                     $("form#pp_blobedit_form{{object.pk}}").submit(function(e){
+                        $("#submit_pp_blobedit_form{{object.pk}}").html("<b>Submitting...</b>")
                         addObject(e);
                         $('html').slideto({'highlight': false});                    
                     });

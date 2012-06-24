@@ -240,6 +240,8 @@ pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pptop
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blob_form.html",
                                                     div_id="#pp_blob_form", jquery_cmd="html", object_specific=True)
 
+ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blobedit_form.html",
+                                                    div_id="#pp_blobedit_form", jquery_cmd="html", object_specific=True)
 
 submitcache, is_new = ModelCache.objects.get_or_create(template="submit.html",
                 div_id="#pages", content_type="submit", main=True, jquery_cmd="append")
