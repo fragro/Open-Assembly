@@ -1,6 +1,8 @@
 {% load thumbnail %}
 {% load sourcetags %}
 
+{% if object != None %}
+
 {% block li_id %}<li>{% endblock%}
 
         {% block listing %}
@@ -9,3 +11,5 @@
         {% endblock %}
     </a>
 </li>
+
+{% endif %}
