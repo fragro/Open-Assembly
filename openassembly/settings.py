@@ -25,7 +25,7 @@ try:
     DOMAIN_NAME = 'http://openassembly.org/'
     DOMAIN = 'http://openassembly.org'
 
-    DEBUG = False
+    DEBUG = True
     TEMPLATE_DEBUG = DEBUG
 
     DATABASES = {
