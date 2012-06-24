@@ -6,11 +6,13 @@
     <li {% if dashobj.zoom_x == 4 %}class="disabled"{% endif %}><a href="javascript:;" onClick="rightzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1);"><i class="icon-chevron-right"></i></a></li>
     <li class="panel_dropdown">
         <i class="icon-cog"></i>
-        <ul>
+        <ul class="menu">
             {% if start != 0 %}
             <li><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'-20'}}, {{end|add:'-20'}});">Previous Page of Results </a></li>
             {% endif %}
+            {% if start|add:'20' < count %}
             <li><a href="javascript:;" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'20'}}, {{end|add:'20'}});">Next Page of Results</a></li>
+            {% endif %}
 
 
             {% if dashobj.boardname == 'Proposals' %}

@@ -138,6 +138,15 @@ ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppc
 ppblobchildeffectcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppblobcache.pk, template="pp_blob_child_effect.html", div_id="#pp_blob_child", jquery_cmd="html", scroll_to=False)
 """
 
+########PURGE THE NON-BELIEVERS!!!
+for i in SideEffectCache.objects.all():
+    i.delete()
+for i in UserSaltCache.objects.all():
+    i.delete()
+for i in ListCache.objects.all():
+    i.delete()
+for i in ModelCache.objects.all():
+    i.delete()
 
 ####USER PROFILE
 usercache, is_new = ModelCache.objects.get_or_create(template="user/user.html",
@@ -154,6 +163,10 @@ uploadcache, is_new = ModelCache.objects.get_or_create(template="upload.html",
                 div_id="#pages", content_type="upload", main=True, jquery_cmd="append")
 upload_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=uploadcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
+
+ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_message_form.html",
+                                                    div_id="#pp_message_form", jquery_cmd="html", object_specific=True)
+
 
 ##USER LISTS
 shortusercache, is_new = ModelCache.objects.get_or_create(template="user/user_short.html",
@@ -238,10 +251,16 @@ pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pptop
                          div_id="#tab_ruler", jquery_cmd="append")
 
 
-errorcache, is_new = ModelCache.objects.get_or_create(template="404.html",
+errorcache, is_new = ModelCache.objects.get_or_create(template="404.html", main=True,
             div_id="#pages", content_type="404", jquery_cmd="append")
 
 errortab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=errorcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+helpcache, is_new = ModelCache.objects.get_or_create(template="etc/faq.html", main=True,
+            div_id="#pages", content_type="help", jquery_cmd="append")
+
+helptab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=helpcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blob_form.html",

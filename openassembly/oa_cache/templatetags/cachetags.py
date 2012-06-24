@@ -3,7 +3,7 @@ from django import template
 from pirate_core import namespace_get
 from oa_cache.views import render_hashed
 
-from settings import DEBUG, DOMAIN
+from settings import DOMAIN
 
 from customtags.decorators import block_decorator
 register = template.Library()
@@ -23,13 +23,13 @@ def pp_get_cached_data(context, nodelist, *args, **kwargs):
     request = kwargs.get('request', None)
 
     if request.META['PATH_INFO'][0:3] == '/p/':
-        ret, obj, rtype = render_hashed(request, None, None, extracontext={'TYPE': 'HTML'})
+        renderdict = render_hashed(request, None, None, extracontext={'TYPE': 'HTML'})
 
         namespace['key'] = request.META['PATH_INFO'].replace('/', '')
-        namespace['rendertype'] = rtype
-        namespace['data'] = ret
+        namespace['rendertype'] = renderdict['rendertype']
+        namespace['data'] = renderdict['renders']
         namespace['DOMAIN'] = DOMAIN
-        namespace['object'] = obj
+        namespace['object'] = renderdict['object']
         namespace['rendered_list'] = None
 
         namespace['nojs'] = True

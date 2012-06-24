@@ -33,13 +33,18 @@ def oa_get_dashboard(context, nodelist, *args, **kwargs):
             key, rendertype, paramdict = interpret_hash(board.plank)
             #add start and end information for pagination
             plank = board.plank + '/s-0/e-20'
-            ret, obj, rtype = render_hashed(request, plank, user, extracontext={'dashobj': board, 'TYPE': 'HTML', 'start': 0, 'end': 20})
+            renderdict = render_hashed(request, plank, user, extracontext={'dashobj': board, 'TYPE': 'HTML', 'start': 0, 'end': 20})
             if 'DIM_KEY' in paramdict:
                 dim = paramdict['DIM_KEY']
             else:
                 dim = ''
             print board
-            dash.append((ret, obj, board, rtype, dim, 0, 20))
+            #if there is a total count for a list in this we need to add that so that the dash renders it might fine
+            if renderdict['rendertype'] in renderdict['counts']:
+                count = renderdict['counts'][renderdict['rendertype']]
+            else:
+                count = None
+            dash.append((renderdict['renders'], renderdict['object'], board, renderdict['rendertype'], dim, 0, 20, count))
         namespace['boards'] = dash
     output = nodelist.render(context)
     context.pop()

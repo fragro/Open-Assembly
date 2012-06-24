@@ -75,18 +75,22 @@ def add_board(request):
             dashobj = DashboardPanel.objects.get(plank=path, dashboard_id=dashboard_id, user=request.user)
         path += '/s-' + str(start) + '/e-' + str(end)
 
-        ret, obj, rtype = render_hashed(request, path, request.user, extracontext={'dashobj': dashobj, 'start': int(start), 'end': int(end)})
+        renderdict = render_hashed(request, path, request.user, extracontext={'dashobj': dashobj, 'start': int(start), 'end': int(end)})
 
-        if rtype == 'chat':
+        if renderdict['rendertype'] == 'chat':
             width = render_to_string('stream/stream_width.html', {'dashobj': dashobj})
             height = render_to_string('stream/stream_height.html', {'dashobj': dashobj})
             results = {'width': width, 'height': height}
-        html = render_to_string('nav/board_template.html', {'board': ret, 'obj': obj, 'dashobj': dashobj, 'start': int(start), 'end': int(end)})
+        if renderdict['rendertype'] in renderdict['counts']:
+            count = renderdict['counts'][renderdict['rendertype']]
+        else:
+            count = None
+        html = render_to_string('nav/board_template.html', {'board': renderdict['renders'], 'obj': renderdict['object'], 'dashobj': dashobj, 'start': int(start), 'end': int(end), 'count': count})
         if functype == 'refresh':
             soup = BeautifulSoup.BeautifulSoup(html)
             v = soup.find("div", id='content' + str(dashobj.pk))
             html = unicode(v.prettify())
-        results.update({'FAIL': False, 'html': html, 'dashpk': dashobj.pk, 'dashzoom_y': dashobj.zoom_y, 'dashzoom_x': dashobj.zoom_x, 'rendertype': rtype})
+        results.update({'FAIL': False, 'html': html, 'dashpk': dashobj.pk, 'dashzoom_y': dashobj.zoom_y, 'dashzoom_x': dashobj.zoom_x, 'rendertype': renderdict['rendertype']})
 
         return HttpResponse(simplejson.dumps(results),
                     mimetype='application/json')

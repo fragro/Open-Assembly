@@ -1,7 +1,7 @@
 <div class="pwide{{dashobj.zoom_x|add:'1'}} ptall{{dashobj.zoom_y|add:'1'}} panel" id="{{dashobj.pk}}">
     <div class="panel_content" id="content{{dashobj.pk}}">
         <div class="panel_header">
-            <h3>{{dashobj.boardname}} - {{obj.shortname|title}} {{start}} - {{end}}</h3>
+            <h3>{{dashobj.boardname}} - {{obj.shortname|title}} {{start}} - {{end}} / {{count}}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
         <div class="panel_inner">

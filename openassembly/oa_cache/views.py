@@ -8,6 +8,7 @@ from pirate_forum.models import create_view, get_rangelist
 from django.template import RequestContext
 from pirate_topics.models import Topic
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from settings import DOMAIN
 from oa_cache.tasks import track_visitors
 import random
@@ -163,6 +164,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         key, rendertype, paramdict = interpret_hash(key)
     rendered_list = []
     load_last = []
+    counts = {}
 
     extracontext.update({'template': rendertype, 'user': user, 'key': key.replace('/', '')})
 
@@ -200,10 +202,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         if obj is not None:
             contextual['object'] = obj
         else:
-            if user.is_authenticated():
-                contextual['object'] = user
-            else:
-                contextual['object'] = str(m.content_type)
+            contextual['object'] = rendertype.replace('_', ' ')
         contextual.update(extracontext)
         #set obj pk
         try:
@@ -263,7 +262,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
         else:
             renders, cached_list, tot_items = renders
         rendered_list.extend(renders)
-
+        counts[rendertype] = tot_items
         #add usersaltcache if there is request data
         if request is not None:
             #Get Dybamic inputs not linked to a user
@@ -376,7 +375,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             html = usc.render(RequestContext(request, context))
             rendered_list.append({'div': usc.div_id,  'phase': phase, 'type': usc.jquery_cmd, 'html': html})
     rendered_list.extend(load_last)
-    return {'object': obj, 'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to, 'rendertype': rendertype}
+    return {'counts': counts, 'object': obj, 'rendered_list': rendered_list, 'paramdict': paramdict, 'render': render, 'scroll_to': scroll_to, 'rendertype': rendertype}
 
 
 """
@@ -453,7 +452,9 @@ decreased the latency of the system.
             if 'SCROLL_KEY' in props['paramdict']:
                 data['scroll_to'] = '#' + props['paramdict']['SCROLL_KEY']
         else:
-            data['FAIL'] = hashed
+            #data['FAIL'] = hashed
+            return HttpResponse(simplejson.dumps({'redirect': hashed}),
+                                    mimetype='application/json')
         #track visitors
         track_visitors(request)
         if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
@@ -571,7 +572,7 @@ def render_hashed(request, key, user, extracontext={}):
             final[k[1:]] = r
         else:
             final[k] = r
-    return final, retdict['object'], rendertype
+    return {'renders': final, 'object': retdict['object'], 'rendertype': rendertype, 'counts': retdict['counts']}
 
 
 def load_page_ret(request, ts, url, c):

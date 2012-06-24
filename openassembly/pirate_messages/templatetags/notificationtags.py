@@ -32,19 +32,19 @@ def pp_has_mail(context, nodelist, *args, **kwargs):
 
     user = kwargs.get('user', None)
     reset = kwargs.get('reset', None)
-    
+
     notes = Notification.objects.filter(receiver=user,is_read=False)
-    
+
     unread = Message.objects.filter(read=False, receiver=user) 
-    
+
     count = len(notes) + len(unread)
-    
-    
+
+
     if count == 0: has_mail = False
     else: has_mail = True
     namespace['has_mail'] = has_mail
     namespace['count'] = count
-    
+
     output = nodelist.render(context)
     context.pop()
 

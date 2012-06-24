@@ -63,7 +63,7 @@ class MessageForm(forms.ModelForm):
         exclude = ('receiver', 'sender', 'created_dt', 'read', 'parent_pk')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_message_form")
-    description = forms.CharField(widget=MarkItUpWidget(), label="Description")
+    description = forms.CharField(widget=forms.Textarea, label="Description")
 
 
 @task(ignore_result=True)
@@ -75,6 +75,8 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
         send_email = profile.receive_emails
     except:
         send_email = True
+    #we aren't sending emails for natgat
+    send_email = False
     content_type = ContentType.objects.get_for_model(obj)
     rep_type = ContentType.objects.get_for_model(reply_to)
     user_type = ContentType.objects.get_for_model(User)
