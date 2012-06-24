@@ -1,0 +1,29 @@
+<form id='pp_message_form{{object.pk}}' method="post" action="">
+
+{% pp_message_form POST=request.POST receiver=object sender=user %}
+        <h1><a data-href="{% pp_url template='user_profile.html' object=pp_messages.user %}">{{pp_messages.user}}</a></h1>
+        {{ pp_messages.form.errors }}
+
+
+        {% include 'etc/object_img_100.html' %}
+
+
+            <br>{{pp_messages.form.description}}<br>
+                {{pp_messages.form.form_id}}
+                {% csrf_token %}
+       <input type="submit" value="Send Message">{% if pp_messages.complete %} Message Sent!{% endif %}
+
+       {% if pp_messages.complete %} <a onClick="tabRemove('{{key}}');">Close</a>{% endif %}
+
+
+        <script>
+         
+             $("form#pp_message_form{{object.pk}}").submit(function(e){
+                $("#submit_pp_message_form{{object.pk}}").html("<b>Submitting...</b>")
+                addObject(e);
+            });
+        </script>
+
+
+{% endpp_message_form %}
+</form>
