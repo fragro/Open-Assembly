@@ -250,14 +250,15 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             if len(cached_list) == 0:
                 renders.append({'div': lm.div_id, 'html': '', 'type': lm.jquery_cmd})
             for li in cached_list:
-                #render each object in the list
-                context = {'div': lm.div_id, 'object': li, 'dimension': dimension}
-                context.update(extracontext)
-                html = lm.render(context, forcerender=forcerender)
-                if lm.object_specific:
-                    renders.append({'div': lm.div_id + str(obj.pk), 'html': html, 'type': lm.jquery_cmd})
-                else:
-                    renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
+                if li != None:
+                    #render each object in the list
+                    context = {'div': lm.div_id, 'object': li, 'dimension': dimension}
+                    context.update(extracontext)
+                    html = lm.render(context, forcerender=forcerender)
+                    if lm.object_specific:
+                        renders.append({'div': lm.div_id + str(obj.pk), 'html': html, 'type': lm.jquery_cmd})
+                    else:
+                        renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
             memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))
         else:
             renders, cached_list, tot_items = renders
