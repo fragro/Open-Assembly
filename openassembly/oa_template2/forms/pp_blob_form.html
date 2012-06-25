@@ -1,85 +1,92 @@
 {% load blobtags %}
 
+{% oa_ingroup object=object user=user %}
 
-{% if dimension != 'edit' %}
-    {% pp_get_forumdimension dimension=dimension %}
-    <i>{{pp_blob.forumdimension.help_text}}
-    {% endpp_get_forumdimension %}
-{% endif %}
-
-    {% pp_blob_form POST=request.POST user=user dimension='tem' parent=object sub=pp_blob.sub %}
-
-        {% if pp_blob.form_complete %}
-
-        <h1>Content Successfully Submitted</h1>
-
-        <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">Check it out here</a></h3>
-
-        {% else %}
-
-                {{ pp_blob.form.media }}
-                <form id='pp_blob_form{{object.pk}}' method="post" action="">
-                <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
-                <div style="color:red;font-size:150%;">{{pp_blob.errors}}</div>
-
-                    {% for field in pp_blob.form %}
-                        <p>
-                        <div style="float:left;">{% if field.errors %}{% for err in field.errors %}<b style="color:red;">{{ err }}</b>{% endfor %}{% endif %}</div>
-                        </p>
-                        {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id' or field.html_name == 'end_of_nomination_phase' and dimension == 'tem' or field.html_name == 'decision_time' and dimension == 'tem' or field.html_name == 'timezone' and dimension == 'tem' or field.html_name == 'winners' and dimension == 'tem'%}
-
-                        {% else %}
-
-                            {% if field.html_name == 'timezone' and dimension == 'pol' %}
-                                
-                                <b>Time Zone<font color="red">*</font>:</b>
-                                <select name="timezone" id="id_timezone">
-                                <option value="" ></option>
-
-                                    {% for timezone in pp_blob.timezones %}
-                                        {% pp_get_user_profile user=user %}
-                                            {% if pp_profile.profile %}
-                                                <option {% if pp_profile.profile.timezone == timezone %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
-                                            {% else %}
-                                                <option {% if timezone == 'US/Eastern' %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
-                                            {% endif %}
-                                        {% endpp_get_user_profile %}
-                                    {% endfor %}
-                                    </select>
-                                <br><br>
-                            {% else %}
-
-                                <p>
-                                    <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
-                                    {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
-                                </p>
-
-                                {% endif %}
-
-                            
-                        {% endif %}
-                    {% endfor %}
+    {% if pp_topic.in_group %}
 
 
-                    {% csrf_token %}
-                    <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blob_form"></span>
-
-                </form> 
-
-                <script>
-                 
-                     $("form#pp_blob_form{{object.pk}}").submit(function(e){
-                        $("#submit_pp_blob_form{{object.pk}}").html("<b>Submitting...</b>")
-                        addObject(e);
-                        //$('html').slideto({'highlight': false});                    
-                    });
-                </script>
-
+        {% if dimension != 'edit' %}
+            {% pp_get_forumdimension dimension=dimension %}
+            <i>{{pp_blob.forumdimension.help_text}}
+            {% endpp_get_forumdimension %}
         {% endif %}
 
-        
-            <span id="content_side_effect" style="display:none;">["{{pp_blob.object_pk}}", "{{pp_blob.content_type}}"]</span>
+            {% pp_blob_form POST=request.POST user=user dimension='tem' parent=object sub=pp_blob.sub %}
+
+                {% if pp_blob.form_complete %}
+
+                <h1>Content Successfully Submitted</h1>
+
+                <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">Check it out here</a></h3>
+
+                {% else %}
+
+                        {{ pp_blob.form.media }}
+                        <form id='pp_blob_form{{object.pk}}' method="post" action="">
+                        <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
+                        <div style="color:red;font-size:150%;">{{pp_blob.errors}}</div>
+
+                            {% for field in pp_blob.form %}
+                                <p>
+                                <div style="float:left;">{% if field.errors %}{% for err in field.errors %}<b style="color:red;">{{ err }}</b>{% endfor %}{% endif %}</div>
+                                </p>
+                                {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id' or field.html_name == 'end_of_nomination_phase' and dimension == 'tem' or field.html_name == 'decision_time' and dimension == 'tem' or field.html_name == 'timezone' and dimension == 'tem' or field.html_name == 'winners' and dimension == 'tem'%}
+
+                                {% else %}
+
+                                    {% if field.html_name == 'timezone' and dimension == 'pol' %}
+                                        
+                                        <b>Time Zone<font color="red">*</font>:</b>
+                                        <select name="timezone" id="id_timezone">
+                                        <option value="" ></option>
+
+                                            {% for timezone in pp_blob.timezones %}
+                                                {% pp_get_user_profile user=user %}
+                                                    {% if pp_profile.profile %}
+                                                        <option {% if pp_profile.profile.timezone == timezone %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
+                                                    {% else %}
+                                                        <option {% if timezone == 'US/Eastern' %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
+                                                    {% endif %}
+                                                {% endpp_get_user_profile %}
+                                            {% endfor %}
+                                            </select>
+                                        <br><br>
+                                    {% else %}
+
+                                        <p>
+                                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
+                                            {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
+                                        </p>
+
+                                        {% endif %}
+
+                                    
+                                {% endif %}
+                            {% endfor %}
+
+
+                            {% csrf_token %}
+                            <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blob_form"></span>
+
+                        </form> 
+
+                        <script>
+                         
+                             $("form#pp_blob_form{{object.pk}}").submit(function(e){
+                                $("#submit_pp_blob_form{{object.pk}}").html("<b>Submitting...</b>")
+                                addObject(e);
+                                //$('html').slideto({'highlight': false});                    
+                            });
+                        </script>
+
+                {% endif %}
+
+                
+                    <span id="content_side_effect" style="display:none;">["{{pp_blob.object_pk}}", "{{pp_blob.content_type}}"]</span>
 
 
 
-    {% endpp_blob_form %}
+            {% endpp_blob_form %}
+    {% endif %}
+
+{% endoa_ingroup %}
