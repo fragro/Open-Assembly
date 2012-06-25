@@ -19,11 +19,11 @@ try:
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
-    #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
-    #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
+    DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
+    DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
 
-    DOMAIN_NAME = 'http://www.openassembly.org/'
-    DOMAIN = 'http://www.openassembly.org'
+    #DOMAIN_NAME = 'http://www.openassembly.org/'
+    #DOMAIN = 'http://www.openassembly.org'
 
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
