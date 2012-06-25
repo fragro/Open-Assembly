@@ -21,10 +21,10 @@
 
                 {% else %}
 
-                        {{ pp_blob.form.media }}
                         <form id='pp_blob_form{{object.pk}}' method="post" action="">
                         <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
-                        <div style="color:red;font-size:150%;">{{pp_blob.errors}}</div>
+
+                        {{pp_blob.errors}}
 
                             {% for field in pp_blob.form %}
                                 <p>
@@ -66,7 +66,7 @@
 
 
                             {% csrf_token %}
-                            <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blob_form"></span>
+                            <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blob_form{{object.pk}}"></span>
 
                         </form> 
 
@@ -87,6 +87,12 @@
 
 
             {% endpp_blob_form %}
+
+
+    {% else %}
+
+    You are not in this group good sir.
+
     {% endif %}
 
 {% endoa_ingroup %}

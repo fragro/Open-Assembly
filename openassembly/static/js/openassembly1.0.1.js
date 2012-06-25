@@ -1,3 +1,5 @@
+
+
 function spectrumvote(idk, pos, user_pk, obj_pk, ctype_pk){
 $.post("/spectrumvote/", {vote: pos, pk: idk},
   function(data) {
@@ -559,6 +561,7 @@ function push_dashboard(path, dash_id, boardname){
       if(data.FAIL === false){
           $('#panels').prepend(data.html);
           $('#panels').masonry('reload');
+
           hrefLess();
       }
   }, "json");
@@ -577,7 +580,6 @@ function delete_dashboard(obj_pk){
       if(data.FAIL === false){
         $('#' + obj_pk).remove();
         $('#panels').masonry('reload');
-
       }
   }, "json");
 }
@@ -716,7 +718,7 @@ function hrefLess() {
     $('a').each(function(){
         var t = $(this);
         if(t.attr('id') != 'register'){
-            if(typeof t.attr('href') != 'undefined'){
+            if(typeof t.attr('href') != 'undefined' && t.attr('href') != 'javascript:;'){
                 t.data('href', t.attr('href'));
                 t.removeAttr('href');
             }

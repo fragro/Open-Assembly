@@ -3,13 +3,9 @@
 
 {% block content %}
  
-    <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
-
 {% oa_get_group_settings object=object %}
 
-    <a data-href="{% pp_url template='submit.html' dimension='tem' object=object %}" href="{% pp_url template='submit.html' object=object dimension='tem' %}">submit a new propsal</a>
-
-
+    <a href="{% pp_url template='submit.html' object=object dimension='tem' %}">submit a new propsal</a>
 
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
