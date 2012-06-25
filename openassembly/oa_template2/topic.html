@@ -23,12 +23,4 @@
 
         <a href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> 
 
-    {% pp_slice obj=object.description amt=200 %}
-        {% if object.description|length > 200 %}
-            {{pp_tag.sliced|markdown}}[...]
-        {% else %}
-            {{pp_tag.sliced|markdown}}
-        {% endif %}
-    {% endpp_slice %}
-
 {% endblock %}
