@@ -46,14 +46,14 @@
             {% cani object=object user=user %}
                 {% if pp_permissions.permission %}
 
-                    <a data-href="{% pp_url object=object template='facilitator.html' %}" href="{% pp_url object=object template='facilitator.html' %}">Facilitate</a>
+                    <a href="{% pp_url object=object template='interact.html' %}">Facilitate</a>
      
                 {% endif %}
             {% endcani %}
-                <a data-href="{% pp_url template='submit.html' dimension='pol' object=object %}" href="{% pp_url template='submit.html' object=object %}">
+                <a href="{% pp_url template='submit.html' object=object %}">
                     Ask a Question</a>
 
-                <a data-href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}" href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}">
+                <a href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}">
                     Decisions</a>
 
                 <span id="addgroup">{% include 'forms/oa_addgroup_form.html' %}</span>

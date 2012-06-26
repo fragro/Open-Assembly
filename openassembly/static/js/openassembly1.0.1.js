@@ -746,7 +746,7 @@ function hrefLess() {
     $('a').each(function(){
         var t = $(this);
         if(t.attr('id') != 'register'){
-            if(typeof t.attr('href') != 'undefined' && t.attr('href') != 'javascript:;'){
+            if(typeof t.attr('href') != 'undefined'){
                 t.data('href', t.attr('href'));
                 t.removeAttr('href');
             }

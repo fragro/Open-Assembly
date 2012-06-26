@@ -676,3 +676,8 @@ a {
 .menu {
     z-index:2;
 }
+#loading {
+    float:left;
+    padding:13px 5px 3px 3px;
+    display:none;
+}

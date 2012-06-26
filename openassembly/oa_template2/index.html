@@ -39,12 +39,14 @@
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
         
         <div id="rail" class="clearfix">
-            <a class="nobbq" href="http://openassembly.org" id="logo"><img src="/static/img/logo.png" alt=""></a>
+            <a class="nobbq" href="http://openassembly.org" id="logo"><img src="/static/img/logo.png" alt=""></a><img id="loading" src="/static/img/1.gif">
             <ul id="nav">
                 <!-- Dashboard -->
+                {% if request.user.is_authenticated %}
+
                 <li><a href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
                 <!-- Inbox -->
-                {% if request.user.is_authenticated %}<li><a href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>{% endif %}
+                <li><a href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>
                 <!-- Browse -->
                 <li class="dropdown">
                     <a href="#"><i class="icon-white icon-list-alt icon-left"></i> Browse <i class="icon-white  icon-chevron-down icon-right"></i></a>
@@ -86,7 +88,6 @@
                 </li>
                 <!-- Bookmarks -->
                 <!--Will develop this feature in the next version -->
-                {% if request.user.is_authenticated %}
                 {% comment %}
                 <li class="dropdown bookmark_dropdown">
                     <a href="#"><i class="icon-white icon-bookmark icon-left"></i> Bookmarks <i class="icon-white  icon-chevron-down icon-right"></i></a>
@@ -449,6 +450,8 @@
             $(window).load(function(){
                 $('#panels').masonry('reload');
             });
+
+
         </script>        
     </body>
 
