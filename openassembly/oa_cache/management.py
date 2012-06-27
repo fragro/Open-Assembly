@@ -225,10 +225,17 @@ comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.ht
 commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache.pk,
         template="comments", div_id="#content_children", content_type="item", default=True)
 
-
 ###VOTING AND SIDEEFFECTS
 tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk,
             template="content/temp_check.html", div_id="#temp_check", jquery_cmd="html", object_specific=True)
+
+####ADMIN
+report_abuse_model_cache, is_new = ModelCache.objects.get_or_create(template="report_abuse.html", main=True,
+            div_id="#pages", content_type="report_abuse", jquery_cmd="append")
+report_abuse_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=report_abuse_model_cache.pk, template="report_abuse.html",
+                                                                div_id="#report_abuse", jquery_cmd="html")
+pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=report_abuse_model_cache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
 
 
 ##FORMS
@@ -277,6 +284,7 @@ submit_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=submi
 
 pprofilecache, is_new = ModelCache.objects.get_or_create(template="pp_profile_form.html",
                 div_id="#pages", content_type="pp_profile_form", main=True, jquery_cmd="append")
+
 pprofileformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_profile_form.html",
                                                     div_id="#pp_profile_form", jquery_cmd="append")
 pprofileform_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pprofilecache.pk, template="skeleton/tab_template.html",
