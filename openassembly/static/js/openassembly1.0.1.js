@@ -1,6 +1,7 @@
 
 
 function spectrumvote(idk, pos, user_pk, obj_pk, ctype_pk){
+
 $.post("/spectrumvote/", {vote: pos, pk: idk},
   function(data) {
       if(data.FAIL === true){
@@ -11,7 +12,6 @@ $.post("/spectrumvote/", {vote: pos, pk: idk},
         $('#spectrum_vote').html(' - ' + data.votetype);
       }
       }, "json");
-
 }
 
 function add_platform(ctype, object_pk){ 
@@ -103,12 +103,35 @@ $.post("/add_platform/", {ctype: ctype, object_pk: object_pk},
  }, "json");
 }
 
+function support(add, subscribed, user){
+  if(add === true){
+      $.post("/add_support/", {subscribed: subscribed, user: user},
+        function(data) {
+            if(data.FAIL !== true){
+              //$('#mygroup').append(data.group);
+              history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+              getContent();
+            }
+       }, "json");
+  }
+  if(add === false){
+      $.post("/remove_support/", {subscribed: subscribed, user: user},
+        function(data) {
+            if(data.FAIL !== true){
+              //$('#mygroup').append(data.group);
+              history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+              getContent();
+            }
+       }, "json");
+  }
+}
+
 function add_group(topic, user){
 $.post("/add_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$('#mygroup').append(data.group);
-        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
         getContent();
         $('.thumbnail_list').prepend(data.group);
       }
@@ -120,7 +143,7 @@ $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$(data.group).remove();
-        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
         getContent();
         $(data.group).remove();
       }
@@ -269,6 +292,7 @@ function addObject(e){
             }
           //if(data.POST){}
         }, "json");
+
   }
 
 function tabQueue() {
@@ -368,10 +392,12 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                 }
             //if(data.POST){}
         }, "json");
+
   }
 
 
 function getContent(){
+
 //            if (currentXhr != null && typeof currentXhr != 'undefined') {
 //                currentXhr.abort();
 //            }
@@ -464,7 +490,7 @@ function sort_dashboard(sorted){
   }, "json");
 }
 
-function increase_zoom(obj_pk, dim, path, dash_id){
+function increase_zoom(obj_pk, dim, path, dash_id, type){
   
   $.post("/increase_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
@@ -475,12 +501,14 @@ function increase_zoom(obj_pk, dim, path, dash_id){
           //});
       }
       if(data.FAIL === false){
-          refresh_size(path, dash_id);
+          if(type == 'Chat' || type == 'Stream'){
+            refresh_size(path, dash_id);
+          }
       }
   }, "json");
 }
 
-function decrease_zoom(obj_pk, dim, path, dash_id){
+function decrease_zoom(obj_pk, dim, path, dash_id, type){
   
   $.post("/decrease_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
@@ -491,8 +519,9 @@ function decrease_zoom(obj_pk, dim, path, dash_id){
           //});
       }
       if(data.FAIL === false){
-          refresh_size(path, dash_id);
-
+          if(type == 'Chat' || type == 'Stream'){
+            refresh_size(path, dash_id);
+          }
       }
   }, "json");
 }
@@ -509,13 +538,12 @@ function resort_dashboard(dash_id, sort_key){
       }
       if(data.FAIL === false){
           //chat window should be resized
-         refresh_dashboard(data.plank, data.dash_id);
+         //refresh_dashboard(data.plank, data.dash_id);
       }
   }, "json");
 }
 
 function refresh_dashboard(path, dash_id, start, end){
-  
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null, start: start, end: end},
   function(data) {
       if(data.FAIL === true){
@@ -539,11 +567,12 @@ function refresh_dashboard(path, dash_id, start, end){
           }
           $('#panels').masonry('reload');
       }
+
   }, "json");
+
 }
 
 function refresh_size(path, dash_id){
-  
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null},
   function(data) {
       if(data.FAIL === true){
@@ -574,10 +603,10 @@ function refresh_size(path, dash_id){
 
       }
   }, "json");
+
 }
 
 function push_dashboard(path, dash_id, boardname){
-  
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'add', boardname: boardname},
   function(data) {
       if(data.FAIL === true){
@@ -621,36 +650,36 @@ function allowPush(e, url, that) {
 
 // Panel resizing
 // Down
-function downzoom(dashpk, path, dash_id){
+function downzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('ptall3')) {
         return false;
     } else if (p.hasClass('ptall2')) {
         p.removeClass('ptall2').addClass('ptall3');
         p.find('icon-chevron-down').closest('li').addClass('disabled');
-        increase_zoom(p.attr('id'), 'Y', path, dash_id);
+        increase_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
         p.find('.icon-chevron-up').closest('li').removeClass('disabled');
         p.addClass('ptall2');
-        increase_zoom(p.attr('id'), 'Y', path, dash_id);
+        increase_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
     }
 }
 // Up
-function upzoom(dashpk, path, dash_id){
+function upzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('ptall3')) {
         p.find('.icon-chevron-down').closest('li').removeClass('disabled');
         p.removeClass('ptall3').addClass('ptall2');
-        decrease_zoom(p.attr('id'), 'Y', path, dash_id);
+        decrease_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('ptall2')) {
         p.removeClass('ptall2');
         p.find('.icon-chevron-up').closest('li').addClass('disabled');
-        decrease_zoom(p.attr('id'), 'Y', path, dash_id);
+        decrease_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
@@ -658,46 +687,46 @@ function upzoom(dashpk, path, dash_id){
     }
 }
 // Right
-function rightzoom(dashpk, path, dash_id){
+function rightzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('pwide4')) {
         return false;
     } else if (p.hasClass('pwide3')) {
         p.removeClass('pwide3').addClass('pwide4');
         p.find('.icon-chevron-right').closest('li').addClass('disabled');
-        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        increase_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('pwide2')) {
         p.removeClass('pwide2').addClass('pwide3');
-        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        increase_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
         p.addClass('pwide2');
         p.find('.icon-chevron-left').closest('li').removeClass('disabled');
-        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        increase_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
     }
 }
 // Left
-function leftzoom(dashpk, path, dash_id){
+function leftzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('pwide4')) {
         p.find('.icon-chevron-right').closest('li').removeClass('disabled');
         p.removeClass('pwide4').addClass('pwide3');
-        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        decrease_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('pwide3')) {
         p.removeClass('pwide3').addClass('pwide2');
-        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        decrease_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('pwide2')) {
         p.removeClass('pwide2');
         p.find('icon-chevron-left').closest('li').addClass('disabled');
-        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        decrease_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {

@@ -49,7 +49,7 @@
 
                      <!-- NEED THIS ID -->
                       <div id='chart{{object.pk}}'> </div>
-
+                      <div>
                            Avg. Quality Rating:
 
                            {% if pp_consensus.mean_information %}
@@ -58,6 +58,7 @@
                            N/A 
                            {% endif %}
 
+                     </div>
                   {% endif %}
           {% endpp_consensus_chart %}
 

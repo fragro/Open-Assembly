@@ -66,7 +66,7 @@
 {% if object %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object|title}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{key}}"class="min_max">
                 <a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">

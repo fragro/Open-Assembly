@@ -142,6 +142,19 @@ class DimensionManager(models.Manager):
         return self.get_or_create(name=name)[0]
 
 
+class AbuseTicket(models.Model):
+
+    user = models.ForeignKey(User)
+    name_of_abuser = models.CharField(max_length=70, unique=True)
+    created_dt = models.DateTimeField(auto_now_add=True)
+    link = models.CharField(max_length=800, null=True, blank=True)
+    description_of_abuse = models.CharField(max_length=500)
+    fixed = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return str(self.name_of_abuser) + ' - ' + str(self.created_dt)
+
+
 class ReputationDimension(models.Model):
     name = models.CharField(max_length=70, null=True, unique=True)
     created_dt = models.DateTimeField(auto_now_add=True)

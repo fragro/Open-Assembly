@@ -53,9 +53,9 @@
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
-            <a data-href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
+            <a onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">I Trust This Citizen</a> 
         {% else %}
-            <a data-href="{% url ajaxapi.views.remove_support object.id %}">Stop Trusting</a>
+            <a onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
         {% endif %}
 {% endpp_has_subscription %}
             
