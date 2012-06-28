@@ -15,21 +15,20 @@
 
           {% pp_imgsource_form POST=request.POST FILE=request.FILES object=object request=request %}
             <h2>Upload Images</h2>
-            <div style="display:block;">
-            <a class="button" href="{{object.get_absolute_url}}">Back to {{object}}</a>
-          </div>
-            <p>
-            <form method="POST" enctype="multipart/form-data">
+            <div style="display:block; margin-bottom:20px;">
+              <a class="button" href="{{object.get_absolute_url}}">Back to {{object}}</a>
+            </div>
+            
+            <form method="POST" enctype="multipart/form-data" id="custom_upload_form">
               {% csrf_token %}
               {% render_upload_data pp_source.upload_data %}
               <table>{{ pp_source.form.as_p }}</table>
-              <input type="submit" value="Upload" />
+              <button type="submit" class="btn btn_green">Upload <i class="icon-white icon-plus-sign icon-right"></i></button>
             </form>
-            <p>
 
           {% endpp_imgsource_form %}
 
-        Previous Images:
+        <h2>Previous Images</h2>
           {% for upload in pp_source.uploads %}
              <div style="width:20%;float:left;">
                   {% url pirate_sources.views.download_handler pk=upload.pk as fallback_url %}

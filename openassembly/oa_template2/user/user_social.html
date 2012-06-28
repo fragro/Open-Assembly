@@ -1,7 +1,8 @@
-<a  data-href="{% pp_url template='submit.html' dimension='mes' object=object %}">Send Message</a>
+<a class="btn btn_green" data-href="{% pp_url template='submit.html' dimension='mes' object=object %}">Send Message</a>
                                 
 {% pp_get_subscribers_for_user user=object start=start end=end %}
-  {{pp_subscription.count}} Trust You
+  
+  <div style="display:block;"><b>{{pp_subscription.count}}</b> Trust You</div>
    
     {% for i in pp_subscription.subscribers %}
         {% pp_get_avatar user=i.subscriber %}
@@ -21,7 +22,7 @@
 
 {% pp_get_subscribees_for_user user=object start=start end=end %}
 
-    You Trust {{pp_subscription.count}}
+    <div style="display:block; margin-top:10px;">You Trust <b>{{pp_subscription.count}}</b></div>
         {% for i in pp_subscription.subscribees %}
             {% pp_get_avatar user=i.subscribee %}
 

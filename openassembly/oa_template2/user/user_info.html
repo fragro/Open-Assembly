@@ -1,4 +1,8 @@
-<h1 class="page_title">{{object.username}}</h1>
+{% if user == object %}
+    {% pp_consensus_get object=object.pk %}
+        {% include 'user/user_activity.html' %}
+    {% endpp_consensus_get %}
+{% endif %}
 
 {% pp_get_avatar user=object %}
 
@@ -16,36 +20,42 @@
 
 {% endpp_get_avatar %}
 
-{% if user == object %}
-    {% pp_consensus_get object=object.pk %}
-        {% include 'user/user_activity.html' %}
-    {% endpp_consensus_get %}
-{% endif %}
-
-{{object.username}}
+<h1 class="page_title">{{object.username}}</h1>
 
 {% pp_get_user_profile user=object %}
     {% if pp_profile.profile.about_me %}
-            <h1>About Me:</h1>
-            {{pp_profile.profile.about_me}}
+            <h2>About Me</h2>
+            <div style="margin-bottom:10px; overflow:hidden;">{{pp_profile.profile.about_me}}</div>
     {% endif %}
 {% endpp_get_user_profile %}
 
 
 {% if user == object %}
 
-    Member Since: {{object.date_joined|date:"d/m/y"}}
-
+    <div>
+        <label>Member Since</label>
+        {{object.date_joined|date:"d/m/y"}}
+    </div>
+    
      {% pp_get_reputation user=object %}
-        Contribution: {{pp_reputation.reputation}}
+        <div>
+            <label>Contribution</label>
+            {{pp_reputation.reputation}}
+        </div>
      {% endpp_get_reputation %}
 
     {% pp_subscriber_count user=object %}                
-        Trust You: {{pp_subscription.count}}
+        <div>
+            <label>Trust You</label>
+            {{pp_subscription.count}}
+        </div>
     {% endpp_subscriber_count %}
 
     {% pp_subscribee_count user=object %}                
-        You Trust: {{pp_subscription.count}}
+        <div style="margin-bottom:10px;">
+            <label>You Trust</label>
+            {{pp_subscription.count}}
+        </div>
     {% endpp_subscribee_count %}   
     
     
@@ -53,7 +63,7 @@
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
-            <a data-href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
+            <a class="btn btn_green" data-href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
         {% else %}
             <a data-href="{% url ajaxapi.views.remove_support object.id %}">Stop Trusting</a>
         {% endif %}

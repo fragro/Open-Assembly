@@ -9,12 +9,7 @@
 {% block content %}
 
     {% oa_mygroup_users object=object start=start end=end %}
-
-
-    {{object.summary}}
-
-    <!--changing image power of facilitator -->
-    {% cani object=object user=user %}
+{% cani object=object user=user %}
         {% if pp_permissions.permission %}
           {% pp_get_contenttype_id object=object %}
             <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}"  href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
@@ -30,33 +25,40 @@
             {% include 'etc/object_img_100.html' %}
             </a>
 
-         {{pp_topic.count}} Member{{pp_topic.count|pluralize}}
-        {% oa_get_group_settings object=object %}
-             {% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group
-             {{ pp_topic.settings.percent_reporting|percent}} Reporting
-             {{ pp_topic.settings.consensus_percentage|percent}} Consensus
-        {% endoa_get_group_settings %}
-         {{object.children}} Issues
-         {{object.solutions}} Nominations
-         {{object.decisions}} Decisions
+    <h1>{{object.summary}}</h1>
 
-                Mission
-                {{object.description|markdown }}
+    <!--changing image power of facilitator -->
+    
+
+         <div id="group_stats">
+            {{pp_topic.count}} Member{{pp_topic.count|pluralize}} | 
+                     {% oa_get_group_settings object=object %}
+                 {% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group |
+                 {{ pp_topic.settings.percent_reporting|percent}} Reporting | 
+                 {{ pp_topic.settings.consensus_percentage|percent}} Consensus | 
+                     {% endoa_get_group_settings %}
+             {{object.children}} Issues | 
+             {{object.solutions}} Nominations | 
+             {{object.decisions}} Decisions
+         </div>
+
+                <div style="display:block;">
+                    <h3>Mission</h3>
+                    {{object.description|markdown }}
+                </div>
 
             {% cani object=object user=user %}
                 {% if pp_permissions.permission %}
 
-                    <a data-href="{% pp_url object=object template='facilitator.html' %}" href="{% pp_url object=object template='facilitator.html' %}">Facilitate</a>
+                    <a class="btn btn_blue" style="margin-right:10px;" data-href="{% pp_url object=object template='facilitator.html' %}" href="{% pp_url object=object template='facilitator.html' %}">Facilitate</a>
      
                 {% endif %}
             {% endcani %}
-                <a data-href="{% pp_url template='submit.html' dimension='pol' object=object %}" href="{% pp_url template='submit.html' object=object %}">
-                    Ask a Question</a>
+                <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='submit.html' dimension='pol' object=object %}" href="{% pp_url template='submit.html' object=object %}">Ask a Question</a>
 
-                <a data-href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}" href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}">
-                    Decisions</a>
+                <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}" href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}">Decisions</a>
 
-                <span id="addgroup">{% include 'forms/oa_addgroup_form.html' %}</span>
+                <span id="addgroup" class="btn">{% include 'forms/oa_addgroup_form.html' %}</span>
 
             {% comment %}
 
@@ -88,7 +90,7 @@
             {% endcomment %}
 
 
-                    {{pp_topic.count}} Member{{pp_topic.count|pluralize}}
+                    <div style="display:block;">{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</div>
                         {% for mygroup in pp_topic.groups %}
                             {{group.user}}
                         {% endfor %}
@@ -102,7 +104,7 @@
 
                     {% has_permissions object=object name='facilitator-permission' %}
 
-                        {{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}
+                        <div style="display:block;">{{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}</div>
                         
                             {% for mygroup in pp_permissions.permissions %}
                                 {{group.user}}

@@ -9,20 +9,20 @@
 
                 {{csrf_string|safe}}
             {% if user.is_authenticated and user.is_active %}                                                            
-            <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_oa_referral_form">
-                
+            <input type="submit" class='button btn btn_green' value="Submit">
+            <span style="color:grey;" id="submit_oa_referral_form">
                 {% for err in oa_ver.errors %}
-                    {{err}}<br>
+                    {{err}}
                 {% endfor %}
             </span>
     </form>
             {% else %} 
-                <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                <a class='button btn btn_green' href="{% pp_url template='register.html' %}">Submit</a>
             {% endif %}
 
         <script>
           $("form#oa_referral_form").submit(function(e){
-                $("#submit_oa_referral_form").html("<b>Sending...</b>");
+                $("#submit_oa_referral_form").html("<img src='/static/img/loader.gif' class='loader'>");
                 addObject(e);
             });
         </script>

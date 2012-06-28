@@ -13,19 +13,23 @@
                      <script>
                      var chart1; // globally available
                      $(document).ready(function() {
-
+                        
                            chart1 = new Highcharts.Chart({
                               chart: {
                                  renderTo: 'chart{{object.pk}}{{key}}',
                                  type: 'pie',
+                                  plotBackgroundColor: null,
+                                  plotBorderWidth: null,
+                                  plotShadow: false
                               },
                               title: {
                                  text: ''
                            },
                               tooltip: {
-                                 formatter: function() {
-                                    return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
-                                 }
+                                 // formatter: function() {
+                                 //    return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                                 // },
+                                 enabled: false
                               },
                               yAxis: {
                                  title: {
@@ -34,11 +38,12 @@
                               },
                               plotOptions: {
                                  pie: {
-                                    allowPointSelect: true,
+                                    // allowPointSelect: true,
                                     cursor: 'pointer',
                                     dataLabels: {
                                        enabled: false
                                     },
+                                    shadow: false
                                  }
                               },
                              credits: {
@@ -52,7 +57,7 @@
                         <!-- NEED THIS ID -->
                          <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> </div>
                      {% else %}
-                         <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> <img src="/static/img/empty_temp.jpg"></div>
+                         <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> <img src="/static/img/checkbox.png"></div>
                      {% endif %}
              {% endpp_consensus_chart %}
 

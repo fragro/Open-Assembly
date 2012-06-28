@@ -39,7 +39,7 @@
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
         
         <div id="rail" class="clearfix">
-            <a class="nobbq" href="http://openassembly.org" id="logo"><img src="/static/img/logo.png" alt=""></a>
+            <a class="nobbq" href="/" id="logo"><img src="/static/img/logo.png" alt=""></a>
             <ul id="nav">
                 <!-- Dashboard -->
                 <li><a href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
@@ -159,9 +159,8 @@
                                         {% endif %}
                                     {% endfor %}
 
-                                     <li>
-                                        <a href="#"><img src="http://lorempixel.com/25/25" alt=""></a>
-                                        <div class="group_preview">
+                                     <li style="text-align:center;">
+                                        <div class="group_preview btn btn_green" style="display:inline-block; margin-top:10px;">
                                             <a class="group_title" href="{% pp_url template='create_group.html' %}" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
                                         </div>
                                     </li>

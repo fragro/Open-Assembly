@@ -51,14 +51,26 @@
 
         {% endpp_consensus_get %}
 
-        $('#pad{{object.pk}}').pad({'padId':'{{object.pk}}', 'host':'http://notes.occupy.net','showChat':'true','baseUrl':'/p/', 'showControls':'true', 'showLineNumbers':'false','userName' : '{{user.username}}'});
+        $('#pad{{object.pk}}').pad({
+            'padId':'{{object.pk}}',
+            'host':'http://notes.occupy.net',
+            'showChat':'true',
+            'baseUrl':'/p/',
+            'showControls':'true',
+            'showLineNumbers':'false',
+            'userName' : '{{user.username}}',
+            'width': '500'
+        });
 
 
     });
 
     </script>
-
+    
+    
     <div class="pad" id="pad{{object.pk}}"></div>
+   
+    <h1><a href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
    
     {% pp_get_root object=object %} 
         {% oa_get_group_settings object=pp_topic.root %}
@@ -73,7 +85,7 @@
                 <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
                 {% endif %}
 
-                    <a href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a> by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}
+                     by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}
 
 
                         {{object.description|markdown }}
