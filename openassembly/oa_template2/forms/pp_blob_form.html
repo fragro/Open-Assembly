@@ -15,9 +15,9 @@
 
                 {% if pp_blob.form_complete %}
 
-                <h1>Content Successfully Submitted</h1>
+                <h2>Content Successfully Submitted</h2>
 
-                <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">Check it out here</a></h3>
+                <a class="btn btn_blue" data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">View Your Proposal</a>
 
                 {% else %}
                 
@@ -39,7 +39,7 @@
 
                                     {% if field.html_name == 'timezone' and dimension == 'pol' %}
                                         
-                                        <b>Time Zone<font color="red">*</font>:</b>
+                                        <b>Time Zone<font color="red">*</font></b>
                                         <select name="timezone" id="id_timezone">
                                         <option value="" ></option>
 
@@ -53,7 +53,7 @@
                                                 {% endpp_get_user_profile %}
                                             {% endfor %}
                                             </select>
-                                        <br><br>
+                                        
                                     {% else %}
 
                                         {% if field.html_name == 'description' %}
@@ -64,7 +64,7 @@
                                         {% else %}
 
                                         <p>
-                                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
+                                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>
                                             {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
                                         </p>
 
@@ -78,14 +78,14 @@
 
 
                             {% csrf_token %}
-                            <input type="submit" class="button green" value="Submit" /><span id="submit_pp_blob_form{{object.pk}}"></span>
+                            <input type="submit" class="button green btn btn_green" value="Submit" /><span id="submit_pp_blob_form{{object.pk}}"></span>
 
                         </form> 
 
                         <script>
                          
                              $("form#pp_blob_form{{object.pk}}").submit(function(e){
-                                $("#submit_pp_blob_form{{object.pk}}").html("<b>Submitting...</b>")
+                                $("#submit_pp_blob_form{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>")
                                 addObject(e);
                                 //$('html').slideto({'highlight': false});                    
                             });

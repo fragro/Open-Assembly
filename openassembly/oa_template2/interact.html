@@ -5,40 +5,40 @@
  
 {% oa_get_group_settings object=object %}
 
-    <a href="{% pp_url template='submit.html' object=object dimension='tem' %}">submit a new propsal</a>
+    <a class="btn btn_green" style="margin-right:10px; margin-bottom:20px;" href="{% pp_url template='submit.html' object=object dimension='tem' %}">Submit a New Propsal</a>
 
     {% cani object=object user=user %}
         {% if pp_permissions.permission %}
 
 
-            <a href="#">Settings for Facilitators (Welcome Facilitator!)</a>
+            <h2>Facilitator Settings</h2>
 
                         {% include 'forms/oa_group_settings_form.html' %}
 
-            <a href="#">Invite Members</a>
+            <h2>Invite Members</h2>
 
                             {% include 'forms/oa_referral_form.html' %}
 
-            <a href="#">Add Facilitators</a>
+            <h2>Add Facilitators</h2>
 
                             {% include 'forms/oa_facilitators_form.html' %}
                 
-            <a href="#">Create Working Group</a>
+            <h2>Create Working Group</h2>
 
                         <div id="pp_topic_form">
                         {% include 'forms/pp_topic_form.html' %}
                         </div>
 
-            <a href="#">Edit Group Info
+            <h2>Edit Group Info</h2>
                         <div id="pp_edittopic_form">
                         {% include 'forms/pp_edittopic_form.html' %}
                         </div>
 
-            <a href="#">Change Image</a>
+            <h2>Change Image</h2>
                 {% cani object=object user=user %}
                     {% if pp_permissions.permission %}
                       {% pp_get_contenttype_id object=object %}
-                            <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}"  href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
+                            <a id="interact_avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}"  href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
 
                             {% include 'etc/object_img_100.html' %}</a>
                       {% endpp_get_contenttype_id %}

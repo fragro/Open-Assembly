@@ -18,25 +18,39 @@
                 <form id="pp_topic_form" method="post" action="">
                             {{ pp_topic.form.form_id}}
                             
-                            Name of Group:<br>{{ pp_topic.form.summary}}<br>
-                            Short Name (less than 20 char):<br>{{ pp_topic.form.shortname}}<br>
+                            <p>
+                                <b>Name of Group</b><br>
+                                {{ pp_topic.form.summary}}
+                            </p>
+                            
+                            <p style="margin-bottom:0;">
+                                <b>Short Name</b> <span class="helptext">(less than 20 char)</span><br>
+                                {{ pp_topic.form.shortname}}
+                            </p>
 
-                            Purpose of Group:<br>{{ pp_topic.form.description}}<br>
-                            Link to Outside Website:<br>{{ pp_topic.form.more_info}}<br>
+                            <p>
+                                <b>Purpose of Group</b><br>
+                                {{ pp_topic.form.description}}
+                            </p>
+                            
+                            <p style="margin-bottom:0;">
+                                <b>Link to Outside Website</b><br>
+                                {{ pp_topic.form.more_info}}
+                            </p>
 
                             {{csrf_string|safe}}
                         {% if user.is_authenticated and user.is_active %}   
                         <div id="errors" class="errors">{{ pp_topic.errors }}</div>
                                                          
-                        <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_topic_form"></span>
+                        <input type="submit" class='button btn btn_green' value="Submit"><span style="color:grey;" id="submit_pp_topic_form"></span>
                 </form>
                         {% else %} 
-                            <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                            <a class='button btn btn_green' href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
                 <script>
 
                   $("form#pp_topic_form").submit(function(e){
-                        $("#submit_pp_topic_form").html("<b>Submitting...</b>")
+                        $("#submit_pp_topic_form").html("<img src='/static/img/loader.gif' class='loader'>")
                         addObject(e);
                     });
 

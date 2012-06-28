@@ -11,34 +11,52 @@
 
                     <form id="pp_profile_form" method="post" action="">
 
-                        <h2>Edit My Settings</h2>
+                        <h2>Edit Profile</h2>
+                        
                         <div id="errors" class="errors">{{ pp_profile.errors }}</div>
-                                {{ pp_profile.form.form_id}}
-                                
-                                <b>About Me:</b><br>{{ pp_profile.form.about_me}}<br>
+                        
+                        {{ pp_profile.form.form_id}}
+                        
+                        <div>
+                            <label>About Me</label>
+                            {{ pp_profile.form.about_me}}
+                        </div>
+                        
+                        <div>
+                            <label>Time Zone</label>
+                            {{ pp_profile.form.timezone}}
+                        </div>
+                        
+                        <div>
+                            <label>Recieve Notification Emails</label>
+                            {{ pp_profile.form.receive_emails}}
+                        </div>
 
-                                <b>Time Zone:</b><br>{{ pp_profile.form.timezone}}<br>
-                                
-                                <br><b>Recieve Notification Emails:</b>{{ pp_profile.form.receive_emails}}<br><br>
-
-                                {{csrf_string|safe}}
-                            {% if user.is_authenticated and user.is_active %}                                                            
-                            <input type="submit" class='button' value="Submit"><span style="color:grey;" id="submit_pp_profile_form"></span>
+                        {{csrf_string|safe}}
+                        
+                        {% if user.is_authenticated and user.is_active %}                                                            
+                        
+                        <button class="btn btn_green" type="submit">Update Profile <i class="icon-white icon-pencil icon-right"></i></button>
+                        
+                        <small id="submit_pp_profile_form"></small>
+                        
                     </form>
-                            {% else %} 
-                                <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
-                            {% endif %}
+                    
+                        {% else %}
+                            <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                        {% endif %}
+                        
                     <script>
 
                       $("form#pp_profile_form").submit(function(e){
-                            $("#submit_pp_profile_form").html("<b>Submitting...</b>")
+                            $("#submit_pp_profile_form").html("<img class='loader' src='/static/img/loader.gif'>")
                             addObject(e);
                         });
 
                     </script>
 
                         {% if pp_profile.complete %}
-                            Update Complete ({% now "jS F Y H:i" %})
+                            <small>Update Complete ({% now "jS F Y H:i" %})</small>
                         {% endif %}
 
 

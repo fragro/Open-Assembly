@@ -1,3 +1,4 @@
+
 {% load pp_url %}
 {% load topictags %}
 
@@ -17,9 +18,21 @@
         <link rel="stylesheet" type="text/css" href="/static/css/style.0.1.css">
         <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
         <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
-        <link href="/static/simple/style.css" type="text/css" media="screen" rel="stylesheet">
-        
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+
+        <script>
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-21219475-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+        </script>
 
     </head>
     <body>
@@ -27,14 +40,12 @@
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
         
         <div id="rail" class="clearfix">
-        <a class="nobbq" href="http://openassembly.org" id="logo"><img src="/static/img/logo.png" alt=""></a><img id="loading" src="/static/img/1.gif">
+            <a class="nobbq" href="/" id="logo"><img src="/static/img/logo.png" alt=""></a>
             <ul id="nav">
                 <!-- Dashboard -->
-                {% if request.user.is_authenticated %}
-
-                <li><a onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
+                <li><a href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
                 <!-- Inbox -->
-                <li><a data-href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>
+                {% if request.user.is_authenticated %}<li><a href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>{% endif %}
                 <!-- Browse -->
                 <li class="dropdown">
                     <a href="#"><i class="icon-white icon-list-alt icon-left"></i> Browse <i class="icon-white  icon-chevron-down icon-right"></i></a>
@@ -42,11 +53,11 @@
                         <div class="col col3">
                             <h3>Groups</h3>
                             <ul>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
             
                                 {% comment %}
                                 <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
@@ -76,6 +87,7 @@
                 </li>
                 <!-- Bookmarks -->
                 <!--Will develop this feature in the next version -->
+                {% if request.user.is_authenticated %}
                 {% comment %}
                 <li class="dropdown bookmark_dropdown">
                     <a href="#"><i class="icon-white icon-bookmark icon-left"></i> Bookmarks <i class="icon-white  icon-chevron-down icon-right"></i></a>
@@ -148,10 +160,9 @@
                                         {% endif %}
                                     {% endfor %}
 
-                                     <li>
-                                        <a href="#"><img src="http://lorempixel.com/25/25" alt=""></a>
-                                        <div class="group_preview">
-                                            <a class="group_title" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
+                                     <li style="text-align:center;">
+                                        <div class="group_preview btn btn_green" style="display:inline-block; margin-top:10px;">
+                                            <a class="group_title" href="{% pp_url template='create_group.html' %}" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
                                         </div>
                                     </li>
 
@@ -170,15 +181,15 @@
                         <div class="col last">
                             <ul>
                                 {% if request.user.is_authenticated %}
-                                <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
-                                <li><a data-href="/p/help">Help</a></li>
-                                <li><a class="nobbq" data-href="/logout/">Logout</a></li>
-                                <li><a data-href="/p/report_abuse">Report Abuse</a></li>
-                                <li><a data-href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
+                                <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}" href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
+                                <li><a href="/p/help">Help</a></li>
+                                <li><a class="nobbq" data-href="/logout/" href="/logout/">Logout</a></li>
+                                <li><a href="#">Report Abuse</a></li>
+                                <li><a data-href="{% pp_url template='user.html' object=request.user %}" href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
                                 {% else %}
-                                <li><a data-href="/p/register">Register/Login</a></li>
-                                <li><a data-href="#">Help</a></li>
-                                <li><a data-href="#">Report Abuse</a></li>
+                                <li><a href="/p/register">Register/Login</a></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="#">Report Abuse</a></li>
 
                                 {% endif %}
                             </ul>
@@ -225,7 +236,7 @@
             <div id="tab_width"></div> 
         </div>
         
-        <!-- Scripts -->
+         <!-- Scripts -->
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
         
         <script type="text/javascript" src="/static/js/jquery-ui-1.8.21.custom.min.js"></script>
@@ -436,7 +447,7 @@
         })();
 
         </script>    
-
+     
     </body>
 
     {% endpp_get_cached_data %}

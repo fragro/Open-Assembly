@@ -3,7 +3,7 @@
   <script>
 
   $("form#submitform5").submit(function(e){
-        $("#submit_submitform5").html("<b>Submitting...</b>")
+        $("#submit_submitform5").html("<img src='/static/img/loader.gif' class='loader'>")
         addObject(e);
         $("#submit_submitform5").html("<b>Complete!</b>")
 
@@ -16,7 +16,7 @@
          {{ pp_source.form.errors }}
           <form id="submitform5" method="post" action="">
               {{pp_topic.form.as_p}}
-            <input type="submit" class="button" value="Submit">{% if pp_topic.complete %}Changes Submitted ({% now "jS F Y H:i:s" %}){% endif %}
+            <input type="submit" class="button btn btn_green" value="Submit">{% if pp_topic.complete %}<span class="helptext" style="display:block;">Changes Submitted ({% now "jS F Y H:i:s" %})</span>{% endif %}
           </form>
       {% endpp_setting_form %}
 {% endpp_getcreate_setting %}

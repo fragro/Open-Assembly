@@ -1,8 +1,8 @@
    
-User Contributions
+<div style="display:block; margin-top:10px"><b>User Contributions</b></div>
 
 {% pp_get_reputation_events user=object start=start end=end %}
-    <ul>
+    <ul id="user_contribs_list">
     {% for note in pp_reputation.reputation_events %}
         <li>
             <a href="{{note.get_absolute_url}}">
