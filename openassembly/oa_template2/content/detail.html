@@ -42,12 +42,27 @@
 
         {% endpp_consensus_get %}
 
-        try{
-            $('#pad{{object.pk}}').pad({'padId':'{{object.pk}}', 'host':'http://notes.occupy.net','showChat':'true','baseUrl':'/p/', 'showControls':'true', 'showLineNumbers':'false','userName' : '{{user.username}}'});
-        }
-        catch(err){
-            //do nothging
-        }
+        {% if object.pad or not object.pad and request.user == object.user %}
+
+            try{
+                $('#pad{{object.pk}}').pad({'padId':'{{object.pk}}', 'host':'http://notes.occupy.net','showChat':'true','baseUrl':'/p/', 'showControls':'true', 'showLineNumbers':'false','userName' : '{{user.username}}'});
+            }
+            catch(err){
+                //do nothging
+            }
+
+        {% else %}
+
+            try{
+                $('#pad{{object.pk}}').pad({'getContents':'exampleGetContents'})
+
+            }
+            catch(err){
+                //do nothging
+            }
+
+        {% endif %}
+        
 
     });
 

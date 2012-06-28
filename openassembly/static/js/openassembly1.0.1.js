@@ -287,7 +287,7 @@ function addObject(e){
                                 tempkey = tempkey.replace(/\//g,"");
                                 $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});                        }
                     }
-                    hrefLess();
+                    //hrefLess();
                 }, "json");
             }
           //if(data.POST){}
@@ -336,7 +336,7 @@ function rememberTabs() {
     for (i=-2; i<=num_of_times_to_fire; i++) {
         tabQueue();
     }
-};
+}
 
 function load_usersaltcache(div, user, obj_pk, ctype_pk){
     $.get("/load_usersaltcache/", {div: div, hash: location.href, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
@@ -387,7 +387,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                                 $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});
                             }
                         }
-                        hrefLess();
+                        //hrefLess();
                     }, "json");
                 }
             //if(data.POST){}
@@ -455,7 +455,7 @@ function getContent(){
                 js_redirect('/404.html?');
             }
             sessionStorage.setItem(OAdata.key, 'True');
-            hrefLess();
+            //hrefLess();
             rememberTabs();
 
 
@@ -560,7 +560,7 @@ function refresh_dashboard(path, dash_id, start, end){
           }
           else{
             $('#' + data.dashpk).html(data.html);
-            hrefLess();
+            //hrefLess();
             //ui.item.addClass('dragging').removeClass('');
             //ui.item.addClass('dragging').addClass('panel');
 
@@ -599,7 +599,7 @@ function refresh_size(path, dash_id){
 
           }
           $('#panels').masonry('reload');
-          hrefLess();
+          //hrefLess();
 
       }
   }, "json");
@@ -619,7 +619,7 @@ function push_dashboard(path, dash_id, boardname){
           $('#panels').prepend(data.html);
           $('#panels').masonry('reload');
 
-          hrefLess();
+          //hrefLess();
       }
   }, "json");
 }

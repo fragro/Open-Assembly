@@ -20,7 +20,10 @@
                 <h3><a data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">Check it out here</a></h3>
 
                 {% else %}
-
+                
+                        <script src="/static/markitup/ajax_csrf.js" type="text/javascript"></script>
+                        <script type='text/javascript' src='/static/markitup/jquery.markitup.js'></script>
+                        <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
                         <form id='pp_blob_form{{object.pk}}' method="post" action="">
                         <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
 
@@ -53,12 +56,21 @@
                                         <br><br>
                                     {% else %}
 
+                                        {% if field.html_name == 'description' %}
+
+                                        <b><label for="id_description{{object.pk}}">Description</label><font color="red">*</font>:</b> <br><textarea id="id_description{{object.pk}}" rows="10" cols="20" name="description"></textarea><script type="text/javascript">(function($) { $(document).ready(function() { $("#id_description{{object.pk}}").markItUp(mySettings); });})(jQuery);</script><br> </p>
+
+
+                                        {% else %}
+
                                         <p>
                                             <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}:</b>
                                             {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
                                         </p>
 
                                         {% endif %}
+
+                                    {% endif %}
 
                                     
                                 {% endif %}
@@ -91,7 +103,7 @@
 
     {% else %}
 
-    You are not in this group good sir.
+    You are not in this group.
 
     {% endif %}
 

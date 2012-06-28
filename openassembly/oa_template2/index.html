@@ -17,6 +17,8 @@
         <link rel="stylesheet" type="text/css" href="/static/css/style.0.1.css">
         <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
         <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
+        <link href="/static/simple/style.css" type="text/css" media="screen" rel="stylesheet">
+        
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
 
     </head>
@@ -30,9 +32,9 @@
                 <!-- Dashboard -->
                 {% if request.user.is_authenticated %}
 
-                <li><a href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
+                <li><a onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
                 <!-- Inbox -->
-                <li><a href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>
+                <li><a data-href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>
                 <!-- Browse -->
                 <li class="dropdown">
                     <a href="#"><i class="icon-white icon-list-alt icon-left"></i> Browse <i class="icon-white  icon-chevron-down icon-right"></i></a>
@@ -40,11 +42,11 @@
                         <div class="col col3">
                             <h3>Groups</h3>
                             <ul>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a href="javascript:;" onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
             
                                 {% comment %}
                                 <li><a href="#">by Activity</a><i class="icon-list-alt icon-white"></i></li>
@@ -149,7 +151,7 @@
                                      <li>
                                         <a href="#"><img src="http://lorempixel.com/25/25" alt=""></a>
                                         <div class="group_preview">
-                                            <a class="group_title" href="{% pp_url template='create_group.html' %}" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
+                                            <a class="group_title" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
                                         </div>
                                     </li>
 
@@ -168,15 +170,15 @@
                         <div class="col last">
                             <ul>
                                 {% if request.user.is_authenticated %}
-                                <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}" href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
-                                <li><a href="/p/help">Help</a></li>
-                                <li><a class="nobbq" data-href="/logout/" href="/logout/">Logout</a></li>
-                                <li><a href="/p/report_abuse">Report Abuse</a></li>
-                                <li><a data-href="{% pp_url template='user.html' object=request.user %}" href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
+                                <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
+                                <li><a data-href="/p/help">Help</a></li>
+                                <li><a class="nobbq" data-href="/logout/">Logout</a></li>
+                                <li><a data-href="/p/report_abuse">Report Abuse</a></li>
+                                <li><a data-href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
                                 {% else %}
-                                <li><a href="/p/register">Register/Login</a></li>
-                                <li><a href="#">Help</a></li>
-                                <li><a href="#">Report Abuse</a></li>
+                                <li><a data-href="/p/register">Register/Login</a></li>
+                                <li><a data-href="#">Help</a></li>
+                                <li><a data-href="#">Report Abuse</a></li>
 
                                 {% endif %}
                             </ul>
@@ -241,11 +243,7 @@
 
         <script type="text/javascript" src="/static/js/etherpad.js"></script>
 
-        <script type='text/javascript' src='/static/markitup/jquery.markitup.js'></script>
-        <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
-
         <script type="text/javascript" src="/static/js/openassembly1.0.1.js"></script>
-
 
         <script type="text/javascript">
             $(document).ready(function(){
@@ -275,7 +273,7 @@
                 });
                 
                 // fire this every time a page is added or removed
-                hrefLess();
+                //hrefLess();
                 
                 // Creates Tabs
                 // $.each($('#pages .page'), function(){

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    {% if not request.user.is_authenticated %}
+    {% if not user.is_authenticated %}
 
             {% include 'etc/register_referral.html' %}
 
