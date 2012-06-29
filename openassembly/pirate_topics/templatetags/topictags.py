@@ -65,6 +65,36 @@ def pp_get_root(context, nodelist, *args, **kwargs):
 
 
 @block
+def pp_check_siblings(context, nodelist, *args, **kwargs):
+
+    context.push()
+    namespace = get_namespace(context)
+    root = kwargs.pop('object', None)
+    user = kwargs.pop('user', None)
+
+    topics = Topic.objects.filter(parent=root)
+    in_child = False
+    group = None
+    for i in topics:
+        try:
+            mygroup = MyGroup.objects.get(topic=i, user=user)
+            in_child = True
+            group = i
+            break
+        except:
+            pass
+
+    namespace['ingroup'] = in_child
+    namespace['group'] = group
+    #except:
+    #    namespace['root'] = None
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
 def pp_get_topic(context, nodelist, *args, **kwargs):
 
     context.push()

@@ -131,9 +131,10 @@ $.post("/add_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$('#mygroup').append(data.group);
-        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
-        getContent();
-        $('.thumbnail_list').prepend(data.group);
+        //history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        //getContent();
+        //$('.thumbnail_list').prepend(data.group);
+        js_redirect(data.redirect);
       }
  }, "json");
 }
@@ -143,9 +144,10 @@ $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$(data.group).remove();
-        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
-        getContent();
-        $(data.group).remove();
+        //history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        //getContent();
+        //$(data.group).remove();
+        js_redirect(data.redirect);
       }
  }, "json");
 }

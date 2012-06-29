@@ -215,6 +215,8 @@
         </div>
         
          <!-- Scripts -->
+        <script type="text/javascript" src="/static/history.js"></script>
+
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
         
         <script type="text/javascript" src="/static/js/jquery-ui-1.8.21.custom.min.js"></script>
@@ -374,13 +376,13 @@
 
                 //This lets us load chunk by chunk with AJAX
                 $(window).bind("popstate", function(evt) {
-                  var state = evt.originalEvent.state;
-                      if (state && state.module === "leave") {
-                            getContent();
-                      }
-                      if (state && state.module === "nobbq") {
-                            js_redirect(state.url);
-                      }
+                 var state = evt.originalEvent.state;
+                     if (state && state.module === "leave") {
+                           getContent();
+                     }
+                     if (state && state.module === "nobbq") {
+                           js_redirect(state.url);
+                     }
                 });
                 //we're popping states for nobbq events that should be loaded the usual way...
 

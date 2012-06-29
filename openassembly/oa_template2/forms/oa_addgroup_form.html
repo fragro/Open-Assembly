@@ -1,23 +1,24 @@
 {% load topictags %}
 {% pp_get_contenttype_id object=object %}
 
-    {% oa_ingroup object=object user=user %}
 
-        {% if pp_topic.in_group %}
+        {% oa_ingroup object=object user=user %}
 
-                <a id="addgroup" class="btn" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> - Leave</a>
+            {% if pp_topic.in_group %}
 
-        {% else %}
-            {% oa_get_group_settings object=object %}
-            	{% if pp_topic.settings.open_group and user.is_authenticated %}
-    				<a id="addgroup" class="btn" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');"> + Join</a>
-    			{% endif %}
-                {% if not user.is_authenticated %}
-                    <a data-href="/p/register"> + Join</a>
-                {% endif %}
+                    <a id="addgroup" class="btn" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> - Leave</a>
 
-            {% endoa_get_group_settings %}
-        {% endif %}
-    {% endoa_ingroup %}
+            {% else %}
+                {% oa_get_group_settings object=object %}
+                	{% if pp_topic.settings.open_group and user.is_authenticated %}
+        				<a id="addgroup" class="btn" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');"> + Join</a>
+        			{% endif %}
+                    {% if not user.is_authenticated %}
+                        <a data-href="/p/register"> + Join</a>
+                    {% endif %}
+
+                {% endoa_get_group_settings %}
+            {% endif %}
+        {% endoa_ingroup %}
 
 {% endpp_get_contenttype_id %}

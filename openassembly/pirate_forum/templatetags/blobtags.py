@@ -151,9 +151,9 @@ def pp_get_questions(context, nodelist, *args, **kwargs):
         else:
             ctype = ContentType.objects.get_for_model(parent)
             key = '/p/list/' + TYPE_KEY + str(ctype.pk) + '/' + OBJ_KEY + str(parent.pk) + '/' + START_KEY + str(start) + '/' + END_KEY + str(end) + '/' + DIM_KEY + str(dimension)
-        if phase is not None:
-            key += '/' + PHASE_KEY + str(phase)
-    l = ListCache.objects.get(content_type='item', template=phase)
+        #if phase is not None:
+        #    key += '/' + PHASE_KEY + str(phase)
+    l = ListCache.objects.get(content_type='proposals', template='issues')
 
     cached_list, tot_items = l.get_or_create_list(key, {}, forcerender=True)
 
