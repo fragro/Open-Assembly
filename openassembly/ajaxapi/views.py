@@ -78,7 +78,7 @@ def add_support(request):
                 old_sub = Subscription.objects.get(subscriber=user, subscribee=subscribed)
             except:
                 sub = Subscription(subscriber=user, subscribee=subscribed,
-                                    created_dt=datetimdee.datetime.now())
+                                    created_dt=datetime.datetime.now())
                 sub.save()
             results = {'FAIL': False, 'redirect': subscribed.get_absolute_url()}
         else:
