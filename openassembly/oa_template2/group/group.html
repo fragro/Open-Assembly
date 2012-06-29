@@ -71,9 +71,13 @@
 
 
                     <div style="display:block;">{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</div>
+                        <ul id="user_contribs_list">
                         {% for mygroup in pp_topic.groups %}
+                            <li>
                             {{mygroup.user}}
+                            </li>
                         {% endfor %}
+                        </ul>
                      <ul class="pagination">
                         {% for s,e,n in pp_topicrangelist %}
                            {% if not s > pp_topic.count %}
