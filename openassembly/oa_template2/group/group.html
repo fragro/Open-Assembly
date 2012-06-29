@@ -12,7 +12,7 @@
 {% cani object=object user=user %}
         {% if pp_permissions.permission %}
           {% pp_get_contenttype_id object=object %}
-            <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}"  href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
+            <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
           {% endpp_get_contenttype_id %}
 
         {% else %}
@@ -50,54 +50,34 @@
             {% cani object=object user=user %}
                 {% if pp_permissions.permission %}
 
-                    <a class="btn btn_blue" style="margin-right:10px;" data-href="{% pp_url object=object template='facilitator.html' %}" href="{% pp_url object=object template='facilitator.html' %}">Facilitate</a>
+                    <a class="btn btn_blue" style="margin-right:10px;" data-href="{% pp_url object=object template='interact.html' %}">Facilitate</a>
      
                 {% endif %}
             {% endcani %}
-                <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='submit.html' dimension='pol' object=object %}" href="{% pp_url template='submit.html' object=object %}">Ask a Question</a>
+                <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='submit.html' dimension='tem' object=object %}">Ask a Question</a>
 
-                <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}" href="{% pp_url template='issues.html' object=object start=0 end=10 dimension='n' %}">Decisions</a>
+                {% include 'forms/oa_addgroup_form.html' %}
 
-                <span id="addgroup" class="btn">{% include 'forms/oa_addgroup_form.html' %}</span>
-
-            {% comment %}
-
-                {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Question" %}
-                {{pp_blob.count}} Active Questions
+                <div>
+                {% pp_get_questions object=object dimension="n" start=0 end=10 phase="Question" %}
+                {{pp_blob.count}} New Questions
                         {% if pp_blob.count > 0 %}
                             {% for object in pp_blob.blob_list %}
-                                {% include 'listing.html' %}
+                                {% include 'content/listing.html' %}
                             {% endfor %}
                         {% endif %}
                 {% endpp_get_questions %}
-
-                {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Nomination" %}
-                {{pp_blob.count}} with Voting In Progress
-                        {% if pp_blob.count > 0 %}
-                            {% for object in pp_blob.blob_list %}
-                                {% include 'listing.html' %}
-                            {% endfor %}
-                        {% endif %}
-                {% endpp_get_questions %}
-               {% pp_get_questions object=object dimension="n" start=0 end=3 phase="Decision" %}
-                {{pp_blob.count}} Decisions Made
-                       {% if pp_blob.count > 0 %}
-                            {% for object in pp_blob.blob_list %}
-                                {% include 'listing.html' %}
-                            {% endfor %}
-                        {% endif %}
-                {% endpp_get_questions %}
-            {% endcomment %}
+                </div>
 
 
                     <div style="display:block;">{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</div>
                         {% for mygroup in pp_topic.groups %}
-                            {{group.user}}
+                            {{mygroup.user}}
                         {% endfor %}
                      <ul class="pagination">
                         {% for s,e,n in pp_topicrangelist %}
                            {% if not s > pp_topic.count %}
-                            <li><a href="{% pp_url template='group.html' object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+                            <li><a data-href="{% pp_url template='group.html' object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
                             {% endif %}
                         {% endfor %}
                     </ul>       
@@ -107,7 +87,7 @@
                         <div style="display:block;">{{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}</div>
                         
                             {% for mygroup in pp_permissions.permissions %}
-                                {{group.user}}
+                                {{mygroup.user}}
                             {% endfor %}
                         
                     {% endhas_permissions %}       

@@ -15,10 +15,10 @@
                             {{pp_reputation.form.as_p}}
                         {{csrf_string|safe}}
                     {% if user.is_authenticated and user.is_active %}                                                            
-                        <input type="submit" class='button' value="Submit"><span id="submit_report_abuse"></span>
+                        <input type="submit" class='btn' value="Submit"><span id="submit_report_abuse"></span>
                 </form>
                         {% else %} 
-                            <a  href="{% pp_url template='register.html' %}">Submit</a>
+                            <a class="btn" data-href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
                 <script>
 

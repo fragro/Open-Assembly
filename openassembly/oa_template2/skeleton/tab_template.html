@@ -66,25 +66,25 @@
 {% if object %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object|title}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object|title}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{key}}"class="min_max">
-                <a data-href="javascript:;" href="javascript:;" onClick="toggleMinMax('{{key}}');">
+                <a onClick="toggleMinMax('{{key}}');">
                     <i class="icon-minus-sign icon-white"></i>
                 </a>
             </li>
 
-            <li><a href="javascript:;" data-href="javascript:;" onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+            <li><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>
 </ul>
 {% else %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" onClick="toggleMinMax('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{key}}"class="min_max"><a href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>
-            <li><a href="javascript:;" data-href="javascript:;" onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+            <li id="minmax{{key}}"class="min_max"><a onClick="toggleMinMax('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>
+            <li><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>
 </ul>

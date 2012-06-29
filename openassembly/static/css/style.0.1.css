@@ -948,12 +948,14 @@ h2 {
     margin-bottom:0;
 }
 .pad {
-    width:500px;
+    width:600px;
     float:right;
     margin:0 0 10px 20px;
     background:#ddd;
+    height:500px;
 }
 #loading {
     float:left;
     padding:13px 5px 3px 3px;
     display:none;
+}

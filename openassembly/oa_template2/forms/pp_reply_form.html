@@ -20,17 +20,17 @@
                     {% if user.is_authenticated and user.is_active %}                                                            
                         <input type="submit" class='button' value="Submit">
 
-                        <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
+                        <a onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
                         <span id="submit_pp_reply_form{{object.pk}}">
                             
-                        <a style="float:right;" href="javascript:;" onmousedown="toggleSlide('pp_formatting_help{{object.pk}}');">formatting help</a>
+                        <a style="float:right;" onmousedown="toggleSlide('pp_formatting_help{{object.pk}}');">formatting help</a>
 
                         </span>
                 </form>
 
 
                         {% else %} 
-                            <a href="{% pp_url template='register.html' %}">Submit</a>
+                            <a data-href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
 
 

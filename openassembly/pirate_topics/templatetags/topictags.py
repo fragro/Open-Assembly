@@ -495,7 +495,7 @@ class TopicForm(forms.ModelForm):
     more_info = forms.CharField(required=False, max_length=100,
               widget=forms.TextInput(
                 attrs={'size': '50', 'class': 'inputText'}), label="Link to Group Website")
-    description = forms.CharField(label="Group Description")
+    description = forms.CharField(widget=forms.Textarea, label="Group Description")
     location = forms.CharField(label="Location", max_length=100,
               widget=forms.TextInput(
                 attrs={'size': '50', 'class': 'inputText'}), required=False)
