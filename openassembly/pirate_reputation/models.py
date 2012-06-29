@@ -227,6 +227,7 @@ class ReputationEvent(models.Model):
 admin.site.register(Reputation)
 admin.site.register(ReputationEvent)
 admin.site.register(ReputationDimension)
+admin.site.register(AbuseTicket)
 
 ###Cannot import from pirate_reputation.models from pirate_reputation.callbacks?
 

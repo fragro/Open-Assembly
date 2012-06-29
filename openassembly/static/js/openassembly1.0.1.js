@@ -540,7 +540,7 @@ function resort_dashboard(dash_id, sort_key){
       }
       if(data.FAIL === false){
           //chat window should be resized
-         //refresh_dashboard(data.plank, data.dash_id);
+          refresh_dashboard(data.plank, data.dash_id);
       }
   }, "json");
 }
