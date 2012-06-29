@@ -45,6 +45,8 @@
         {% if object.pad or not object.pad and request.user == object.user %}
 
             try{
+
+                {% comment %}
                     $('#pad{{object.pk}}').pad({
                         'padId':'{{object.pk}}',
                         'host':'http://notes.occupy.net',
@@ -53,8 +55,10 @@
                         'showControls':'true',
                         'showLineNumbers':'false',
                         'userName' : '{{user.username}}',
-                        'width': '500'
+                        'width' : 500,
+                        'height': 100,
                     });
+                {% endcomment %}
             }
             catch(err){
                 //do nothging
@@ -78,9 +82,10 @@
     </script>
     
     
-    <div class="pad" id="pad{{object.pk}}"></div>
+    <div class="pad" id="pad{{object.pk}}">
+    <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe></div>
    
-    <h1><a href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
+    <h1><a data-href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
    
     {% pp_get_root object=object %} 
         {% oa_get_group_settings object=pp_topic.root %}
@@ -90,12 +95,12 @@
            {% pp_consensus_get object=object.pk user=user %}
 
                 {% if pp_consensus.consensus.interest > 1000 %}
-                <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
+                <a data-href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
                 {% else %}
-                <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
+                <a data-href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
                 {% endif %}
 
-                     by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}
+                     by <a data-href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}
 
 
                         {{object.description|markdown }}
@@ -163,6 +168,7 @@
 
 
             <!--number currently reporting -->
+            {% comment %}
 
             {% pp_get_ranked_decision object=pp_consensus.consensus %}
                 {% oa_get_group_settings object=object.parent %}
@@ -245,6 +251,8 @@
 
             {% endpp_get_ranked_decision %}
 
+            {% endcomment %}
+
         {% endpp_consensus_get %}
 
 
@@ -258,25 +266,28 @@
        
 
     {% pp_comment_count object=object.id %}
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>  | 
+
+        {{pp_comment.count}} Comments
 
     {% endpp_comment_count %}
 
+
+{% comment %}
     {% pp_get_argument_count object=object arg_type='yea' %}
 
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
+        <a data-href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
 
     {% endpp_get_argument_count %}
 
     {% pp_get_argument_count object=object arg_type='nay' %}
 
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+        <a data-href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
 
     {% endpp_get_argument_count %}
+{% endcomment %}
 
     <div id="content_children{{object.pk}}">                                
                                
     </div>
-
 
 {% endblock %}

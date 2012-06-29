@@ -11,7 +11,7 @@
     {% include 'content/temp_check_small.html' %}
     <a class="ov_hid" id="{{key}}">
 
-    <a href="{% pp_url object=object.content_object template='detail.html' %}" data-href="{% pp_url object=object.content_object template='detail.html' %}">
+    <a data-href="{% pp_url object=object.content_object template='detail.html' %}">
         {{object.content_object.summary }}
     </a>
 {% endblock %}
