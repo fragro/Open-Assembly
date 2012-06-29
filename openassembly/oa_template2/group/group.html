@@ -130,7 +130,7 @@
                 <ul id="user_contribs_list">
                 {% for mygroup in pp_topic.groups %}
                     <li>
-                    {{mygroup.user}}
+                    <a data-href="{% pp_url template='user_profile.html' object=mygroup.user %}">{{mygroup.user}}</a>
                     </li>
                 {% endfor %}
                 </ul>
@@ -141,7 +141,7 @@
                     <ul id="user_contribs_list">
 
                     {% for mygroup in pp_permissions.permissions %}
-                        <li>{{mygroup.user}}</li>
+                        <li><a data-href="{% pp_url template='user_profile.html' object=mygroup.user %}">{{mygroup.user}}</a></li>
                     {% endfor %}
                     </ul>
                 
