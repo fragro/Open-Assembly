@@ -2,7 +2,7 @@
     {{pp_blob.count}} Edits
         {% for edit in pp_blob.edits %}
 
-            ({{forloop.counter}}) Edit by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{ edit.user.username }}</a> on {{edit.time}}
+            ({{forloop.counter}}) Edit by <a data-href="{% pp_url template='user_profile.html' object=object.user %}">{{ edit.user.username }}</a> on {{edit.time}}
 
         {% endfor %}
 

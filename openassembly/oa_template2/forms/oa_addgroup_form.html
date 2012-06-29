@@ -5,15 +5,15 @@
 
         {% if pp_topic.in_group %}
 
-                <a href="javascript:;" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> - Leave</a>
+                <a id="addgroup" class="btn" onmousedown="remove_group('{{object.pk}}', '{{user.pk}}');"> - Leave</a>
 
         {% else %}
             {% oa_get_group_settings object=object %}
             	{% if pp_topic.settings.open_group and user.is_authenticated %}
-    				<a href="javascript:;" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');"> + Join</a>
+    				<a id="addgroup" class="btn" onmousedown="add_group('{{object.pk}}', '{{user.pk}}');"> + Join</a>
     			{% endif %}
                 {% if not user.is_authenticated %}
-                    <a class="nobbq" href="/p/register"> + Join</a>
+                    <a data-href="/p/register"> + Join</a>
                 {% endif %}
 
             {% endoa_get_group_settings %}

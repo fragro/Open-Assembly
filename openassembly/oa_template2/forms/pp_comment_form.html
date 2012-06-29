@@ -15,13 +15,13 @@
 
                 <span id="submit_pp_reply_form{{object.pk}}">
                     
-                <a href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>
+                <a onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>
 
                 <span style="color:grey;" id="submit_pp_comment_form{{object.pk}}"></span>
 
             </form>
                     {% else %} 
-                        <a class='button' href="{% pp_url template='register.html' %}">Submit</a>
+                        <a class='button' ata-href="{% pp_url template='register.html' %}">Submit</a>
                     {% endif %}
 
             <div class='reply_comment' id='pp_formatting_help' style='display:none; overflow:hidden; height:290px;width:100%;'>
