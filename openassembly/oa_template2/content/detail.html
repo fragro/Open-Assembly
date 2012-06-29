@@ -59,7 +59,7 @@
             'showControls':'true',
             'showLineNumbers':'false',
             'userName' : '{{user.username}}',
-            'width': '500'
+            'width': 500
         });
 
 
@@ -79,13 +79,13 @@
 
            {% pp_consensus_get object=object.pk user=user %}
 
-                {% if pp_consensus.consensus.interest > 1000 %}
-                <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
-                {% else %}
-                <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
-                {% endif %}
-
-                     by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}
+                <div style="margin-bottom:10px;">{% if pp_consensus.consensus.interest > 1000 %}
+                        <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
+                    {% else %}
+                        <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
+                    {% endif %}
+                    
+                         by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}</div>
 
 
                         {{object.description|markdown }}
@@ -106,26 +106,27 @@
 
                 
                 <!--don't fuck with this too much, pretty much all of this is used for voting -->
-            
+                
+                        <div id="temp_check{{object.pk}}" class="detail_temp_check">{% include 'content/temp_check.html' %}</div>
+                        
                         Vote <span id="spectrum_vote"></span>
                         Agreement: <span id="stars-cap-spec"></span>
 
                         {% pp_spectrum_form object=object user=user %}
-
                         <form method="post" action="">
 
                             <div id="stars-wrapper-spec{{object.id}}">
-
-                            {{pp_consensus.form.spectrum}}
-                            {{pp_consensus.form.form_id}}
+                                {{pp_consensus.form.spectrum}}
+                                {{pp_consensus.form.form_id}}
                             </div>
+                            
                             {{csrf_string|safe}}
 
-                        <noscript><input type="submit" class='button green' value="Rating"></noscript>
+                            <noscript><input type="submit" class='button green' value="Rating"></noscript>
 
                         </form>
                         {% endpp_spectrum_form %}
-                        
+                        <br><br>
                         Informative: <span id="stars-cap-rate"></span>
                         {% pp_rating_form object=object user=user %}
 
@@ -146,14 +147,14 @@
 
             <!--fuck around free for all down here! -->
 
-
-            <div id="temp_check{{object.pk}}">{% include 'content/temp_check.html' %}</div>
+<br><br>
+            
 
             {% include 'etc/author_controls.html' %}
 
 
             <!--number currently reporting -->
-
+<br>
             {% pp_get_ranked_decision object=pp_consensus.consensus %}
                 {% oa_get_group_settings object=object.parent %}
 
@@ -163,18 +164,18 @@
                             {% if pp_topic.root %}
                                 {% pp_get_reporting_percentage object=object group=pp_topic.root %}
                                     {% if pp_consensus.reporting > pp_topic.settings.reporting_percent %}
-                                        Currently Reporting: {{pp_consensus.reporting|percent}}
+                                        <b>Currently Reporting</b> {{pp_consensus.reporting|percent}}
                                     {% else %}
-                                        Currently Reporting: {{pp_consensus.reporting|percent}}
+                                        <b>Currently Reporting</b> {{pp_consensus.reporting|percent}}
                                     {% endif %}               
                                 {% endpp_get_reporting_percentage %}
                             {% endif %}
                         {% endpp_get_root %}
                                          
                     {% endif %}
-
+<br>
                     {% include 'etc/edits.html' %}
-
+<br>
         
                 <!-- This is the status of the decision -->
 
@@ -193,7 +194,7 @@
                             <b style="color:#e11010">
                         {% endif %}
 
-                        {{ pp_consensus.ranked_decision.consensus_percent|percent }} Consensus- 
+                        {{ pp_consensus.ranked_decision.consensus_percent|percent }} Consensus 
                         
                         {% if pp_topic.settings.percent_reporting < pp_consensus.ranked_decision.reporting_percent %}
                             <b style="color:#56e110;">
@@ -210,10 +211,10 @@
                     {{object.forumdimension.name}} Response{{pp_blob.count|pluralize}} ({{object.children}})
 
                     {% if pp_consensus.consensus.winners %}
-                        Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}
+                        <br>Accepting {{pp_consensus.consensus.winners}} Response{{pp_consensus.consensus.winners|pluralize}}
 
                     {% else %}
-                        Accepting All Responses With Consent
+                        <br>Accepting All Responses With Consent
                     {% endif %}
 
                     {% pp_get_questions object=object dimension="r" phase="Nomination" %}
@@ -248,19 +249,19 @@
        
 
     {% pp_comment_count object=object.id %}
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>  | 
+        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>
 
     {% endpp_comment_count %}
 
     {% pp_get_argument_count object=object arg_type='yea' %}
 
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a> | 
+        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a>
 
     {% endpp_get_argument_count %}
 
     {% pp_get_argument_count object=object arg_type='nay' %}
 
-        <a href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
 
     {% endpp_get_argument_count %}
 

@@ -18,7 +18,7 @@
                             {{pp_comment.form.form_id}}
                             {{csrf_string|safe}}
                     {% if user.is_authenticated and user.is_active %}                                                            
-                        <input type="submit" class='button' value="Submit">
+                        <input type="submit" class='button btn btn_green' value="Submit">
 
                         <a href="javascript:;" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
                         <span id="submit_pp_reply_form{{object.pk}}">
@@ -36,7 +36,7 @@
 
 <script>
           $("form#pp_reply_form{{object.pk}}").submit(function(e){
-                $("#submit_pp_reply_form{{object.pk}}").html("<b>Submitting...</b>")
+                $("#submit_pp_reply_form{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>")
                 slideup('pp_formatting_help{{object.pk}}');
                 addObject(e);
 

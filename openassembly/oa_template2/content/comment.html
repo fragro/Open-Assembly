@@ -9,7 +9,7 @@
         <ul id="comment{{object.pk}}" class="comment">
         {% endif %}
 
-        <span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
+        asdfsd<span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
        
         <li>
         
@@ -41,15 +41,11 @@
                         {{pp_tag.dt}}
                     {% endpp_time_difference_str %}
                 </span>
-            <span id="comment_text{{object.pk}}">
-            <p>
-            {{object.text|markdown}}
-            </p>
+            <span id="comment_text{{object.pk}}" class="a_comment">
+                {{object.text|markdown}}
             </span>
             <span id="comment_links{{object.pk}}">
-
                 {% include 'etc/comment_salt.html' %}
-
             </span>
             {% if salted %}
             </ul>
