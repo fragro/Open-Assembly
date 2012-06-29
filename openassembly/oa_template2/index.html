@@ -27,7 +27,7 @@
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
         
         <div id="rail" class="clearfix">
-            <a class="nobbq" data-href="/" id="logo"><img src="/static/img/logo.png" alt=""></a><img id="loading" src="/static/img/1.gif">
+            <a class="nobbq" data-href="/" id="logo"><img src="/static/img/logo.png" alt=""></a><img id="loading" \src="/static/img/1.gif">
             <ul id="nav">
                 {% if request.user.is_authenticated %}
                 <!-- Dashboard -->
@@ -161,7 +161,7 @@
                             <ul>
                                 {% if request.user.is_authenticated %}
                                     <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
-                                    <li><a datahref="/p/help">Help</a></li>
+                                    <li><a data-href="/p/help">Help</a></li>
                                     <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
                                     <li><a data-href="#">Report Abuse</a></li>
                                     <li><a data-href="{% pp_url template='user.html' object=request.user %}" data-href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
