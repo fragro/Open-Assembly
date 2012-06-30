@@ -216,6 +216,10 @@
             <!-- use ptall3 pwide4 -->
             {% include 'board.html' %}
             
+            {% if not request.user.is_authenticated %}
+                HELLO!
+            {% endif %}
+            
         </div>
         
         <div id="overlay" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="display:auto;"{% else %}style="display:none;"{% endif %}></div>
