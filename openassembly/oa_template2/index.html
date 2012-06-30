@@ -6,7 +6,7 @@
 
 
 <!DOCTYPE html>
-<html{% if not request.user.is_authenticated %} class="not_logged_in"{% endif %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
+<html{% oa_has_dash user=request.user %} {% if not oa_dashboard.has_board %} class="not_logged_in"{% endif %} {% endoa_has_dash %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
     <head>
 
 
@@ -192,13 +192,15 @@
         
         <!-- Panels -->
         <div id="panels">
-            {% oa_has_dash user=request.user %}
-                {% if not oa_dashboard.has_board %}
-                    <div id="tutorial">
-                        NOOBS!
-                    </div>
-                {% endif %}
-            {% endoa_has_dash %}
+            {% if request.user.is_authenticated %}
+                {% oa_has_dash user=request.user %}
+                    {% if not oa_dashboard.has_board %}
+                        <div id="tutorial">
+                            <img src="/static/img/add_panels.jpg" alt="" style="position:absolute; top:0; right:250px;">
+                        </div>
+                    {% endif %}
+                {% endoa_has_dash %}
+            {% endif %}
             <!-- use ptall3 pwide4 -->
             {% include 'board.html' %}
             
