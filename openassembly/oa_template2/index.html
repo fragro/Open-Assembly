@@ -5,7 +5,7 @@
 
 
 <!DOCTYPE html>
-<html lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
+<html{% if not request.user.is_authenticated %} class="not_logged_in"{% endif %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
     <head>
 
 
@@ -217,7 +217,7 @@
             {% include 'board.html' %}
             
             {% if not request.user.is_authenticated %}
-                HELLO!
+                <img src="/static/img/register_login.jpg" alt="" style="position:absolute; top:0; right:40px;">
             {% endif %}
             
         </div>
