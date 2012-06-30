@@ -1,7 +1,7 @@
 <div class="pwide{{dashobj.zoom_x|add:'1'}} ptall{{dashobj.zoom_y|add:'1'}} panel" id="{{dashobj.pk}}">
     <div class="panel_content" id="content{{dashobj.pk}}">
         <div class="panel_header">
-            <h3>{{dashobj.boardname}} - {{obj.shortname|title}} {{start}} - {{end}} / {{count}}</h3>
+            <h3>{{dashobj.boardname}} - {{obj.shortname|title}}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
         <div class="panel_inner">
@@ -11,6 +11,12 @@
                     {{b|safe}}
                 {% endfor %}
             </ul>
+            {% if start != 0 %}
+                <a class="btn btn_blue" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'-20'}}, {{end|add:'-20'}});">Previous</a>
+            {% endif %}
+            {% if start|add:'20' < count %}
+                <a class="btn btn_blue" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'20'}}, {{end|add:'20'}});">Next</a>
+            {% endif %}
             </p>
         </div>
     </div>

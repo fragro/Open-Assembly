@@ -1,6 +1,7 @@
 
 
 function spectrumvote(idk, pos, user_pk, obj_pk, ctype_pk){
+
 $.post("/spectrumvote/", {vote: pos, pk: idk},
   function(data) {
       if(data.FAIL === true){
@@ -11,7 +12,6 @@ $.post("/spectrumvote/", {vote: pos, pk: idk},
         $('#spectrum_vote').html(' - ' + data.votetype);
       }
       }, "json");
-
 }
 
 function add_platform(ctype, object_pk){ 
@@ -103,14 +103,38 @@ $.post("/add_platform/", {ctype: ctype, object_pk: object_pk},
  }, "json");
 }
 
+function support(add, subscribed, user){
+  if(add === true){
+      $.post("/add_support/", {subscribed: subscribed, user: user},
+        function(data) {
+            if(data.FAIL !== true){
+              //$('#mygroup').append(data.group);
+              history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+              getContent();
+            }
+       }, "json");
+  }
+  if(add === false){
+      $.post("/remove_support/", {subscribed: subscribed, user: user},
+        function(data) {
+            if(data.FAIL !== true){
+              //$('#mygroup').append(data.group);
+              history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+              getContent();
+            }
+       }, "json");
+  }
+}
+
 function add_group(topic, user){
 $.post("/add_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$('#mygroup').append(data.group);
-        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
-        getContent();
-        $('.thumbnail_list').prepend(data.group);
+        //history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        //getContent();
+        //$('.thumbnail_list').prepend(data.group);
+        js_redirect(data.redirect);
       }
  }, "json");
 }
@@ -120,9 +144,10 @@ $.post("/remove_group/", {topic: topic, user: user},
   function(data) {
       if(data.FAIL !== true){
         //$(data.group).remove();
-        history.replaceState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
-        getContent();
-        $(data.group).remove();
+        //history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
+        //getContent();
+        //$(data.group).remove();
+        js_redirect(data.redirect);
       }
  }, "json");
 }
@@ -264,12 +289,41 @@ function addObject(e){
                                 tempkey = tempkey.replace(/\//g,"");
                                 $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});                        }
                     }
-                    hrefLess();
+                    //hrefLess();
                 }, "json");
             }
           //if(data.POST){}
         }, "json");
+
   }
+
+function tabQueue() {
+    var window_width = $(window).width();
+        ruler = $('#tab_ruler');
+        ruler_width = ruler.width();
+        min_win = window_width - 300;
+        num_tabs = $('#the_queue .tab').length;
+        tab_iter = $('#tab_queue .tab_iterate');
+    
+    // check to see if the tabs are being overlapped by the queue
+    if (ruler_width > min_win) {
+        // move tabs to queue
+        var last_tab = $('#tab_ruler .tab').last();
+        $('#the_queue').append(last_tab);
+    } else if ( (min_win - 162 ) > ruler_width) {
+        // move tabs back to taskbar
+        var last_tab = $('#the_queue .tab').last();
+        $('#tab_ruler').append(last_tab);
+    }
+    
+    if (num_tabs > 0) {
+        tab_iter.text(num_tabs);
+    } else {
+        tab_iter.text('No');
+    }
+    
+}
+
 
 // remember how many tabs were in queue on doc load
 function rememberTabs() {
@@ -281,11 +335,10 @@ function rememberTabs() {
         old_width = $('#tab_width').text();
     
     num_of_times_to_fire = Math.ceil( num_tabs - ( Math.abs(old_width - window_width) / 162 ) );
-    
-    for (i=-1; i<=num_of_times_to_fire; i++) {
+    for (i=-2; i<=num_of_times_to_fire; i++) {
         tabQueue();
     }
-};
+}
 
 function load_usersaltcache(div, user, obj_pk, ctype_pk){
     $.get("/load_usersaltcache/", {div: div, hash: location.href, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
@@ -336,15 +389,17 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                                 $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});
                             }
                         }
-                        hrefLess();
+                        //hrefLess();
                     }, "json");
                 }
             //if(data.POST){}
         }, "json");
+
   }
 
 
 function getContent(){
+
 //            if (currentXhr != null && typeof currentXhr != 'undefined') {
 //                currentXhr.abort();
 //            }
@@ -402,7 +457,9 @@ function getContent(){
                 js_redirect('/404.html?');
             }
             sessionStorage.setItem(OAdata.key, 'True');
-            hrefLess();
+            //hrefLess();
+            rememberTabs();
+
 
           //if(OAdata.scroll_to !== null){
           //  $(OAdata.scroll_to).slideto({'slide_duration': "fast", 'highlight': false});
@@ -415,7 +472,6 @@ function getContent(){
     }
     if (ss === 'True' && module !== 'Reload'){
         toggleMinMax(tempkey);
-        rememberTabs();
     }
 }
 
@@ -436,7 +492,7 @@ function sort_dashboard(sorted){
   }, "json");
 }
 
-function increase_zoom(obj_pk, dim, path, dash_id){
+function increase_zoom(obj_pk, dim, path, dash_id, type){
   
   $.post("/increase_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
@@ -447,12 +503,14 @@ function increase_zoom(obj_pk, dim, path, dash_id){
           //});
       }
       if(data.FAIL === false){
-          refresh_size(path, dash_id);
+          if(type == 'Chat' || type == 'Stream'){
+            refresh_size(path, dash_id);
+          }
       }
   }, "json");
 }
 
-function decrease_zoom(obj_pk, dim, path, dash_id){
+function decrease_zoom(obj_pk, dim, path, dash_id, type){
   
   $.post("/decrease_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
@@ -463,8 +521,9 @@ function decrease_zoom(obj_pk, dim, path, dash_id){
           //});
       }
       if(data.FAIL === false){
-          refresh_size(path, dash_id);
-
+          if(type == 'Chat' || type == 'Stream'){
+            refresh_size(path, dash_id);
+          }
       }
   }, "json");
 }
@@ -481,13 +540,12 @@ function resort_dashboard(dash_id, sort_key){
       }
       if(data.FAIL === false){
           //chat window should be resized
-         refresh_dashboard(data.plank, data.dash_id);
+          refresh_dashboard(data.plank, data.dash_id);
       }
   }, "json");
 }
 
 function refresh_dashboard(path, dash_id, start, end){
-  
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null, start: start, end: end},
   function(data) {
       if(data.FAIL === true){
@@ -504,18 +562,19 @@ function refresh_dashboard(path, dash_id, start, end){
           }
           else{
             $('#' + data.dashpk).html(data.html);
-            hrefLess();
+            //hrefLess();
             //ui.item.addClass('dragging').removeClass('');
             //ui.item.addClass('dragging').addClass('panel');
 
           }
           $('#panels').masonry('reload');
       }
+
   }, "json");
+
 }
 
 function refresh_size(path, dash_id){
-  
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null},
   function(data) {
       if(data.FAIL === true){
@@ -542,14 +601,14 @@ function refresh_size(path, dash_id){
 
           }
           $('#panels').masonry('reload');
-          hrefLess();
+          //hrefLess();
 
       }
   }, "json");
+
 }
 
 function push_dashboard(path, dash_id, boardname){
-  
   $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'add', boardname: boardname},
   function(data) {
       if(data.FAIL === true){
@@ -562,7 +621,7 @@ function push_dashboard(path, dash_id, boardname){
           $('#panels').prepend(data.html);
           $('#panels').masonry('reload');
 
-          hrefLess();
+          //hrefLess();
       }
   }, "json");
 }
@@ -593,36 +652,36 @@ function allowPush(e, url, that) {
 
 // Panel resizing
 // Down
-function downzoom(dashpk, path, dash_id){
+function downzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('ptall3')) {
         return false;
     } else if (p.hasClass('ptall2')) {
         p.removeClass('ptall2').addClass('ptall3');
         p.find('icon-chevron-down').closest('li').addClass('disabled');
-        increase_zoom(p.attr('id'), 'Y', path, dash_id);
+        increase_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
         p.find('.icon-chevron-up').closest('li').removeClass('disabled');
         p.addClass('ptall2');
-        increase_zoom(p.attr('id'), 'Y', path, dash_id);
+        increase_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
     }
 }
 // Up
-function upzoom(dashpk, path, dash_id){
+function upzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('ptall3')) {
         p.find('.icon-chevron-down').closest('li').removeClass('disabled');
         p.removeClass('ptall3').addClass('ptall2');
-        decrease_zoom(p.attr('id'), 'Y', path, dash_id);
+        decrease_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('ptall2')) {
         p.removeClass('ptall2');
         p.find('.icon-chevron-up').closest('li').addClass('disabled');
-        decrease_zoom(p.attr('id'), 'Y', path, dash_id);
+        decrease_zoom(p.attr('id'), 'Y', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
@@ -630,46 +689,46 @@ function upzoom(dashpk, path, dash_id){
     }
 }
 // Right
-function rightzoom(dashpk, path, dash_id){
+function rightzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('pwide4')) {
         return false;
     } else if (p.hasClass('pwide3')) {
         p.removeClass('pwide3').addClass('pwide4');
         p.find('.icon-chevron-right').closest('li').addClass('disabled');
-        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        increase_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('pwide2')) {
         p.removeClass('pwide2').addClass('pwide3');
-        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        increase_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
         p.addClass('pwide2');
         p.find('.icon-chevron-left').closest('li').removeClass('disabled');
-        increase_zoom(p.attr('id'), 'X', path, dash_id);
+        increase_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
     }
 }
 // Left
-function leftzoom(dashpk, path, dash_id){
+function leftzoom(dashpk, path, dash_id, type){
     var p = $('#' + dashpk);
     if (p.hasClass('pwide4')) {
         p.find('.icon-chevron-right').closest('li').removeClass('disabled');
         p.removeClass('pwide4').addClass('pwide3');
-        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        decrease_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('pwide3')) {
         p.removeClass('pwide3').addClass('pwide2');
-        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        decrease_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else if (p.hasClass('pwide2')) {
         p.removeClass('pwide2');
         p.find('icon-chevron-left').closest('li').addClass('disabled');
-        decrease_zoom(p.attr('id'), 'X', path, dash_id);
+        decrease_zoom(p.attr('id'), 'X', path, dash_id, type);
         $('#panels').masonry('reload');
 
     } else {
@@ -718,7 +777,7 @@ function hrefLess() {
     $('a').each(function(){
         var t = $(this);
         if(t.attr('id') != 'register'){
-            if(typeof t.attr('href') != 'undefined' && t.attr('href') != 'javascript:;'){
+            if(typeof t.attr('href') != 'undefined'){
                 t.data('href', t.attr('href'));
                 t.removeAttr('href');
             }

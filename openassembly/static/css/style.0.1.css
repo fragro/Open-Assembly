@@ -949,10 +949,16 @@ h2 {
     margin-bottom:0;
 }
 .pad {
-    width:500px;
+    width:600px;
     float:right;
     margin:0 0 10px 20px;
     background:#ddd;
+    height:500px;
+}
+#loading {
+    float:left;
+    padding:13px 5px 3px 3px;
+    display:none;
 }
 h1 a {
     color:#222;
@@ -1037,4 +1043,8 @@ h1 a:hover {
 }
 html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     height:100% !important;
+}
+#panel_inner_list a {
+    height:50px;
+    overflow:hidden;
 }

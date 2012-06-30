@@ -12,6 +12,6 @@
 	<div class="panel_list_img">{% include 'etc/object_img_50_user.html' %}</div>
 	<a class="ov_hid">
             
-	<a href="{% pp_url object=object.user template='user_profile.html'%}" data-href="{% pp_url object=object.user template='user_profile.html'%}">{{object.user}}</a>
+	<a data-href="{% pp_url object=object.user template='user_profile.html'%}">{{object.user}}</a>
 	                        
 {% endblock %}

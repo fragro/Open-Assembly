@@ -155,7 +155,7 @@ def pp_get_avatar(context, nodelist, *args, **kwargs):
     output = nodelist.render(context)
     context.pop()
 
-    return output  
+    return output
 
     
 class ProfileForm(forms.ModelForm):
@@ -166,9 +166,8 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        exclude = ('user','submit_date')
+        exclude = ('user', 'submit_date')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_profile_form")
     about_me = forms.CharField(widget=forms.Textarea, label="Who are you?", required=False)
     timezone = forms.ChoiceField(label="Time Zone:", choices=[(i, i) for i in pytz.common_timezones])
-

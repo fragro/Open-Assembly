@@ -35,7 +35,7 @@
             
             <li>
             
-            <a href="{% pp_url template='user_profile.html' object=object.user%}" class="author"> {{object.user.username}}</a> 
+            <a data-href="{% pp_url template='user_profile.html' object=object.user%}" class="author"> {{object.user.username}}</a> 
                 <span class="meta">
                     {% pp_time_difference_str then=object.submit_date %}
                         {{pp_tag.dt}}

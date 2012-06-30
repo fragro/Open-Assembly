@@ -1,0 +1,38 @@
+{% extends 'skeleton/page.html'%}
+
+{% load pp_url %}
+{% load reputationtags %}
+
+{% block content %}
+
+{% abuse_ticket_form POST=request.POST user=request.user %}
+
+                <form id="report_abuse" method="post" action="">
+
+                    <h2>Report Abuse</h2>
+                    <div id="errors" class="errors">{{ pp_reputation.errors }}</div>
+                            
+                            {{pp_reputation.form.as_p}}
+                        {{csrf_string|safe}}
+                    {% if user.is_authenticated and user.is_active %}                                                            
+                        <input type="submit" class='btn' value="Submit"><span id="submit_report_abuse"></span>
+                </form>
+                        {% else %} 
+                            <a class="btn" data-href="{% pp_url template='register.html' %}">Submit</a>
+                        {% endif %}
+                <script>
+
+                  $("form#report_abuse").submit(function(e){
+                        $("#submit_report_abuse").html("<b>Submitting...</b>")
+                        addObject(e);
+                    });
+
+                </script>
+
+                    {% if pp_reputation.complete %}
+                        Report Sent ({% now "jS F Y H:i" %})
+                    {% endif %}
+
+    {% endabuse_ticket_form %}
+
+{% endblock %}  

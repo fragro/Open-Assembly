@@ -9,7 +9,7 @@
     {% pp_get_contenttype_id object=object %}
 
         {% if user = object and user.is_authenticated %}
-            <a id="avatar" data-href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}"  href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
+            <a id="avatar" data-href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
 
             {% include 'etc/object_img_100.html' %}</a>
             {% else %}
@@ -63,9 +63,10 @@
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
-            <a class="btn btn_green" data-href="{% url ajaxapi.views.add_support object.id %}">I Trust This Citizen</a> 
+            <a class="btn btn_green" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">I Trust This Citizen</a> 
+
         {% else %}
-            <a data-href="{% url ajaxapi.views.remove_support object.id %}">Stop Trusting</a>
+            <a class="btn btn_green" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
         {% endif %}
 {% endpp_has_subscription %}
             

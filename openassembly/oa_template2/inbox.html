@@ -21,12 +21,12 @@
 
                 {% endfor %}      
             {% endpp_get_messages %} 
-            <a href="{% pp_url template='user_profile.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
+            <a data-href="{% pp_url template='inbox.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
 
     <ul class="pagination">
         {% for s,e,n in pp_messages.rangelist %}
            {% if not s > pp_messages.count %}
-            <li><a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
+            <li><a data-href="{% pp_url template='inbox.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a></li>
             {% endif %}
         {% endfor %}
     </ul>
@@ -47,12 +47,12 @@
                         {% include 'etc/notice.html'%}
 
                 {% endfor %}      
-                <a href="{% pp_url template='user_profile.html' object=user dimension='notifications' start=0 end=20 %}">(view all)</a>
+                <a data-href="{% pp_url template='user_profile.html' object=user dimension='notifications' start=0 end=20 %}">(view all)</a>
 
        <ul class="pagination">
             {% for s,e,n in pp_messages.rangelist %}
                {% if not s > pp_messages.count %}
-                <li><a href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}({{n}}){% else %}{{n}}{% endif %}</a></li>
+                <li><a data-href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}({{n}}){% else %}{{n}}{% endif %}</a></li>
                 {% endif %}
             {% endfor %}
         </ul>

@@ -156,7 +156,6 @@ class ForumBlob(models.Model):
                                             blank=True, null=True)
     parent_pk = models.CharField(_('Parent PK'), max_length=100, blank=True, null=True)
     parent = generic.GenericForeignKey(ct_field="parent_type", fk_field="parent_pk")
-    parent_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     child = models.ForeignKey(ContentType, verbose_name=_('child content type'),
                                             related_name="%(app_label)s_%(class)s_child",
                                             blank=True, null=True)
@@ -169,7 +168,7 @@ class ForumBlob(models.Model):
     #classification_model = models.ForeignKey(ClassModel)
     #location = models.CharField(max_length=100, blank=True, null=True)
     permission_req = models.ForeignKey(Permission, blank=True, null=True)
-    #pad = models.BooleanField(default=False, verbose_name="Include EtherPad (this allows users to collaboratively edit)")
+    pad = models.BooleanField(default=False, verbose_name="Allow other users to collaborate. (Leave this blank if you don't want the proposal open to edit by other users.)")
 
     def __unicode__(self):
         return self.summary

@@ -61,32 +61,59 @@ def search_posts(request):
         {'posts': posts}, context_instance=RequestContext(request))
 
 
-def add_support(request, pk):
-    ###Pirate_social AJAX views
-    if request.user.is_authenticated() and request.user.is_active:
+def add_support(request):
+    if not request.user.is_authenticated() or not request.user.is_active:
+        return HttpResponse(simplejson.dumps({'FAIL': True}),
+                                mimetype='application/json')
 
-        user = User.objects.get(pk=pk)
-        c_type = ContentType.objects.get_for_model(user)
-        sub = Subscription(subscriber=request.user, subscribee=user,
-                            created_dt=datetime.datetime.now())
-        sub.save()
-        obj_str = get_pretty_url(c_type.pk, pk)
-        return redirect("/p/user/" + STR_KEY + str(obj_str))
+    if request.method == 'POST':
+        user_pk = request.POST[u'user']
+        object_pk = request.POST[u'subscribed']
+
+        user = User.objects.get(pk=user_pk)
+        subscribed = User.objects.get(pk=object_pk)
+
+        if request.user == user:
+            try:
+                old_sub = Subscription.objects.get(subscriber=user, subscribee=subscribed)
+            except:
+                sub = Subscription(subscriber=user, subscribee=subscribed,
+                                    created_dt=datetime.datetime.now())
+                sub.save()
+            results = {'FAIL': False, 'redirect': subscribed.get_absolute_url()}
+        else:
+            results = {'FAIL:': True}
     else:
-        return redirect('/p/register')
+        results = {'FAIL': True}
+    if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
+        return HttpResponse(simplejson.dumps(results),
+                            mimetype='application/json')
 
 
-def remove_support(request, pk):
-    if request.user.is_authenticated() and request.user.is_active:
-        user = User.objects.get(pk=pk)
-        c_type = ContentType.objects.get_for_model(user)
-        sub = Subscription.objects.get(subscriber=request.user,
-                                        subscribee=user)
-        sub.delete()
-        obj_str = get_pretty_url(c_type.pk, pk)
-        return redirect("/p/user/" + STR_KEY + str(obj_str))
+def remove_support(request):
+    if not request.user.is_authenticated() or not request.user.is_active:
+        return HttpResponse(simplejson.dumps({'FAIL': True}),
+                                mimetype='application/json')
+
+    if request.method == 'POST':
+        user_pk = request.POST[u'user']
+        object_pk = request.POST[u'subscribed']
+
+        user = User.objects.get(pk=user_pk)
+        subscribed = User.objects.get(pk=object_pk)
+
+        if request.user == user:
+            sub = Subscription.objects.get(subscriber=user,
+                                            subscribee=subscribed)
+            sub.delete()
+            results = {'FAIL': False,  'redirect': subscribed.get_absolute_url()}
+        else:
+            results = {'FAIL:': True}
     else:
-        return redirect('/p/register')
+        results = {'FAIL': True}
+    if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
+        return HttpResponse(simplejson.dumps(results),
+                            mimetype='application/json')
 
 
 def change_hash_dim(request):

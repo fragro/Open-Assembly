@@ -33,15 +33,17 @@ def pp_has_mail(context, nodelist, *args, **kwargs):
     user = kwargs.get('user', None)
     reset = kwargs.get('reset', None)
 
-    notes = Notification.objects.filter(receiver=user,is_read=False)
+    notes = Notification.objects.filter(receiver=user, is_read=False)
 
-    unread = Message.objects.filter(read=False, receiver=user) 
+    unread = Message.objects.filter(read=False, receiver=user)
 
     count = len(notes) + len(unread)
 
 
-    if count == 0: has_mail = False
-    else: has_mail = True
+    if count == 0:
+        has_mail = False
+    else:
+        has_mail = True
     namespace['has_mail'] = has_mail
     namespace['count'] = count
 
@@ -52,14 +54,14 @@ def pp_has_mail(context, nodelist, *args, **kwargs):
 
 
 @block
-def pp_notification_unread_list_get(context, nodelist, *args, **kwargs): 
+def pp_notification_unread_list_get(context, nodelist, *args, **kwargs):
     context.push()
     namespace = get_namespace(context)
 
     user = kwargs.get('user', None)
     reset = kwargs.get('reset', None)
     notes = Notification.objects.all()
-    notes = notes.filter(receiver=user,is_read=False)
+    notes = notes.filter(receiver=user, is_read=False)
     notes = notes.order_by('-submit_date')
     if reset == None:
         for i in notes:
@@ -80,13 +82,14 @@ def pp_notification_read_list_get(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     user = kwargs.get('user', None)
-    
+
     notes = Notification.objects.all()
-    notes = notes.filter(receiver=user,is_read=True)
+    notes = notes.filter(receiver=user, is_read=True)
     notes = notes.order_by('-submit_date')
-    
+
     namespace['notifications'] = notes
-    
+
+
 @block
 def pp_notification_list_get(context, nodelist, *args, **kwargs): 
     context.push()

@@ -96,8 +96,8 @@ urlpatterns += patterns('pirate_sources.views',
     (r'^change/(?P<obj_pk>[0-9A-Za-z_\-]+)/(?P<new_pk>[0-9A-Za-z_\-]+)/(?P<ctype_pk>[0-9A-Za-z_\-]+)/$', 'change_avatar'),
 )
 urlpatterns += patterns('ajaxapi.views',
-    (r'^add_support/(?P<pk>.+)$', 'add_support'),
-    (r'^remove_support/(?P<pk>.+)$', 'remove_support'),
+    (r'^add_support/$', 'add_support'),
+    (r'^remove_support/$', 'remove_support'),
     (r'^live_search/$', 'live_search'),
 )
 

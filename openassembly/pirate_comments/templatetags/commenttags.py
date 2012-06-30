@@ -263,10 +263,12 @@ def pp_comment_form(context, nodelist, *args, **kwargs):
     comment = kwargs.get('edit', None)
 
     if comment is not None:
+        #print type(comment)
+        #print comment.text
         if POST and POST.get("form_id") == "pp_edit_form":
             form = CommentForm(POST, instance=comment)
             if form.is_valid():
-                comment.text = clean_html(form.cleaned_data['text'])
+                comment.text = clean_html(POST['text'])
                 comment.save()
         else:
             form = CommentForm(instance=comment)

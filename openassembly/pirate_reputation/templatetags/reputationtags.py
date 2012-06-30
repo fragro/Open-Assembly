@@ -5,7 +5,7 @@ import datetime,sys
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from tagging.models import Tag, TaggedItem
-from pirate_reputation.models import ReputationManager, Reputation, ReputationDimension, ReputationEvent
+from pirate_reputation.models import ReputationManager, Reputation, ReputationDimension, ReputationEvent, AbuseTicket
 from pirate_consensus.models import Consensus
 from pirate_forum.models import get_rangelist
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
@@ -117,6 +117,57 @@ def pp_get_reputation_events(context, nodelist, *args, **kwargs):
     return output
 
 
+class ReportAbuseForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        new_prof = super(ReportAbuseForm, self).save(commit=commit)
+        return new_prof
+
+    class Meta:
+        model = AbuseTicket
+
+        exclude = ('user', 'created_dt', 'fixed')
+
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="report_abuse")
+
+
+@block
+def abuse_ticket_form(context, nodelist, *args, **kwargs):
+    '''
+    This block tag can create or process forms either to create or to modify arguments.
+    Usage is as follows:
+
+    {% pp_profile_form POST=request.POST object=request.object %}
+       Do stuff with {{ pp_profile.form }}.
+    {% endpp_profile_form %}
+    '''
+
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+    POST = kwargs.get('POST', None)
+
+    if POST and POST.get("form_id") == "report_abuse":
+            form = ReportAbuseForm(POST)
+            #new_arg = form.save(commit=False)
+            if form.is_valid():
+                report_abuse_new = form.save(commit=False)
+                report_abuse_new.user = user
+                report_abuse_new.save()
+                namespace['complete'] = True
+            else:
+                namespace['errors'] = form.errors
+    else:
+            form = ReportAbuseForm()
+
+    namespace['form'] = form
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
 @block
 def pp_get_reputation(context, nodelist, *args, **kwargs):
     '''
@@ -156,6 +207,7 @@ def pp_get_reputation(context, nodelist, *args, **kwargs):
     output = nodelist.render(context)
     context.pop()
     return output
+
 
 #returns a graph of the distribution of votes for this user, based on dtype
 #argument which is equal to 'spectrum' or 'rating' based on the opinion/quality

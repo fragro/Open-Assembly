@@ -20,7 +20,7 @@
                         <input type="submit" class='button btn btn_green' value="Submit"><span style="color:grey;" id="submit_pp_edittopic_form"></span>
                 </form>
                         {% else %} 
-                            <a class='button btn btn_green' href="{% pp_url template='register.html' %}">Submit</a>
+                            <a class='button btn btn_green' data-href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
 
                         {% if pp_topic.complete %}
