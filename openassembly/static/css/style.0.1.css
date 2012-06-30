@@ -1041,3 +1041,7 @@ h1 a:hover {
 .comment .a_comment code {
     font-size:12px;
 }
+#panel_inner_list a {
+    height:50px;
+    overflow:hidden;
+}
