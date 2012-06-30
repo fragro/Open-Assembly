@@ -33,4 +33,14 @@
         
             <span id="pp_edit_form{{object.pk}}_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
 
+<script>
+
+  $("form#pp_edit_form{{object.pk}}").submit(function(e){
+        $("#submit_pp_edit_form{{object.pk}}").html("<b>Submitting...</b>")
+        slideup('pp_formatting_help');
+        addObject(e);
+    });
+
+</script>
+
         {% endpp_comment_form %}

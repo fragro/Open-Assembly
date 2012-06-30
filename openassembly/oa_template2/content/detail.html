@@ -46,10 +46,10 @@
 
     </script>
     
-    
+    {% if user.is_authenticated and user.is_active %}
     <div class="pad" id="pad{{object.pk}}">
     <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe></div>
-   
+    {% endif %}
     <h1><a data-href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
    
     {% pp_get_root object=object %} 

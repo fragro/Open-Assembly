@@ -290,7 +290,7 @@ pprofileformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_pro
 pprofileform_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pprofilecache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
-ppeditcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk,
+ppeditcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
         template="forms/pp_edit_form.html", div_id="#pp_edit_form", jquery_cmd="html",
             is_recursive=True, is_toggle=True, object_specific=True, load_last=True)
 
@@ -318,6 +318,8 @@ decisionsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache
 ###SIDE EFFECT FOR COMMENTS
 ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppcommentformcache.pk,
                         template="content/comment.html", div_id="#content_children", jquery_cmd="prepend", object_specific=True)
+pp_editsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppeditcache.pk,
+        template="content/comment_edit.html", div_id="#comment_text", jquery_cmd="html", object_specific=True)
 
 
 
