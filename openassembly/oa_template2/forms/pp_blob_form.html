@@ -4,13 +4,6 @@
 
     {% if pp_topic.in_group %}
 
-
-        {% if dimension != 'edit' %}
-            {% pp_get_forumdimension dimension=dimension %}
-            <i>{{pp_blob.forumdimension.help_text}}
-            {% endpp_get_forumdimension %}
-        {% endif %}
-
             {% pp_blob_form POST=request.POST user=user dimension='tem' parent=object sub=pp_blob.sub %}
 
                 {% if pp_blob.form_complete %}

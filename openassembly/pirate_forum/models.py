@@ -168,7 +168,7 @@ class ForumBlob(models.Model):
     #classification_model = models.ForeignKey(ClassModel)
     #location = models.CharField(max_length=100, blank=True, null=True)
     permission_req = models.ForeignKey(Permission, blank=True, null=True)
-    pad = models.BooleanField(default=False, verbose_name="Allow other users to collaborate. (Leave this blank if you don't want the proposal open to edit by other users.)")
+    #pad = models.BooleanField(default=False, verbose_name="Allow other users to collaborate. (Leave this blank if you don't want the proposal open to edit by other users.)")
 
     def __unicode__(self):
         return self.summary
