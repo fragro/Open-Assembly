@@ -942,9 +942,6 @@ textarea {
 h2 {
     font-style:normal;
 }
-#panel_inner_list a {
-    line-height:50px;
-}
 #id_file, #id_private {
     margin-bottom:0;
 }

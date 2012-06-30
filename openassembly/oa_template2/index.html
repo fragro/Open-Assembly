@@ -194,7 +194,9 @@
         <div id="panels">
             {% oa_has_dash user=request.user %}
                 {% if not oa_dashboard.has_board %}
-                    NOOBS!
+                    <div id="tutorial">
+                        NOOBS!
+                    </div>
                 {% endif %}
             {% endoa_has_dash %}
             <!-- use ptall3 pwide4 -->

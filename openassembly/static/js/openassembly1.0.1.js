@@ -620,7 +620,7 @@ function push_dashboard(path, dash_id, boardname){
       if(data.FAIL === false){
           $('#panels').prepend(data.html);
           $('#panels').masonry('reload');
-
+          $('#tutorial').hide();
           //hrefLess();
       }
   }, "json");
