@@ -20,11 +20,12 @@
                             type: 'pie',
                             plotBackgroundColor: null,
                             plotBorderWidth: null,
-                            backgroundColor: "#ffffff",
-                            plotShadow: false
+                            backgroundColor: "none",
+                            plotShadow: false,
+                            spacingTop: -140
                         },
                         title: {
-                            text: 'Temperature Check'
+                            text: ''
                         },
                         tooltip: {
                             formatter: function() {
@@ -58,8 +59,8 @@
 
                      <!-- NEED THIS ID -->
                       <div id='chart{{object.pk}}'> </div>
-                      <div>
-                           Avg. Quality Rating:
+
+                           <b class="avg_quality_rating">Avg. Quality Rating</b>
 
                            {% if pp_consensus.mean_information %}
                               {{pp_consensus.mean_information|floatformat:"1"}}

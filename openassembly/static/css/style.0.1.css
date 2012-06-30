@@ -680,7 +680,7 @@ a {
 
 
 
-/* 6/6/12 - 6/7/12 */
+/* Pressed Web - team@pressedweb.com - 6/12 */
 .tab li {
     opacity:.5;
 }
@@ -707,6 +707,7 @@ a:hover {
 .page textarea {
     width:100%;
     resize:vertical;
+    display:block;
 }
 .btn {
     padding:10px 30px;
@@ -958,4 +959,85 @@ h2 {
     float:left;
     padding:13px 5px 3px 3px;
     display:none;
+}
+h1 a {
+    color:#222;
+}
+h1 a:hover {
+    text-decoration:none;
+}
+.detail_temp_check {
+    clear:left;
+    width:300px;
+    height:270px;
+    float:left;
+    margin:0 20px 0 0;
+    overflow:hidden;
+}
+#stars-cap-spec, #stars-cap-rate {
+    font-weight:bold;
+    color:#000;
+}
+.markItUpEditor {
+    padding:10px !important;
+}
+#pp_comment_form {
+    display:block;
+}
+#pp_comment_form textarea {
+    width:100%;
+}
+#pp_formatting_help {
+    border:1px #ddd solid;
+    padding:5px;
+    height:auto !important;
+    display:inline-block;
+    width:auto !important;
+    background:rgba(0,0,0,.025);
+}
+.hidden {
+    display:none;
+}
+.page .comment {
+    margin:0 0 10px;
+    padding-bottom:10px;
+    border-bottom:1px #ddd solid;
+    background:rgba(0,0,0,.05);
+}
+.page .comment li {
+    list-style:none;
+}
+.page .comment img:first-child {
+    float:left;
+    margin-right:5px;
+}
+.page .comment a:first-child, .page .comment .meta {
+    line-height:25px;
+}
+.page .comment_links {
+    overflow:hidden;
+    margin:0 0 0 30px;
+}
+.comment_links li {
+    float:left;
+    list-style:none;
+    margin-right:5px;
+}
+.comment_links a, .comment_links a:visited {
+    color:#3c5f8b;
+    text-decoration:underline;
+}
+.comment_links a:hover {
+    text-decoration:none;
+}
+.comment .a_comment {
+    padding-left:30px;
+    display:block;
+    margin-top:0;
+}
+.comment .a_comment p {
+    margin-bottom:5px;
+}
+.comment .a_comment code {
+    font-size:12px;
 }
