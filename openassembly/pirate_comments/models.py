@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+import settings
 
 from django.template import Context, Template
 
@@ -34,7 +35,7 @@ class Comment(models.Model):
     def get_absolute_url(self):
         t = Template("{% load pp_url%}{% pp_url template='detail.html' object=object scroll_to=scroll_to %}")
         c = Context({"object": self.content_object, 'scroll_to': 'comment' + str(self.pk)})
-        return t.render(c)
+        return settings.DOMAIN + t.render(c)
 
 
 def get_children(object_pk, cur_comment):

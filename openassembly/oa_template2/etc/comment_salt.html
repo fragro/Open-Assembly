@@ -8,9 +8,12 @@
             <li>
                 <a onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">reply</a>
             </li>
+
+            {% comment %}
             <li>
-                <a data-href="{{object.get_absolute_url}}">permalink</a>
+                <a href="{{object.get_absolute_url}}">permalink</a>
             </li>
+            {% endcomment %}
 
             {% if user == object.user %}
             <li>
@@ -25,10 +28,11 @@
             <li>
                 <a data-href="{% pp_url template='register.html' %}" >reply</a>
             </li>
+            {% comment %}
             <li>
-                <a data-href="{{object.get_absolute_url}}">permalink</a>
+                <a href="{{object.get_absolute_url}}">permalink</a>
             </li>
-        
+            {% endcomment %}
 
     {% endif %}
 

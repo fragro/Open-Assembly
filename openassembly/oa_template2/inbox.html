@@ -6,19 +6,19 @@
 
 {% block content %}
     {% pp_get_messages start=start end=end user=user %}
-
-        Messages{% if pp_messages.unreadcount > 0 %} ({{pp_messages.unreadcount}} New){% endif %}
+        <h2>Messages{% if pp_messages.unreadcount > 0 %} ({{pp_messages.unreadcount}} New){% endif %}</h2>
+    <ul id="user_contribs_list">
 
                 {% for note in pp_messages.unread %}
                    
-                   {% include 'etc/message.html' %}
+                   <li>{% include 'etc/message.html' %}</li>
 
                 {% endfor %}   
                 
                 {% for note in pp_messages.read %}
                            
-                    {% include 'etc/message.html' %}
-
+                    <li>{% include 'etc/message.html' %}</li>
+    </ul>
                 {% endfor %}      
             {% endpp_get_messages %} 
             <a data-href="{% pp_url template='inbox.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
@@ -31,24 +31,25 @@
         {% endfor %}
     </ul>
 
-
+{% comment %}
     {% pp_notification_list_get start=start end=end user=user get_new='True' %}
 
-        Notifications{% if unreadcount > 0 %} ({{pp_message.unreadcount}} New){% endif %}
+        <h2>Notifications{% if unreadcount > 0 %} ({{pp_message.unreadcount}} New){% endif %}</h2>
+    <ul id="user_contribs_list">
 
                 {% for note in pp_messages.unreadnotifications %}
                       
-                        {% include 'etc/notice.html'%}
+                        <li>{% include 'etc/notice.html'%}</li>
 
                 {% endfor %}   
                 
                 {% for note in pp_messages.notifications %}
 
-                        {% include 'etc/notice.html'%}
+                        <li>{% include 'etc/notice.html'%}</li>
 
                 {% endfor %}      
                 <a data-href="{% pp_url template='user_profile.html' object=user dimension='notifications' start=0 end=20 %}">(view all)</a>
-
+    </ul>
        <ul class="pagination">
             {% for s,e,n in pp_messages.rangelist %}
                {% if not s > pp_messages.count %}
@@ -58,5 +59,7 @@
         </ul>
 
     {% endpp_notification_list_get %} 
+
+{% endcomment %}
 
 {% endblock %}

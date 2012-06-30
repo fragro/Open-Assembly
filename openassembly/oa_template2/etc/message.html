@@ -1,5 +1,7 @@
+<div>
 <a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a>
-
+<br>
 {{note.description|title }}
-
+<br>
 <a data-href="{% pp_url template='submit.html' object=note.sender dimension='mes' %}">Reply</a>
+</div>
