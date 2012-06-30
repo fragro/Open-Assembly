@@ -538,7 +538,6 @@ def render_hashed(request, key, user, extracontext={}):
     empty = True
     if user is None:
         user = request.user
-    print extracontext
     retdict = get_cache_or_render(user, key, empty, forcerender=True, request=request, extracontext=extracontext)
     rendered_list = retdict['rendered_list']
     ret = defaultdict(list)
@@ -551,13 +550,12 @@ def render_hashed(request, key, user, extracontext={}):
                 elif i['type'] == 'append':
                     ret[i['div']].append(soup)
         else:
-            print i['div'] + ' : ' + i['type']
+            #print i['div'] + ' : ' + i['type']
             soup = BeautifulSoup.BeautifulSoup(i['html'])
-            if '#pages' in ret and i['div'] != '#tab_ruler':
-                text = ret['#pages'][0].findAll('div', id=i['div'][1:], limit=1)
+            if '#pages' in ret and i['div'] != '#tab_ruler' and i['type'] != 'html':
+                text = ret['#pages'][0].find('div', {'id': i['div'][1:]})
                 #print text
-                for i in text:
-                    i.insert(0, soup)
+                text.insert(0, BeautifulSoup.NavigableString(i['html']))
             elif i['type'] == 'html':
                 ret[i['div']] = [soup]
             elif i['type'] == 'append':

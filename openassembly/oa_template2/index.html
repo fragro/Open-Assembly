@@ -192,6 +192,11 @@
         
         <!-- Panels -->
         <div id="panels">
+            {% oa_has_dash user=request.user %}
+                {% if not oa_dashboard.has_board %}
+                    NOOBS!
+                {% endif %}
+            {% endoa_has_dash %}
             <!-- use ptall3 pwide4 -->
             {% include 'board.html' %}
             

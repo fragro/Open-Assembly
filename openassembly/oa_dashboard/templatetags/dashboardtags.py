@@ -50,3 +50,23 @@ def oa_get_dashboard(context, nodelist, *args, **kwargs):
     context.pop()
 
     return output
+
+
+@block
+def oa_has_dash(context, nodelist, *args, **kwargs):
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+
+    if user is not None and user.is_authenticated():
+        #get platform for this contenttype and user
+        boards = DashboardPanel.objects.filter(user=user)
+        if boards.count() > 0:
+            namespace['has_board'] = True
+        else:
+            namespace['has_board'] = False
+    output = nodelist.render(context)
+    context.pop()
+
+    return output

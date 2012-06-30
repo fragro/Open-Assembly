@@ -7,12 +7,6 @@
     <li class="panel_dropdown">
         <i class="icon-cog"></i>
         <ul class="menu">
-            {% if start != 0 %}
-            <li><a onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'-20'}}, {{end|add:'-20'}});">Previous Page of Results </a></li>
-            {% endif %}
-            {% if start|add:'20' < count %}
-            <li><a onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'20'}}, {{end|add:'20'}});">Next Page of Results</a></li>
-            {% endif %}
             {% if dashobj.boardname == 'Proposals' %}
                 <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
                 <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Activity</a></li>

@@ -1,7 +1,6 @@
 
 {% load commenttags %}
 {% load sourcetags %}
-
       {% pp_comment_form POST=request.POST user=user edit=object  %}
             <form id="pp_edit_form{{object.pk}}" method="post" action="">
                 <div id="errors" class="errors">{{ pp_comment.errors }}</div>
@@ -20,7 +19,7 @@
                     {% if user.is_authenticated and user.is_active %}                                                            
                     <input type="submit" class='button btn btn_green' value="Submit">
 
-                    <a class="button2" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
+                    <a class="btn btn_red" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');">Cancel</a>
                         <span style="color:grey;" id="submit_pp_edit_form{{object.pk}}">
                             
                         <a style="float:right;" onmousedown="toggleSlide('pp_formatting_help{{object.pk}}');">formatting help</a>
