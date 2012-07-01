@@ -39,20 +39,13 @@
                     {% if pp_permissions.permission %}
                       {% pp_get_contenttype_id object=object %}
                             <a id="interact_avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
-
-                            {% include 'etc/object_img_100.html' %}</a>
+                            {% include 'etc/object_img_100.html' %}
+                            </a>
                       {% endpp_get_contenttype_id %}
                     {% else %}
                         <a>
                     {% endif %}
                 {% endcani %}  
-                    {% pp_get_sources object=object type='img' %}
-                        {% if pp_source.cur_img %}
-                            <img  src="/media/{{pp_source.cur_img.thumbnail_large}}" alt="{{object.content_object.summary}}">
-                        {% else %}
-                            <img src="/static/img/group_header.jpg" alt="{{object.summary}}">
-                        {% endif %}
-                    {% endpp_get_sources %}
         {% endif %}
     {% endcani %}       
 

@@ -1,8 +1,5 @@
 www:
   type: python
-  systempackages:
-    - libfuse2
-    - fuse-utils
 db:
   type: mongodb
 worker:
