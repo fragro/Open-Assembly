@@ -1045,3 +1045,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     height:50px;
     overflow:hidden;
 }
+#tutorial {
+    width:50%;
+    margin-left:24%;
+}

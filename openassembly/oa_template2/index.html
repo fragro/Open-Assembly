@@ -206,6 +206,9 @@
             
             {% if not request.user.is_authenticated %}
                 <img src="/static/img/register_login.jpg" alt="" style="position:absolute; top:0; right:40px;">
+                <div id="tutorial">
+                    {% include 'etc/homepage.html' %}
+                </div>
             {% endif %}
             
         </div>

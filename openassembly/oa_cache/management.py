@@ -220,7 +220,7 @@ groupsettingsform, is_new = UserSaltCache.objects.get_or_create(is_toggle=False,
     template="forms/oa_group_settings_form.html", div_id="#oa_group_settings_form", jquery_cmd="html", load_last=True)
 
 
-comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.html",
+comcache, is_new = ModelCache.objects.get_or_create(template="comment.html",
     div_id="#content_children", content_type="item", is_recursive=True, object_specific=True, jquery_cmd="append")
 commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache.pk,
         template="comments", div_id="#content_children", content_type="item", default=True)
@@ -249,7 +249,7 @@ pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_to
                          div_id="#create_group", jquery_cmd="html", redirect=True)
 
 ppreplysdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppreplycache.pk,
-        template="content/comment.html", div_id="#comment_links", jquery_cmd="append", object_specific=True)
+        template="comment.html", div_id="#comment_links", jquery_cmd="append", object_specific=True)
 
 
 pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="create_group.html",
@@ -317,7 +317,7 @@ decisionsslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache
 
 ###SIDE EFFECT FOR COMMENTS
 ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppcommentformcache.pk,
-                        template="content/comment.html", div_id="#content_children", jquery_cmd="prepend", object_specific=True)
+                        template="comment.html", div_id="#content_children", jquery_cmd="prepend", object_specific=True)
 pp_editsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppeditcache.pk,
         template="content/comment_edit.html", div_id="#comment_text", jquery_cmd="html", object_specific=True)
 
@@ -344,7 +344,7 @@ pp_editsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=p
 
 
 # ##COMMENTS
-# comcache, is_new = ModelCache.objects.get_or_create(template="content/comment.html",
+# comcache, is_new = ModelCache.objects.get_or_create(template="comment.html",
 #         div_id="#content_right", content_type="item", is_recursive=True, jquery_cmd="append")
 # commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache.pk,
 #         template="comments", div_id="#content_right", content_type="item", default=True)
