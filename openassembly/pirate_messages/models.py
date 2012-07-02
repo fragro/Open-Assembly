@@ -75,6 +75,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
         send_email = profile.receive_emails
     except:
         send_email = True
+    send_email = False
     #we aren't sending emails for natgat
     content_type = ContentType.objects.get_for_model(obj)
     rep_type = ContentType.objects.get_for_model(reply_to)
