@@ -659,6 +659,7 @@ a {
 .pad {
     width: 100%;
     height:250px;
+    border:1px #ddd solid;
 }
 .panel_list_img {
     width:50px;
