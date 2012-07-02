@@ -1,9 +1,1 @@
-{% pp_get_sources object=object.user type='img' %}
-    {% if pp_source.cur_img %}
-        {% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}
-            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-        {% endthumbnail %}
-    {% else %}
-        <img src="/static/img/faux_logo.png">
-    {% endif %}
-{% endpp_get_sources %}
+<img src="/static/img/faux_logo.png">
