@@ -63,29 +63,8 @@
             {% endcani %}
                 <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='submit.html' dimension='tem' object=object %}">Ask a Question</a>
 
-        {% if object.parent.summary == '__NULL__' %}
-
                 {% include 'forms/oa_addgroup_form.html' %}
 
-        {% else %}
-
-            {% pp_check_siblings object=object.parent user=user %}
-
-                {% if not pp_topic.ingroup %}
-
-                    {% include 'forms/oa_addgroup_form.html' %}
-
-                {% else %}
-                <div>
-                You are already a member of visioning group <a data-href="{{pp_topic.group.get_absolute_url}}">{{pp_topic.group.summary}}</a>. For the National Gathering you can only join 1 visioning group.
-                </div>
-
-                {% endif %}
-
-            {% endpp_check_siblings %}
-
-
-        {% endif %}
                 <div>
                 {% pp_get_topic_list topic=object %}
                     {% if pp_topic.count > 0 %}
