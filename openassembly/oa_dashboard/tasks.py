@@ -1,5 +1,6 @@
 from oa_dashboard.models import DashboardPanel
 from celery.task import task
+from django.contrib.auth.models import User
 
 
 @task(ignore_result=True)
@@ -38,16 +39,10 @@ def save_board(board_path, dashboard_id, user, boardname):
 
 
 @task(ignore_result=True)
-def async_del_board(board_pk):
-        try:
-                ds = DashboardPanel.objects.get(pk=board_pk)
-                user = ds.user
-                dashboard_id = ds.dashboard_id
-                ds.delete()
-                itr = 1
-                for ds in DashboardPanel.objects.filter(dashboard_id=dashboard_id, user=user).order_by('priority'):
-                        ds.priority = itr
-                        ds.save()
-                        itr += 1
-        except:
-                pass
+def async_del_board(board_pk, user_pk, dashboard_id):
+        user = User.objects.get(pk=user_pk)
+        itr = 1
+        for ds in DashboardPanel.objects.filter(dashboard_id=dashboard_id, user=user).order_by('priority'):
+                ds.priority = itr
+                ds.save()
+                itr += 1

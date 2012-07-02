@@ -144,7 +144,11 @@ def del_board(request):
 
     if request.method == 'POST':
         obj_pk = request.POST[u'object_pk']
-        async_del_board.apply_async(args=[obj_pk])
+        ds = DashboardPanel.objects.get(pk=obj_pk)
+        user = ds.user
+        dashboard_id = ds.dashboard_id
+        ds.delete()
+        async_del_board.apply_async(args=[obj_pk, user.pk, dashboard_id])
 
         results = {'FAIL': False}
 
