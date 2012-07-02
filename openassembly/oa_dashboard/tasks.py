@@ -39,12 +39,15 @@ def save_board(board_path, dashboard_id, user, boardname):
 
 @task(ignore_result=True)
 def async_del_board(board_pk):
-        ds = DashboardPanel.objects.get(pk=board_pk)
-        user = ds.user
-        dashboard_id = ds.dashboard_id
-        ds.delete()
-        itr = 1
-        for ds in DashboardPanel.objects.filter(dashboard_id=dashboard_id, user=user).order_by('priority'):
-                ds.priority = itr
-                ds.save()
-                itr += 1
+        try:
+                ds = DashboardPanel.objects.get(pk=board_pk)
+                user = ds.user
+                dashboard_id = ds.dashboard_id
+                ds.delete()
+                itr = 1
+                for ds in DashboardPanel.objects.filter(dashboard_id=dashboard_id, user=user).order_by('priority'):
+                        ds.priority = itr
+                        ds.save()
+                        itr += 1
+        except:
+                pass
