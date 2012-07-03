@@ -26,7 +26,7 @@ try:
     DOMAIN = 'http://www.openassembly.org'
 
     DEBUG = False
-    TEMPLATE_DEBUG = DEBUG
+    TEMPLATE_DEBUG = False
 
     DATABASES = {
         'default': {
@@ -59,8 +59,8 @@ except:
     DOMAIN_NAME = 'http://localhost:8000/'
     DOMAIN = 'http://localhost:8000'
 
-    DEBUG = True
-    TEMPLATE_DEBUG = DEBUG
+    DEBUG = False
+    TEMPLATE_DEBUG = False
 
     DATABASES = {
         'default': {
