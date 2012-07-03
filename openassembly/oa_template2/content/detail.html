@@ -60,12 +60,14 @@
            {% pp_consensus_get object=object.pk user=user %}
 
 
-                <div style="margin-bottom:10px;">{% if pp_consensus.consensus.interest > 1000 %}
-                        <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
-                    {% else %}
-                        <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
-                    {% endif %}
-                    
+                <div style="margin-bottom:10px;">
+                    {% comment %}
+                        {% if pp_consensus.consensus.interest > 1000 %}
+                            <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
+                        {% else %}
+                            <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
+                        {% endif %}
+                    {% endcomment %}
                          by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}</div>
 
                         {{object.description|markdown }}
