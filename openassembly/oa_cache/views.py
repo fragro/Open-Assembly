@@ -555,7 +555,8 @@ def render_hashed(request, key, user, extracontext={}):
             if '#pages' in ret and i['div'] != '#tab_ruler' and i['type'] != 'html':
                 text = ret['#pages'][0].find('div', {'id': i['div'][1:]})
                 #print text
-                text.insert(0, BeautifulSoup.NavigableString(i['html']))
+                if text is not None:
+                    text.insert(0, BeautifulSoup.NavigableString(i['html']))
             elif i['type'] == 'html':
                 ret[i['div']] = [soup]
             elif i['type'] == 'append':
