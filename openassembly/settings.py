@@ -277,5 +277,8 @@ DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
-EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+try:
+    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+except:
+    pass
 EMAIL_PORT = 587
