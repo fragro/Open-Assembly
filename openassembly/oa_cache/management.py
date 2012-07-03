@@ -265,7 +265,7 @@ errortab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=errorca
                          div_id="#tab_ruler", jquery_cmd="append")
 
 helpcache, is_new = ModelCache.objects.get_or_create(template="natgathelp.html", main=True,
-            div_id="#pages", content_type="help", jquery_cmd="append")
+            div_id="#pages", content_type="natgathelp", jquery_cmd="append")
 
 helptab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=helpcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
