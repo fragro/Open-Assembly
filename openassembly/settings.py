@@ -25,7 +25,7 @@ try:
     DOMAIN_NAME = 'http://www.openassembly.org/'
     DOMAIN = 'http://www.openassembly.org'
 
-    DEBUG = True
+    DEBUG = False
     TEMPLATE_DEBUG = DEBUG
 
     DATABASES = {
@@ -277,5 +277,5 @@ DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
-EMAIL_HOST_PASSWORD = 'unicorns are sexy'
+EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
 EMAIL_PORT = 587
