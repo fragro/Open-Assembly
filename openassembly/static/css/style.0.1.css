@@ -1046,10 +1046,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     height:50px;
     overflow:hidden;
 }
-#tutorial {
-    margin-left:23%;
-    margin-top:6%;
-}
+#tutorial iframe { margin:10% auto; }
 .content_children {
     clear:both;
 }
