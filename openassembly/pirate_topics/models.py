@@ -86,7 +86,7 @@ def get_users(parent, start, end, dimension, ctype_list):
     if parent != None and isinstance(parent, Topic):
         user_list = MyGroup.objects.filter(topic=parent)
         if dimension == 'n':
-            user_list = user_list.order_by('-created_dt')
+            user_list = user_list.order_by('created_dt')
         count = user_list.count()
         if start is not None and end is not None:
             user_list = user_list[int(start):int(end)]

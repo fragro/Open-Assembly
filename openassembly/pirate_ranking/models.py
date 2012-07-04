@@ -102,9 +102,20 @@ def calc_hot(dt, spectrum, rating):
     else:
         y = -1
     #now if the obj is siginficant, i.e. been viewed extensively we take into account it's popularity
-    z = abs(x)
     #now calculate final score
-    score = (3 * math.log(z + 1.0) + y) * dt
+    #score = (3 * math.log(x + 1.0) + y) * dt
+    return x
+
+
+def calc_best(dt, spectrum, rating):
+    #get spectrum list ex: [(-5,246), (-4,45), ... ,(5,121)]
+    score = 0
+    tot = 0
+    for k, num in spectrum:
+        score += k * num
+        tot += num
+    if tot != 0:
+        score = score / tot
     return score
 
 
@@ -174,6 +185,9 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
         elif dimension == "t":
             order_by = 'votes'
             next_issue_list = issue_list.order_by(order_by)
+        elif dimension == "b":
+            order_by = '-best'
+            next_issue_list = issue_list.order_by(order_by)
             #next_issue_list = sorted(next_issue_list, key=lambda x: int(x.votes), reverse=True)
         #elif dimension == "hn":
         #    dt = datetime.datetime.now()
@@ -222,7 +236,7 @@ def update_rankings(cons):
 
     dt = timeDiff / float(timeNormFactor)
 
-    sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)))]
+    sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)), ('best', calc_best(dt, spectrum, rating)))]
 
     ###I don't know why, but this fails if it's where it should be up above...
     from pirate_ranking.models import Ranking
@@ -237,7 +251,13 @@ def update_rankings(cons):
                 newrank = Ranking(content_object=pis, dimension=dim, score=sc,
                             consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
                 newrank.save()
-
+                if dim == 'hot':
+                    setattr(cons, 'interest', sc)
+                if dim == 'cont':
+                    setattr(cons, 'controversy', sc)
+                if dim == 'best':
+                    setattr(cons, 'best', sc)
+                cons.save()
 
 #When a vote is created via the consensus engine, this callback updates
 #the issue ranked score, for each dimension

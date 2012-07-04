@@ -151,6 +151,7 @@ class Consensus(models.Model):
     ratings = models.IntegerField(default=0)
     #denormalized ranking values
     interest = models.FloatField(default=0.0)
+    best = models.FloatField(default=0.0)
     controversy = models.FloatField(default=0.0)
     is_edittable = models.BooleanField(default=True)
     #refers to edittable property of parent, nullified by a vote

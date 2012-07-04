@@ -54,13 +54,20 @@ try:
     BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
     BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
     BROKER_VHOST = '/'
+    DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
+    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+    EMAIL_PORT = 587
+
 
 except:
     DOMAIN_NAME = 'http://localhost:8000/'
     DOMAIN = 'http://localhost:8000'
 
-    DEBUG = False
-    TEMPLATE_DEBUG = False
+    DEBUG = True
+    TEMPLATE_DEBUG = True
 
     DATABASES = {
         'default': {
@@ -272,13 +279,9 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
 
-
 DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
-try:
-    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
-except:
-    pass
+EMAIL_HOST_PASSWORD = 'fuck you'
 EMAIL_PORT = 587

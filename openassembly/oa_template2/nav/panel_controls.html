@@ -9,7 +9,7 @@
         <ul class="menu">
             {% if dashobj.boardname == 'Proposals' %}
                 <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Activity</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Best</a></li>
                 <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'cns')">Order by Agreement</a></li>
                 <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Controversy</a></li>
             {% endif %}
