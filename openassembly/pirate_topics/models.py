@@ -140,7 +140,6 @@ def del_group_tag(obj_pk, ctype_pk, tag):
     taggedobj.delete()
 
 
-
 def get_root(root):
     if root is not None:
         try:
