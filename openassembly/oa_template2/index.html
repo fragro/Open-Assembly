@@ -196,7 +196,7 @@
                 {% oa_has_dash user=request.user %}
                     {% if not oa_dashboard.has_board %}
                         <div id="tutorial">
-                            <img src="/static/img/add_panels.jpg" alt="" style="position:absolute; top:0; right:250px;">
+                            {% comment %}<img src="/static/img/add_panels.jpg" alt="" style="position:absolute; top:0; right:250px;">{% endcomment %}
                             <iframe width="720" height="460" src="http://www.youtube.com/embed/_TzoR66HcYM?wmode=opaque" frameborder="0" allowfullscreen></iframe>
                             <div> 
                         </div>
