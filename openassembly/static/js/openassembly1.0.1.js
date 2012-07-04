@@ -621,6 +621,7 @@ function push_dashboard(path, dash_id, boardname){
           $('#panels').prepend(data.html);
           $('#panels').masonry('reload');
           $('#tutorial').hide();
+          $('#youtube').remove();
           //hrefLess();
       }
   }, "json");
