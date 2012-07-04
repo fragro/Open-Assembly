@@ -404,7 +404,10 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
     if POST and (POST.get("form_id") == "create_group" or POST.get("form_id") == "pp_edittopic_form")and user is not None:
         form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
-            new_topic = form.save(commit=False)
+            if topic is not None:
+                new_topic = form.save(commit=False, instance=topic)
+            else:
+                new_topic = form.save(commit=False)
             new_topic.is_featured = False
             new_topic.description = urlize(new_topic.description, trim_url_limit=30, nofollow=True)
             new_topic.slug = _slugify(new_topic.summary)
