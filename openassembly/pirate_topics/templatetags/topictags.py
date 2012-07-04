@@ -407,7 +407,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
             new_topic = None
 
             if topic is not None:
-                new_topic = form.save(commit=False, instance=topic)
+                new_topic = form.save(commit=False)
                 new_topic.is_featured = False
                 new_topic.description = urlize(new_topic.description, trim_url_limit=30, nofollow=True)
                 new_topic.slug = _slugify(new_topic.summary)
