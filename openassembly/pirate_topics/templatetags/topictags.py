@@ -404,25 +404,23 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
     if POST and (POST.get("form_id") == "create_group" or POST.get("form_id") == "pp_edittopic_form")and user is not None:
         form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
+            new_topic = None
+
             if topic is not None:
                 new_topic = form.save(commit=False, instance=topic)
-            else:
-                new_topic = form.save(commit=False)
-            new_topic.is_featured = False
-            new_topic.description = urlize(new_topic.description, trim_url_limit=30, nofollow=True)
-            new_topic.slug = _slugify(new_topic.summary)
-            #let's see if there are any groups with this shortname or full name
-            if root and isinstance(root, Topic):
-                new_topic.parent = root
-                new_topic.save()
-            else:
-                new_topic.parent = Topic.objects.null_dimension()
-                new_topic.save()
+                new_topic.is_featured = False
+                new_topic.description = urlize(new_topic.description, trim_url_limit=30, nofollow=True)
+                new_topic.slug = _slugify(new_topic.summary)
+                #let's see if there are any groups with this shortname or full name
+                if root and isinstance(root, Topic):
+                    new_topic.parent = root
+                    new_topic.save()
+                else:
+                    new_topic.parent = Topic.objects.null_dimension()
+                    new_topic.save()
             #raise HttpRedirectException(HttpResponseRedirect("/topics.html"))
-            namespace['complete'] = True
-            namespace['object_pk'] = new_topic.pk
             if topic is None:
-
+                new_topic = form.save(commit=False)
                 ctype = ContentType.objects.get_for_model(new_topic)
                 namespace['content_type'] = ctype.pk
                 #create Facilitator permissions for group creator
@@ -433,6 +431,12 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
                 mg, is_new = MyGroup.objects.get_or_create(topic=new_topic, user=user)
                 new_topic.group_members = 1
                 new_topic.save()
+            if new_topic is not None:
+                ctype = ContentType.objects.get_for_model(new_topic)
+                namespace['content_type'] = ctype.pk
+                namespace['object_pk'] = new_topic.pk
+                namespace['complete'] = True
+
         else:
             namespace['errors'] = form.errors
     else:
