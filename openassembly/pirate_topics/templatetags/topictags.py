@@ -424,6 +424,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
                 ctype = ContentType.objects.get_for_model(new_topic)
                 namespace['content_type'] = ctype.pk
                 #create Facilitator permissions for group creator
+                new_topic.save()
                 perm_group, is_new = PermissionsGroup.objects.get_or_create(name="Facilitator", description="Permission group for Facilitation of Online Working Groups")
                 perm = Permission(user=user, name='facilitator-permission', content_type=ctype,
                             object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
