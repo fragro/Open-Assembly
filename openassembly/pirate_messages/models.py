@@ -75,8 +75,6 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
         send_email = profile.receive_emails
     except:
         send_email = True
-    send_email = False
-    #we aren't sending emails for natgat
     content_type = ContentType.objects.get_for_model(obj)
     rep_type = ContentType.objects.get_for_model(reply_to)
     user_type = ContentType.objects.get_for_model(User)
@@ -90,6 +88,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                 else:
                     summ = str(reply_to.summary)
                 if send_email:
+                        print reply_to.user.email
                         notification.send([reply_to.user], "comment_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
                         "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
                         "reply": str(obj.text), "path": settings.DOMAIN + path})
