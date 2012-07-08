@@ -22,8 +22,12 @@ try:
     #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
     #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
 
-    DOMAIN_NAME = 'http://www.openassembly.org/'
-    DOMAIN = 'http://www.openassembly.org'
+    if env['DOTCLOUD_WWW_HTTP_URL'] == "http://openassembly1-fragro.dotcloud.com/":
+        DOMAIN_NAME = 'http://www.openassembly.org/'
+        DOMAIN = 'http://www.openassembly.org'
+    else:
+        DOMAIN_NAME = env['DOTCLOUD_WWW_HTTP_URL']
+        DOMAIN = env['DOTCLOUD_WWW_HTTP_URL'][:-1]
 
     DEBUG = False
     TEMPLATE_DEBUG = False
