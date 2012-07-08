@@ -259,7 +259,6 @@ LOGGING = {
 
 ########CELERY
 
-# A very simple queue, just to illustrate the principle of routing.
 CELERY_DEFAULT_QUEUE = 'default'
 CELERY_QUEUES = {
     'default': {
