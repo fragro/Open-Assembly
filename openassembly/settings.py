@@ -82,6 +82,13 @@ except:
     BROKER_PASSWORD = "guest"
     BROKER_VHOST = "/"
 
+    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_HOST_PASSWORD = 'this is a password'
+    EMAIL_PORT = 587
+
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
@@ -272,9 +279,18 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
 
-DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
-EMAIL_HOST_PASSWORD = 'this is a password'
-EMAIL_PORT = 587
+if BROKER_HOST == 'localhost':
+    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_HOST_PASSWORD = 'this is a password'
+    EMAIL_PORT = 587
+
+else:
+    DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
+    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+    EMAIL_PORT = 587
