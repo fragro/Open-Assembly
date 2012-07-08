@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% blocktrans %}
+
+{{notice_message}}
+
+<a href="{{path}}">Check it</a>
+
+{% endblocktrans %}

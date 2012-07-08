@@ -1,0 +1,28 @@
+{% load i18n %}
+
+{% blocktrans %}
+
+You have received the following notice from {{from_user}} on Open Assembly:
+
+<br><br>
+
+{{notice_message}}
+
+<br><br>
+<div style="margin-left:1%;">
+
+{{reply}}
+
+</div>
+
+<br>
+
+See the reply at <a href="{{path}}">{{path}}</a>
+
+<br><br>
+
+To see other notices or change how you receive notifications, please go to <a href="{{ user_url }}">and edit your user profile</a>.
+
+<br>
+
+{% endblocktrans %}
