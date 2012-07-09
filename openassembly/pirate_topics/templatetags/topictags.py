@@ -405,38 +405,36 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
         form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
             new_topic = None
-
             if topic is not None:
                 new_topic = form.save(commit=False)
                 new_topic.is_featured = False
                 new_topic.description = urlize(new_topic.description, trim_url_limit=30, nofollow=True)
                 new_topic.slug = _slugify(new_topic.summary)
                 #let's see if there are any groups with this shortname or full name
-                if root and isinstance(root, Topic):
-                    new_topic.parent = root
-                    new_topic.save()
-                else:
-                    new_topic.parent = Topic.objects.null_dimension()
-                    new_topic.save()
             #raise HttpRedirectException(HttpResponseRedirect("/topics.html"))
             if topic is None:
                 new_topic = form.save(commit=False)
                 ctype = ContentType.objects.get_for_model(new_topic)
-                namespace['content_type'] = ctype.pk
                 #create Facilitator permissions for group creator
+                new_topic.save()
+                new_topic.group_members = 1
                 new_topic.save()
                 perm_group, is_new = PermissionsGroup.objects.get_or_create(name="Facilitator", description="Permission group for Facilitation of Online Working Groups")
                 perm = Permission(user=user, name='facilitator-permission', content_type=ctype,
                             object_pk=new_topic.pk, permissions_group=perm_group, component_membership_required=True)
                 perm.save()
                 mg, is_new = MyGroup.objects.get_or_create(topic=new_topic, user=user)
-                new_topic.group_members = 1
-                new_topic.save()
             if new_topic is not None:
                 ctype = ContentType.objects.get_for_model(new_topic)
                 namespace['content_type'] = ctype.pk
                 namespace['object_pk'] = new_topic.pk
                 namespace['complete'] = True
+                if root and isinstance(root, Topic):
+                    new_topic.parent = root
+                    new_topic.save()
+                else:
+                    new_topic.parent = Topic.objects.null_dimension()
+                    new_topic.save()
 
         else:
             namespace['errors'] = form.errors
