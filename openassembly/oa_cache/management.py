@@ -270,8 +270,12 @@ errortab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=errorca
 
 helpcache, is_new = ModelCache.objects.get_or_create(template="natgathelp.html", main=True,
             div_id="#pages", content_type="natgathelp", jquery_cmd="append")
-
 helptab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=helpcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+resultscache, is_new = ModelCache.objects.get_or_create(template="natgatresults.html", main=True,
+            div_id="#pages", content_type="natgatresults", jquery_cmd="append")
+resultstab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=resultscache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
 natgatcache, is_new = ModelCache.objects.get_or_create(template="etc/faq.html", main=True,
