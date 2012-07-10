@@ -1,4 +1,5 @@
 <!-- need all the DIV IDs in this html template -->
+{{pp_topic.in_group}} {{pp_topic.root}}
 
 {% if user.is_authenticated and pp_topic.in_group %}
 
@@ -15,7 +16,6 @@
     <b>Comment</b>
 
         <div id="pp_comment_form">
-                    {{pp_topic.in_group}} {{pp_topic.root}}
                 {% include 'forms/pp_comment_form.html'%}
         </div>
 
