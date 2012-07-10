@@ -108,7 +108,13 @@ def calc_hot(dt, spectrum, rating):
         y = -1
     #now if the obj is siginficant, i.e. been viewed extensively we take into account it's popularity
     #now calculate final score
-    score = (3 * math.log(x + 1.0) + y) * dt
+    try:
+        if x > 0:
+            score = (3 * math.log(x + 1.0) + y) * dt
+        else:
+            score = -1
+    except:
+        score = 0
     return score
 
 
@@ -256,13 +262,13 @@ def update_rankings(cons):
                 newrank = Ranking(content_object=pis, dimension=dim, score=sc,
                             consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
                 newrank.save()
-                if dim == 'hot':
-                    setattr(cons, 'interest', sc)
-                if dim == 'cont':
-                    setattr(cons, 'controversy', sc)
-                if dim == 'best':
-                    setattr(cons, 'best', sc)
-                cons.save()
+            if dim == 'hot':
+                setattr(cons, 'interest', sc)
+            if dim == 'cont':
+                setattr(cons, 'controversy', sc)
+            if dim == 'best':
+                setattr(cons, 'best', sc)
+            cons.save()
 
 #When a vote is created via the consensus engine, this callback updates
 #the issue ranked score, for each dimension
