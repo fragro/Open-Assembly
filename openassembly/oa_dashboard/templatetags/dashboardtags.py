@@ -28,8 +28,12 @@ def oa_get_dashboard(context, nodelist, *args, **kwargs):
         boards = DashboardPanel.objects.filter(user=user,
                 dashboard_id=dashboard_id).order_by('priority')
     elif not user.is_authenticated():
-        boards = DashboardPanel.objects.filter(user=User.objects.get(username='congress_critter'),
+        try:
+            us = User.objects.get(username='congress_critter')
+            boards = DashboardPanel.objects.filter(user=us,
                 dashboard_id=dashboard_id).order_by('priority')
+        except:
+            pass
         #for each board, render the respective information
     dash = []
     for board in boards:
