@@ -59,6 +59,8 @@ try:
     BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
     BROKER_VHOST = '/'
 
+    ETHERPAD_API = env['ETHERPAD_API']
+
 
 except:
     DOMAIN_NAME = 'http://localhost:8000/'

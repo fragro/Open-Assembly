@@ -45,11 +45,20 @@
     });
 
     </script>
-    
-    {% if user.is_authenticated and user.is_active %}
     <div class="pad" id="pad{{object.pk}}">
-    <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe></div>
+
+    {% if user.is_authenticated and user.is_active %}
+        <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe>
+
+    {% else %}
+
+        {% pp_get_pad object=object %}
+
+            {{pp_source.text|safe}}
+
+        {% endpp_get_pad %}
     {% endif %}
+    </div>
     <h3><a data-href="{% pp_url object=object.parent template='group.html' %}">{{object.parent.summary}}</a></h3>
     <h1><a data-href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
    

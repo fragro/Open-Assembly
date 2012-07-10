@@ -11,6 +11,7 @@ from django.core.cache import cache
 from py_etherpad import EtherpadLiteClient
 import datetime
 
+from settings import ETHERPAD_API
 from filetransfers.api import prepare_upload
 
 from django.conf import settings
@@ -67,16 +68,16 @@ def pp_get_pad(context, nodelist, *args, **kwargs):
 
     obj = kwargs.get('object', None)
 
-    myPad = EtherpadLiteClient('as;kdaslkjdlkj12lkj312jelkqsjdoaiud98ewq', 'http://107.20.139.148:9001/api')
+    myPad = EtherpadLiteClient(ETHERPAD_API, 'http://notes.occupy.net/api')
 
     #Change the text of the etherpad
     try:
-        text = myPad.getText(str(obj.pk))
+        text = myPad.getHtml(str(obj.pk))
     except:
         myPad.createPad(str(obj.pk), '')
-        text = myPad.getText(str(obj.pk))
+        text = myPad.getHtml(str(obj.pk))
 
-    namespace['text'] = text['text']
+    namespace['text'] = text['html']
 
     output = nodelist.render(context)
     context.pop()
