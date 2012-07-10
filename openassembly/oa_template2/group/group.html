@@ -65,7 +65,7 @@
     <div>
           {% pp_get_topic_list topic=object %}
             {% if pp_topic.count > 0 %}
-                <div class="panel ptall2 pwide1">
+                <div class="panel ptall1 pwide2">
                     <div class="panel_content">
                         <div class="panel_header">
                             <h3>Affinity Groups</h3>
@@ -88,17 +88,17 @@
 
             {% endif %}
         {% endpp_get_topic_list %}   
-                <div class="panel ptall2 pwide1">
+                <div class="panel ptall1 pwide2">
                     <div class="panel_content">
                         <div class="panel_header">
-                            <h3>{{pp_blob.count}} Proposals</h3>
+                           {% pp_get_questions object=object dimension="n" start=start end=end phase="issues" %}
+
+                            <h3>{{pp_blob.count}} Proposal{{pp_blob.count|pluralize}}</h3>
                             <ul class="panel_controls">
-                               
                             </ul>
                         </div>
                         <div class="panel_inner">
                             <p>
-                               {% pp_get_questions object=object dimension="n" start=start end=end phase="issues" %}
                                         {% if pp_blob.count > 0 %}
                                             <ul>
                                                 {% for object in pp_blob.blob_list %}
@@ -108,12 +108,13 @@
                                                     </a>
                                                     </li>
                                                 {% endfor %}
-                                            </ul>
                                         {% endif %}
-                                        {% if pp_blob.count > 10 %}
+                                        {% if pp_blob.count > end %}
+                                            <i>To See More Proposals use MyGroup > Proposals to access through Dashboard</i>
+                                        {% endif %}
+                                        </ul>
 
-                                        {% endif %}
-                                    {% endpp_get_questions %}
+                            {% endpp_get_questions %}
                             </p>
                         </div>
                     </div>
@@ -123,7 +124,7 @@
         {% oa_mygroup_users object=object start=start end=end %}
     
 
-                <div class="panel ptall2 pwide1">
+                <div class="panel ptall1 pwide2">
                 <div class="panel_content">
                     <div class="panel_header">
                         <h3>{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</h3>
@@ -136,12 +137,16 @@
                                 <li>
                                 <a data-href="{% pp_url template='user_profile.html' object=mygroup.user %}">{{mygroup.user}}</a>
                                 </li>
-                            {% endfor %}</ul>
+                            {% endfor %}
+                            {% if pp_topic.count > end %}
+                                <i>To See More Members use MyGroup > Members to access through Dashboard</i>
+                            {% endif %}
+                            </ul>
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="panel ptall2 pwide1">
+            <div class="panel ptall1 pwide2">
                 <div class="panel_content">
                     <div class="panel_header">
                         <h3>{{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}</h3>
