@@ -2,7 +2,13 @@
 from oa_dashboard.models import DashboardPanel
 from django.contrib.auth.models import User
 
-AnonymousUser, is_new = User.objects.get_or_create(username='congress_critter')
+users = User.objects.filter(username='congress_critter')
+if users.count() == 0 or users.count() == 1:
+	AnonymousUser, is_new = User.objects.get_or_create(username='congress_critter')
+else:
+	AnonymousUser = users[0]
+	for u in users[1:]:
+		u.delete()
 
 db = DashboardPanel.objects.filter(user=AnonymousUser)
 for i in db:
