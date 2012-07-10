@@ -95,6 +95,7 @@ except:
     EMAIL_HOST_PASSWORD = 'this is a password'
     EMAIL_PORT = 587
 
+    ETHERPAD_API = None
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS

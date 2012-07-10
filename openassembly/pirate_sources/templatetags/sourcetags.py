@@ -70,14 +70,17 @@ def pp_get_pad(context, nodelist, *args, **kwargs):
 
     myPad = EtherpadLiteClient(ETHERPAD_API, 'http://notes.occupy.net/api')
 
-    #Change the text of the etherpad
-    try:
-        text = myPad.getHtml(str(obj.pk))
-    except:
-        myPad.createPad(str(obj.pk), '')
-        text = myPad.getHtml(str(obj.pk))
+    if ETHERPAD_API != None:
+        #Change the text of the etherpad
+        try:
+            text = myPad.getHtml(str(obj.pk))
+        except:
+            myPad.createPad(str(obj.pk), '')
+            text = myPad.getHtml(str(obj.pk))
 
-    namespace['text'] = text['html']
+        namespace['text'] = text['html']
+    else:
+        namespace['text'] = '<p>No API Key</p>'
 
     output = nodelist.render(context)
     context.pop()

@@ -22,7 +22,7 @@
                 
                 {% endif %}
 
-             {{dashobj.boardname}} {% if obj != None %} - {{obj.shortname|title}} {% endif %}</h3>
+             {{dashobj.boardname}} {% if obj != None %} - <a data-href="{{ obj.get_absolute_url }}">{{obj.shortname|title}}</a> {% endif %}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
         <div class="panel_inner">
