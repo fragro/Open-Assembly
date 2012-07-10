@@ -202,8 +202,12 @@ oref, is_new = UserSaltCache.objects.get_or_create(model_cache=intercache.pk, is
             template="forms/oa_referral_form.html", div_id="#oa_referral_form", jquery_cmd="html", load_last=True)
 fac, is_new = UserSaltCache.objects.get_or_create(model_cache=intercache.pk, is_toggle=False,
         template="forms/oa_facilitators_form.html", div_id="#oa_facilitators_form", jquery_cmd="html", load_last=True)
+
 ppedittopiccache, is_new = UserSaltCache.objects.get_or_create(model_cache=intercache.pk, template="forms/pp_edittopic_form.html",
-                                        div_id="#pp_edittopic_form", jquery_cmd="html", redirect=True)
+                                        div_id="#pp_edittopic_form", jquery_cmd="html")
+
+ppedittopicsideeffectcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppedittopiccache.pk,
+        template="group/group.html", div_id="#page", jquery_cmd="html", key_specific=True)
 
 ###PROPOSALS
 propcache, is_new = ModelCache.objects.get_or_create(template="content/listing.html",

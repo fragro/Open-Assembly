@@ -405,6 +405,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
         form = TopicForm(POST) if topic is None else EditTopicForm(POST, instance=topic)
         if form.is_valid():
             new_topic = None
+            #edit old group
             if topic is not None:
                 new_topic = form.save(commit=False)
                 new_topic.is_featured = False
@@ -412,6 +413,7 @@ def pp_topic_form(context, nodelist, *args, **kwargs):
                 new_topic.slug = _slugify(new_topic.summary)
                 #let's see if there are any groups with this shortname or full name
             #raise HttpRedirectException(HttpResponseRedirect("/topics.html"))
+            #create new group
             if topic is None:
                 new_topic = form.save(commit=False)
                 ctype = ContentType.objects.get_for_model(new_topic)

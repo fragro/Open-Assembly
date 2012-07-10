@@ -12,6 +12,7 @@ from django.shortcuts import redirect
 from settings import DOMAIN
 from oa_cache.tasks import track_visitors
 import random
+import settings
 import BeautifulSoup
 from types import ListType
 from collections import defaultdict
@@ -70,7 +71,9 @@ for more information on SideEffectCache
             else:
                 sideeffects = SideEffectCache.objects.filter(user_salt_cache=usc.pk)
                 for s in sideeffects:
-                    if s.object_specific:
+                    if s.key_specific:
+                        div = s.div_id + obj.get_absolute_url().replace('/', '')
+                    elif s.object_specific:
                         div = s.div_id + str(parent_pk)
                     else:
                         div = s.div_id

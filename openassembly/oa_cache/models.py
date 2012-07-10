@@ -322,6 +322,7 @@ only rendered when the corresponding model_cache is rendered"""
     #is this object DIV specific or required an object pk appended
     #set to TRUE if you want it OA_CACHE to append an object pk
     object_specific = models.BooleanField(default=False)
+    key_specific = models.BooleanField(default=False)
     scroll_to = models.BooleanField(default=True)
 
     def render(self, context):

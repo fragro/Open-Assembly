@@ -91,7 +91,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                         print reply_to.user.email
                         notification.send([reply_to.user], "comment_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
                         "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
-                        "reply": str(obj.text), "path": settings.DOMAIN + path})
+                        "reply": str(obj.text), "path": path})
                 if len(obj.text) > 30:
                     tt = str(obj.text)[0:30] + "..."
                 else:
