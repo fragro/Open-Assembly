@@ -5,6 +5,7 @@ from pirate_reputation.models import ReputationEvent
 from django.contrib.contenttypes.models import ContentType
 from pirate_consensus.models import RatingVote, UpDownVote
 import datetime
+from pirate_ranking.models import update_rankings
 
 
 #ForumDimension.objects.register(key='pro', name='Problem',
@@ -94,6 +95,9 @@ def main():
 			d, is_new = DimensionTracker.objects.get_or_create(object_pk=topic.pk, dimension=fd)
 			#d.children = issue_list.count()
 			d.save()
+
+for cons in Consensus.objects.all():
+	update_rankings.apply_async(args=[cons])
 
 
 ### CREATE THE PHASELINKS and LINKS BETWEEN THEM

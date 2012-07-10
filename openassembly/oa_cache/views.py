@@ -254,13 +254,14 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                 renders.append({'div': lm.div_id, 'html': '', 'type': lm.jquery_cmd})
             for li in cached_list:
                 #render each object in the list
-                context = {'div': lm.div_id, 'object': li, 'dimension': dimension}
-                context.update(extracontext)
-                html = lm.render(context, forcerender=forcerender)
-                if lm.object_specific:
-                    renders.append({'div': lm.div_id + str(obj.pk), 'html': html, 'type': lm.jquery_cmd})
-                else:
-                    renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
+                if li != None:
+                    context = {'div': lm.div_id, 'object': li, 'dimension': dimension}
+                    context.update(extracontext)
+                    html = lm.render(context, forcerender=forcerender)
+                    if lm.object_specific:
+                        renders.append({'div': lm.div_id + str(obj.pk), 'html': html, 'type': lm.jquery_cmd})
+                    else:
+                        renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
             memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))
         else:
             renders, cached_list, tot_items = renders
@@ -282,33 +283,34 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
 
             sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
             for li in cached_list:
-                try:
-                    context = {'dimension': paramdict.get('DIM_KEY', 'n'),
-                            'object': li, 'obj_pk': li.pk, 'user': user,
-                            'phase': phase, 'csrf_string': csrf_t,
-                            'sort_type': paramdict.get('CTYPE_KEY', '')}
-                except:
+                if li != None:
+                    try:
                         context = {'dimension': paramdict.get('DIM_KEY', 'n'),
-                            'object': li, 'obj_pk': li[0].pk, 'user': user,
-                            'phase': phase, 'csrf_string': csrf_t,
-                            'sort_type': paramdict.get('CTYPE_KEY', '')}
-                context.update(extracontext)
-                #user requested this, not auto-update. generate user specific html
-                for usc in sp:
-                    if not usc.is_recursive:
-                        try:
-                            rendered_list.append({'div': usc.div_id + str(li.pk), 'type': usc.jquery_cmd, 'html':
-                            usc.render(RequestContext(request, context))})
-                        except:
-                            raise ValueError(str(li) + ' : ' + str(usc))
-                    else:
-                        #if it's recursive we need to also render all the children USCs
-                        recursive_list = usc.render(RequestContext(request, context))
-                        for html, pk in recursive_list:
-                            rendered_list.append({'div': usc.div_id + str(pk), 'type': usc.jquery_cmd, 'html': html})
+                                'object': li, 'obj_pk': li.pk, 'user': user,
+                                'phase': phase, 'csrf_string': csrf_t,
+                                'sort_type': paramdict.get('CTYPE_KEY', '')}
+                    except:
+                            context = {'dimension': paramdict.get('DIM_KEY', 'n'),
+                                'object': li, 'obj_pk': li[0].pk, 'user': user,
+                                'phase': phase, 'csrf_string': csrf_t,
+                                'sort_type': paramdict.get('CTYPE_KEY', '')}
+                    context.update(extracontext)
+                    #user requested this, not auto-update. generate user specific html
+                    for usc in sp:
+                        if not usc.is_recursive:
+                            try:
+                                rendered_list.append({'div': usc.div_id + str(li.pk), 'type': usc.jquery_cmd, 'html':
+                                usc.render(RequestContext(request, context))})
+                            except:
+                                raise ValueError(str(li) + ' : ' + str(usc))
+                        else:
+                            #if it's recursive we need to also render all the children USCs
+                            recursive_list = usc.render(RequestContext(request, context))
+                            for html, pk in recursive_list:
+                                rendered_list.append({'div': usc.div_id + str(pk), 'type': usc.jquery_cmd, 'html': html})
 
-            #now add all the UserSaltCache objects from this page
-            #THIS REQUIRES A REQUEST OBJECT FO' CSRF
+                #now add all the UserSaltCache objects from this page
+                #THIS REQUIRES A REQUEST OBJECT FO' CSRF
             context = {'dimension': paramdict.get('DIM_KEY', None),
                                 'user': user, 'phase': phase,
                                 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}

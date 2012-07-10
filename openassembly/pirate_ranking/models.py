@@ -36,11 +36,13 @@ class Ranking(models.Model):
             cons.interest = self.score
             cons.save()
         elif self.dimension == 'cont':
-            try: #object in question should have consensus associated with it
+            try:
+                #object in question should have consensus associated with it
                 cons = Consensus.objects.get(pk=self.consensus_pk)
                 cons.controversy = self.score
                 cons.save()
-            except: #if not this is in error
+            except:
+                #if not this is in error
                 pass
 
 
@@ -49,20 +51,23 @@ def calc_new(obj):
 
 
 def calc_controversial(dt, spectrum, rating):
-    x = 0 # weighted votes
-    mag = 0 #magnitude of votes
+    x = 0
+    # weighted votes
+    mag = 0
+    #magnitude of votes
     #compute the mean
-    for k, num in spectrum: 
+    for k, num in spectrum:
         x += k * num
         mag += num
-    if mag != 0: 
+    if mag != 0:
         mean = x / mag
         #compute the sd
         tot = 0
-        for k, num in spectrum: #TODO: INEFFICIENT, needs better solution
-            for i in range(num): 
-                tot += math.pow((k - mean),2)
-        sd = math.sqrt(tot/mag)
+        for k, num in spectrum:
+            #TODO: INEFFICIENT, needs better solution
+            for i in range(num):
+                tot += math.pow((k - mean), 2)
+        sd = math.sqrt(tot / mag)
     else:
         mean = 0.0
         sd = 0.0
@@ -103,14 +108,14 @@ def calc_hot(dt, spectrum, rating):
         y = -1
     #now if the obj is siginficant, i.e. been viewed extensively we take into account it's popularity
     #now calculate final score
-    #score = (3 * math.log(x + 1.0) + y) * dt
-    return x
+    score = (3 * math.log(x + 1.0) + y) * dt
+    return score
 
 
 def calc_best(dt, spectrum, rating):
     #get spectrum list ex: [(-5,246), (-4,45), ... ,(5,121)]
-    score = 0
-    tot = 0
+    score = 0.0
+    tot = 0.0
     for k, num in spectrum:
         score += k * num
         tot += num

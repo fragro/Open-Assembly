@@ -8,18 +8,21 @@
         <i class="icon-cog"></i>
         <ul class="menu">
             {% if dashobj.boardname == 'Proposals' %}
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Best</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'cns')">Order by Agreement</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by New</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'b')">Order by Best</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Hot</a></li>
+                {% comment %}
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'cns')">Order by Consensus</a></li>
                 <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Controversy</a></li>
+                {% endcomment %}
             {% endif %}
             {% if dashobj.boardname == 'Groups' %}
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Date</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Proposals</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Members</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by New</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Most Proposals</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Most Members</a></li>
             {% endif %}
             {% if dashobj.boardname == 'Members' %}
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by Joined Date</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by New</a></li>
             {% endif %}
 
             <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>

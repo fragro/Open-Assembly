@@ -66,6 +66,8 @@ def add_board(request):
         functype = request.POST[u'type']
         boardname = request.POST[u'boardname']
         start = request.POST.get('start', 0)
+        key, rendertype, db = interpret_hash(path)
+        dimension = db.get('DIM_KEY', None)
         end = request.POST.get('end', 20)
         #for pagination
 
@@ -75,7 +77,7 @@ def add_board(request):
             dashobj = DashboardPanel.objects.get(plank=path, dashboard_id=dashboard_id, user=request.user)
         path += '/s-' + str(start) + '/e-' + str(end)
 
-        renderdict = render_hashed(request, path, request.user, extracontext={'dashobj': dashobj, 'start': int(start), 'end': int(end)})
+        renderdict = render_hashed(request, path, request.user, extracontext={'dimension': dimension, 'dashobj': dashobj, 'start': int(start), 'end': int(end)})
 
         if renderdict['rendertype'] == 'chat':
             width = render_to_string('stream/stream_width.html', {'dashobj': dashobj})
@@ -85,7 +87,7 @@ def add_board(request):
             count = renderdict['counts'][renderdict['rendertype']]
         else:
             count = None
-        html = render_to_string('nav/board_template.html', {'board': renderdict['renders'], 'obj': renderdict['object'], 'dashobj': dashobj, 'start': int(start), 'end': int(end), 'count': count})
+        html = render_to_string('nav/board_template.html', {'dimension': dimension, 'board': renderdict['renders'], 'obj': renderdict['object'], 'dashobj': dashobj, 'start': int(start), 'end': int(end), 'count': count})
         if functype == 'refresh':
             soup = BeautifulSoup.BeautifulSoup(html)
             v = soup.find("div", id='content' + str(dashobj.pk))
