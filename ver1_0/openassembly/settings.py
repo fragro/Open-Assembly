@@ -42,9 +42,9 @@ try:
         }
     }
 
-    STATICFILES_DIRS = (
-        "/home/dotcloud/current/openassembly/static/",
-    )
+    #STATICFILES_DIRS = (
+    #    "/home/dotcloud/current/openassembly/static/",
+    #)
     MEDIA_ROOT = '/home/dotcloud/store/media/'
     STATIC_ROOT = '/home/dotcloud/store/static/'
     MEDIA_URL = '/media/'
