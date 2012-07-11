@@ -1,5 +1,6 @@
 www:
   type: python
+  approot: Open-Assembly
   systempackages:
     - libfuse2
     - fuse-utils
