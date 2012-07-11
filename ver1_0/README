@@ -41,3 +41,13 @@ test content to develop on. Soon we will release an anonymized exported database
 For more debug information in Celery, include:
 
 python manage.py celeryd -l DEBUG
+
+
+####
+Push To Production
+
+Requires Setup of S3FS
+http://docs.dotcloud.com/guides/s3fs/
+
+Requires Setting of Email and Password within Settings and associated EMAIL_PASSWORD in Dotcloud environment variables
+http://docs.dotcloud.com/guides/environment/
