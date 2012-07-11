@@ -1,42 +1,73 @@
 <a class="btn btn_green" data-href="{% pp_url template='submit.html' dimension='mes' object=object %}">Send Message</a>
-                                
-{% pp_get_subscribers_for_user user=object start=start end=end %}
-  
-  <div style="display:block;"><b>{{pp_subscription.count}}</b> Trust You</div>
-   
-    {% for i in pp_subscription.subscribers %}
-        {% pp_get_avatar user=i.subscriber %}
 
-                <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
-                    <img src="{{pp_profile.thumbnail_small}}" alt="{{i.subscriber.username}}">
-                </a>
-                <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
-                    {{i.subscriber.username}}
-                </a>
+{% if dimension == 'followers' or dimension == None %}                           
+    {% pp_get_subscribers_for_user user=object start=start end=end %}
+      
+      <div style="display:block;"><b>{{pp_subscription.count}}</b> Trust You <a data-href="{% pp_url template='user_profile.html' dimension='followers' start=0 end=pp_subscription.count object=object %}">(view all)</a>
+    </div>
+       
+        {% for i in pp_subscription.subscribers %}
+            {% pp_get_avatar user=i.subscriber %}
 
-        {% endpp_get_avatar %}
-    {% endfor %}
-{% endpp_get_subscribers_for_user %}
-
-<a data-href="{% pp_url template='user_profile.html' dimension='followers' start=0 end=20 object=object %}">(view all)</a>
-
-{% pp_get_subscribees_for_user user=object start=start end=end %}
-
-    <div style="display:block; margin-top:10px;">You Trust <b>{{pp_subscription.count}}</b></div>
-        {% for i in pp_subscription.subscribees %}
-            {% pp_get_avatar user=i.subscribee %}
-
-                <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
-                    <img src="{{pp_profile.thumbnail_small}}" alt="{{i.subscribee.username}}">
-                </a>
-                <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
-                    {{i.subscribee.username}}
-                </a>
+                <span class="trusted_user">
+                    <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
+                         {% pp_get_sources object=i.subscriber type='img' %}
+                            {% if pp_source.cur_img %}
+                                {% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}
+                                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                                {% endthumbnail %}
+                            {% else %}
+                                <img src="/static/img/faux_logo.png">
+                            {% endif %}
+                        {% endpp_get_sources %}
+                    </a>
+                    <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
+                        {{i.subscriber.username}}
+                    </a>
+                </span>
 
             {% endpp_get_avatar %}
-
         {% endfor %}
-{% endpp_get_subscribees_for_user %}
-<a data-href="{% pp_url template='user_profile.html' dimension='followees' start=0 end=20 object=object %}">(view all)</a>
+    {% endpp_get_subscribers_for_user %}
 
-<!-- end .profile_follows -->
+{% endif %}
+
+{% if dimension == 'followees' or dimension == None %}                           
+
+    {% pp_get_subscribees_for_user user=object start=start end=end %}
+
+        <div style="display:block; margin-top:10px;">You Trust <b>{{pp_subscription.count}}</b> <a data-href="{% pp_url template='user_profile.html' dimension='followees' start=0 end=pp_subscription.count object=object %}">(view all)</a>
+    </div>
+            {% for i in pp_subscription.subscribees %}
+
+                <span class="trusted_user">
+
+                    <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
+                         {% pp_get_sources object=i.subscribee type='img' %}
+                            {% if pp_source.cur_img %}
+                                {% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}
+                                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                                {% endthumbnail %}
+                            {% else %}
+                                <img src="/static/img/faux_logo.png">
+                            {% endif %}
+                        {% endpp_get_sources %}
+                    </a>
+                    <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
+                        {{i.subscribee.username}}
+                    </a>
+
+                </span>
+
+            {% endfor %}
+    {% endpp_get_subscribees_for_user %}
+
+{% endif %}
+{% if dimension == 'followees' or dimension == 'followers' %}
+
+    <h3><a onClick="tabRemove('{{key}}');" data-href="{% pp_url template='user_profile.html' object=object %}">Return to Profile</a></h3>
+
+
+{% endif %}                           
+
+    <!-- end .profile_follows -->
