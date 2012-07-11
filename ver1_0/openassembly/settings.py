@@ -45,8 +45,8 @@ try:
     STATICFILES_DIRS = (
         "/home/dotcloud/current/openassembly/static/",
     )
-    MEDIA_ROOT = '/home/dotcloud/data/media/'
-    STATIC_ROOT = '/home/dotcloud/data/static/'
+    MEDIA_ROOT = '/home/dotcloud/store/media/'
+    STATIC_ROOT = '/home/dotcloud/store/static/'
     MEDIA_URL = '/media/'
 
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
