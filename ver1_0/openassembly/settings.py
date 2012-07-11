@@ -61,7 +61,6 @@ try:
 
     ETHERPAD_API = env['ETHERPAD_API']
 
-
 except:
     DOMAIN_NAME = 'http://localhost:8000/'
     DOMAIN = 'http://localhost:8000'
