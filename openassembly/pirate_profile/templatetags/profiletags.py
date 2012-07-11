@@ -11,7 +11,7 @@ from pirate_sources.models import IMGSource
 
 import pytz
 
-from pirate_core import HttpRedirectException, namespace_get, FormMixin
+from pirate_core import HttpRedirectException, namespace_get
 
 from customtags.decorators import block_decorator
 register = template.Library()
@@ -128,24 +128,24 @@ def pp_profile_form(context, nodelist, *args, **kwargs):
 
 @block
 def pp_get_avatar(context, nodelist, *args, **kwargs):
-    
+
     context.push()
     namespace = get_namespace(context)
 
     user = kwargs.get('user', None)
-    
-    try: 
+
+    try:
         img = IMGSource.objects.get(object_pk=user.pk, current=True)
         url = img.thumbnail_large.url
         thumbnail = img.thumbnail.url
         thumbnail_small = img.thumbnail_small.url
         has_avatar = True
     except:
-        url = '/static/img/avatar_180x160.jpg' 
-        thumbnail = '/static/img/avatar_70x60.jpg' 
+        url = '/static/img/avatar_180x160.jpg'
+        thumbnail = '/static/img/avatar_70x60.jpg'
         thumbnail_small = '/static/img/avatar_20x18.jpg'
         has_avatar = False
-        
+
     #get_serving_url will serve up full size images as well as transformed images
 
     namespace['avatar_url'] = url
@@ -157,7 +157,7 @@ def pp_get_avatar(context, nodelist, *args, **kwargs):
 
     return output
 
-    
+
 class ProfileForm(forms.ModelForm):
 
     def save(self, commit=True):
