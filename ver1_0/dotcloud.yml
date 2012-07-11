@@ -1,5 +1,6 @@
 www:
   type: python
+  approot: ver1_0
   systempackages:
     - libfuse2
     - fuse-utils
