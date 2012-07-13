@@ -144,13 +144,16 @@
 
             {% include 'etc/author_controls.html' %}
 
+<br>
+                    
+            {% include 'etc/edits.html' %}
+                    
 
             <!--number currently reporting -->
             {% comment %}
 
 <br>
             {% pp_get_ranked_decision object=pp_consensus.consensus %}
-                {% oa_get_group_settings object=object.parent %}
 
                     {% if not pp_consensus.ranked_decision %}
 
@@ -167,8 +170,6 @@
                         {% endpp_get_root %}
                                          
                     {% endif %}
-<br>
-                    {% include 'etc/edits.html' %}
 <br>
         
                 <!-- This is the status of the decision -->

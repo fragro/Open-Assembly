@@ -1050,3 +1050,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .content_children {
     clear:both;
 }
+.trusted_user {
+    width:5%;
+    display:inline-block;
+}
