@@ -391,6 +391,8 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                 setattr(blob, k, v)
             #blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
             blob.save()
+            e = Edit(object_pk=obj.pk, user=user, time=datetime.datetime.now)
+            e.save()
 
             if 'link' in form.cleaned_data:
                 validate = URLValidator(verify_exists=False)
@@ -411,6 +413,8 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                     output = nodelist.render(context)
                     context.pop()
             content_type = ContentType.objects.get_for_model(obj.__class__)
+            e = Edit(object_pk=obj.pk, user=user, object_type=content_type)
+            e.save()
             namespace['form_complete'] = True
             namespace['path'] = obj
             namespace['form'] = form
