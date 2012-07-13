@@ -1,6 +1,6 @@
 <!-- need all the DIV IDs in this html template -->
 
-{% if user.is_authenticated and pp_topic.in_group and not pp_topic.settings.open_group or user.is_authenticated and not pp_topic.in_group and pp_topic.settings.open_group %}
+{% if user.is_authenticated and pp_topic.in_group and not pp_topic.settings.open_group or user.is_authenticated and not pp_topic.in_group and pp_topic.settings.open_group or user.is_authenticated and pp_topic.in_group %}
 
        
     {% if object.child and pp_consensus.consensus.phase.curphase.phasename == 'nom' %}
