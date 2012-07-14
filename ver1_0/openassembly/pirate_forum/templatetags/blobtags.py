@@ -337,7 +337,7 @@ class TypeForm(forms.Form):
 def defer_dimensiontracker_update(parent, dimension):
     try:
         fd = ForumDimension.objects.get(key=dimension)
-        d, is_new = DimensionTracker.objects.get_or_create(object_pk=parent.pk,dimension=fd)
+        d, is_new = DimensionTracker.objects.get_or_create(object_pk=parent.pk, dimension=fd)
         if is_new:
             d.children = 1
             usc = UserSaltCache(div_id='#sort')
@@ -391,8 +391,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                 setattr(blob, k, v)
             #blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
             blob.save()
-            e = Edit(object_pk=obj.pk, user=user, time=datetime.datetime.now)
-            e.save()
 
             if 'link' in form.cleaned_data:
                 validate = URLValidator(verify_exists=False)

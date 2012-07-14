@@ -231,7 +231,7 @@ class Nomination(ForumBlob):
 
 class Edit(models.Model):
     user = models.ForeignKey(User)
-    time = models.DateTimeField()
+    time = models.DateTimeField(auto_now_add=True)
     object_type = models.ForeignKey(ContentType, verbose_name=_('parent content type'),
                                             related_name="%(app_label)s_%(class)s_parent",
                                             blank=True, null=True)

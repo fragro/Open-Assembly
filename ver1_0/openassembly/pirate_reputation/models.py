@@ -155,6 +155,16 @@ class AbuseTicket(models.Model):
         return str(self.name_of_abuser) + ' - ' + str(self.created_dt)
 
 
+class FeedbackTicket(models.Model):
+
+    user = models.ForeignKey(User)
+    feedback = models.CharField(max_length=500)
+    created_dt = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return str(self.user.username) + ' - ' + str(self.created_dt)
+
+
 class ReputationDimension(models.Model):
     name = models.CharField(max_length=70, null=True, unique=True)
     created_dt = models.DateTimeField(auto_now_add=True)
