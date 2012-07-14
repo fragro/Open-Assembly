@@ -187,7 +187,12 @@
         
         <!-- Pages -->
         <div id="pages">
-            
+
+            <![if IE]>
+
+                {% include 'ienotsupported.html' %}
+
+            <![endif]>
             <!-- Page1 -->  
             {{pp_cache.data.pages|safe}}
 
