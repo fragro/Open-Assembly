@@ -1,14 +1,16 @@
 from django import template
 from django import forms
-from django.http import HttpResponseRedirect
-import datetime,sys
+import datetime
+import sys
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from tagging.models import Tag, TaggedItem
-from pirate_reputation.models import ReputationManager, Reputation, ReputationDimension, ReputationEvent, AbuseTicket
+from pirate_reputation.models import Reputation, ReputationDimension, ReputationEvent, AbuseTicket, FeedbackTicket
 from pirate_consensus.models import Consensus
 from pirate_forum.models import get_rangelist
-from pirate_core import HttpRedirectException, namespace_get, FormMixin
+from pirate_core import namespace_get
+import settings
+from notification import models as notification
+
 
 from customtags.decorators import block_decorator
 register = template.Library()
@@ -117,6 +119,21 @@ def pp_get_reputation_events(context, nodelist, *args, **kwargs):
     return output
 
 
+class FeedbackForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        new_prof = super(FeedbackForm, self).save(commit=commit)
+        return new_prof
+
+    class Meta:
+        model = FeedbackTicket
+
+        exclude = ('user', 'created_dt')
+
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="feedback")
+    feedback = forms.CharField(max_length=500, widget=forms.Textarea)
+
+
 class ReportAbuseForm(forms.ModelForm):
 
     def save(self, commit=True):
@@ -129,6 +146,7 @@ class ReportAbuseForm(forms.ModelForm):
         exclude = ('user', 'created_dt', 'fixed')
 
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="report_abuse")
+    description_of_abuse = forms.CharField(max_length=500, widget=forms.Textarea)
 
 
 @block
@@ -156,10 +174,51 @@ def abuse_ticket_form(context, nodelist, *args, **kwargs):
                 report_abuse_new.user = user
                 report_abuse_new.save()
                 namespace['complete'] = True
+                notification.send([settings.DEFAULT_FROM_EMAIL], "abuse_feedback", {
+                        "notice_message": "New Abuse Ticket Received Check out the Admin"})
             else:
                 namespace['errors'] = form.errors
     else:
             form = ReportAbuseForm()
+
+    namespace['form'] = form
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
+@block
+def feedback_form(context, nodelist, *args, **kwargs):
+    '''
+    This block tag can create or process forms either to create or to modify arguments.
+    Usage is as follows:
+
+    {% pp_profile_form POST=request.POST object=request.object %}
+       Do stuff with {{ pp_profile.form }}.
+    {% endpp_profile_form %}
+    '''
+
+    context.push()
+    namespace = get_namespace(context)
+
+    user = kwargs.get('user', None)
+    POST = kwargs.get('POST', None)
+
+    if POST and POST.get("form_id") == "feedback":
+            form = FeedbackForm(POST)
+            #new_arg = form.save(commit=False)
+            if form.is_valid():
+                feedback_new = form.save(commit=False)
+                feedback_new.user = user
+                feedback_new.save()
+                namespace['complete'] = True
+                notification.send([settings.DEFAULT_FROM_EMAIL], "abuse_feedback", {
+                        "notice_message": "New Feedback Received Check out the Admin"})
+            else:
+                namespace['errors'] = form.errors
+    else:
+            form = FeedbackForm()
 
     namespace['form'] = form
     output = nodelist.render(context)
