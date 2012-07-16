@@ -660,6 +660,7 @@ a {
     width: 100%;
     height:250px;
     border:1px #ddd solid;
+    overflow:scroll;
 }
 .panel_list_img {
     width:50px;
