@@ -1,5 +1,5 @@
 <div>
-<a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender}}</a>
+<a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender}} - {{note.created_dt|date:"SHORT_DATETIME_FORMAT"}}</a>
 <br>
 {{note.description}}
 <br>
