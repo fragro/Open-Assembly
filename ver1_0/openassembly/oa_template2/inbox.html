@@ -18,8 +18,8 @@
                 {% for note in pp_messages.read %}
                            
                     <li>{% include 'etc/message.html' %}</li>
-    </ul>
                 {% endfor %}      
+    </ul>
             {% endpp_get_messages %} 
             <a data-href="{% pp_url template='inbox.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
 
