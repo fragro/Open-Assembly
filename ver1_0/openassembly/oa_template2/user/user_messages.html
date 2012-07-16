@@ -2,16 +2,21 @@
 
     <div style="display:block; margin-top:10px;"><b>Messages{% if pp_messages.unreadcount > 0 %} ({{pp_messages.unreadcount}} New){% endif %}</b></div>
 
-
+        <ul>
             {% for note in pp_messages.unread %}
+                <li>
                 <a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a>
                 <a data-href="{% pp_url template='messages.html' object=note.sender dimension='mes' %}">{{note.description|title }}</a>
+                </li>
             {% endfor %}   
-            
+        
             {% for note in pp_messages.read %}
+                    <li>
                        <a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a>
                        <a data-href="{% pp_url object=note.sender template='messages.html' %}">{{note.description|title }}</a>
-            {% endfor %}      
+                    </li>
+            {% endfor %}     
+        </ul> 
         {% endpp_get_messages %} 
         <a data-href="{% pp_url template='user_profile.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
 
