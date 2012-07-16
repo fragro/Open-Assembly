@@ -35,4 +35,35 @@
 
     {% endabuse_ticket_form %}
 
+
+{% feedback_form POST=request.POST user=request.user %}
+
+                <form id="feedback" method="post" action="">
+
+                    <h2>Bug Report/Feedback</h2>
+                    <div id="errors" class="errors">{{ pp_reputation.errors }}</div>
+                            
+                            {{pp_reputation.form.as_p}}
+                        {{csrf_string|safe}}
+                    {% if user.is_authenticated and user.is_active %}                                                            
+                        <input type="submit" class='btn' value="Submit"><span id="submit_feedback"></span>
+                </form>
+                        {% else %} 
+                            <a class="btn" data-href="{% pp_url template='register.html' %}">Submit</a>
+                        {% endif %}
+                <script>
+
+                  $("form#feedback").submit(function(e){
+                        $("#submit_feedback").html("<b>Submitting...</b>")
+                        addObject(e);
+                    });
+
+                </script>
+
+                    {% if pp_reputation.complete %}
+                        Report Sent ({% now "jS F Y H:i" %})
+                    {% endif %}
+
+    {% endfeedback_form %}
+
 {% endblock %}  
