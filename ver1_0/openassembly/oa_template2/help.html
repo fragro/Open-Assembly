@@ -4,6 +4,24 @@
 
 {% block content %}
 
+
+        <script>
+          var chat = io.connect('http://localhost:3000/chat')
+            , news = io.connect('http://localhost:3000/news');
+
+          chat.on('connect', function () {
+            chat.emit('hi!');
+            chat.emit('msg', prompt('What is your message?'));
+            $('#test').html('socketon');
+          });
+
+          news.on('news', function () {
+            news.emit('woot');
+          });
+        </script>
+
+        <div id="test"></div>
+
         <div class="faq">
 
         <h2>How do I participate in the National Gathering Visioning Process on July 4th, 2012?</h2>

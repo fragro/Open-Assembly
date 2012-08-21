@@ -6,7 +6,9 @@
 
                     {% if dimension == 'n' %}New {% endif %}{% if dimension == 'h' %}Hot {% endif %}
                     {% if dimension == 'b' %}Best {% endif %}{% if dimension == 'c' %}Cont. {% endif %}
-                
+
+
+                {{dashobj.boardname}}
                 {% endif %}
 
                 {% if dashobj.boardname == 'Groups' %}
@@ -14,15 +16,20 @@
                     {% if dimension == 'n' %}New {% endif %}{% if dimension == 'h' %}Active {% endif %}
                     {% if dimension == 'c' %}Big {% endif %}
                 
+
+                {{dashobj.boardname}}
                 {% endif %}
 
                 {% if dashobj.boardname == 'Members' %}
 
-                    {% if dimension == 'n' %}New {% endif %}
-                
+                    {% if dimension == 'n' %}New {% endif %}                    
+                    {% if dimension == 'j' %}Recently Online {% endif %}
+                    {% if dimension == 'a' %}Alphabetical {% endif %}
+
+                Users
                 {% endif %}
 
-             {{dashobj.boardname}} {% if obj != None %} - <a data-href="{{ obj.get_absolute_url }}">{{obj.shortname|title}}</a> {% endif %}</h3>
+              {% if obj != None %} - <a data-href="{{ obj.get_absolute_url }}">{{obj.shortname|title}}</a> {% endif %}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
         <div class="panel_inner">

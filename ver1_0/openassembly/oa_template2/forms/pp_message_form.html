@@ -1,3 +1,4 @@
+{% load pp_url %}
 <form id='pp_message_form{{object.pk}}' method="post" action="">
 
 {% pp_message_form POST=request.POST receiver=object sender=user %}

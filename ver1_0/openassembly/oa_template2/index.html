@@ -41,7 +41,7 @@
                         <div class="col col3">
                             <h3>Groups</h3>
                             <ul>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='a' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
@@ -52,6 +52,7 @@
                         <div class="col col3">
                             <h3>Proposals</h3>
                             <ul>
+                                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='x' %}', 1, 'Proposals');">by Consensus</a><i class="icon-list-alt icon-white"></i></li>  
                                 <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='n' %}', 1, 'Proposals');">by New</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='h' %}', 1, 'Proposals');">by Hot</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li>                           
@@ -60,7 +61,10 @@
                         <div class="col col3 last">
                             <h3>Members</h3>
                             <ul>
+                                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='a' %}', 1, 'Members');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='n' %}', 1, 'Members');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='j' %}', 1, 'Members');">by Last Login</a><i class="icon-list-alt icon-white"></i></li>
+
                             </ul>
                         </div>
                     </div>
@@ -401,6 +405,9 @@
                 $(window).bind("popstate", function(evt) {
                  var state = evt.originalEvent.state;
                      if (state && state.module === "leave") {
+                           if(state.url == '/'){
+                            minimizeAll();
+                           }
                            getContent();
                      }
                      if (state && state.module === "nobbq") {
@@ -421,7 +428,7 @@
                         console.log(that.data('href'));
                         if (allowPush(e, url, that)) {
                             e.preventDefault();
-                            history.pushState({load:true, module:'leave'}, '', url);
+                            history.pushState({load:true, module:'leave', url: url}, '', url);
                             getContent();            
                         }
                         else{ 

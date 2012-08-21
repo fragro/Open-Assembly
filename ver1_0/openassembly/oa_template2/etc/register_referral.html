@@ -1,21 +1,35 @@
-{% if request.dimension and request.user.is_authenticated %}
-    {% oa_activate_referral key=request.dimension user=request.user %}
-        {% if oa_ver.referral %}
-             {% if not oa_ver.errors %}
-                You Joined the Group "{{oa_ver.referral.topic}}"
-            {% else %}
-                {{oa_ver.errors}}
-            {% endif %}
-        {% else %}
-        Referral Not Found
-        {% endif %}
-     {% endoa_activate_referral %}
-{% endif %}
-{% if request.dimension and not request.user.is_authenticated %}
 
-    {% oa_get_referral key=request.dimension %}
-        {% if oa_ver.referral %}
-            You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!
-        {% endif %}
-    {% endoa_get_referral %}
+{% if dimension %}
+
+    <div class="modal-header">
+        <h2>Referral Status</h2>
+    </div>
+    {% if request.user.is_authenticated %}
+        {% oa_activate_referral key=dimension user=request.user %}
+            {% if oa_ver.referral %}
+                 {% if not oa_ver.errors %}
+                    <h3>You Joined the Group "{{oa_ver.referral.topic}}"</h3>
+                {% else %}
+                    <h3 style="margin-bottom:25px;">{{oa_ver.errors|safe}}</h3>
+
+                    {% include 'etc/register_login.html' %}
+
+                {% endif %}
+            {% else %}
+            <h3>Referral Not Found</h3>
+            {% endif %}
+         {% endoa_activate_referral %}
+    {% endif %}
+    {% if not request.user.is_authenticated %}
+
+        {% oa_get_referral key=dimension %}
+            {% if oa_ver.referral %}
+                <h3 style="margin-bottom:25px;">You've been referred to join "{{oa_ver.referral.topic}}". Register or login now to join!</h3>
+
+                {% include 'etc/register_login.html' %}
+
+            {% endif %}
+        {% endoa_get_referral %}
+    {% endif %}
+
 {% endif %}

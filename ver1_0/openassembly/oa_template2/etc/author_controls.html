@@ -1,3 +1,4 @@
+{% load pp_url %}
 {% ifequal object.user user %}
 
 <a class="btn btn_green" data-href="{% pp_url template='submit.html' object=object dimension='edit' %}">Edit</a>

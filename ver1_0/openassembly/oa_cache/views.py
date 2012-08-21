@@ -444,7 +444,7 @@ decreased the latency of the system.
             hashed = '/p/landing'
             #need to make this some sort of home feed for user
         if hashed[0:2] == '/p':
-            props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=True)
+            props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=False)
             for d in props['rendered_list']:
                 data['output'].append(d)
             if 'OBJ_KEY' in props['paramdict']:
@@ -543,7 +543,7 @@ def render_hashed(request, key, user, extracontext={}):
     empty = True
     if user is None:
         user = request.user
-    retdict = get_cache_or_render(user, key, empty, forcerender=True, request=request, extracontext=extracontext)
+    retdict = get_cache_or_render(user, key, empty, forcerender=False, request=request, extracontext=extracontext)
     rendered_list = retdict['rendered_list']
     ret = defaultdict(list)
     for i in rendered_list:

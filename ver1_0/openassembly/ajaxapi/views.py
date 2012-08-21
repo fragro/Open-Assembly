@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from pirate_flags.models import Flag, UserFlag
 from django.contrib.auth.models import User
 from pirate_badges.models import check_badges
+from pirate_forum.models import Edit
 
 from pirate_topics.models import Topic, MyGroup, del_group_tag, add_group_tag
 from pirate_messages.models import Notification
@@ -39,8 +40,10 @@ from pirate_reputation.models import ReputationDimension
 
 from oa_filmgenome.models import FilmIdea
 import search
-
+import json
+from diff_match_patch import diff_match_patch
 from search.views import live_search_results
+from markdown import markdown
 
 from oa_verification.models import EmailVerification
 
@@ -272,6 +275,93 @@ def remove_platform(request):
     if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
         return HttpResponse(simplejson.dumps(results),
                             mimetype='application/json')
+
+
+
+def load_patch(request):
+    if not request.user.is_authenticated() or not request.user.is_active:
+        return HttpResponse(simplejson.dumps({'FAIL': True}),
+                                mimetype='application/json')
+
+    if request.method == 'POST':
+        obj_pk = request.POST[u'obj_pk']
+        edit_num = request.POST.get(u'edit_num')
+        #text = request.POST.get(u'text', '')
+        patch_me = int(request.POST.get(u'patch', 1))
+        if edit_num == '':
+            edit_num = 1
+        else:
+            edit_num = int(edit_num)
+        
+        if patch_me == 0:
+            edits = Edit.objects.filter(object_pk=obj_pk).order_by('time')
+            edit = edits[edits.count()-(edit_num-1)]
+        else:
+            edits = Edit.objects.filter(object_pk=obj_pk).order_by('time')
+            edit = edits[edits.count()-(edit_num)]
+        # diffs = []
+        # for edit in edits:
+        #     diffs.extend(json.loads(edit.edit_diff)['diff'])
+        diff = json.loads(edit.edit_diff)['diff']
+        #diff = diffs
+        #print text 
+        #print 'cnt: ' + str(text.count('\n'))
+        #text = html2text(text)
+
+
+        #get existing object text
+        #text = edit.content_object.description
+
+        mpl = diff_match_patch()
+
+        if patch_me == 1:
+            patch = mpl.patch_make(diff)
+        else:
+            new_diff = []
+            for i, val in diff:
+                if i == 1:
+                    new_diff.append((-1, val))
+                elif i == -1:
+                    new_diff.append((1, val))
+                elif i == 0:
+                    new_diff.append((0, val))
+            diff = new_diff
+
+        #     patch = mpl.patch_make(new_diff)
+        # text = mpl.patch_apply(patch, text)
+        # print text [0]
+        # print 'cnt: ' + str(text[0].count('\n'))
+        # print 'object: ' + str(edit.content_object.description.count('\n'))
+        #ret_text = markdown(text[0])
+        l = ''
+        for i, v in diff:
+            if i == 1 or i == 0:
+                l += v
+        ret_text = markdown(l)
+        #get next edit for purposes of going back
+        try:
+            previous = Edit.objects.filter(object_pk=obj_pk).order_by('time')
+            if patch_me == 1:
+                if previous.count()-(edit_num + 1) >= 0:
+                    previous = previous[previous.count()-(edit_num + 1)].pk
+                else:
+                    previous = None
+                edit_num += 1
+            elif patch_me == 0:
+                previous = previous[previous.count()-(edit_num-1)].pk
+                edit_num -= 1
+        except Exception, e:
+            raise e
+        print 'edit_num' + str(edit_num)
+        results = {'next': previous, 'text': ret_text, 'FAIL': False, 'ctrl': render_to_string('etc/edits.html', {'object': edit.content_object,
+                        'edit_num': edit_num })}
+
+    else:
+        results = {'FAIL': True}
+    if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
+        return HttpResponse(simplejson.dumps(results),
+                            mimetype='application/json')
+
 
 
 def confirm(request, key):

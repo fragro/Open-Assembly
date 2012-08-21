@@ -1,4 +1,5 @@
 {% load blobtags %}
+{% load pp_url %}
 
 
             {% pp_blob_form POST=request.POST edit='True' user=user dimension=object.get_blob_key object=object sub=pp_blob.sub %}
