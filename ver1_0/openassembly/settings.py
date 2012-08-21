@@ -14,109 +14,109 @@ TWITTER_ACCESS_TOKEN_URL = ''
 TWITTER_AUTHORIZATION_URL = ''
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
-try:
-    ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
-    with open(os.path.expanduser('~/environment.json')) as f:
-        env = json.load(f)
+#try:
+###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
+with open(os.path.expanduser('~/environment.json')) as f:
+    env = json.load(f)
 
-    #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
-    #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
+#DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
+#DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
 
-    if env['DOTCLOUD_WWW_HTTP_URL'] == "http://openassembly1-fragro.dotcloud.com/":
-        DOMAIN_NAME = 'http://www.openassembly.org/'
-        DOMAIN = 'http://www.openassembly.org'
-    else:
-        DOMAIN_NAME = env['DOTCLOUD_WWW_HTTP_URL']
-        DOMAIN = env['DOTCLOUD_WWW_HTTP_URL'][:-1]
+if env['DOTCLOUD_WWW_HTTP_URL'] == "http://openassembly1-fragro.dotcloud.com/":
+    DOMAIN_NAME = 'http://www.openassembly.org/'
+    DOMAIN = 'http://www.openassembly.org'
+else:
+    DOMAIN_NAME = env['DOTCLOUD_WWW_HTTP_URL']
+    DOMAIN = env['DOTCLOUD_WWW_HTTP_URL'][:-1]
 
-    DEBUG = False
-    TEMPLATE_DEBUG = False
+DEBUG = False
+TEMPLATE_DEBUG = False
 
-    DATABASES = {
-        'default': {
+DATABASES = {
+    'default': {
 
-            'ENGINE': 'django_mongodb_engine',
-            'NAME': 'admin',
-            'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
-            'SUPPORTS_TRANSACTIONS': False,
-        }
+        'ENGINE': 'django_mongodb_engine',
+        'NAME': 'admin',
+        'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
+        'SUPPORTS_TRANSACTIONS': False,
     }
+}
 
-    STATICFILES_DIRS = (
-        "/home/dotcloud/current/ver1_0/openassembly/static/",
-    )
-    MEDIA_ROOT = '/home/dotcloud/store/media/'
-    STATIC_ROOT = '/home/dotcloud/data/static/'
-    MEDIA_URL = '/media/'
+STATICFILES_DIRS = (
+    "/home/dotcloud/current/openassembly/static/",
+)
+MEDIA_ROOT = '/home/dotcloud/store/media/'
+STATIC_ROOT = '/home/dotcloud/data/static/'
+MEDIA_URL = '/media/'
 
-    # Configure Celery using the RabbitMQ credentials found in the DotCloud
-    # environment.
-    djcelery.setup_loader()
+# Configure Celery using the RabbitMQ credentials found in the DotCloud
+# environment.
+djcelery.setup_loader()
 
-    BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
+BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
 
-    # BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
-    # BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
-    # BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
-    # BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
-    # BROKER_VHOST = '/'
+# BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
+# BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
+# BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
+# BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
+# BROKER_VHOST = '/'
 
-    ETHERPAD_API = env['ETHERPAD_API']
+ETHERPAD_API = env['ETHERPAD_API']
 
-    #SWITCHED TO REDIS
-    CACHES = {
-        'default': {
-            'BACKEND': 'redis_cache.cache.RedisCache',
-            'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'],
-            'OPTIONS': {
-                'DB': 1,
-                'PASSWORD': env['DOTCLOUD_CACHE_REDIS_PASSWORD'],
-                'PARSER_CLASS': 'redis.connection.HiredisParser'
-            },
+#SWITCHED TO REDIS
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'],
+        'OPTIONS': {
+            'DB': 1,
+            'PASSWORD': env['DOTCLOUD_CACHE_REDIS_PASSWORD'],
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
         },
-    }
+    },
+}
 
 
-except:
-    DOMAIN_NAME = 'http://localhost:8000/'
-    DOMAIN = 'http://localhost:8000'
+# except:
+#     DOMAIN_NAME = 'http://localhost:8000/'
+#     DOMAIN = 'http://localhost:8000'
 
-    DEBUG = True
-    TEMPLATE_DEBUG = True
+#     DEBUG = True
+#     TEMPLATE_DEBUG = True
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django_mongodb_engine',
-            'NAME': 'admin'
-        }
-    }
-    STATICFILES_DIRS = (
-        "static/",
-    )
-    STATIC_ROOT = 'static_dev_serve/static/'
-    MEDIA_ROOT = 'static_dev_serve/media/'
-    MEDIA_URL = '/media/'
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django_mongodb_engine',
+#             'NAME': 'admin'
+#         }
+#     }
+#     STATICFILES_DIRS = (
+#         "static/",
+#     )
+#     STATIC_ROOT = 'static_dev_serve/static/'
+#     MEDIA_ROOT = 'static_dev_serve/media/'
+#     MEDIA_URL = '/media/'
 
-    BROKER_URL = 'redis://localhost:6379/0'
+#     BROKER_URL = 'redis://localhost:6379/0'
 
-    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_HOST_PASSWORD = 'this is a password'
-    EMAIL_PORT = 587
+#     DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+#     EMAIL_USE_TLS = True
+#     EMAIL_HOST = 'smtp.gmail.com'
+#     EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+#     EMAIL_HOST_PASSWORD = 'this is a password'
+#     EMAIL_PORT = 587
 
-    ETHERPAD_API = None
+#     ETHERPAD_API = None
 
-    CACHES = {
-        'default': {
-            'BACKEND': 'redis_cache.cache.RedisCache',
-            'LOCATION': 'localhost:6379',
-            'OPTIONS': {
-                'DB': 1,
-            },
-        },
-    }
+#     CACHES = {
+#         'default': {
+#             'BACKEND': 'redis_cache.cache.RedisCache',
+#             'LOCATION': 'localhost:6379',
+#             'OPTIONS': {
+#                 'DB': 1,
+#             },
+#         },
+#     }
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
