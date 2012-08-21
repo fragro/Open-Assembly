@@ -4,6 +4,11 @@ var app = require('express').createServer(),
     redis = require('socket.io/node_modules/redis'),
     io = require('socket.io').listen(app);
 
+process.on('SIGTERM', function () {
+  console.log('Got SIGTERM, exiting...');
+  process.exit(0);
+});
+
 //dotcloud environment parametes for hooking into our own redis server
 try{
   var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
@@ -22,7 +27,7 @@ pub.auth('pass', function(){console.log("adentro! pub")});
 sub.auth('pass', function(){console.log("adentro! sub")});
 store.auth('pass', function(){console.log("adentro! store")});
 
-app.listen(8080);
+app.listen(process.env['PORT_WWW'] || 8080);
 
 function init_user(users, username, sessionid, socketid, room){
   var u1 = users[sessionid];

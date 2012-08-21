@@ -8,7 +8,7 @@ db:
   type: mongodb
 worker:
   type: python-worker
-data:
+cache:
   type: redis
 nodejs:
   type: custom
@@ -16,5 +16,5 @@ nodejs:
   ports:
     www: tcp
   process: node server.js
-  approot: oanode # change this to your application root!
+  approot: oanode
   node_version: v0.6.5
