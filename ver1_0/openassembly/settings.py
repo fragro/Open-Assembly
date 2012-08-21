@@ -61,7 +61,11 @@ BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_
 # BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
 # BROKER_VHOST = '/'
 
-ETHERPAD_API = env['ETHERPAD_API']
+try:
+    ETHERPAD_API = env['ETHERPAD_API']
+except: #maybe etherpad api is not setup yet
+    ETHERPAD_API = '##################'
+
 
 #SWITCHED TO REDIS
 CACHES = {
