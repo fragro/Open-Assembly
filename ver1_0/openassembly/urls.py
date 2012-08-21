@@ -8,7 +8,7 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from pirate_core import redirectable, welcome_page
 from ajaxapi.views import vote, generate_vote_content, delete_source, add_tag, starvote, spectrumvote, add_group, remove_group
-from ajaxapi.views import flagvote, set_loc_by_ip, del_tag, add_video_vote, update_video_votes, remove_platform
+from ajaxapi.views import flagvote, set_loc_by_ip, del_tag, add_video_vote, update_video_votes, remove_platform, load_patch
 from ajaxapi.views import setup_admin, confirm, add_platform, change_hash_dim, change_hash_ctype, delete_object
 from pirate_login.views import logout_view
 from pirate_consensus.views import set_ranked_vote, confirm_ranked_vote, del_confirm_ranked_vote
@@ -65,6 +65,7 @@ urlpatterns = patterns('',
     (r'^add_platform/', add_platform),
     (r'^set_ranked_vote/', set_ranked_vote),
     (r'^remove_platform/', remove_platform),
+    (r'^load_patch/', load_patch),
     (r'^generate_vote_content/', generate_vote_content),
     (r'^comments/', include('django.contrib.comments.urls')),
     (r'^markitup/', include('markitup.urls')),
@@ -133,4 +134,8 @@ urlpatterns += patterns('',
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),
+)
+
+urlpatterns += patterns('',
+    url("", include('django_socketio.urls')),
 )

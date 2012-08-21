@@ -1,4 +1,3 @@
-Pillow==1.7.5
 python-memcached==1.48
 pymongo
 git+https://github.com/django-nonrel/mongodb-engine.git#egg=django_mongodb_engine
@@ -16,11 +15,10 @@ httplib2
 python-openid
 simplejson
 django-piston
-pyorbited
 hg+http://bitbucket.org/fragro/django-tracking#egg=tracking
 hg+http://bitbucket.org/nator/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
-django-celery
+django-celery-with-redis
 setproctitle
 pytz
 git+https://github.com/bradbeattie/python-vote-core.git#egg=pyvotecore
@@ -28,3 +26,5 @@ git+https://github.com/fragro/django-notification.git#egg=notification
 johnny-cache
 git+https://github.com/sorl/sorl-thumbnail.git#egg=sorl
 git+https://github.com/devjones/PyEtherpadLite.git#egg=PyEtherpadLite
+django-redis==1.4.5
+git+https://github.com/boto/boto.git#egg=boto

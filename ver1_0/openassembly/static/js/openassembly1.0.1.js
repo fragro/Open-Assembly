@@ -809,3 +809,28 @@ function minimizeAll(){
 
     }
 }
+
+function load_patch(obj_pk, patch){
+  edit_pk = $('#current_edit' + obj_pk).attr("class");
+  edit_num = $('#edit_num' + obj_pk).attr("class");
+  $.post("/load_patch/", {obj_pk: obj_pk, edit_num: edit_num, patch: patch},
+  function(data) {
+      if(data.FAIL === true){
+         //$(ui.item).fadeOut('slow', function() {
+          //    $(ui.sender).append(ui.item);
+          //    $(ui.item).fadeIn('slow');
+          //});
+      }
+      if(data.FAIL === false){
+          $('#description' + obj_pk).fadeOut('fast', function() {
+            $('#description' + obj_pk).html(data.text);
+            $('#description' + obj_pk).fadeIn();
+          });
+          $('#current_edit' + obj_pk).html(data.next);
+          $('#edits' + obj_pk).html(data.ctrl);
+
+          //hrefLess();
+      }
+  }, "json");
+
+}

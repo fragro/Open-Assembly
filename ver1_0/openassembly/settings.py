@@ -53,13 +53,29 @@ try:
     # environment.
     djcelery.setup_loader()
 
-    BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
-    BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
-    BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
-    BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
-    BROKER_VHOST = '/'
+    BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
+
+    # BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
+    # BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
+    # BROKER_USER = env['DOTCLOUD_BROKER_AMQP_LOGIN']
+    # BROKER_PASSWORD = env['DOTCLOUD_BROKER_AMQP_PASSWORD']
+    # BROKER_VHOST = '/'
 
     ETHERPAD_API = env['ETHERPAD_API']
+
+    #SWITCHED TO REDIS
+    CACHES = {
+        'default': {
+            'BACKEND': 'redis_cache.cache.RedisCache',
+            'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'],
+            'OPTIONS': {
+                'DB': 1,
+                'PASSWORD': env['DOTCLOUD_CACHE_REDIS_PASSWORD'],
+                'PARSER_CLASS': 'redis.connection.HiredisParser'
+            },
+        },
+    }
+
 
 except:
     DOMAIN_NAME = 'http://localhost:8000/'
@@ -81,11 +97,7 @@ except:
     MEDIA_ROOT = 'static_dev_serve/media/'
     MEDIA_URL = '/media/'
 
-    BROKER_HOST = "localhost"
-    BROKER_PORT = 5672
-    BROKER_USER = "guest"
-    BROKER_PASSWORD = "guest"
-    BROKER_VHOST = "/"
+    BROKER_URL = 'redis://localhost:6379/0'
 
     DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
     EMAIL_USE_TLS = True
@@ -95,6 +107,16 @@ except:
     EMAIL_PORT = 587
 
     ETHERPAD_API = None
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'redis_cache.cache.RedisCache',
+            'LOCATION': 'localhost:6379',
+            'OPTIONS': {
+                'DB': 1,
+            },
+        },
+    }
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
@@ -143,7 +165,7 @@ INSTALLED_APPS = (
     'oa_dashboard',
     'sorl.thumbnail',
     'oa_cache',
-    'django_mongodb_engine'
+    'django_mongodb_engine',
 )
 
 STATIC_URL = '/static/'
@@ -172,9 +194,8 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'oa_template2'),)
 
 FAIL_SILENTLY = True
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-)
+AUTHENTICATION_BACKENDS = ('openassembly.pirate_login.backends.CaseInsensitiveModelBackend',)
+
 
 DJANGO_BUILTIN_TAGS = (
     'native_tags.templatetags.native',
@@ -213,15 +234,10 @@ GEOIP_PATH = "static/GeoIP/"
 GEOIP_CACHE_TYPE = 1
 DEFAULT_TRACKING_TEMPLATE = 'map.html'
 
-# some johnny settings
-CACHES = {
-    'default': dict(
-        BACKEND='johnny.backends.memcached.MemcachedCache',
-        LOCATION=['127.0.0.1:11211'],
-        JOHNNY_CACHE=True,
-        TIMEOUT=0,
-    )
-}
+
+# we also are going to use redis for our session cache as well.
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 
 JOHNNY_MIDDLEWARE_KEY_PREFIX = 'jc_openassembly'
 
@@ -285,7 +301,7 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
 
-if BROKER_HOST == 'localhost':
+if DEBUG == True:
     DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.gmail.com'
