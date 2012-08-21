@@ -1,0 +1,34 @@
+   <div class="modal-header">
+        <h2>Register</h2>
+    </div>
+    {% pp_user_registration_form request=request dimension=dimension user=request.user %}
+            <form id="registration_form" action="" method="post">
+                <input type="text" name="name" id="id_name" class="input-medium" placeholder="Username" style="margin-bottom:10px; margin-right:10px;">
+                <input type="text" name="email" id="id_email" class="input-medium" placeholder="Email" style="margin-bottom:10px;"><br>
+                <input type="password" name="password1" id="id_password1" class="input-medium" placeholder="Password" style="margin-bottom:10px; margin-right:10px;">
+                <input type="password" name="password2" id="id_password2" class="input-medium" placeholder="Confirm Password" style="margin-bottom:10px;"><br>
+                {{ pp_login.form.form_id}}
+                {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn_green"><i class="icon-user icon-white icon-left"></i> Register</button>
+            {{pp_login.errors}}<br>{{ pp_login.form.errors }}
+            </form>
+    {% endpp_user_registration_form %}
+
+    <div class="modal-header">
+        <h2 style="margin-top:20px;">Login</h2>
+    </div>
+    {% pp_user_login_form request=request dimension=dimension %}
+
+            <form id="login_form" action="" method="post">
+                <input type="text"  name="name" id="id_name" class="input-medium" placeholder="Username" style="margin:0 10px 10px 0;">
+                <input type="password"  name="password" id="id_password" class="input-medium" placeholder="Password" style="margin:0;"><br>
+                {{ pp_login.form.form_id}}
+                {% csrf_token %}
+           <button type="submit" class="btn btn-primary btn_green"><i class="icon-ok icon-white icon-left"></i> Login</button>
+           {{pp_login.errors}}<br>{{ pp_login.form.errors }}
+            </form>
+
+                    
+    {% endpp_user_login_form %}
+
+    <a class="nobbq" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a>
