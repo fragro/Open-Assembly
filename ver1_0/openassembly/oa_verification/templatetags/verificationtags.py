@@ -176,7 +176,7 @@ def oa_activate_referral(context, nodelist, *args, **kwargs):
             if ref.topic is not None:
                 myg = MyGroup.objects.get_or_create(topic=ref.topic, user=user)
         else:
-            namespace['errors'] = 'Email not associated with this account. Log into account associated with ' + str(ref.email) + ' and try again.'
+            namespace['errors'] = 'Email not associated with this account. <br> Log into account associated with <i>' + str(ref.email) + ' </i>and try again.'
     except:
         ref = None
 
@@ -263,7 +263,7 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
                     email_subject = 'OpenAssembly Referral'
                     if obj:
                         email_subject += " to Group " + str(obj.shortname)
-                    email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\n%sp/register/d-=%s" % (
+                    email_body = "You've been referred to OpenAssembly by %s. \n\nTo join as a verified user:\n\n%sp/register/d-%s" % (
                         user.username, DOMAIN_NAME,
                         ref.key)
                     send_mail(email_subject,

@@ -12,6 +12,7 @@ from pirate_consensus.models import Rating, Spectrum
 from tagging.models import Tag, TaggedItem
 from django.contrib.auth.models import User
 from pirate_forum.models import ForumDimension
+from pirate_topics.models import Topic, MyGroup
 
 
 # Create your models here.
@@ -180,10 +181,10 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
             #must support random
             order_by = '-random'
             next_issue_list = issue_list.order_by(order_by)
-        elif dimension == "cns":
+        elif dimension == "x":
             #must support random
             order_by = '-consensus_percent'
-            next_issue_list = issue_list.order_by(order_by)
+            next_issue_list = issue_list.order_by('votes', order_by)
             #next_issue_list = sorted(next_issue_list, key=lambda x: x.submit_date, reverse=True)
         elif dimension == "h":
             order_by = '-interest'
@@ -230,6 +231,26 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
 
 @task(ignore_result=True)
 def update_rankings(cons):
+
+    #update reporting percentage
+    upvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__gt=6)
+    downvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__lt=6)
+    try:
+        topic = Topic.objects.get(pk=cons.content_object.parent.pk)
+        groups = MyGroup.objects.filter(topic=topic)
+
+        try:
+            cons.reporting_percent = (upvotes.count() + downvotes.count()) / float(groups.count())
+        except:
+            cons.reporting_percent = 0.0
+
+        try:
+            cons.consensus_percent = upvotes.count() / float(upvotes.count() + downvotes.count())
+        except:
+            cons.consensus_percent = 0.0
+    except:
+        pass
+    #update the various ranking algorithms
     pis = cons.content_object
     spectrum = cons.spectrum.get_list()
     try:
@@ -239,8 +260,8 @@ def update_rankings(cons):
         rt = Rating()
         cons.rating = rt
         rt.save()
-        cons.save()
         rating = cons.rating.get_list()
+    cons.save()
     dt = cons.submit_date
     timeDiff = (dt - datetime.datetime(2010, 7, 5, 20, 16, 19, 539498)).seconds
     timeNormFactor = (dt - datetime.datetime.now()).seconds

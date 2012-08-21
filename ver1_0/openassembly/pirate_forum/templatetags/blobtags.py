@@ -31,6 +31,7 @@ from pirate_consensus.tasks import initiate_nextphase, local_tz_to_utc
 from pirate_reputation.models import ReputationDimension
 from pirate_forum.models import ForumBlob, Question, Edit, Search
 from pirate_forum.models import  BlobEditForm
+from pirate_forum.tasks import create_edit
 from pirate_core.forms import ComboFormFactory
 from pirate_topics.models import Topic
 from pirate_topics.forms import TopicForm
@@ -60,6 +61,11 @@ def get_form(t):
 def get_models():
     #returns a list of child models for ForumBlob
     return ForumDimension.objects.filter(is_content=True)
+
+
+@register.filter    
+def subtract(value, arg):
+    return value - int(arg)
 
 
 @block
@@ -383,15 +389,27 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
         blob_form, model, verbose_name = get_form(dimension)
         blob_form = BlobEditForm
         if POST:
+
             #save editted form
             form = blob_form(POST, instance=obj)
+            #get info for diff
+            old_text = obj.description
             blob = form.save(commit=False)
             cleaned_data = form.clean()
             for k, v in cleaned_data.items():
                 setattr(blob, k, v)
             #blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
             blob.save()
+            new_text = blob.description
 
+            #create edit
+            ctype = ContentType.objects.get_for_model(blob)
+
+            #compute diff using diff_match_patch from google
+
+            create_edit.apply_async(args=[blob.pk, user.pk, ctype.pk, new_text, old_text])
+
+            #deprecated
             if 'link' in form.cleaned_data:
                 validate = URLValidator(verify_exists=False)
                 contype = ContentType.objects.get_for_model(blob)
@@ -411,8 +429,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
                     output = nodelist.render(context)
                     context.pop()
             content_type = ContentType.objects.get_for_model(obj.__class__)
-            e = Edit(object_pk=obj.pk, user=user, object_type=content_type)
-            e.save()
             namespace['form_complete'] = True
             namespace['path'] = obj
             namespace['form'] = form
@@ -671,13 +687,21 @@ def pp_blob_edits(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     obj = kwargs.get('object', None)
-
+    start = kwargs.get('start', 0)
+    end = kwargs.get('end', 4)
+    edit_num = kwargs.get('edit_num', 1)
+    if edit_num == None:
+        edit_num = 1
     if obj is not None:
         edits = Edit.objects.filter(object_pk=obj.pk).order_by('time')
-        namespace['edits'] = edits
-        cnt = len(edits)
+        cnt = edits.count()
+        if cnt >= 1:
+            if cnt-edit_num >= 0:
+                namespace['latest_edit'] = edits[cnt-edit_num]
+                namespace['latest_edit_pk'] = edits[cnt-edit_num].pk
+                #namespace['edits'] = edits[int(start):int(end)]
         namespace['count'] = cnt
-        namespace['height'] = cnt * 16
+        namespace['edit_itr'] = cnt + 1 - edit_num
 
     output = nodelist.render(context)
     context.pop()

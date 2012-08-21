@@ -191,7 +191,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                     if new_user.password1 == new_user.password2:
                         #check to see if there are other users with this name
                         try:
-                            ui = User.objects.get(username=new_user.name)
+                            ui = User.objects.get(username__iexact=new_user.name)
                             namespace['errors'] = "Sorry that username is taken already, please pick another."
                         except:
                             user = User.objects.create_user(new_user.name, new_user.email, new_user.password1)
@@ -217,7 +217,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                         mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                         ref.topic.group_members += 1
                                         ref.topic.save()
-                                    namespace['errors'] = 'Check your email for confirmation!'
+                                    namespace['errors'] = 'Account created and group joined!'
                                     #except:
                                     #    namespace['errors'] = "Illegal Referral Key"
                                 else:

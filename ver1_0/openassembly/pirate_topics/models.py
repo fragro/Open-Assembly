@@ -92,8 +92,14 @@ def get_users(parent, start, end, dimension, ctype_list):
             user_list = user_list[int(start):int(end)]
         return user_list, count
     else:
-        user_list = User.objects.all()
+        user_list = User.objects.filter(is_active=True)
         count = user_list.count()
+        if dimension == 'n':
+            user_list = user_list.order_by('-date_joined')
+        if dimension == 'j':
+            user_list = user_list.order_by('-last_login')
+        if dimension == 'a':
+            user_list = user_list.order_by('username')
         if start is not None and end is not None:
             user_list = user_list[int(start):int(end)]
         return user_list, count
@@ -114,10 +120,12 @@ def get_topics(parent, start, end, dimension, ctype_list):
         topic_list = topic_list.order_by('submit_date')
     elif dimension == 'h':
         topic_list = topic_list.order_by('-group_members')
+    elif dimension == 'a':
+        topic_list = topic_list.order_by('-summary')
     count = topic_list.count()
+    print dimension
     if start is not None and end is not None:
         topic_list = topic_list[int(start):int(end)]
-    print topic_list
     return topic_list, count
 
 

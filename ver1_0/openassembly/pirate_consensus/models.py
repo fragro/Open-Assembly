@@ -108,6 +108,8 @@ class Rating(models.Model):
     rating_w4 = models.FloatField(default=0.0)
     rating_w5 = models.FloatField(default=0.0)
 
+    mean = models.FloatField(default=0.0)
+
     def __unicode__(self):
         return str(self.id)
         #cons = Consensus.objects.get(rating=self)
@@ -117,17 +119,20 @@ class Rating(models.Model):
         setattr(self, 'rating' + str(vote), getattr(self, 'rating' + str(vote)) + 1)
         #TODO: save rating_w and increment rating_n
         self.save()
+        self.set_mean()
 
     def del_vote(self, vote):
         setattr(self, 'rating' + str(vote), getattr(self, 'rating' + str(vote)) - 1)
         #TODO: save rating_w and increment rating_n
         self.save()
+        self.set_mean()
 
     def change_vote(self, vote, old_vote):
         setattr(self, 'rating' + str(old_vote), getattr(self, 'rating' + str(old_vote)) - 1)
         setattr(self, 'rating' + str(vote), getattr(self, 'rating' + str(vote)) + 1)
         #TODO: save rating_w and increment rating_n
         self.save()
+        self.set_mean()
 
     def get_list(self):
         #TODO: Implement weighted voting on ratings
@@ -135,6 +140,22 @@ class Rating(models.Model):
         w = 1.0
         return [(i, w, getattr(self, 'rating' + str(i))) for i in range(1, 6)]
 
+    def set_mean(self, save_this=True):
+        rating_list = self.get_list()
+        tot = 0.0
+        val = 0.0
+        #user reputation weights not integrated yet
+        for i, weight, num in rating_list:
+            val += (i * num)
+            tot += num
+        print rating_list
+        if tot > 0:
+            self.mean = float(val) / tot
+        else:
+            self.mean = 0.0
+        print self.mean
+        if save_this:
+            self.save()
 
 class Consensus(models.Model):
     #Generic conesensus object that acts as parent for all agree/disagree/votes
@@ -168,6 +189,7 @@ class Consensus(models.Model):
     vote_rate = models.FloatField(default=0.0, null=None, blank=None)
     phase = models.ForeignKey("Phase", blank=True, null=True, related_name="consensus_phase")
     phasename = models.CharField(max_length=30, blank=True, null=True)
+
     consensus_percent = models.FloatField(blank=True, null=True)
     reporting_percent = models.FloatField(blank=True, null=True)
     winners = models.IntegerField(blank=True, null=True)
