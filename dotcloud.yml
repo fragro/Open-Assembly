@@ -8,5 +8,13 @@ db:
   type: mongodb
 worker:
   type: python-worker
-broker:
-  type: rabbitmq
+data:
+  type: redis
+nodejs:
+  type: custom
+  buildscript: nodejs/builder
+  ports:
+    www: tcp
+  process: node server.js
+  approot: oanode # change this to your application root!
+  node_version: v0.6.5

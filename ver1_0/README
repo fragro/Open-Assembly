@@ -21,7 +21,7 @@ mkdir OA_ENV
 virtualenv OA_ENV
 source OA_ENV/bin/activate
 cd Open-Assembly
-pip install -R requirements.txt
+pip install -r requirements.txt
 cd openassembly
 
 Now Open Two Terminals and Run the Django/Celery Servers Concurrently
