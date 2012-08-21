@@ -43,7 +43,7 @@ try:
     }
 
     STATICFILES_DIRS = (
-        "/home/dotcloud/current/openassembly/static/",
+        "/home/dotcloud/current/ver1_0/openassembly/static/",
     )
     MEDIA_ROOT = '/home/dotcloud/store/media/'
     STATIC_ROOT = '/home/dotcloud/data/static/'
@@ -53,7 +53,7 @@ try:
     # environment.
     djcelery.setup_loader()
 
-    BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
+    BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
 
     # BROKER_HOST = env['DOTCLOUD_BROKER_AMQP_HOST']
     # BROKER_PORT = int(env['DOTCLOUD_BROKER_AMQP_PORT'])
