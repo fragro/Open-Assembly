@@ -1,9 +1,9 @@
 {% comment %}
 
-{% if object %}
-	<iframe class="iframe{{object.pk}}" src="http://webchat.freenode.net?nick={{user.username}}&channels=oa-{{object.pk}}&prompt=1&uio=d4" width="100%" height="{% include 'stream/stream_height.html' %}"></iframe>
+{% if object.pk %}
+	<iframe class="iframe{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" src="http://webchat.freenode.net?nick={{user.username}}&channels=oa-{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}&prompt=1&uio=d4" width="100%" height="{% include 'stream/stream_height.html' %}"></iframe>
 {% else %}
-	<iframe class="iframe{{object.pk}}" src="http://webchat.freenode.net?nick={{user.username}}&channels=oa-welcome-aboard&prompt=1&uio=d4" width="100%" height="{% include 'stream/stream_height.html' %}"></iframe>
+	<iframe class="iframe{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" src="http://webchat.freenode.net?nick={{user.username}}&channels=oa-welcome-aboard&prompt=1&uio=d4" width="100%" height="{% include 'stream/stream_height.html' %}"></iframe>
 {% endif %}
 
 {% endcomment %}
@@ -27,7 +27,13 @@
         // on connection to server, ask for user's name with an anonymous callback
         socket.on('connect', function(){
             // call the server-side function 'adduser' and send one parameter (value of prompt)
-            socket.emit('adduser', '{{user.username}}', '{{request.session.session_key}}', '{{object.pk}}');
+            {% if user.is_authenticated %}
+            socket.emit('adduser', '{{user.username}}', '{{request.session.session_key}}', '{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}');
+            {% else %}
+            {% pp_random_id slice=5 %}
+            	socket.emit('adduser', 'guest{{pp_tag.id}}', '{{request.session.session_key}}', '{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}');
+            {% endpp_random_id %}
+            {% endif %}
             console.log('connecting');
 
 
@@ -54,26 +60,26 @@
 	            });
 	        });
 
-	        function disconnect{{object.pk}}(){
+	        function disconnect{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}(){
 	        	socket.disconnect();
 	        }
 			// on load of page
 			$(function(){
 				// when the client clicks SEND
-				$('#datasend{{object.pk}}').click( function() {
-					var message = $('#data{{object.pk}}').val();
-					$('#data{{object.pk}}').val('');
+				$('#datasend{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').click( function() {
+					var message = $('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').val();
+					$('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').val('');
 					// tell server to execute 'sendchat' and send along one parameter
-					socket.emit('sendchat', message, '{{object.pk}}');
-					$('#data{{object.pk}}').focus();
+					socket.emit('sendchat', message, '{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}');
+					$('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').focus();
 
 				});
 
 				// when the client hits ENTER on their keyboard
-				$('#data{{object.pk}}').keypress(function(e) {
+				$('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').keypress(function(e) {
 					if(e.which == 13) {
 						$(this).blur();
-						$('#datasend{{object.pk}}').focus().click();
+						$('#datasend{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').focus().click();
 					}
 				});
 			});
@@ -81,7 +87,7 @@
 			//this dynamic javascript produced by the django template basically gives us access to the dashobj function
 			//which is user specific, however the socket.io JS is global and cannot access the django templates outside of connect
 			//as it is overwritten when multiple chat windows are open
-			function scrollBack{{object.pk}}(){
+			function scrollBack{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}(){
 				//console.log($('#panel_inner{{dashobj.pk}}')._scrollable());
 				$('#panel_inner{{dashobj.pk}}').scrollTo('max');
 			};
@@ -96,6 +102,6 @@
 </audio>
 
 <div style="float:left;width:75%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;padding-left:3%;">
-	<div id="conversation{{object.pk}}" style="margin-bottom:32px;margin-left:20%;"></div>
+	<div id="conversation{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" style="margin-bottom:32px;margin-left:20%;"></div>
 </div>
 

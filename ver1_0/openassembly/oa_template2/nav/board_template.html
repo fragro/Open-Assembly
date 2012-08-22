@@ -43,7 +43,7 @@
         {% if dashobj.boardname == 'Chat' %}
         <div style="margin-left:10px;float:left;width:25%;overflow:hidden;">
             <b>USERS</b>
-            <div id="users{{obj.pk}}"></div>
+            <div id="users{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}"></div>
         </div>
         {% endif %} 
 
@@ -65,8 +65,8 @@
         </div>
         {% if dashobj.boardname == 'Chat' %}
             <div style="padding:1px;position:relative;margin-top:{% if dashobj.zoom_y == 0 %}142{% endif %}{% if dashobj.zoom_y == 1 %}360{% endif %}{% if dashobj.zoom_y == 2 %}577{% endif %}px;" id="chat_ctrl{{dashobj.pk}}">
-                <input style="width:80%;" id="data{{obj.pk}}" />
-                <input type="button" id="datasend{{obj.pk}}" value="send" />
+                <input style="width:80%;" id="data{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" />
+                <input type="button" id="datasend{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" value="send" />
             </div>
         {% endif %} 
     </div>

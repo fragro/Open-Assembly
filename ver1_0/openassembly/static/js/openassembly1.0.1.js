@@ -528,9 +528,9 @@ function decrease_zoom(obj_pk, dim, path, dash_id, type){
   }, "json");
 }
 
-function resort_dashboard(dash_id, sort_key){
+function resort_dashboard(dash_id, sort_key, dashobjpk){
   
-  $.post("/resort_board/", {dashboard_id: dash_id, sort_key: sort_key},
+  $.post("/resort_board/", {dashboard_id: dash_id, sort_key: sort_key, dashobj: dashobjpk},
   function(data) {
       if(data.FAIL === true){
          //$(ui.item).fadeOut('slow', function() {
@@ -540,13 +540,13 @@ function resort_dashboard(dash_id, sort_key){
       }
       if(data.FAIL === false){
           //chat window should be resized
-          refresh_dashboard(data.plank, data.dash_id);
+          refresh_dashboard(data.plank, data.dash_id, dashobjpk);
       }
   }, "json");
 }
 
-function refresh_dashboard(path, dash_id, start, end){
-  $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null, start: start, end: end},
+function refresh_dashboard(path, dash_id, dashobjpk, start, end){
+  $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null, start: start, end: end, dashobj: dashobjpk },
   function(data) {
       if(data.FAIL === true){
          //$(ui.item).fadeOut('slow', function() {

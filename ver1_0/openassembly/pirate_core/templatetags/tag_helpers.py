@@ -19,7 +19,7 @@ from pirate_social.models import register_relationship_event
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
 
 from django.template.defaultfilters import stringfilter
-
+import uuid
 from customtags.decorators import block_decorator
 register = template.Library()
 block = block_decorator(register)
@@ -41,6 +41,22 @@ def percent(value):
         return floatformat(value * 100.0, 0) + '%'
     except:
         return '0 %'
+
+
+@block
+def pp_random_id(context, nodelist, *args, **kwargs):
+    context.push()
+    namespace = get_namespace(context)
+
+    amt = kwargs.get('slice', None)
+
+    pk = str(uuid.uuid4())
+
+    namespace['id'] = pk[0:int(amt)]
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
 
 
 @block

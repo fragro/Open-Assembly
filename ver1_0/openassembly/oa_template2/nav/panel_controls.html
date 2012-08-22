@@ -1,5 +1,5 @@
 <ul class="panel_controls">
-    <li ><a onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start}}, {{end}});"><i class="icon-refresh"></i></a></li>
+    <li ><a onClick="refresh_dashboard('{{dashobj.plank}}', 1, '{{dashobj.pk}}', {{start}}, {{end}});"><i class="icon-refresh"></i></a></li>
     <li {% if dashobj.zoom_y == 2 %}class="disabled"{% endif %}><a onClick="downzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-down"></i></a></li>
     <li {% if dashobj.zoom_y == 0 %}class="disabled"{% endif %}><a onClick="upzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-up"></i></a></li>
     <li {% if dashobj.zoom_x == 0 %}class="disabled"{% endif %}><a onClick="leftzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-left"></i></a></li>
@@ -8,25 +8,25 @@
         <i class="icon-cog"></i>
         <ul class="menu">
             {% if dashobj.boardname == 'Proposals' %}
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'x')">Order by Consensus</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by New</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Hot</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Controversy</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'x', '{{dashobj.pk}}')">Order by Consensus</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n', '{{dashobj.pk}}')">Order by New</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h', '{{dashobj.pk}}')">Order by Hot</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c', '{{dashobj.pk}}')">Order by Controversy</a></li>
 
-                {% comment %}<li><a onClick="resort_dashboard('{{dashobj.pk}}', 'b')">Order by Best</a></li>{% endcomment %}
+                {% comment %}<li><a onClick="resort_dashboard('{{dashobj.pk}}', 'b', '{{dashobj.pk}}')">Order by Best</a></li>{% endcomment %}
             {% endif %}
             {% if dashobj.boardname == 'Groups' %}
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'a')">Alphabetically</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by New</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'o')">Order by Oldest</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h')">Order by Members</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c')">Order by Proposals</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'a', '{{dashobj.pk}}')">Alphabetically</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n', '{{dashobj.pk}}')">Order by New</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'o', '{{dashobj.pk}}')">Order by Oldest</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'h', '{{dashobj.pk}}')">Order by Members</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'c', '{{dashobj.pk}}')">Order by Proposals</a></li>
 
             {% endif %}
             {% if dashobj.boardname == 'Members' %}
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'a')">Alphabetically</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n')">Order by New</a></li>
-                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'j')">Order by Last Login</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'a', '{{dashobj.pk}}')">Alphabetically</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'n', '{{dashobj.pk}}')">Order by New</a></li>
+                <li><a onClick="resort_dashboard('{{dashobj.pk}}', 'j', '{{dashobj.pk}}')">Order by Last Login</a></li>
 
 
             {% endif %}

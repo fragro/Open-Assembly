@@ -63,6 +63,7 @@ def add_board(request):
     if request.method == 'POST':
         path = request.POST[u'path']
         dashboard_id = request.POST[u'dashboard_id']
+        dashpk = request.POST[u'dashobj']
         functype = request.POST[u'type']
         boardname = request.POST[u'boardname']
         start = request.POST.get('start', 0)
@@ -74,7 +75,7 @@ def add_board(request):
         if functype != 'refresh':
             dashobj = save_board(path, dashboard_id, request.user, boardname)
         else:
-            dashobj = DashboardPanel.objects.get(plank=path, dashboard_id=dashboard_id, user=request.user)
+            dashobj = DashboardPanel.objects.get(pk=dashpk)
         path += '/s-' + str(start) + '/e-' + str(end)
 
         renderdict = render_hashed(request, path, request.user, extracontext={'dimension': dimension, 'dashobj': dashobj, 'start': int(start), 'end': int(end)})
