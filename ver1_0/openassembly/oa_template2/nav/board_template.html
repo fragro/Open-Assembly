@@ -9,25 +9,32 @@
 
 
                 {{dashobj.boardname}}
-                {% endif %}
-
-                {% if dashobj.boardname == 'Groups' %}
-
-                    {% if dimension == 'n' %}New {% endif %}{% if dimension == 'h' %}Active {% endif %}
-                    {% if dimension == 'c' %}Big {% endif %}
                 
+                {% else %}
+                    {% if dashobj.boardname == 'Groups' %}
 
-                {{dashobj.boardname}}
+                        {% if dimension == 'n' %}New {% endif %}{% if dimension == 'h' %}Active {% endif %}
+                        {% if dimension == 'c' %}Big {% endif %}
+                    
+
+                    {{dashobj.boardname}}
+                    {% else %}
+                        {% if dashobj.boardname == 'Members' %}
+
+                            {% if dimension == 'n' %}New {% endif %}                    
+                            {% if dimension == 'j' %}Recently Online {% endif %}
+                            {% if dimension == 'a' %}Alphabetical {% endif %}
+
+                        Users
+                        {% else %}
+
+                            {{dashobj.boardname}}
+                        
+                        {% endif %}
+                    {% endif %}
                 {% endif %}
 
-                {% if dashobj.boardname == 'Members' %}
 
-                    {% if dimension == 'n' %}New {% endif %}                    
-                    {% if dimension == 'j' %}Recently Online {% endif %}
-                    {% if dimension == 'a' %}Alphabetical {% endif %}
-
-                Users
-                {% endif %}
 
               {% if obj != None %} - <a data-href="{{ obj.get_absolute_url }}">{{obj.shortname|title}}</a> {% endif %}</h3>
             {% include 'nav/panel_controls.html' %}

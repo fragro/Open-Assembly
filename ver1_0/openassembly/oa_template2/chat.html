@@ -7,71 +7,94 @@
 {% endif %}
 
 {% endcomment %}
-
 <script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
-<script type="text/javascript" src="/static/js/jquery.scrollTo-1.4.2-min.js"></script>
 <script>
-	var socket = io.connect('http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}');
+		var $scrollingDiv = $("#scrollingDiv");
+ 
+		
+</script>
+<script>
+		function EvalSound(soundobj) {
+		  var thissound=document.getElementById(soundobj);
+		  thissound.src = '/static/sounds/tabla.wav'
+		  thissound.play();
+		}
 
-	// on connection to server, ask for user's name with an anonymous callback
-	socket.on('connect', function(){
-		// call the server-side function 'adduser' and send one parameter (value of prompt)
-		socket.emit('adduser', '{{user.username}}', '{{request.session.session_key}}', '{{object.pk}}');
-	});
+        //WEBSOCKETS SETUP        
+        var socket = io.connect('http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}');
 
-	// listener, whenever the server emits 'updatechat', this updates the chat body
-	socket.on('updatechat', function (username, data, object) {
-			$('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
-			eval('scrollBack' + object + '();');
-	});
+        // on connection to server, ask for user's name with an anonymous callback
+        socket.on('connect', function(){
+            // call the server-side function 'adduser' and send one parameter (value of prompt)
+            socket.emit('adduser', '{{user.username}}', '{{request.session.session_key}}', '{{object.pk}}');
+        });
 
-	// listener, whenever the server emits 'updateusers', this updates the username list
-	socket.on('updateusers', function(data, object) {
-		$('#users' + object).empty();
-		$.each(data, function(key, value) {
-			$('#users'  + object).append('<div>' + value['username'] + '</div>');
+        // listener, whenever the server emits 'updatechat', this updates the chat body
+        socket.on('updatechat', function (username, data, object) {
+                $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
+                console.log(object);
+                eval('scrollBack' + object + '();');
+                console.log(document.hasFocus());
+				if(!document.hasFocus()){
+					EvalSound('audio1');
+				}
+        });
+
+        // listener, whenever the server emits 'updateusers', this updates the username list
+        socket.on('updateusers', function(data, object) {
+            $('#users' + object).empty();
+            $.each(data, function(key, value) {
+                $('#users'  + object).append('<div>' + value['username'] + '</div>');
+            });
+        });
+
+        function disconnect{{object.pk}}(){
+        	socket.disconnect();
+        }
+		// on load of page
+		$(function(){
+			// when the client clicks SEND
+			$('#datasend{{object.pk}}').click( function() {
+				var message = $('#data{{object.pk}}').val();
+				$('#data{{object.pk}}').val('');
+				// tell server to execute 'sendchat' and send along one parameter
+				socket.emit('sendchat', message, '{{object.pk}}');
+				$('#data{{object.pk}}').focus();
+
+			});
+
+			// when the client hits ENTER on their keyboard
+			$('#data{{object.pk}}').keypress(function(e) {
+				if(e.which == 13) {
+					$(this).blur();
+					$('#datasend{{object.pk}}').focus().click();
+				}
+			});
 		});
-	});
 
-	// on load of page
-	$(function(){
-		// when the client clicks SEND
-		$('#datasend{{object.pk}}').click( function() {
-			var message = $('#data{{object.pk}}').val();
-			$('#data{{object.pk}}').val('');
-			// tell server to execute 'sendchat' and send along one parameter
-			socket.emit('sendchat', message, '{{object.pk}}');
-			$('#data{{object.pk}}').focus();
+		//this dynamic javascript produced by the django template basically gives us access to the dashobj function
+		//which is user specific, however the socket.io JS is global and cannot access the django templates outside of connect
+		//as it is overwritten when multiple chat windows are open
+		function scrollBack{{object.pk}}(){
+			//console.log($('#panel_inner{{dashobj.pk}}')._scrollable());
+			$('#panel_inner{{dashobj.pk}}').scrollTo('max');
+		};
 
-		});
-
-		// when the client hits ENTER on their keyboard
-		$('#data{{object.pk}}').keypress(function(e) {
-			if(e.which == 13) {
-				$(this).blur();
-				$('#datasend{{object.pk}}').focus().click();
-			}
-		});
-	});
-
-	//this dynamic javascript produced by the django template basically gives us access to the dashobj function
-	//which is user specific, however the socket.io JS is global and cannot access the django templates outside of connect
-	//as it is overwritten when multiple chat windows are open
-	function scrollBack{{object.pk}}(){
-		//console.log($('#panel_inner{{dashobj.pk}}')._scrollable());
-		$('#panel_inner{{dashobj.pk}}').scrollTo('max');
-	}
 
 </script>
 
+<audio id="audio1" src="/static/sounds/tabla.wav" preload="auto" autobuffer>
+</audio>
 
-<div style="float:left;width:25%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;">
+
+<div style="float:left;width:25%;verflow:scroll-y;">
 	<b>USERS</b>
 	<div id="users{{object.pk}}"></div>
 </div>
 <div style="float:left;width:72%;height:{% include 'stream/stream_height.html' %};border-left:1px solid black;overflow:scroll-y;padding-left:3%;">
-	<div id="conversation{{object.pk}}" style="margin-bottom:15px;"></div>
-	<input style="width:80%;" id="data{{object.pk}}" />
-	<input type="button" id="datasend{{object.pk}}" value="send" />
+	<div id="conversation{{object.pk}}" style="margin-bottom:100px;"></div>
 </div>
-
+	<div id="chat_ctrl{{object.pk}}">
+		<input style="width:80%;" id="data{{object.pk}}" />
+		<input type="button" id="datasend{{object.pk}}" value="send" />
+	</div>

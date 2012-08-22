@@ -31,7 +31,11 @@
 
             {% endif %}
 
-            <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
+            {% if dashobj.boardname == 'Chat' %}
+                <li class="delete_panel"><a onClick="eval('disconnect{{obj.pk}}();');delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
+            {% else %}
+                <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
+            {% endif %}
         </ul>
     </li>
 </ul>

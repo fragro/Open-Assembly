@@ -161,6 +161,10 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
 
     To overcome this only specified cached content in:
         src/pirate_core/templatetags/pp_url/TEMPLATE_DICT
+
+
+    *** There are a lot of repeated prgramming patterns throughout this function and it
+        could easily be optimized
     """
     #init
     tot_items = None
@@ -170,6 +174,8 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
     load_last = []
     counts = {}
 
+    #need to determine the computational load of adding all the settings dict to the context, if any. Should be a heavier memory load at most, but
+    #I don't see how this could slow down the cpu necessarily if we are using hashing
     extracontext.update({'template': rendertype, 'user': user, 'key': key.replace('/', ''), 'settings': settings})
 
     #get the obj if it exists

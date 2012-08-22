@@ -10,7 +10,7 @@ from django.shortcuts import render
 from markdown import markdown
 from minidetector import detect_mobile
 from django.template import Context, loader
-
+import settings
 
 @detect_mobile
 def welcome_page(request):
@@ -18,7 +18,7 @@ def welcome_page(request):
     print request
     #    return HttpResponseRedirect('mobile.html')
     t = loader.get_template('index.html')
-    c = Context({'request': request})
+    c = Context({'request': request, 'settings': settings})
     return HttpResponse(t.render(c))
     #return HttpResponseRedirect('index.html')
 

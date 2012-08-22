@@ -10,17 +10,19 @@ process.on('SIGTERM', function () {
 });
 
 //dotcloud environment parametes for hooking into our own redis server
-//try{
-var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
-port = env['DOTCLOUD_CACHE_REDIS_PORT'];
-host = env['DOTCLOUD_CACHE_REDIS_HOST'];
+try{
+  var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
+  var port = env['DOTCLOUD_CACHE_REDIS_PORT'];
+  var host = env['DOTCLOUD_CACHE_REDIS_HOST'];
+  var nodeport = 42801; 
 
-// /*}
-// catch(e){
-//   var port = 6379;
-//   var host = 'localhost';
-// }
-// */
+ }
+catch(e){
+  var nodeport = 8080;
+  var port = 6379;
+  var host = 'localhost';
+}
+// 
 // var pub = redis.createClient(port, host);
 // var sub = redis.createClient(port, host);
 // var store = redis.createClient(port, host);
@@ -28,7 +30,7 @@ host = env['DOTCLOUD_CACHE_REDIS_HOST'];
 // sub.auth('pass', function(){console.log("adentro! sub")});
 // store.auth('pass', function(){console.log("adentro! store")});
 
-app.listen(42801);
+app.listen(nodeport);
 
 function init_user(users, username, sessionid, socketid, room){
   var u1 = users[sessionid];
@@ -79,6 +81,8 @@ io.sockets.on('connection', function (socket) {
     user = users[socket.username]
     if(user){
       chatlist = user['chats']
+      socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room);
+
       //delete users[socket.username];
       // update list of users in chat, client-side
       for(var room in chatlist){
@@ -86,6 +90,5 @@ io.sockets.on('connection', function (socket) {
       }
     }
     // echo globally that this client has left
-    socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room);
   });
 });
