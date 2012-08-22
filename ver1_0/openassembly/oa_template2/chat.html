@@ -8,10 +8,11 @@
 
 {% endcomment %}
 
-<script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
+<script src="http://testoa-fragro.dotcloud.com:42801/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script>
-	var socket = io.connect('http://{{NODEJS_HOST}}:{{NODEJS_PORT}}');
+
+	var socket = io.connect('http://testoa-fragro.dotcloud.com:42801');
 
 	// on connection to server, ask for user's name with an anonymous callback
 	socket.on('connect', function(){
