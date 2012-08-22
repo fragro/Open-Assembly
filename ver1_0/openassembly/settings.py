@@ -13,6 +13,9 @@ TWITTER_REQUEST_TOKEN_URL = ''
 TWITTER_ACCESS_TOKEN_URL = ''
 TWITTER_AUTHORIZATION_URL = ''
 
+settings_dir = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
+
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 try:
     ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
