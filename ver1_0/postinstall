@@ -5,7 +5,7 @@
 #python openassembly/manage.py collectstatic --noinput
 
 app_name=openassembly
-data_dir=$HOME/data
+data_dir=$HOME/current
 
 dotcloud_get_env() {
     sed -n "/$1/ s/.*: \"\(.*\)\".*/\1/p" < "$HOME/environment.json"
@@ -13,8 +13,8 @@ dotcloud_get_env() {
 
 setup_django() {
     # Create the data directories on the first push:
-    if [ ! -d $data_dir/media ] || [ ! -d $data_dir/static ] ; then
-        mkdir -p $data_dir/media $data_dir/static
+    if [ ! -d $data_dir/static ] ; then
+        mkdir -p $ $data_dir/static
     fi
 
     python $app_name/manage.py collectstatic --noinput
