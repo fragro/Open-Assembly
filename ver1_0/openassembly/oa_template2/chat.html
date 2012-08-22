@@ -58,7 +58,7 @@
 	//which is user specific, however the socket.io JS is global and cannot access the django templates outside of connect
 	//as it is overwritten when multiple chat windows are open
 	function scrollBack{{object.pk}}(){
-		console.log($('#panel_inner{{dashobj.pk}}')._scrollable());
+		//console.log($('#panel_inner{{dashobj.pk}}')._scrollable());
 		$('#panel_inner{{dashobj.pk}}').scrollTo('max');
 	}
 
