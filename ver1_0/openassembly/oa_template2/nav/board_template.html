@@ -39,6 +39,14 @@
               {% if obj != None %} - <a data-href="{{ obj.get_absolute_url }}">{{obj.shortname|title}}</a> {% endif %}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
+
+        {% if dashobj.boardname == 'Chat' %}
+        <div style="margin-left:10px;float:left;width:25%;overflow:hidden;">
+            <b>USERS</b>
+            <div id="users{{obj.pk}}"></div>
+        </div>
+        {% endif %} 
+
         <div class="panel_inner" id="panel_inner{{dashobj.pk}}">
             <p> 
             <ul id="panel_inner_list">
@@ -53,6 +61,13 @@
                 <a class="btn btn_blue" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'20'}}, {{end|add:'20'}});">Next</a>
             {% endif %}
             </p>
+
         </div>
+        {% if dashobj.boardname == 'Chat' %}
+            <div style="padding:1px;position:relative;margin-top:{% if dashobj.zoom_y == 0 %}142{% endif %}{% if dashobj.zoom_y == 1 %}360{% endif %}{% if dashobj.zoom_y == 2 %}577{% endif %}px;" id="chat_ctrl{{dashobj.pk}}">
+                <input style="width:80%;" id="data{{obj.pk}}" />
+                <input type="button" id="datasend{{obj.pk}}" value="send" />
+            </div>
+        {% endif %} 
     </div>
 </div>

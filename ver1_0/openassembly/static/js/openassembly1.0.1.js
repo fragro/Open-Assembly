@@ -586,8 +586,8 @@ function refresh_size(path, dash_id){
       if(data.FAIL === false){
           //chat window should be resized
           if(data.rendertype == 'chat'){
-            $('.iframe' + data.dashpk).width(data.width);
-            $('.iframe' + data.dashpk).height(data.height);
+            $('#chat_ctrl' + data.dashpk).css('marginTop', data.height + "px");
+
           }
           else{
             $('#' + data.dashpk).html(data.html);

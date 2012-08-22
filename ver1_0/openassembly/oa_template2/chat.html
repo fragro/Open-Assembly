@@ -8,12 +8,11 @@
 
 {% endcomment %}
 <script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
+
 <script>
-		var $scrollingDiv = $("#scrollingDiv");
- 
-		
-</script>
-<script>
+		var timestamp = new Date();
+		var delta;
+
 		function EvalSound(soundobj) {
 		  var thissound=document.getElementById(soundobj);
 		  thissound.src = '/static/sounds/tabla.wav'
@@ -32,12 +31,16 @@
         // listener, whenever the server emits 'updatechat', this updates the chat body
         socket.on('updatechat', function (username, data, object) {
                 $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
-                console.log(object);
                 eval('scrollBack' + object + '();');
-                console.log(document.hasFocus());
+
 				if(!document.hasFocus()){
-					EvalSound('audio1');
+					var delta  = new Date() - timestamp;
+					if(delta > 5000 && delta){
+						EvalSound('audio1');
+						timestamp = new Date();
+					}
 				}
+
         });
 
         // listener, whenever the server emits 'updateusers', this updates the username list
@@ -86,15 +89,7 @@
 <audio id="audio1" src="/static/sounds/tabla.wav" preload="auto" autobuffer>
 </audio>
 
+<div style="float:left;width:75%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;padding-left:3%;">
+	<div id="conversation{{object.pk}}" style="margin-bottom:32px;margin-left:20%;"></div>
+</div>
 
-<div style="float:left;width:25%;verflow:scroll-y;">
-	<b>USERS</b>
-	<div id="users{{object.pk}}"></div>
-</div>
-<div style="float:left;width:72%;height:{% include 'stream/stream_height.html' %};border-left:1px solid black;overflow:scroll-y;padding-left:3%;">
-	<div id="conversation{{object.pk}}" style="margin-bottom:100px;"></div>
-</div>
-	<div id="chat_ctrl{{object.pk}}">
-		<input style="width:80%;" id="data{{object.pk}}" />
-		<input type="button" id="datasend{{object.pk}}" value="send" />
-	</div>
