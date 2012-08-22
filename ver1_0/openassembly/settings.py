@@ -134,6 +134,9 @@ except:
         },
     }
 
+    NODEJS_HOST = 'localhost'
+    NODEJS_PORT = 8080
+
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
 

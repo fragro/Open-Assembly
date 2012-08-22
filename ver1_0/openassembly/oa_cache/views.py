@@ -16,6 +16,7 @@ import settings
 import BeautifulSoup
 from types import ListType
 from collections import defaultdict
+import settings
 
 
 def get_object_or_none(ctype_id, obj_id):
@@ -169,7 +170,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
     load_last = []
     counts = {}
 
-    extracontext.update({'template': rendertype, 'user': user, 'key': key.replace('/', '')})
+    extracontext.update({'template': rendertype, 'user': user, 'key': key.replace('/', ''), 'settings': settings})
 
     #get the obj if it exists
     ctype_id = paramdict.get('TYPE_KEY', None)

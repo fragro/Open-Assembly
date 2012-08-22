@@ -8,7 +8,7 @@
 
 {% endcomment %}
 
-<script src="http://{{NODEJS_HOST}}:{{NODEJS_PORT}}/socket.io/socket.io.js"></script>
+<script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script>
 	var socket = io.connect('http://{{NODEJS_HOST}}:{{NODEJS_PORT}}');
