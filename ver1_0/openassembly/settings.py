@@ -51,8 +51,9 @@ try:
     )
 
     MEDIA_ROOT = '/home/dotcloud/store/media/'
-    STATIC_ROOT = '/home/dotcloud/volatile/static/'
+    STATIC_ROOT = '/home/dotcloud/data/static/'
     MEDIA_URL = '/media/'
+    STATIC_URL = '/static/'
 
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
     # environment.

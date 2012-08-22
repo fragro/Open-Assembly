@@ -13,8 +13,10 @@ dotcloud_get_env() {
 
 setup_django() {
     # Create the data directories on the first push:
-    mkdir -p /home/dotcloud/store/media /home/dotcloud/volatile/static
-    ln -sf /home/dotcloud/volatile/static /home/dotcloud/static
+    if [ ! -d $data_dir/media ] || [ ! -d $data_dir/static ] ; then
+        mkdir -p $data_dir/media $data_dir/static
+    fi
+
     python $app_name/manage.py collectstatic --noinput
     python waitfordb.py
     python $app_name/manage.py syncdb --noinput
