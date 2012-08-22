@@ -11,23 +11,23 @@ process.on('SIGTERM', function () {
 
 //dotcloud environment parametes for hooking into our own redis server
 //try{
-var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
-port = env['DOTCLOUD_CACHE_REDIS_PORT'];
-host = env['DOTCLOUD_CACHE_REDIS_HOST']
-/*}
-catch(e){
-  var port = 6379;
-  var host = 'localhost';
-}
-*/
-var pub = redis.createClient(port, host);
-var sub = redis.createClient(port, host);
-var store = redis.createClient(port, host);
-pub.auth('pass', function(){console.log("adentro! pub")});
-sub.auth('pass', function(){console.log("adentro! sub")});
-store.auth('pass', function(){console.log("adentro! store")});
+// var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
+// port = env['DOTCLOUD_CACHE_REDIS_PORT'];
+// host = env['DOTCLOUD_CACHE_REDIS_HOST']
+// /*}
+// catch(e){
+//   var port = 6379;
+//   var host = 'localhost';
+// }
+// */
+// var pub = redis.createClient(port, host);
+// var sub = redis.createClient(port, host);
+// var store = redis.createClient(port, host);
+// pub.auth('pass', function(){console.log("adentro! pub")});
+// sub.auth('pass', function(){console.log("adentro! sub")});
+// store.auth('pass', function(){console.log("adentro! store")});
 
-app.listen(process.env['PORT_WWW'] || 8080);
+app.listen(8080);
 
 function init_user(users, username, sessionid, socketid, room){
   var u1 = users[sessionid];
