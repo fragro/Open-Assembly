@@ -28,7 +28,7 @@ host = env['DOTCLOUD_CACHE_REDIS_HOST'];
 // sub.auth('pass', function(){console.log("adentro! sub")});
 // store.auth('pass', function(){console.log("adentro! store")});
 
-app.listen(process.env.WWW_PORT || 8080);
+app.listen(42801);
 
 function init_user(users, username, sessionid, socketid, room){
   var u1 = users[sessionid];
