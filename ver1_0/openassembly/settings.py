@@ -47,13 +47,12 @@ try:
 
     # Additional locations of static files
     STATICFILES_DIRS = (
-        os.path.join(PROJECT_ROOT, 'static/'),
+        os.path.join(PROJECT_ROOT, 'openassembly/static/'),
     )
 
     MEDIA_ROOT = '/home/dotcloud/store/media/'
     STATIC_ROOT = '/home/dotcloud/data/static/'
     MEDIA_URL = '/media/'
-    STATIC_URL = '/static/'
 
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
     # environment.
