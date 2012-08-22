@@ -8,10 +8,10 @@
 
 {% endcomment %}
 
-<script src="http://localhost:8080/socket.io/socket.io.js"></script>
+<script src="http://{{NODEJS_HOST}}:{{NODEJS_PORT}}/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script>
-	var socket = io.connect('http://localhost:8080');
+	var socket = io.connect('http://{{NODEJS_HOST}}:{{NODEJS_PORT}}');
 
 	// on connection to server, ask for user's name with an anonymous callback
 	socket.on('connect', function(){

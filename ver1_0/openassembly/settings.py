@@ -88,6 +88,10 @@ try:
         },
     }
 
+    #New NODEJS integration
+    NODEJS_HOST = env['DOTCLOUD_NODEJS_WWW_HOST']
+    NODEJS_PORT = int(env['DOTCLOUD_NODEJS_WWW_PORT'])
+
 
 except:
     DOMAIN_NAME = 'http://localhost:8000/'
