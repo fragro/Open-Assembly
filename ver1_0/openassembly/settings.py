@@ -42,11 +42,13 @@ try:
         }
     }
 
+    # Additional locations of static files
     STATICFILES_DIRS = (
-        "/home/dotcloud/current/openassembly/static/",
+        os.path.join(PROJECT_ROOT, 'static/'),
     )
+
     MEDIA_ROOT = '/home/dotcloud/store/media/'
-    STATIC_ROOT = '/home/dotcloud/data/static/'
+    STATIC_ROOT = '/home/dotcloud/volatile/static/'
     MEDIA_URL = '/media/'
 
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
@@ -64,7 +66,7 @@ try:
     try:
         ETHERPAD_API = env['ETHERPAD_API']
     except: #maybe etherpad api is not setup yet
-        ETHERPAD_API = '##################'
+        ETHERPAD_API = None
 
 
     #SWITCHED TO REDIS

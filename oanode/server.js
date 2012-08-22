@@ -85,6 +85,6 @@ io.sockets.on('connection', function (socket) {
       }
     }
     // echo globally that this client has left
-    socket.broadcast.to(room).emit('updatechat', 'SERVER', socket.username + ' has disconnected', room);
+    socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room);
   });
 });

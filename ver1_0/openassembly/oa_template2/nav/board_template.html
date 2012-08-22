@@ -32,7 +32,7 @@
               {% if obj != None %} - <a data-href="{{ obj.get_absolute_url }}">{{obj.shortname|title}}</a> {% endif %}</h3>
             {% include 'nav/panel_controls.html' %}
         </div>
-        <div class="panel_inner">
+        <div class="panel_inner" id="panel_inner{{dashobj.pk}}">
             <p> 
             <ul id="panel_inner_list">
                 {% for k, b in board.items %}
