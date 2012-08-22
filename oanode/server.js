@@ -10,16 +10,16 @@ process.on('SIGTERM', function () {
 });
 
 //dotcloud environment parametes for hooking into our own redis server
-try{
-  var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
-  port = env['DOTCLOUD_CACHE_REDIS_PORT'];
-  host = env['DOTCLOUD_CACHE_REDIS_HOST']
-}
+//try{
+var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
+port = env['DOTCLOUD_CACHE_REDIS_PORT'];
+host = env['DOTCLOUD_CACHE_REDIS_HOST']
+/*}
 catch(e){
   var port = 6379;
   var host = 'localhost';
 }
-
+*/
 var pub = redis.createClient(port, host);
 var sub = redis.createClient(port, host);
 var store = redis.createClient(port, host);
