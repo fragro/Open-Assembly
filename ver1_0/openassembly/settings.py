@@ -32,7 +32,7 @@ try:
         DOMAIN_NAME = env['DOTCLOUD_WWW_HTTP_URL']
         DOMAIN = env['DOTCLOUD_WWW_HTTP_URL'][:-1]
 
-    DEBUG = False
+    DEBUG = True
     TEMPLATE_DEBUG = False
 
     DATABASES = {
