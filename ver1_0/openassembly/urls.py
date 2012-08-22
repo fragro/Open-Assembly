@@ -135,7 +135,3 @@ urlpatterns += patterns('',
         'document_root': settings.MEDIA_ROOT,
     }),
 )
-
-urlpatterns += patterns('',
-    url("", include('django_socketio.urls')),
-)
