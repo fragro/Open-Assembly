@@ -45,9 +45,21 @@ function init_user(users, username, sessionid, socketid, room){
   }
 }
 
+function init_room(rooms, room, username){
+  var r1 = rooms[room];
+  if(r1){
+    rooms[room][username] = 1;
+  }
+  else{
+    rooms[room] = {};
+    rooms[room][username] = 1;
+  }
+}
+
 //CHAT SOCKETIO CODE
 // usernames which are currently connected to the chat
 var users = {};
+var rooms = {};
 //list of users for each chat room to direct messages
 
 io.sockets.on('connection', function (socket) {
@@ -56,6 +68,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('sendchat', function (data, room) {
     // we tell the client to execute 'updatechat' with 2 parameters
       io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room);
+
   });
 
   // when the client emits 'adduser', this listens and executes
@@ -66,13 +79,14 @@ io.sockets.on('connection', function (socket) {
     socket.username = sessionid;
     // add the client's username to the global list
     init_user(users, username, sessionid, socket.id, room);
+    init_room(rooms, room, username);
     //init_chat(rooms, socket.id, room);
     // echo to client they've connected
     socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room);
     // echo globally (all clients) that a person has connected
     socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room);
     // update the list of users in chat, client-side
-    io.sockets.to(room).emit('updateusers', users, room);
+    io.sockets.to(room).emit('updateusers', rooms[room], room);
   });
 
   // when the user disconnects.. perform this
@@ -83,11 +97,13 @@ io.sockets.on('connection', function (socket) {
       chatlist = user['chats']
       socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room);
 
-      //delete users[socket.username];
       // update list of users in chat, client-side
       for(var room in chatlist){
-        io.sockets.to(room).emit('updateusers', users, room);
+        delete rooms[room][users[socket.username]['username']]
+        io.sockets.to(room).emit('updateusers', rooms[room], room);
       }
+      delete users[socket.username];
+
     }
     // echo globally that this client has left
   });

@@ -267,6 +267,36 @@
 
         <script type="text/javascript">
 
+                var socket = io.connect('http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}');
+
+                // on connection to server, ask for user's name with an anonymous callback
+                socket.on('connect', function(){
+                    // call the server-side function 'adduser' and send one parameter (value of prompt)
+
+                    // listener, whenever the server emits 'updatechat', this updates the chat body
+                    socket.on('updatechat', function (username, data, object) {
+                            $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
+                            eval('scrollBack' + object + '();');
+                            console.log('updatechat');
+                            if(!document.hasFocus()){
+                                var delta  = new Date() - timestamp;
+                                if(delta > 5000 && delta){
+                                    EvalSound('audio1');
+                                    timestamp = new Date();
+                                }
+                            }
+                    });
+
+                    // listener, whenever the server emits 'updateusers', this updates the username list
+                    socket.on('updateusers', function(data, object) {
+                        $('#users' + object).empty();
+                        $.each(data, function(key, value) {
+                            $('#users'  + object).append('<div>' + key + '</div>');
+                        });
+                    });
+                });
+
+
 
             $(document).ready(function(){
 

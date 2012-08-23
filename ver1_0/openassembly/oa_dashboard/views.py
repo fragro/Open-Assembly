@@ -63,7 +63,7 @@ def add_board(request):
     if request.method == 'POST':
         path = request.POST[u'path']
         dashboard_id = request.POST[u'dashboard_id']
-        dashpk = request.POST[u'dashobj']
+        dashpk = request.POST.get(u'dashobj', None)
         functype = request.POST[u'type']
         boardname = request.POST[u'boardname']
         start = request.POST.get('start', 0)
