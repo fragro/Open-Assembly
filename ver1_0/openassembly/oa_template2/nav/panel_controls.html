@@ -1,9 +1,9 @@
 <ul class="panel_controls">
     <li ><a onClick="refresh_dashboard('{{dashobj.plank}}', 1, '{{dashobj.pk}}', {{start}}, {{end}});"><i class="icon-refresh"></i></a></li>
-    <li {% if dashobj.zoom_y == 2 %}class="disabled"{% endif %}><a onClick="downzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-down"></i></a></li>
-    <li {% if dashobj.zoom_y == 0 %}class="disabled"{% endif %}><a onClick="upzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-up"></i></a></li>
-    <li {% if dashobj.zoom_x == 0 %}class="disabled"{% endif %}><a onClick="leftzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-left"></i></a></li>
-    <li {% if dashobj.zoom_x == 3 %}class="disabled"{% endif %}><a onClick="rightzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}');"><i class="icon-chevron-right"></i></a></li>
+    <li {% if dashobj.zoom_y == 2 %}class="disabled"{% endif %}><a onClick="downzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}', '{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}');"><i class="icon-chevron-down"></i></a></li>
+    <li {% if dashobj.zoom_y == 0 %}class="disabled"{% endif %}><a onClick="upzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}', '{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}');"><i class="icon-chevron-up"></i></a></li>
+    <li {% if dashobj.zoom_x == 0 %}class="disabled"{% endif %}><a onClick="leftzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}', '{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}');"><i class="icon-chevron-left"></i></a></li>
+    <li {% if dashobj.zoom_x == 3 %}class="disabled"{% endif %}><a onClick="rightzoom('{{dashobj.pk}}', '{{dashobj.plank}}', 1, '{{dashobj.boardname}}', '{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}');"><i class="icon-chevron-right"></i></a></li>
     <li class="panel_dropdown">
         <i class="icon-cog"></i>
         <ul class="menu">
