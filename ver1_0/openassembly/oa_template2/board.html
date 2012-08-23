@@ -1,4 +1,4 @@
-p{% load dashboardtags %}
+{% load dashboardtags %}
 
 {% oa_get_dashboard request=request user=request.user dashboard_id=1 %}
         {% for board, obj, dashobj, rendertype, dimension, start, end, count in oa_dashboard.boards %}

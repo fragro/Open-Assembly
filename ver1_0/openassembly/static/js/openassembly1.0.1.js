@@ -491,6 +491,12 @@ function sort_dashboard(sorted){
       }
   }, "json");
 }
+
+function adjustchat(obj_pk){
+    $('#chat_ctrl' + obj_pk).css('marginTop', $('#' + obj_pk).height()-63 + "px");
+}
+
+
 //obj_pk is actually dashobj pk
 function increase_zoom(obj_pk, dim, path, dash_id, type, obj){
   
@@ -498,10 +504,8 @@ function increase_zoom(obj_pk, dim, path, dash_id, type, obj){
   function(data) {
       if(type == 'Chat'){
         console.log('chatresize');
-        $('#chat_ctrl' + obj_pk).css('marginTop', $('#' + obj_pk).height()-58 + "px");
         $('#user_container' + obj).css('height', $('#' + obj_pk).height()-30 + "px");
-
-
+        adjustchat(obj_pk);
       }
       if(type == 'Stream'){
         refresh_size(path, dash_id);
@@ -515,7 +519,7 @@ function decrease_zoom(obj_pk, dim, path, dash_id, type, obj){
   function(data) {
       if(type == 'Chat'){
         console.log('chatresize');
-        $('#chat_ctrl' + obj_pk).css('marginTop', $('#' + obj_pk).height()-58 + "px");
+        adjustchat(obj_pk);
         $('#user_container' + obj).css('height', $('#' + obj_pk).height()-30 + "px");
       }
       if(type == 'Stream'){

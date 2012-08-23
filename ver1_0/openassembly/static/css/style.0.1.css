@@ -394,6 +394,15 @@ html {
 .ptall3 .panel_content {
     height:636px;
 }
+.utall1  {
+    height:172px;
+    padding:10px 15px 15px;
+    top:30px;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
 .utall2  {
     height:389px;
     padding:10px 15px 15px;

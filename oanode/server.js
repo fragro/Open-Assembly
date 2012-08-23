@@ -34,15 +34,22 @@ app.listen(nodeport);
 
 function init_user(users, username, sessionid, socketid, room){
   var u1 = users[sessionid];
+  var new_user = true;
   if(u1){
     console.log(u1);
-    u1['chats'][room] = 1;
+    if(u1['chats'][room] == 1){
+      new_user = false;
+    }
+    else{
+      u1['chats'][room] = 1;
+    }
   }
   else{
     var chatlist = {};
     chatlist[room] = 1; 
     users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': chatlist};
   }
+  return new_user;
 }
 
 function init_room(rooms, room, username){
@@ -78,13 +85,17 @@ io.sockets.on('connection', function (socket) {
     // we store the username in the socket session for this client
     socket.username = sessionid;
     // add the client's username to the global list
-    init_user(users, username, sessionid, socket.id, room);
-    init_room(rooms, room, username);
+    new_user = init_user(users, username, sessionid, socket.id, room);
+    if(new_user){
+      init_room(rooms, room, username);
+    }
     //init_chat(rooms, socket.id, room);
     // echo to client they've connected
     socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room, sessionid);
     // echo globally (all clients) that a person has connected
-    socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid );
+    if(new_user){
+      socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid );
+    }
     // update the list of users in chat, client-side
     io.sockets.to(room).emit('updateusers', rooms[room], room);
   });
@@ -95,12 +106,14 @@ io.sockets.on('connection', function (socket) {
     user = users[socket.username]
     if(user){
       chatlist = user['chats']
-      socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid'] );
 
       // update list of users in chat, client-side
       for(var room in chatlist){
+        //first check to 
         delete rooms[room][users[socket.username]['username']]
         io.sockets.to(room).emit('updateusers', rooms[room], room);
+        io.sockets.to(room).emit('updatechat', 'SERVER',  users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid']);
+
       }
       delete users[socket.username];
 

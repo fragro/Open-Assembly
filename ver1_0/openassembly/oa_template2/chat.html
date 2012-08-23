@@ -12,6 +12,7 @@
 <script>
 		var timestamp = new Date();
 		var delta;
+		//new socket for this chat session
 
 		function EvalSound(soundobj) {
 		  var thissound=document.getElementById(soundobj);
@@ -25,7 +26,7 @@
 		};
 
         function disconnect{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}(){
-        	socket.disconnect();
+        	//socket.disconnect();
         }
         //WEBSOCKETS SETUP        
 
@@ -75,6 +76,6 @@
 </audio>
 
 <div style="float:left;width:80%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;">
-	<div id="conversation{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" style="margin-bottom:30px;"></div>
+	<div id="conversation{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" style="margin-bottom:9%;"></div>
 </div>
 

@@ -64,10 +64,16 @@
 
         </div>
         {% if dashobj.boardname == 'Chat' %}
-            <div style="padding:1px;position:relative;margin-top:{% if dashobj.zoom_y == 0 %}142{% endif %}{% if dashobj.zoom_y == 1 %}361{% endif %}{% if dashobj.zoom_y == 2 %}567{% endif %}px;" id="chat_ctrl{{dashobj.pk}}">
-                <input style="width:60%;" id="data{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" />
+        <div style="padding-left:21%;position:relative;margin-top:{% if dashobj.zoom_y == 0 %}36%;{% endif %}{% if dashobj.zoom_y == 1 %}91%;{% endif %}{% if dashobj.zoom_y == 2 %}14%;{% endif %}" id="chat_ctrl{{dashobj.pk}}">
+                <input style="width:75%;" id="data{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" />
                 <input type="button" id="datasend{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" value="send" />
             </div>
+
+            <script>
+            $(function(){
+                $('#chat_ctrl{{dashobj.pk}}').css('marginTop', $('#{{dashobj.pk}}').height()-63 + "px");
+            });
+            </script>
         {% endif %} 
     </div>
 </div>
