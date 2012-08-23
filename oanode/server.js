@@ -67,7 +67,7 @@ io.sockets.on('connection', function (socket) {
   // when the client emits 'sendchat', this listens and executes
   socket.on('sendchat', function (data, room) {
     // we tell the client to execute 'updatechat' with 2 parameters
-      io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room);
+      io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room, users[socket.username]['sessionid']);
 
   });
 
@@ -82,9 +82,9 @@ io.sockets.on('connection', function (socket) {
     init_room(rooms, room, username);
     //init_chat(rooms, socket.id, room);
     // echo to client they've connected
-    socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room);
+    socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room, sessionid);
     // echo globally (all clients) that a person has connected
-    socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room);
+    socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid );
     // update the list of users in chat, client-side
     io.sockets.to(room).emit('updateusers', rooms[room], room);
   });
@@ -95,7 +95,7 @@ io.sockets.on('connection', function (socket) {
     user = users[socket.username]
     if(user){
       chatlist = user['chats']
-      socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room);
+      socket.broadcast.to(room).emit('updatechat', 'SERVER', users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid'] );
 
       // update list of users in chat, client-side
       for(var room in chatlist){

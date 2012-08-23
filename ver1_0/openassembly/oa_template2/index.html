@@ -267,15 +267,22 @@
 
         <script type="text/javascript">
 
+                //WEBSOCKETS!
                 var socket = io.connect('http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}');
-
                 // on connection to server, ask for user's name with an anonymous callback
                 socket.on('connect', function(){
                     // call the server-side function 'adduser' and send one parameter (value of prompt)
 
                     // listener, whenever the server emits 'updatechat', this updates the chat body
-                    socket.on('updatechat', function (username, data, object) {
-                            $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
+                    socket.on('updatechat', function (username, data, object, sessionid) {
+                            console.log(sessionid);
+                            console.log('{{request.session.session_key}}');
+                            if('{{request.session.session_key}}' == sessionid && username !== 'SERVER'){
+                                $('#conversation' + object).append('<b style="color:green;">'+username + ':</b> ' + data + '<br>');
+                            }
+                            else{
+                                $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
+                            }
                             eval('scrollBack' + object + '();');
                             console.log('updatechat');
                             if(!document.hasFocus()){
