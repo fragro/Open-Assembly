@@ -276,10 +276,10 @@
                     // listener, whenever the server emits 'updatechat', this updates the chat body
                     socket.on('updatechat', function (username, data, object, sessionid) {
                             if('{{request.session.session_key}}' == sessionid && username !== 'SERVER'){
-                                $('#conversation' + object).append('<b style="color:green;">'+username + ':</b> ' + data + '<br>');
+                                $('#conversation' + object).append('<b style="color:green;">'+username + ':</b> ' + data.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + '<br>');
                             }
                             else{
-                                $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
+                                $('#conversation' + object).append('<b>'+username + ':</b> ' + data.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + '<br>');
                             }
                             eval('scrollBack' + object + '();');
                             if(!document.hasFocus()){
