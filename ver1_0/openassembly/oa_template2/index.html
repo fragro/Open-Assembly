@@ -275,8 +275,6 @@
 
                     // listener, whenever the server emits 'updatechat', this updates the chat body
                     socket.on('updatechat', function (username, data, object, sessionid) {
-                            console.log(sessionid);
-                            console.log('{{request.session.session_key}}');
                             if('{{request.session.session_key}}' == sessionid && username !== 'SERVER'){
                                 $('#conversation' + object).append('<b style="color:green;">'+username + ':</b> ' + data + '<br>');
                             }
@@ -284,7 +282,6 @@
                                 $('#conversation' + object).append('<b>'+username + ':</b> ' + data + '<br>');
                             }
                             eval('scrollBack' + object + '();');
-                            console.log('updatechat');
                             if(!document.hasFocus()){
                                 var delta  = new Date() - timestamp;
                                 if(delta > 5000 && delta){
