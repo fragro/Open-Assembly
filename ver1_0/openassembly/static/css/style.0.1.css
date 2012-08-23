@@ -388,11 +388,29 @@ html {
     overflow: hidden;
 }
 .ptall2 .panel_content {
-    height:419px;#tab
+    height:419px;
 
 }
 .ptall3 .panel_content {
     height:636px;
+}
+.utall2  {
+    height:389px;
+    padding:10px 15px 15px;
+    top:30px;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.utall3  {
+    height:636px;
+    padding:10px 15px 15px;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    top:30px;
 }
 .panel_header {
     background: #f5f5f5;
