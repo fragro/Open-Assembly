@@ -34,9 +34,11 @@
 			// when the client clicks SEND
 			$('#datasend{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').click( function() {
 				var message = $('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').val();
-				$('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').val('');
-				// tell server to execute 'sendchat' and send along one parameter
-				socket.emit('sendchat', message, '{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}');
+				if(message !== ''){
+					$('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').val('');
+					// tell server to execute 'sendchat' and send along one parameter
+					socket.emit('sendchat', message, '{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}');
+				}
 				$('#data{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}').focus();
 
 			});

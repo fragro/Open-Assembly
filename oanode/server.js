@@ -23,15 +23,16 @@ catch(e){
   var host = 'localhost';
 }
 // 
-// var pub = redis.createClient(port, host);
-// var sub = redis.createClient(port, host);
-// var store = redis.createClient(port, host);
+var pub = redis.createClient(port, host);
+var sub = redis.createClient(port, host);
+var store = redis.createClient(port, host);
 // pub.auth('pass', function(){console.log("adentro! pub")});
 // sub.auth('pass', function(){console.log("adentro! sub")});
 // store.auth('pass', function(){console.log("adentro! store")});
 
 app.listen(nodeport);
 
+//returns new_user, true if this user has joined this chat for the first time this session
 function init_user(users, username, sessionid, socketid, room){
   var u1 = users[sessionid];
   var new_user = true;
@@ -53,6 +54,7 @@ function init_user(users, username, sessionid, socketid, room){
 }
 
 function init_room(rooms, room, username){
+
   var r1 = rooms[room];
   if(r1){
     rooms[room][username] = 1;
@@ -61,6 +63,7 @@ function init_room(rooms, room, username){
     rooms[room] = {};
     rooms[room][username] = 1;
   }
+  return new_room;
 }
 
 //CHAT SOCKETIO CODE
@@ -86,16 +89,14 @@ io.sockets.on('connection', function (socket) {
     socket.username = sessionid;
     // add the client's username to the global list
     new_user = init_user(users, username, sessionid, socket.id, room);
+    init_room(rooms, room, username);
     if(new_user){
-      init_room(rooms, room, username);
-    }
-    //init_chat(rooms, socket.id, room);
-    // echo to client they've connected
-    socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room, sessionid);
-    // echo globally (all clients) that a person has connected
-    if(new_user){
+      //init_chat(rooms, socket.id, room);
+      // echo to client they've connected
+      // echo globally (all clients) that a person has connected
       socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid, 'connect' );
     }
+    socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room, sessionid);
     // update the list of users in chat, client-side
     io.sockets.to(room).emit('updateusers', rooms[room], room);
   });
