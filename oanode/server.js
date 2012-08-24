@@ -94,7 +94,7 @@ io.sockets.on('connection', function (socket) {
     socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room, sessionid);
     // echo globally (all clients) that a person has connected
     if(new_user){
-      socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid );
+      socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid, 'connect' );
     }
     // update the list of users in chat, client-side
     io.sockets.to(room).emit('updateusers', rooms[room], room);
@@ -112,7 +112,7 @@ io.sockets.on('connection', function (socket) {
         //first check to 
         delete rooms[room][users[socket.username]['username']]
         io.sockets.to(room).emit('updateusers', rooms[room], room);
-        io.sockets.to(room).emit('updatechat', 'SERVER',  users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid']);
+        io.sockets.to(room).emit('updatechat', 'SERVER',  users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid'], 'disconnect');
 
       }
       delete users[socket.username];

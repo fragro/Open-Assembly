@@ -242,7 +242,16 @@
             </div>
             <div id="tab_width"></div> 
         </div>
-        
+ 
+
+        <audio id="audio1" src="/static/sounds/tabla.wav" preload="auto" autobuffer>
+        </audio>
+
+        <audio id="connect" src="/static/sounds/connect.wav" preload="auto" autobuffer>
+        </audio>
+
+        <audio id="disconnect" src="/static/sounds/disconnect.wav" preload="auto" autobuffer>
+        </audio>       
          <!-- Scripts -->
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
         
@@ -274,7 +283,7 @@
                     // call the server-side function 'adduser' and send one parameter (value of prompt)
                 });
                 // listener, whenever the server emits 'updatechat', this updates the chat body
-                socket.on('updatechat', function (username, data, object, sessionid) {
+                socket.on('updatechat', function (username, data, object, sessionid, ifconnect) {
                         if('{{request.session.session_key}}' == sessionid && username !== 'SERVER'){
                             $('#conversation' + object).append('<b style="color:green;">'+username + ':</b> ' + data.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").linkify() + '<br>');
                         }
@@ -282,11 +291,17 @@
                             $('#conversation' + object).append('<b>'+username + ':</b> ' + data.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").linkify() + '<br>');
                         }
                         eval('scrollBack' + object + '();');
-                        if(!document.hasFocus()){
-                            var delta  = new Date() - timestamp;
-                            if(delta > 5000 && delta){
-                                EvalSound('audio1');
-                                timestamp = new Date();
+
+                        if($('#chatsounds'  + object).attr('class') == 'true'){
+                            if(!document.hasFocus() && !ifconnect){
+                                var delta  = new Date() - timestamp;
+                                if(delta > 5000 && delta){
+                                    EvalSound('audio1');
+                                    timestamp = new Date();
+                                }
+                            }
+                            if(ifconnect){
+                                EvalSound(ifconnect);
                             }
                         }
                 });

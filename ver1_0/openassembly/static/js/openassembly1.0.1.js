@@ -854,3 +854,9 @@ if(!String.linkify) {
             .replace(emailAddressPattern, '<a href="mailto:$&">$&</a>');
     };
 }
+
+function EvalSound(soundobj) {
+      var thissound=document.getElementById(soundobj);
+      thissound.src = thissound.src;
+      thissound.play();
+}

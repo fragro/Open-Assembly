@@ -14,21 +14,10 @@
 		var delta;
 		//new socket for this chat session
 
-		function EvalSound(soundobj) {
-		  var thissound=document.getElementById(soundobj);
-		  thissound.src = '/static/sounds/tabla.wav'
-		  thissound.play();
-		}
-
 		function scrollBack{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}(){
 			//console.log($('#panel_inner{{dashobj.pk}}')._scrollable());
 			$('#panel_inner{{dashobj.pk}}').scrollTo('max');
 		};
-
-        function disconnect{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}(){
-        	//socket.disconnect();
-        }
-        //WEBSOCKETS SETUP        
 
 		// on load of page
 		$(function(){
@@ -72,10 +61,7 @@
 
 </script>
 
-<audio id="audio1" src="/static/sounds/tabla.wav" preload="auto" autobuffer>
-</audio>
-
 <div style="float:left;width:80%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;">
 	<div id="conversation{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" style="margin-bottom:9%;"></div>
 </div>
-
+<div style="display:none;" id="chatsounds{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" class="true"></div>
