@@ -33,18 +33,6 @@ var pub = redis.createClient(port, host);
 console.log(env['DOTCLOUD_CACHE_REDIS_PASSWORD']);
 pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
 
-rc.on('ready', function(){
-  console.log('this doesn\'t get printed');
-  // move this out of ready handler
-  // rc.auth('password');
-});
-
-// can't hurt to attach an error handler as well, if you want to
-rc.on('error', function (e) {
-  console.log(e);
-});
-
-
 //var sub = redis.createClient(port, host);
 //var store = redis.createClient(port, host);
 // pub.auth('pass', function(){console.log("adentro! pub")});
