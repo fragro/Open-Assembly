@@ -4,13 +4,15 @@ var app = require('express').createServer(),
     redis = require('socket.io/node_modules/redis'),
     io = require('socket.io').listen(app);
 
+redis.debug_mode = true;
+
 process.on('SIGTERM', function () {
   console.log('Got SIGTERM, exiting...');
   process.exit(0);
 });
 
-//dotcloud environment parametes for hooking into our own redis server
 try{
+  //dotcloud environment parametes for hooking into our own redis server
   var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
   var port = env['DOTCLOUD_CACHE_REDIS_PORT'];
   var host = env['DOTCLOUD_CACHE_REDIS_HOST'];
@@ -18,6 +20,7 @@ try{
 
  }
 catch(e){
+  //running on dev server
   var nodeport = 8080;
   var port = 6379;
   var host = 'localhost';
@@ -27,7 +30,21 @@ console.log(env['DOTCLOUD_CACHE_REDIS_PORT']);
 console.log(env['DOTCLOUD_CACHE_REDIS_HOST']);
 
 var pub = redis.createClient(port, host);
+console.log('output');
 pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSSWORD'])
+
+rc.on('ready', function(){
+  console.log('this doesn\'t get printed');
+  // move this out of ready handler
+  // rc.auth('password');
+});
+
+// can't hurt to attach an error handler as well, if you want to
+rc.on('error', function (e) {
+  console.log(e);
+});
+
+
 //var sub = redis.createClient(port, host);
 //var store = redis.createClient(port, host);
 // pub.auth('pass', function(){console.log("adentro! pub")});
