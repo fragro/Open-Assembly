@@ -27,7 +27,7 @@ console.log(env['DOTCLOUD_CACHE_REDIS_PORT']);
 console.log(env['DOTCLOUD_CACHE_REDIS_HOST']);
 
 var pub = redis.createClient(port, host);
-pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSSWORD'], callback)
+pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSSWORD'])
 //var sub = redis.createClient(port, host);
 //var store = redis.createClient(port, host);
 // pub.auth('pass', function(){console.log("adentro! pub")});
