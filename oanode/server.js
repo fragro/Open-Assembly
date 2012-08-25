@@ -17,7 +17,9 @@ try{
   var port = env['DOTCLOUD_CACHE_REDIS_PORT'];
   var host = env['DOTCLOUD_CACHE_REDIS_HOST'];
   var nodeport = 42801; 
-
+  //connect to redis
+  var pub = redis.createClient(port, host);
+  pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
  }
 catch(e){
   //running on dev server
@@ -26,12 +28,7 @@ catch(e){
   var host = 'localhost';
 }
 // 
-console.log(env['DOTCLOUD_CACHE_REDIS_PORT']);
-console.log(env['DOTCLOUD_CACHE_REDIS_HOST']);
 
-var pub = redis.createClient(port, host);
-console.log(env['DOTCLOUD_CACHE_REDIS_PASSWORD']);
-pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
 
 //var sub = redis.createClient(port, host);
 //var store = redis.createClient(port, host);
@@ -72,7 +69,6 @@ function init_room(rooms, room, username){
     rooms[room] = {};
     rooms[room][username] = 1;
   }
-  return new_room;
 }
 
 //CHAT SOCKETIO CODE
