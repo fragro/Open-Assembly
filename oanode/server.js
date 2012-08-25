@@ -30,8 +30,8 @@ console.log(env['DOTCLOUD_CACHE_REDIS_PORT']);
 console.log(env['DOTCLOUD_CACHE_REDIS_HOST']);
 
 var pub = redis.createClient(port, host);
-console.log('output');
-pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSSWORD'])
+console.log(env['DOTCLOUD_CACHE_REDIS_PASSWORD']);
+pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
 
 rc.on('ready', function(){
   console.log('this doesn\'t get printed');
