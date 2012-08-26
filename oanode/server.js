@@ -82,8 +82,12 @@ io.sockets.on('connection', function (socket) {
   // when the client emits 'sendchat', this listens and executes
   socket.on('sendchat', function (data, room) {
     // we tell the client to execute 'updatechat' with 2 parameters
-      io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room, users[socket.username]['sessionid']);
-
+      try{
+        io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room, users[socket.username]['sessionid']);
+      }
+      catch(err){
+        io.sockets.socket(socket.id).emit('updatechat', 'SERVER', 'Still connecting. Wait a few seconds please.', room)
+      }
   });
 
   // when the client emits 'adduser', this listens and executes
