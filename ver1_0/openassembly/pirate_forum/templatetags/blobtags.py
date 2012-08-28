@@ -701,7 +701,7 @@ def pp_blob_edits(context, nodelist, *args, **kwargs):
                 namespace['latest_edit_pk'] = edits[cnt-edit_num].pk
                 #namespace['edits'] = edits[int(start):int(end)]
         namespace['count'] = cnt
-        namespace['edit_itr'] = cnt + 1 - edit_num
+        namespace['edit_itr'] = cnt+  1 - edit_num
 
     output = nodelist.render(context)
     context.pop()

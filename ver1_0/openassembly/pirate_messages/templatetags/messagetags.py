@@ -100,6 +100,7 @@ def pp_message_form(context, nodelist, *args, **kwargs):
             #raise HttpRedirectException(HttpResponseRedirect(receiver.get_absolute_url()))
             form = MessageForm()
             namespace['complete'] = True
+            notification_send.send(sender=mes.sender, obj=mes, reply_to=namespace['reply'])
 
     else:
         form = MessageForm()
