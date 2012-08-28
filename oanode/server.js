@@ -26,11 +26,11 @@ catch(e){
   var nodeport = 8080;
   var port = 6379;
   var host = 'localhost';
+  var sub = redis.createClient(port, host);
 }
 // 
 
 
-//var sub = redis.createClient(port, host);
 //var store = redis.createClient(port, host);
 // pub.auth('pass', function(){console.log("adentro! pub")});
 // sub.auth('pass', function(){console.log("adentro! sub")});
@@ -40,23 +40,28 @@ app.listen(nodeport);
 
 //returns new_user, true if this user has joined this chat for the first time this session
 function init_user(users, username, sessionid, socketid, room){
-  var u1 = users[sessionid];
-  var new_user = true;
-  if(u1){
-    console.log(u1);
-    if(u1['chats'][room] == 1){
-      new_user = false;
+  if(room != null){
+    var u1 = users[sessionid];
+    var new_user = true;
+    if(u1){
+      console.log(u1);
+      if(u1['chats'][room] == 1){
+        new_user = false;
+      }
+      else{
+        u1['chats'][room] = 1;
+      }
     }
     else{
-      u1['chats'][room] = 1;
+      var chatlist = {};
+      chatlist[room] = 1; 
+      users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': chatlist};
     }
+    return new_user;
   }
   else{
-    var chatlist = {};
-    chatlist[room] = 1; 
-    users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': chatlist};
+    users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': {}};
   }
-  return new_user;
 }
 
 function init_room(rooms, room, username){
@@ -72,10 +77,21 @@ function init_room(rooms, room, username){
 }
 
 //CHAT SOCKETIO CODE
-// usernames which are currently connected to the chat
+// usernames which are currently connected
 var users = {};
 var rooms = {};
-//list of users for each chat room to direct messages
+
+
+//when redis sends us a message about a channel we are subscribed to: logic
+sub.on("message", function (channel, message) {
+    console.log("client1 channel " + channel + ": " + message);
+    try{
+      io.sockets.socket(users[channel]['socketid']).emit('updateUI', message)
+    }
+    catch(err){
+      
+    }
+});
 
 io.sockets.on('connection', function (socket) {
 
@@ -86,8 +102,16 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room, users[socket.username]['sessionid']);
       }
       catch(err){
-        io.sockets.socket(socket.id).emit('updatechat', 'SERVER', 'Still connecting. Wait a few seconds please.', room)
+        io.sockets.socket(socket.id).emit('updatechat', 'SERVER', 'Still connecting. Wait a few seconds please.', room);
       }
+  });
+
+  //when the user subscribes to dynamic events through socket.io, register the redis SUB
+  socket.on('subscribe', function(username, sessionid){
+    console.log('subscribed to ' + username);
+    //initialize user so we can responsd to the right socket for real-time events
+    init_user(users, username, sessionid, socket.id, null);
+    sub.subscribe(sessionid);
   });
 
   // when the client emits 'adduser', this listens and executes
@@ -100,9 +124,7 @@ io.sockets.on('connection', function (socket) {
     new_user = init_user(users, username, sessionid, socket.id, room);
     init_room(rooms, room, username);
     if(new_user){
-      //init_chat(rooms, socket.id, room);
-      // echo to client they've connected
-      // echo globally (all clients) that a person has connected
+      // echo globally (all clients in that room) that a person has connected
       socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid, 'connect' );
     }
     socket.to(room).emit('updatechat', 'SERVER', 'you have connected', room, sessionid);
