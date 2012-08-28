@@ -8,6 +8,8 @@ db:
   type: mongodb
 worker:
   type: python-worker
+  environment:
+    SERVICE_NAME: worker
 cache:
   type: redis
 nodejs:
