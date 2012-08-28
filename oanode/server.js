@@ -18,8 +18,8 @@ try{
   var host = env['DOTCLOUD_CACHE_REDIS_HOST'];
   var nodeport = 42801; 
   //connect to redis
-  var pub = redis.createClient(port, host);
-  pub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
+  var sub = redis.createClient(port, host);
+  sub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
  }
 catch(e){
   //running on dev server
@@ -89,7 +89,7 @@ sub.on("message", function (channel, message) {
       io.sockets.socket(users[channel]['socketid']).emit('updateUI', message)
     }
     catch(err){
-      
+
     }
 });
 
