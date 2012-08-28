@@ -68,7 +68,7 @@ try:
     BROKER_VHOST = 0
     BROKER_DB = 0
 
-    CELERY_RESULT_BACKEND = BROKER_URL
+    CELERY_RESULT_BACKEND = 'redis'
     REDIS_CONNECT_RETRY = True
 
     try:
