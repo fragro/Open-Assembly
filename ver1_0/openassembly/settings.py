@@ -66,6 +66,7 @@ try:
     BROKER_USER = env['DOTCLOUD_CACHE_REDIS_LOGIN']
     BROKER_PASSWORD = env['DOTCLOUD_CACHE_REDIS_PASSWORD']
     BROKER_VHOST = 0
+    BROKER_DB = 0
     CELERY_RESULT_BACKEND = "redis"
     REDIS_CONNECT_RETRY = True
 
@@ -113,7 +114,14 @@ except:
     MEDIA_ROOT = 'static_dev_serve/media/'
     MEDIA_URL = '/media/'
 
+    BROKER_HOST = 'localhost'
+    BROKER_PORT = 6379
     BROKER_URL = 'redis://localhost:6379/0'
+    BROKER_DB = 0
+    BROKER_PASSWORD = ''
+
+    CELERY_RESULT_BACKEND = "redis"
+    REDIS_CONNECT_RETRY = True
 
     DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
     EMAIL_USE_TLS = True
@@ -256,7 +264,7 @@ DEFAULT_TRACKING_TEMPLATE = 'map.html'
 
 # we also are going to use redis for our session cache as well.
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-
+SESSION_COOKIE_SECURE = True
 
 JOHNNY_MIDDLEWARE_KEY_PREFIX = 'jc_openassembly'
 

@@ -13,6 +13,8 @@ from tagging.models import Tag, TaggedItem
 from django.contrib.auth.models import User
 from pirate_forum.models import ForumDimension
 from pirate_topics.models import Topic, MyGroup
+from redis_func import redis_client
+import json
 
 
 # Create your models here.
@@ -230,7 +232,7 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
 
 
 @task(ignore_result=True)
-def update_rankings(cons):
+def update_rankings(sender, cons):
 
     #update reporting percentage
     upvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__gt=6)
@@ -290,13 +292,17 @@ def update_rankings(cons):
             if dim == 'best':
                 setattr(cons, 'best', sc)
             cons.save()
+    ##Now we want to publish the vote event in the redis for nodejs to update
+    print '*' * 50
+    print 'publishing to: ' + str(cons.content_object.user.username)
+    redis_client().publish(sender, json.dumps({'message': 'Someone voted on ' + str(cons.content_object.summary), 'type': 'vote'}))
 
 #When a vote is created via the consensus engine, this callback updates
 #the issue ranked score, for each dimension
 def vote_created_callback(sender, **kwargs):
     #udpate hot
     cons = kwargs.pop('parent', None)
-    update_rankings.apply_async(args=[cons])
+    update_rankings.apply_async(args=[sender, cons])
 
 
 vote_created.connect(vote_created_callback)

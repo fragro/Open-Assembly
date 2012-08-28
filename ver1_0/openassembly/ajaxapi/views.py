@@ -717,14 +717,14 @@ def vote(request, pk, vote, votemodel, vote_type_str, register):
                 old.save()
                 if register:
                     user_cons.register_vote(old, 'change', old_vote=old_vote_pos)
-                vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
+                vote_created_callback(sender=request.session.session_key, parent=consensus, vote_type=vote)
                 consensus.register_vote(old, 'change', old_vote=old_vote_pos)
         except:
             st, is_new = votemodel.objects.get_or_create(user=request.user, parent=consensus, vote=vote, object_pk=pk, parent_pk=consensus.parent_pk)
             st.save()
             check_badges(consensus.content_object.user, votemodel, pk)
             # register reputation for voting
-            vote_created_callback(sender=request.user, parent=consensus, vote_type=vote)
+            vote_created_callback(sender=request.session.session_key, parent=consensus, vote_type=vote)
             if register:
                 aso_rep_event.send(sender=request.user, event_score=1, user=consensus.content_object.user,
                                 initiator=request.user, dimension=ReputationDimension.objects.get('Vote'),
