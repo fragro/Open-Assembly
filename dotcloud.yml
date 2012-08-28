@@ -9,8 +9,6 @@ db:
 worker:
   approot: ver1_0
   type: python-worker
-  environment:
-    SERVICE_NAME: worker
 cache:
   type: redis
 nodejs:

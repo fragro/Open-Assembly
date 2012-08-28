@@ -8,7 +8,7 @@ app_name=openassembly
 data_dir=$HOME/current
 
 dotcloud_get_env() {
-    sed -n "/$1/ s/.*: \"\(.*\)\".*/\1/p" < "$HOME/environment.json"
+    sed -n '/SERVICE_NAME/ s/.*: "\(.*\)".*/\1/p' < "$HOME/environment.json"
 }
 
 setup_django() {
