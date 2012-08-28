@@ -273,7 +273,227 @@
 
         <!-- lots of index.html javascript moved to other files for sanity -->
         {% include 'etc/socket_js.html' %}
-        {% include 'etc/document_js.html' %}
+
+        <script type="text/javascript">
+
+
+            $(document).ready(function(){
+
+                try{
+                    sessionStorage.clear();
+                }
+                catch(err){
+                    alert(err);
+                }
+                {% if request.user.is_authenticated %}
+                    tabRemove('pregister');
+                {% endif %}
+
+                        
+                $(document).ready(function(){
+
+                    $('#loading')
+                    .hide()  // hide it initially
+                    .ajaxStart(function() {
+                        $(this).show();
+                    })
+                    .ajaxStop(function() {
+                        $(this).hide();
+                    });
+                           
+                });
+
+                $("#dynamic").click(function() {
+                    $('#dynamic').css({'top': '-200px'});
+                });
+
+
+                //SET INITIAL PAGE LOAD ITEM AS TRUE
+                var hash = location.href;
+                var dom = $('#domain').html();
+                var tempkey = hash.replace(dom, '');
+                tempkey = tempkey.replace('http:', '');
+                tempkey = tempkey.replace(/\//g,"");
+                if(tempkey !== ''){
+                    sessionStorage.setItem(tempkey, 'True');
+                }
+
+
+                // Delete panel
+                $('.delete_panel').click(function(){
+                    $(this).closest('.panel').remove();
+                    $('#panels').masonry('reload');
+                });
+                
+                // fire this every time a page is added or removed
+                //hrefLess();
+                
+                // Creates Tabs
+                // $.each($('#pages .page'), function(){
+                //     var $this = $(this);
+                //         page_id = $this.attr('id');
+                //         $tabs = $('#tabs');
+                //         $template = $('.tab_template');
+                //         $tab_ruler = $('#tab_ruler');
+                //         page_title = $this.find('.page_title').html();
+                    
+                //     $template.find('.tab_title').html(page_title);
+                //     $template.find('.min_max').attr('id', page_id);
+                //     $tab_ruler.append($template.html());
+                // });
+                
+                
+                // Removes Bookmark
+                $('.bookmark_dropdown .icon-remove-sign').click(function(){
+                    var $bookmark = $(this).closest('li');
+                    $bookmark.fadeOut(600, function(){
+                        $bookmark.remove();
+                    });
+                });
+
+                rememberTabs();
+
+                // fire every time window is resized
+                $(window).resize(function(){
+                    rememberTabs();
+                    
+                });
+
+                // Closes/removes Page/Tab
+                function tabRemove(tab){
+                    tabobj = $('#tab' + tab);
+                    tabobj.remove();
+                    $('#page' + tab).remove();
+                    sessionStorage.removeItem(tab);
+                    var curtab = $('#current_tab').html();
+                    if (curtab == tab){
+                        $('#current_tab').html('');
+                        $('#overlay').hide();
+                        $("html").css("overflow", "auto");
+                    }
+                    rememberTabs();
+                };
+                
+                // Sort Panels
+                $('#panels').sortable({
+                    handle: '.panel_header',
+                    scroll: false,
+                    cursor: 'move',
+                    helper: 'clone'
+                });
+
+                
+                // Masonry Hack - http://jsfiddle.net/desandro/XMfwZ/1/
+                var t = $('#panels');
+                
+                t.masonry({
+                    itemSelector: '.panel',
+                    isResizable: true,
+                    columnWidth: 1
+                })
+                
+                t.sortable({
+                    distance: 12,
+                    forcePlaceholderSize: true,
+                    items: '.panel',
+                    placeholder: 'placeholder panel',
+                    tolerance: 'pointer',
+                    start: function(event, ui) {
+                        ui.item.addClass('dragging').removeClass('panel');
+                        if ( ui.item.hasClass('panel') ) {
+                            ui.placeholder.addClass('panel');
+                        }
+                        ui.item.parent().masonry('reload')
+                        },
+                        change: function(event, ui) {
+                            ui.item.parent().masonry('reload');
+
+                        },
+                        stop: function(event, ui) { 
+                        ui.item.removeClass('dragging').addClass('panel');
+                        var result = String(t.sortable('toArray'));
+                        sort_dashboard(result);
+                        ui.item.parent().masonry('reload');
+
+
+                    }
+                });
+
+                //This lets us load chunk by chunk with AJAX
+                $(window).bind("popstate", function(evt) {
+                 var state = evt.originalEvent.state;
+                     if (state && state.module === "leave") {
+                           if(state.url == '/'){
+                            minimizeAll();
+                           }
+                           getContent();
+                     }
+                     if (state && state.module === "nobbq") {
+                           js_redirect(state.url);
+                     }
+                });
+                //we're popping states for nobbq events that should be loaded the usual way...
+
+                if (history.pushState) {
+                    $('body').delegate('a', 'click', function (e) {
+                        var that = $(this);
+                        if(that.hasClass('nobbq')){
+                            history.replaceState({load:true, module:'nobbq', url: that.data('href')}, '');
+                            js_redirect(that.data('href'));
+                        }
+                        var that = $(this);
+                        var url = (typeof that.data('href') != 'undefined') ? that.data('href').replace('{{DOMAIN}}', '') : '';
+                        console.log(that.data('href'));
+                        if (allowPush(e, url, that)) {
+                            e.preventDefault();
+                            history.pushState({load:true, module:'leave', url: url}, '', url);
+                            getContent();            
+                        }
+                        else{ 
+                            //need to load some error msg
+                        }
+                    });
+                };
+                //press escape to remove content
+                function keyDown(e) {
+                    var keycode = e.which
+                    if(keycode == 27){
+                        //remove the old page
+                        var curtab = $('#current_tab').html();
+                        if(curtab !== ''){
+                            $('#overlay').hide();
+                            $("html").css("overflow", "auto");
+                            $('#current_tab').html('');
+                            $('#page' + curtab).removeClass('current');
+                            $('#page' + curtab).hide();
+                            $('#min_max' + curtab).removeClass('current-icon');
+                            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+                            $('#tab' + curtab).removeClass('current-icon');
+                        }
+                    }
+                }
+
+                document.onkeydown = keyDown
+                document.captureEvents(Event.KEYDOWN)
+
+            });
+    
+            $(window).load(function(){
+                $('#panels').masonry('reload');
+            });
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-21219475-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+        </script>    
+
     <div class="notificationbox" id="dynamic">EXAMPLE TEXT</div>
 
     </body>
