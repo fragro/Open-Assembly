@@ -96,7 +96,7 @@ def add_board(request):
                 html = unicode(v.prettify())
             results.update({'FAIL': False, 'html': html, 'dashpk': dashobj.pk, 'dashzoom_y': dashobj.zoom_y, 'dashzoom_x': dashobj.zoom_x, 'rendertype': renderdict['rendertype']})
     except Exception, e:
-        results = {'err': e}
+        results = {'err': str(e)}
     return HttpResponse(simplejson.dumps(results),
                 mimetype='application/json')
 

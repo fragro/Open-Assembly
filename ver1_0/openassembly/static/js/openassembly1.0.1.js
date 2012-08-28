@@ -508,7 +508,7 @@ function increase_zoom(obj_pk, dim, path, dash_id, type, obj){
         adjustchat(obj_pk);
       }
       if(type == 'Stream'){
-        refresh_size(path, dash_id);
+        refresh_size(path, dash_id, obj_pk);
       }
   }, "json");
 }
@@ -523,7 +523,7 @@ function decrease_zoom(obj_pk, dim, path, dash_id, type, obj){
         $('#user_container' + obj).css('height', $('#' + obj_pk).height()-30 + "px");
       }
       if(type == 'Stream'){
-        refresh_size(path, dash_id);
+        refresh_size(path, dash_id, obj_pk);
       }
   }, "json");
 }
@@ -540,7 +540,6 @@ function resort_dashboard(dash_id, sort_key, dashobjpk){
       }
       if(data.FAIL === false){
           //chat window should be resized
-          if 
           refresh_dashboard(data.plank, data.dash_id, dashobjpk);
       }
   }, "json");
@@ -574,10 +573,10 @@ function refresh_dashboard(path, dash_id, dashobjpk, start, end){
 
 }
 
-function refresh_size(path, dash_id){
+function refresh_size(path, dash_id, dashobjpk){
   //special case for non-logged in user
 
-      $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null},
+      $.post("/add_board/", {path: path, dashboard_id: dash_id, type: 'refresh', boardname: null, dashobj: dashobjpk},
       function(data) {
           if(data.FAIL === true){
              //$(ui.item).fadeOut('slow', function() {
