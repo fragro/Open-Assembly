@@ -295,7 +295,8 @@ def update_rankings(sender, cons):
     ##Now we want to publish the vote event in the redis for nodejs to update
     print '*' * 50
     print 'publishing to: ' + str(cons.content_object.user.username)
-    redis_client().publish(sender, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
+    if sender != 'null':
+        redis_client().publish(sender, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
 
 #When a vote is created via the consensus engine, this callback updates
 #the issue ranked score, for each dimension
