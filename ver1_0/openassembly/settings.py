@@ -264,7 +264,6 @@ DEFAULT_TRACKING_TEMPLATE = 'map.html'
 
 # we also are going to use redis for our session cache as well.
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-SESSION_COOKIE_SECURE = True
 
 JOHNNY_MIDDLEWARE_KEY_PREFIX = 'jc_openassembly'
 
