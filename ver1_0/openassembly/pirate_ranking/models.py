@@ -296,7 +296,7 @@ def update_rankings(sender, cons):
     print '*' * 50
     print 'publishing to: ' + str(cons.content_object.user.username)
     if sender != 'null':
-        redis_client().publish(sender, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
+        redis_client().publish(cons.content_object.user.username, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
 
 #When a vote is created via the consensus engine, this callback updates
 #the issue ranked score, for each dimension

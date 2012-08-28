@@ -15,7 +15,6 @@ import settings
 @detect_mobile
 def welcome_page(request):
     #if request.mobile:
-    print request
     #    return HttpResponseRedirect('mobile.html')
     t = loader.get_template('index.html')
     c = Context({'request': request, 'settings': settings})

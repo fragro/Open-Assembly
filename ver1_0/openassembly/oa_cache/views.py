@@ -438,6 +438,7 @@ decreased the latency of the system.
 
 """
     if request.method == 'GET':
+        request.session.set_expiry(0)
         data = {'output': []}
         hashed = request.GET.get('hash', None)
         if hashed is None:
