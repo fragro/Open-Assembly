@@ -59,7 +59,7 @@ try:
     djcelery.setup_loader()
 
     BROKER_BACKEND = "redis"
-    BROKER_URL = 'redis://' + env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
+    BROKER_URL = 'redis://' + env['DOTCLOUD_CACHE_REDIS_PASSWORD'] + '@' + env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
 
     BROKER_HOST = env['DOTCLOUD_CACHE_REDIS_HOST']
     BROKER_PORT = int(env['DOTCLOUD_CACHE_REDIS_PORT'])
