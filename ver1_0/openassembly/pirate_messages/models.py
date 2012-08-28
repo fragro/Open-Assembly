@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.template import Context, Template
 import datetime
 import django.dispatch
 from django.contrib import admin
@@ -15,7 +16,8 @@ import settings
 from pirate_comments.models import Comment
 from celery.task import task
 from pirate_topics.models import Topic, get_root
-
+from redis_func import redis_client
+import json
 
 class Message(models.Model):
     sender = models.ForeignKey(User, null=True, related_name="message_sender")
@@ -30,6 +32,11 @@ class Message(models.Model):
             return str(self.description[0:100] + '[...]')
         else:
             return str(self.description)
+
+    def get_absolute_url(self):
+        t = Template("{% load pp_url%}{% pp_url template='inbox.html' object=object %}")
+        c = Context({"object": self.receiver})
+        return t.render(c)
 
 
 class Notification(models.Model):
@@ -76,11 +83,22 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
     except:
         send_email = True
     content_type = ContentType.objects.get_for_model(obj)
-    rep_type = ContentType.objects.get_for_model(reply_to)
+    if reply_to is not None:
+        rep_type = ContentType.objects.get_for_model(reply_to)
+    else:
+        rep_type = None
     user_type = ContentType.objects.get_for_model(User)
     if content_type is not user_type and rep_type is not user_type:
-        if obj.user != reply_to.user:
-            path = obj.get_absolute_url()
+        path = obj.get_absolute_url()
+        if str(content_type) == 'message':
+            if send_email:
+                    notification.send([obj.receiver], "message_received", {"from_user": obj.sender, "user_url": settings.DOMAIN + obj.sender.get_absolute_url(),
+                    "notice_message": obj.sender.username  + "said<br>" + obj.description,
+                    "path": settings.DOMAIN + path})
+            redis_client().publish(obj.receiver, json.dumps({'message': obj.sender.username + ' said',
+                'object': str(obj.description), 'type': 'argument', 'object_pk': str(obj.pk)}))
+        elif obj.user != reply_to.user:
+            #redis_client().publish(cons.content_object.user.username, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
             #if this notification is a comment_reply
             if str(content_type) == 'comment':
                 if str(rep_type) == 'comment':
@@ -98,6 +116,8 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                     tt = str(obj.text)
                 text = str(obj.user.username) + " replied to your " + str(rep_type) + ": " + tt
                 link = obj.get_absolute_url()
+                redis_client().publish(reply_to.user.username, json.dumps({'message': obj.user.username + " commented on ",
+                    'object': str(summ), 'type': 'argument', 'object_pk': str(obj.pk)}))
 
             #if notification is an action_reply
             elif str(content_type) == 'action taken':
@@ -116,6 +136,9 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                         "path": settings.DOMAIN + path})
                 text = str(obj.user.username) + " created an argument for your " + str(rep_type)
                 link = reply_to.get_absolute_url()
+                #push to nodejs through redis
+                redis_client().publish(reply_to.user.username, json.dumps({'message': obj.user.username + ' made an argument on',
+                        'object': str(reply_to.summary), 'type': 'argument', 'object_pk': str(obj.pk)}))
 
             #if notification is badge_received
 
@@ -136,7 +159,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
             #if notification is support_Created
 
             #if notification is an argument_reply
-
+  
     if link is not None and text is not None:
         if user_type != rep_type:
             notif = Notification(receiver=reply_to.user, sender=obj.user, text=text,
