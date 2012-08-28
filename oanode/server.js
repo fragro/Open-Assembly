@@ -20,6 +20,9 @@ try{
   //connect to redis
   var sub = redis.createClient(port, host);
   sub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
+  var store = redis.createClient(port, host); 
+  store.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
+
  }
 catch(e){
   //running on dev server
@@ -27,6 +30,7 @@ catch(e){
   var port = 6379;
   var host = 'localhost';
   var sub = redis.createClient(port, host);
+  var store = redis.createClient(port, host); 
 }
 // 
 
@@ -86,7 +90,13 @@ var rooms = {};
 sub.on("message", function (channel, message) {
     console.log("client1 channel " + channel + ": " + message);
     try{
-      io.sockets.socket(users[channel]['socketid']).emit('updateUI', message)
+      store.get(channel, function (err, reply) {
+        console.log('reply from redis: ' + reply.toString());
+        var sessionid = reply.toString();
+        console.log(users[sessionid]['socketid']);
+        io.sockets.socket(users[sessionid]['socketid']).emit('updateUI', message);
+      });
+
     }
     catch(err){
 
@@ -111,7 +121,8 @@ io.sockets.on('connection', function (socket) {
     console.log('subscribed to ' + username);
     //initialize user so we can responsd to the right socket for real-time events
     init_user(users, username, sessionid, socket.id, null);
-    sub.subscribe(sessionid);
+    sub.subscribe(username);
+    store.set(username, sessionid);
   });
 
   // when the client emits 'adduser', this listens and executes
@@ -147,6 +158,7 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(room).emit('updatechat', 'SERVER',  users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid'], 'disconnect');
 
       }
+      store.del(users[socket.username]['username'])
       delete users[socket.username];
 
     }
