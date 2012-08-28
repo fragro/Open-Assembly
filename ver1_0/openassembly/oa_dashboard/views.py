@@ -59,44 +59,46 @@ def add_board(request):
         #needs to popup registration dialog instead
         return HttpResponse(simplejson.dumps({'FAIL': True}),
                                 mimetype='application/json')
-    results = {}
-    if request.method == 'POST':
-        path = request.POST[u'path']
-        dashboard_id = request.POST[u'dashboard_id']
-        dashpk = request.POST.get(u'dashobj', None)
-        functype = request.POST[u'type']
-        boardname = request.POST[u'boardname']
-        start = request.POST.get('start', 0)
-        key, rendertype, db = interpret_hash(path)
-        dimension = db.get('DIM_KEY', None)
-        end = request.POST.get('end', 20)
-        #for pagination
+    try:
+        results = {}
+        if request.method == 'POST':
+            path = request.POST[u'path']
+            dashboard_id = request.POST[u'dashboard_id']
+            dashpk = request.POST.get(u'dashobj', None)
+            functype = request.POST[u'type']
+            boardname = request.POST[u'boardname']
+            start = request.POST.get('start', 0)
+            key, rendertype, db = interpret_hash(path)
+            dimension = db.get('DIM_KEY', None)
+            end = request.POST.get('end', 20)
+            #for pagination
 
-        if functype != 'refresh':
-            dashobj = save_board(path, dashboard_id, request.user, boardname)
-        else:
-            dashobj = DashboardPanel.objects.get(pk=dashpk)
-        path += '/s-' + str(start) + '/e-' + str(end)
+            if functype != 'refresh':
+                dashobj = save_board(path, dashboard_id, request.user, boardname)
+            else:
+                dashobj = DashboardPanel.objects.get(pk=dashpk)
+            path += '/s-' + str(start) + '/e-' + str(end)
 
-        renderdict = render_hashed(request, path, request.user, extracontext={'dimension': dimension, 'dashobj': dashobj, 'start': int(start), 'end': int(end)})
+            renderdict = render_hashed(request, path, request.user, extracontext={'dimension': dimension, 'dashobj': dashobj, 'start': int(start), 'end': int(end)})
 
-        if renderdict['rendertype'] == 'chat':
-            width = render_to_string('stream/stream_width.html', {'dashobj': dashobj})
-            height = render_to_string('stream/stream_height.html', {'dashobj': dashobj})
-            results = {'width': width, 'height': height}
-        if renderdict['rendertype'] in renderdict['counts']:
-            count = renderdict['counts'][renderdict['rendertype']]
-        else:
-            count = None
-        html = render_to_string('nav/board_template.html', {'dimension': dimension, 'board': renderdict['renders'], 'obj': renderdict['object'], 'dashobj': dashobj, 'start': int(start), 'end': int(end), 'count': count})
-        if functype == 'refresh':
-            soup = BeautifulSoup.BeautifulSoup(html)
-            v = soup.find("div", id='content' + str(dashobj.pk))
-            html = unicode(v.prettify())
-        results.update({'FAIL': False, 'html': html, 'dashpk': dashobj.pk, 'dashzoom_y': dashobj.zoom_y, 'dashzoom_x': dashobj.zoom_x, 'rendertype': renderdict['rendertype']})
-
-        return HttpResponse(simplejson.dumps(results),
-                    mimetype='application/json')
+            if renderdict['rendertype'] == 'chat':
+                width = render_to_string('stream/stream_width.html', {'dashobj': dashobj})
+                height = render_to_string('stream/stream_height.html', {'dashobj': dashobj})
+                results = {'width': width, 'height': height}
+            if renderdict['rendertype'] in renderdict['counts']:
+                count = renderdict['counts'][renderdict['rendertype']]
+            else:
+                count = None
+            html = render_to_string('nav/board_template.html', {'dimension': dimension, 'board': renderdict['renders'], 'obj': renderdict['object'], 'dashobj': dashobj, 'start': int(start), 'end': int(end), 'count': count})
+            if functype == 'refresh':
+                soup = BeautifulSoup.BeautifulSoup(html)
+                v = soup.find("div", id='content' + str(dashobj.pk))
+                html = unicode(v.prettify())
+            results.update({'FAIL': False, 'html': html, 'dashpk': dashobj.pk, 'dashzoom_y': dashobj.zoom_y, 'dashzoom_x': dashobj.zoom_x, 'rendertype': renderdict['rendertype']})
+    except Exception, e:
+        results = {'err': e}
+    return HttpResponse(simplejson.dumps(results),
+                mimetype='application/json')
 
 
 def sort_board(request):
