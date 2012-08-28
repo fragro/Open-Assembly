@@ -59,7 +59,7 @@ try:
     djcelery.setup_loader()
 
     BROKER_BACKEND = "redis"
-    BROKER_URL = env['DOTCLOUD_CACHE_REDIS_HOST']
+    BROKER_URL = 'redis://' + env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
 
     BROKER_HOST = env['DOTCLOUD_CACHE_REDIS_HOST']
     BROKER_PORT = int(env['DOTCLOUD_CACHE_REDIS_PORT'])
@@ -67,7 +67,8 @@ try:
     BROKER_PASSWORD = env['DOTCLOUD_CACHE_REDIS_PASSWORD']
     BROKER_VHOST = 0
     BROKER_DB = 0
-    CELERY_RESULT_BACKEND = "redis"
+
+    CELERY_RESULT_BACKEND = BROKER_URL
     REDIS_CONNECT_RETRY = True
 
     try:
@@ -120,7 +121,7 @@ except:
     BROKER_DB = 0
     BROKER_PASSWORD = ''
 
-    CELERY_RESULT_BACKEND = "redis"
+    CELERY_RESULT_BACKEND = BROKER_URL
     REDIS_CONNECT_RETRY = True
 
     DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'

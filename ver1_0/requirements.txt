@@ -19,8 +19,10 @@ django-piston
 hg+http://bitbucket.org/fragro/django-tracking#egg=tracking
 hg+http://bitbucket.org/nator/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
-django-celery-with-redis
+django-celery==3.0.4
+celery==3.0.6
 setproctitle
+redis
 pytz
 git+https://github.com/bradbeattie/python-vote-core.git#egg=pyvotecore
 git+https://github.com/fragro/django-notification.git#egg=notification
