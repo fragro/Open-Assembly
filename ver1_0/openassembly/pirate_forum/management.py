@@ -97,7 +97,7 @@ def main():
 			d.save()
 
 for cons in Consensus.objects.all():
-	update_rankings.apply_async(args=[cons])
+	update_rankings.apply_async(args=['null', cons])
 
 
 ### CREATE THE PHASELINKS and LINKS BETWEEN THEM
