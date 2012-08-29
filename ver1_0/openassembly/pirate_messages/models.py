@@ -96,7 +96,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                     "notice_message": obj.sender.username  + "said<br>" + obj.description,
                     "path": settings.DOMAIN + path})
             redis_client().publish(obj.receiver, json.dumps({'message': obj.sender.username + ' said',
-                'object': str(obj.description), 'type': 'argument', 'object_pk': str(obj.pk)}))
+                'object': str(obj.description), 'type': 'message', 'object_pk': str(obj.pk)}))
         elif obj.user != reply_to.user:
             #redis_client().publish(cons.content_object.user.username, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
             #if this notification is a comment_reply
@@ -117,7 +117,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                 text = str(obj.user.username) + " replied to your " + str(rep_type) + ": " + tt
                 link = obj.get_absolute_url()
                 redis_client().publish(reply_to.user.username, json.dumps({'message': obj.user.username + " commented on ",
-                    'object': str(summ), 'type': 'argument', 'object_pk': str(obj.pk)}))
+                    'object': str(summ), 'type': 'comment', 'object_pk': str(obj.pk)}))
 
             #if notification is an action_reply
             elif str(content_type) == 'action taken':

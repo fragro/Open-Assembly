@@ -1106,7 +1106,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     position:fixed;
     top:-200px;
     left:2%;
-    right:85%;
+    max-width:25%;
     background-color:#fff;
     color:#3c5f8b;
     opacity:0.9;
@@ -1121,4 +1121,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 .notificationbox h3 h4{
     color:#3c5f8b;
+}
+.notificationbox img {
+    float:right;
 }

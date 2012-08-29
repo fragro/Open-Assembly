@@ -91,10 +91,15 @@ sub.on("message", function (channel, message) {
     console.log("client1 channel " + channel + ": " + message);
     try{
       store.get(channel, function (err, reply) {
-        console.log('reply from redis: ' + reply.toString());
-        var sessionid = reply.toString();
-        console.log(users[sessionid]['socketid']);
-        io.sockets.socket(users[sessionid]['socketid']).emit('updateUI', message);
+        if(reply != null){
+          console.log('reply from redis: ' + reply.toString());
+          var sessionid = reply.toString();
+          console.log(users[sessionid]['socketid']);
+          io.sockets.socket(users[sessionid]['socketid']).emit('updateUI', message); 
+        }
+        else{
+          console.log(store.keys('*'));
+        }
       });
 
     }
@@ -123,6 +128,7 @@ io.sockets.on('connection', function (socket) {
     init_user(users, username, sessionid, socket.id, null);
     sub.subscribe(username);
     store.set(username, sessionid);
+    //store.expire(username, -1)
   });
 
   // when the client emits 'adduser', this listens and executes

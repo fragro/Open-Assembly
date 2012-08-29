@@ -63,7 +63,7 @@
 
 </script>
 
-<div style="float:left;width:80%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;">
-	<div id="conversation{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" style="margin-bottom:9%;"></div>
+<div style="float:left;width:95%;height:{% include 'stream/stream_height.html' %};overflow:scroll-y;">
+	<div id="conversation{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" style="margin-bottom:9%;word-wrap: break-word;overflow-x: auto;"></div>
 </div>
 <div style="display:none;" id="chatsounds{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" class="true"></div>
