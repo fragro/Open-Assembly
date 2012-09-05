@@ -8,7 +8,7 @@ db:
   type: mongodb
 worker:
   approot: ver1_0
-  type: python-worker
+  type: worker-python
 cache:
   type: redis
 nodejs:

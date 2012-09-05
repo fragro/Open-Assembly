@@ -1,9 +1,14 @@
-
 var fs = require('fs');
 var app = require('express').createServer(),
     redis = require('socket.io/node_modules/redis'),
     io = require('socket.io').listen(app);
 
+
+//CHAT SOCKETIO CODE
+// usernames which are currently connected
+var users = {};
+var rooms = {};
+//should probably transfer this to redis instead of the local nodejs server in case of reboot
 redis.debug_mode = true;
 
 process.on('SIGTERM', function () {
@@ -22,6 +27,8 @@ try{
   sub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
   var store = redis.createClient(port, host); 
   store.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
+  var p2p = redis.createClient(port, host);
+  p2p.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
 
  }
 catch(e){
@@ -30,7 +37,8 @@ catch(e){
   var port = 6379;
   var host = 'localhost';
   var sub = redis.createClient(port, host);
-  var store = redis.createClient(port, host); 
+  var store = redis.createClient(port, host);
+  var p2p = redis.createClient(port, host); 
 }
 // 
 
@@ -43,7 +51,7 @@ catch(e){
 app.listen(nodeport);
 
 //returns new_user, true if this user has joined this chat for the first time this session
-function init_user(users, username, sessionid, socketid, room){
+function init_user(username, sessionid, socketid, room){
   if(room != null){
     var u1 = users[sessionid];
     var new_user = true;
@@ -68,7 +76,7 @@ function init_user(users, username, sessionid, socketid, room){
   }
 }
 
-function init_room(rooms, room, username){
+function init_room(room, username){
 
   var r1 = rooms[room];
   if(r1){
@@ -80,17 +88,21 @@ function init_room(rooms, room, username){
   }
 }
 
-//CHAT SOCKETIO CODE
-// usernames which are currently connected
-var users = {};
-var rooms = {};
+//takes a user name and returns true if that user has an connected socket
+function user_online(user){
+  store.get(user, function (err, reply) {
+        if(reply != null){
+          return true;
+        }
+        else{
+          return false;
+        }
+      });
+}
 
-
-//when redis sends us a message about a channel we are subscribed to: logic
-sub.on("message", function (channel, message) {
-    console.log("client1 channel " + channel + ": " + message);
-    try{
-      store.get(channel, function (err, reply) {
+function socket_throughput(user, message){
+  console.log("client1 channel " + user + ": " + message);
+      store.get(user, function (err, reply) {
         if(reply != null){
           console.log('reply from redis: ' + reply.toString());
           var sessionid = reply.toString();
@@ -101,12 +113,16 @@ sub.on("message", function (channel, message) {
           console.log(store.keys('*'));
         }
       });
+}
 
-    }
-    catch(err){
-
-    }
+////REDIS SUBSCRIPTION MESSAGES
+//when redis sends us a message about a channel we are subscribed to: logic
+sub.on("message", function (channel, message) {
+    socket_throughput(channel, message);
 });
+
+
+//CHAT SERVER AND SOCKET BASED SUBSCRIPTIONS
 
 io.sockets.on('connection', function (socket) {
 
@@ -121,13 +137,40 @@ io.sockets.on('connection', function (socket) {
       }
   });
 
+  // when the client emits 'sendchat', this listens and executes
+  socket.on('sendP2P', function (data, room) {
+    // we tell the client to execute 'updatechat' with 2 parameters
+      try{
+        store.get(users[socket.username]['username'] + room, function (err, reply) {
+          io.sockets.to(room).emit('updateP2P', users[socket.username]['username'], data, room, users[socket.username]['sessionid'], reply.toString());
+        });
+
+      }
+      catch(err){
+        io.sockets.socket(socket.id).emit('updateP2P', 'SERVER', 'Still connecting. Wait a few seconds please.', room);
+      }
+  });
+
   //when the user subscribes to dynamic events through socket.io, register the redis SUB
   socket.on('subscribe', function(username, sessionid){
     console.log('subscribed to ' + username);
     //initialize user so we can responsd to the right socket for real-time events
-    init_user(users, username, sessionid, socket.id, null);
+    init_user(username, sessionid, socket.id, null);
     sub.subscribe(username);
     store.set(username, sessionid);
+    //store.expire(username, -1)
+  });
+
+  //when the user subscribes to dynamic events through socket.io, register the redis SUB
+  socket.on('subscribeP2P', function(username,  key, sessionid, url){
+    console.log('subscribed to ' + key);
+    //initialize user so we can responsd to the right socket for real-time events
+    socket.join(key);
+    socket.username = sessionid;
+    //store user image url for future callbacks to server
+    store.set(username + key, url);
+    new_user = init_user(username, sessionid, socket.id, key);
+
     //store.expire(username, -1)
   });
 
@@ -138,8 +181,8 @@ io.sockets.on('connection', function (socket) {
     // we store the username in the socket session for this client
     socket.username = sessionid;
     // add the client's username to the global list
-    new_user = init_user(users, username, sessionid, socket.id, room);
-    init_room(rooms, room, username);
+    new_user = init_user(username, sessionid, socket.id, room);
+    init_room(room, username);
     if(new_user){
       // echo globally (all clients in that room) that a person has connected
       socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected', room, sessionid, 'connect' );
@@ -159,10 +202,14 @@ io.sockets.on('connection', function (socket) {
       // update list of users in chat, client-side
       for(var room in chatlist){
         //first check to 
-        delete rooms[room][users[socket.username]['username']]
-        io.sockets.to(room).emit('updateusers', rooms[room], room);
-        io.sockets.to(room).emit('updatechat', 'SERVER',  users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid'], 'disconnect');
+        try{
+          delete rooms[room][users[socket.username]['username']]
+          io.sockets.to(room).emit('updateusers', rooms[room], room);
+          io.sockets.to(room).emit('updatechat', 'SERVER',  users[socket.username]['username'] + ' has disconnected', room, users[socket.username]['sessionid'], 'disconnect');
+        }
+        catch(err){
 
+        }
       }
       store.del(users[socket.username]['username'])
       delete users[socket.username];
