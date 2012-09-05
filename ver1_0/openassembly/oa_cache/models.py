@@ -276,6 +276,7 @@ only rendered when the corresponding model_cache is rendered"""
     load_last = models.BooleanField(default=False)
     ###if we should only load when the user prompts us to load
     persistent = models.BooleanField(default=False)
+    ###persistent to a single dashboard
 
     def recursive_render(self, tree, context):
         ret_html = []
@@ -295,7 +296,7 @@ only rendered when the corresponding model_cache is rendered"""
     def render(self, context, forcerender=True):
         if not self.is_recursive:
             if self.cache:
-                key = str(context['object'].pk) + ' - ' + str(context['dimension']) + ' - ' + str(context['sort_type'])
+                key = str(context['object'].pk) + ' - ' + self.template.replace('/','-').replace('.', '-').replace('_', '-')
                 cached = memcache.get(key)
                 if cached == None or forcerender:
                     r = render_to_string(self.template, context)

@@ -118,16 +118,15 @@ def pp_notification_list_get(context, nodelist, *args, **kwargs):
 
         namespace['notifications'] = list(readnotes[start:end])
 
-        if get_new is not None:
-            notes = notes.filter(receiver=user, is_read=False)
-            count += notes.count()
-            namespace['unreadcount'] = notes.count()
-            notes = notes.order_by('-submit_date')
-            for i in notes:
-                i.is_read = True
-                i.save()
+        notes = notes.filter(receiver=user, is_read=False)
+        count += notes.count()
+        namespace['unreadcount'] = notes.count()
+        notes = notes.order_by('-submit_date')
+        for i in notes:
+            i.is_read = True
+            i.save()
 
-            namespace['unreadnotifications'] = notes
+        namespace['unreadnotifications'] = notes
     else:
         count = 0
     namespace['count'] = count

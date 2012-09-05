@@ -257,6 +257,8 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
             renders = []
             #get list of objects to be rendered
             cached_list, tot_items = l.get_or_create_list(key, paramdict, forcerender=forcerender)
+            sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
+
             if len(cached_list) == 0:
                 renders.append({'div': lm.div_id, 'html': '', 'type': lm.jquery_cmd})
             for li in cached_list:
@@ -269,27 +271,6 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                         renders.append({'div': lm.div_id + str(obj.pk), 'html': html, 'type': lm.jquery_cmd})
                     else:
                         renders.append({'div': lm.div_id, 'html': html, 'type': lm.jquery_cmd})
-            memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))
-        else:
-            renders, cached_list, tot_items = renders
-        rendered_list.extend(renders)
-        counts[rendertype] = tot_items
-        #add usersaltcache if there is request data
-        if request is not None:
-            #Get Dybamic inputs not linked to a user
-            lu = UserSaltCache.objects.filter(model_cache=lm.pk, opposite=False, load_last=False, **kwargs)
-            context = {'dimension': paramdict.get('DIM_KEY', None),
-                                    'user': user, 'phase': phase,
-                                    'sort_type': paramdict.get('CTYPE_KEY', '')}
-            if obj is not None:
-                context.update({'object': obj, 'obj_pk': obj.pk})
-            context.update(extracontext)
-            for usc in lu:
-                rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
-                                    usc.render(RequestContext(request, context))})
-
-            sp = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=True, **kwargs)
-            for li in cached_list:
                 if li != None:
                     try:
                         context = {'dimension': paramdict.get('DIM_KEY', 'n'),
@@ -305,19 +286,35 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                     #user requested this, not auto-update. generate user specific html
                     for usc in sp:
                         if not usc.is_recursive:
-                            try:
-                                rendered_list.append({'div': usc.div_id + str(li.pk), 'type': usc.jquery_cmd, 'html':
-                                usc.render(RequestContext(request, context))})
-                            except:
-                                raise ValueError(str(li) + ' : ' + str(usc))
+                            retdiv = usc.div_id + str(li.pk)
+                            renders.append({'div': retdiv, 'type': usc.jquery_cmd, 'html':
+                            usc.render(RequestContext(request, context))})
                         else:
                             #if it's recursive we need to also render all the children USCs
                             recursive_list = usc.render(RequestContext(request, context))
                             for html, pk in recursive_list:
-                                rendered_list.append({'div': usc.div_id + str(pk), 'type': usc.jquery_cmd, 'html': html})
+                                renders.append({'div': usc.div_id + str(pk), 'type': usc.jquery_cmd, 'html': html})  
+            memcache.set(str(key) + str(l.pk), (renders, cached_list, tot_items))
+        else:
+            renders, cached_list, tot_items = renders
+        rendered_list.extend(renders)
+        counts[rendertype] = tot_items
+        #add usersaltcache if there is request data
+        if request is not None:
+            #Get Dybamic inputs not linked to a user
+            lu = UserSaltCache.objects.filter(model_cache=lm.pk, object_specific=False, opposite=False, load_last=False, **kwargs)
+            context = {'dimension': paramdict.get('DIM_KEY', None),
+                                    'user': user, 'phase': phase,
+                                    'sort_type': paramdict.get('CTYPE_KEY', '')}
+            if obj is not None:
+                context.update({'object': obj, 'obj_pk': obj.pk})
+            context.update(extracontext)
+            for usc in lu:
+                rendered_list.append({'div': usc.div_id, 'type': usc.jquery_cmd, 'html':
+                                    usc.render(RequestContext(request, context))})
 
-                #now add all the UserSaltCache objects from this page
-                #THIS REQUIRES A REQUEST OBJECT FO' CSRF
+            #now add all the UserSaltCache objects from this page
+            #THIS REQUIRES A REQUEST OBJECT FO' CSRF
             context = {'dimension': paramdict.get('DIM_KEY', None),
                                 'user': user, 'phase': phase,
                                 'csrf_string': csrf_t, 'sort_type': paramdict.get('CTYPE_KEY', '')}
@@ -555,6 +552,8 @@ def render_hashed(request, key, user, extracontext={}):
     rendered_list = retdict['rendered_list']
     ret = defaultdict(list)
     for i in rendered_list:
+        for k,v in i.items():
+            if k != 'html': print k + ' '+ str(v)
         if type(i['html']) == ListType:
             for v, k in i['html']:
                 soup = BeautifulSoup.BeautifulSoup(v)
@@ -574,6 +573,12 @@ def render_hashed(request, key, user, extracontext={}):
                 ret[i['div']] = [soup]
             elif i['type'] == 'append':
                 ret[i['div']].append(soup)
+            else:
+                print i['type']
+                text = ret[i['type']][len(ret[i['type']])-1].find('div', {'id': i['div'][1:]})
+                #print text
+                if text is not None:
+                    text.insert(0, BeautifulSoup.NavigableString(i['html']))
     rendertype = retdict['rendertype']
     final = {}
     for k, v in ret.items():

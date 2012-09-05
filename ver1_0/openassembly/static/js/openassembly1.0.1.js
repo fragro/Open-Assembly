@@ -269,17 +269,20 @@ function addObject(e){
                         if(data2.output[item].type == 'after'){
                             $(data2.output[item].div).after(data2.output[item].html);
                         }
-                        if(data2.output[item].type == 'before'){
+                        else if(data2.output[item].type == 'before'){
                             $(data2.output[item].div).before(data2.output[item].html);
                         }
-                        if(data2.output[item].type == 'prepend'){
+                        else if(data2.output[item].type == 'prepend'){
                             $(data2.output[item].div).prepend(data2.output[item].html);
                         }
-                        if(data2.output[item].type == 'append'){
+                        else if(data2.output[item].type == 'append'){
                             $(data2.output[item].div).append(data2.output[item].html);
                         }
-                        if(data2.output[item].type == 'html'){
+                        else if(data2.output[item].type == 'html'){
                             $(data2.output[item].div).html(data2.output[item].html);
+                        }
+                        else{
+                          $(data2.output[item].div).html(data2.output[item].html);
                         }
                         if(data2.output[item].scroll_to === true){
                                 var hash = location.href;

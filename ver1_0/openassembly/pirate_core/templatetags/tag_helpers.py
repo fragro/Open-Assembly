@@ -43,6 +43,29 @@ def percent(value):
         return '0 %'
 
 
+##gets an ordered tuple, if we want to user 2 ordered keys as another key, for example 2-way communication between
+###users. This way the template can order keys even if received from multiple users
+@block
+def pp_ordered_tuple(context, nodelist, *args, **kwargs):
+    context.push()
+    namespace = get_namespace(context)
+
+    key1 = kwargs.get('key1', None)
+    key2 = kwargs.get('key1', None)
+
+    if key1 is not None and key2 is not None:
+        if key1 < key2:
+            ret = key1 + key2
+        else:
+            ret = key2 + key1
+
+    namespace['key'] = ret
+    output = nodelist.render(context)
+    context.pop()
+
+    return output
+
+
 @block
 def pp_random_id(context, nodelist, *args, **kwargs):
     context.push()

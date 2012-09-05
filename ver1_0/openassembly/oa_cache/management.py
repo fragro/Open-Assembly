@@ -154,9 +154,9 @@ usercache, is_new = ModelCache.objects.get_or_create(template="user/user.html",
 user_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=usercache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
-inboxcache, is_new = ModelCache.objects.get_or_create(template="inbox.html",
-                div_id="#pages", content_type="inbox", main=True, jquery_cmd="append")
-inbox_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=inboxcache.pk, template="skeleton/tab_template.html",
+messcache, is_new = ModelCache.objects.get_or_create(template="message.html",
+                div_id="#pages", content_type="message", main=True, jquery_cmd="append")
+mess_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=messcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
 uploadcache, is_new = ModelCache.objects.get_or_create(template="upload.html",
@@ -167,6 +167,10 @@ upload_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=uploa
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_message_form.html",
                                                     div_id="#pp_message_form", jquery_cmd="html", object_specific=True)
 
+inboxcache, is_new = ModelCache.objects.get_or_create(template="inbox.html",
+                div_id="#pages", content_type="inbox", main=True, jquery_cmd="append")
+inbox_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=inboxcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
 
 ##USER LISTS
 shortusercache, is_new = ModelCache.objects.get_or_create(template="user/user_short.html",
@@ -232,6 +236,10 @@ commentslistcache, is_new = ListCache.objects.get_or_create(model_cache=comcache
 ###VOTING AND SIDEEFFECTS
 tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk,
             template="content/temp_check.html", div_id="#temp_check", jquery_cmd="html", object_specific=True)
+
+tempchecksmallcache, is_new = UserSaltCache.objects.get_or_create(model_cache=propcache.pk,
+            template="content/temp_check_small.html", div_id="#temp_check_small", jquery_cmd="#panels", 
+            object_specific=True, cache=True)
 
 ####ADMIN
 report_abuse_model_cache, is_new = ModelCache.objects.get_or_create(template="report_abuse.html", main=True,
