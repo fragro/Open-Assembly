@@ -1,0 +1,88 @@
+{% extends 'skeleton/page.html' %}
+
+{% load messagetags %}
+{% load pp_url %}
+{% load notificationtags %}
+{% load tag_helpers %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+    {% pp_ordered_tuple key1=user.pk key2=object.pk %}
+		<script>
+			var timestamp = new Date();
+			var delta;
+			//new socket for this chat session
+
+			function scrollMessage{{pp_tag.key}}(){
+				$('#page{{key}}').scrollTo( (parseInt($('#messages{{pp_tag.key}}').css('height').replace(/[^-\d\.]/g, '')) + 200).toString());
+			};
+
+			// on load of page
+	        // on connection to server, ask for user's name with an anonymous callback
+
+	    	$(function() {  
+	        	socket.emit('subscribeP2P', '{{user.username}}', '{{pp_tag.key}}', '{{request.session.session_key}}', '{% include "etc/object_img_50.html" %}');
+
+			      // To keep track of how many images have loaded
+			    var loaded = 0;
+
+			      // Let's retrieve how many images there are
+			    var numImages = $("img").length;
+
+			      // Let's bind a function to the loading of EACH image
+			    $("img").load(function() {
+
+			          // One more image has loaded
+			        ++loaded;
+
+			          // Only if ALL the images have loaded
+			        if (loaded === numImages) {
+
+			              // This will be executed ONCE after all images are loaded.
+			            scrollMessage{{pp_tag.key}}(); 
+			        }
+			    });
+
+	                //  $("form#pp_message_form{{object.pk}}").submit(function(e){
+	                //     $("#submit_pp_message_form{{object.pk}}").html("<b>Submitting...</b>")
+	                //     addObject(e);
+	                // });
+
+	        });
+
+
+		</script>
+
+
+		{% pp_get_messages start=start end=end user=user sender=object %}
+		<div class="messages" id="messages{{pp_tag.key}}">
+			<div id="message_list{{pp_tag.key}}">
+		    <h1>Chat With {{object.username}}</h1>
+
+		            {% for note in pp_messages.all reversed %}
+
+		            <div class="message">
+
+		            	<div class="userinfo">{% include 'etc/object_img_50.html' %}</div>
+
+		                	<div class="text">
+		                  		{{note.description}}
+		                	</div>
+		                <div class="meta">{{note.created_dt}}</div>
+
+		            </div>
+
+		                                              
+		            {% endfor %}
+		 	</div>
+		 {% include 'forms/pp_message_form.html' %}
+		</div>
+
+
+		{% endpp_get_messages %} 
+    {% endpp_ordered_tuple %}
+{% endif  %}
+
+
+{% endblock %}
