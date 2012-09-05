@@ -16,7 +16,7 @@
                         
                            chart1 = new Highcharts.Chart({
                               chart: {
-                                 renderTo: 'chart{{object.pk}}{{key}}',
+                                 renderTo: 'chart{{object.pk}}{{dashobj.pk}}',
                                  type: 'pie',
                                   plotBackgroundColor: null,
                                   plotBorderWidth: null,
@@ -55,9 +55,9 @@
                         </script>
 
                         <!-- NEED THIS ID -->
-                         <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> </div>
+                         <div id='chart{{object.pk}}{{dashobj.pk}}' class="panel_list_img"> </div>
                      {% else %}
-                         <div id='chart{{object.pk}}{{key}}' class="panel_list_img"> <img src="/static/img/checkbox.png"></div>
+                         <div id='chart{{object.pk}}{{dashobj.pk}}' class="panel_list_img"> <img src="/static/img/checkbox.png"></div>
                      {% endif %}
              {% endpp_consensus_chart %}
 

@@ -1,67 +1,55 @@
    
-<div style="display:block; margin-top:10px"><b>User Contributions</b></div>
 
 {% pp_get_reputation_events user=object start=start end=end %}
-    <ul id="user_contribs_list">
     {% for note in pp_reputation.reputation_events %}
-        <li>
-            <a data-href="{{note.get_absolute_url}}">
-                {{note.created_dt}} -
+        <div class="notitem activity">
+            <p style="display:none;" class="time"> {{note.created_dt|date:"U" }}</p>
+            <div class="content">
 
-                <!-- this bunch of junk just turns out to be a piece of text -->
-                {% if note.related_object.text %}
+                    <a data-href="{{note.get_absolute_url}}">
 
-                    {% pp_slice obj=note.related_object.text amt=30 %}
-                        {% if note.related_object.text|length > 30 %}
-                            {{pp_tag.sliced}}[...]
-                        {% else %}
-                            {{pp_tag.sliced}}
-                        {% endif %}
-                    {% endpp_slice %}
+                        <!-- this bunch of junk just turns out to be a piece of text -->
+                        {% if note.related_object.text %}
 
-                {% else %}
-
-                    {% if note.related_object.content_object.summary %}
-                    
-                    {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
-                        {% if note.related_object.content_object.summary|length > 30 %}
-                            {{pp_tag.sliced}}[...]
-                        {% else %}
-                            {{pp_tag.sliced}}
-                        {% endif %}
-                    {% endpp_slice %}      
-                                                              
-                    {% else %}
-                        {% if note.related_object %}
-
-                            {% pp_slice obj=note.related_object amt=30 %}
-                                {% if note.related_object|length > 30 %}
+                            {% pp_slice obj=note.related_object.text amt=30 %}
+                                {% if note.related_object.text|length > 30 %}
                                     {{pp_tag.sliced}}[...]
                                 {% else %}
                                     {{pp_tag.sliced}}
                                 {% endif %}
-                            {% endpp_slice %}  
-                        {% else %}
-                          ERR
-                        {% endif %}  
-                    {% endif %}
-                {% endif %}
-            </a>
-        </li>
-    {% endfor %} 
-    </ul>
-    <a data-href="{% pp_url template='user_profile.html' dimension='activity' object=object start=0 end=20 %}">(view all)</a>
+                            {% endpp_slice %}
 
-    {% if dimension == 'activity' %}
-        <ul>
-            {% for s,e,n in pp_reputation.rangelist %}
-               {% if not s > pp_reputation.count %}
-                <li>
-                    <a data-href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}<b style="color:white">({{n}})</b>{% else %}{{n}}{% endif %}</a>
-                </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    {% endif %}
+                        {% else %}
+
+                            {% if note.related_object.content_object.summary %}
+                            
+                            {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
+                                {% if note.related_object.content_object.summary|length > 30 %}
+                                    {{pp_tag.sliced}}[...]
+                                {% else %}
+                                    {{pp_tag.sliced}}
+                                {% endif %}
+                            {% endpp_slice %}      
+                                                                      
+                            {% else %}
+                                {% if note.related_object %}
+
+                                    {% pp_slice obj=note.related_object amt=30 %}
+                                        {% if note.related_object|length > 30 %}
+                                            {{pp_tag.sliced}}[...]
+                                        {% else %}
+                                            {{pp_tag.sliced}}
+                                        {% endif %}
+                                    {% endpp_slice %}  
+                                {% else %}
+                                  ERR
+                                {% endif %}  
+                            {% endif %}
+                        {% endif %}
+                    </a>
+            </div>
+            <div class="time">{{note.created_dt}}</div>
+        </div>
+    {% endfor %} 
 
 {% endpp_get_reputation_events %}

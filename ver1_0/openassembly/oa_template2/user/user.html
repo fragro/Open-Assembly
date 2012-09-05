@@ -1,29 +1,45 @@
 {% extends 'skeleton/page.html' %}
+<script type="text/javascript" src="/static/js/jquery.isotope.min.js"></script>
 
 {% block content %}
 
-			<div id="content">
             
 			{% include 'user/user_info.html' %}
+
+		<div id="container{{object.pk}}">
+
+
+			{% if user == object %}
+
+					{% include 'user/user_messages.html' %}
+
+			{% endif %}
+			                
 
 			{% include 'user/user_social.html' %}
 
 			   
-			{% if dimension = 'activity' or not dimension %}
+			{% include 'user/user_contribution.html' %}
 
-				{% include 'user/user_contribution.html' %}
+		</div>
+                     
 
-			{% endif %}
+<script>
 
-			{% if user == object %}
-				{% if dimension = 'messages' or not dimension %}
-
-					{% include 'user/user_messages.html' %}
-
-				{% endif %}
-			{% endif %}
-			                                     
-			</div>
+    $(document).ready(function(){
+	  $('#container{{object.pk}}').isotope({
+          // options
+            getSortData : {
+			    name : function ( $elem ) {
+			      return $elem.find('.time').text();
+			    },
+		  	},
+          itemSelector : '.notitem',
+          layoutMode : 'fitRows',
+          sortBy : 'time'
+        });
+	});
+</script>
 
 
 

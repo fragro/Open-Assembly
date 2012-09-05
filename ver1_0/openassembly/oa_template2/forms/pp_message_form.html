@@ -1,30 +1,50 @@
+<div>
 {% load pp_url %}
-<form id='pp_message_form{{object.pk}}' method="post" action="">
+{% pp_ordered_tuple key1=user.pk key2=object.pk %}
+    <form id='pp_message_form{{object.pk}}' method="post" action="">
 
-{% pp_message_form POST=request.POST receiver=object sender=user %}
-        <h1><a data-href="{% pp_url template='user_profile.html' object=pp_messages.user %}">{{pp_messages.user}}</a></h1>
-        {{ pp_messages.form.errors }}
+    {% pp_message_form POST=request.POST receiver=object sender=user %}
+            {{ pp_messages.form.errors }}
 
+                <textarea id="P2Pdata{{object.pk}}" rows="10" cols="40" name="description">    </textarea>                
 
-        {% include 'etc/object_img_100.html' %}
-
-
-            <br>{{pp_messages.form.description}}<br>
                 {{pp_messages.form.form_id}}
-                {% csrf_token %}
-       <input type="submit" value="Send Message">{% if pp_messages.complete %} Message Sent!{% endif %}
-
-       {% if pp_messages.complete %} <a onClick="tabRemove('{{key}}');">Close</a>{% endif %}
+                    {% csrf_token %}
+           <input id="P2Psend{{object.pk}}" type="submit" value="Send Message">
 
 
-        <script>
-         
-             $("form#pp_message_form{{object.pk}}").submit(function(e){
-                $("#submit_pp_message_form{{object.pk}}").html("<b>Submitting...</b>")
-                addObject(e);
-            });
-        </script>
+           {% if pp_messages.complete %}{% now "jS F Y H:i" %}{% endif %}
 
+    {% endpp_message_form %}
+    </form>
 
-{% endpp_message_form %}
-</form>
+    <script>
+                $(function() {  
+
+                    $('#P2Pdata{{object.pk}}').focus();
+
+                    // when the client hits ENTER on their keyboard
+                    $('#P2Pdata{{object.pk}}').keypress(function(e) {
+                        if(e.which == 13) {
+                            $(this).blur();
+                            $("#P2Psend{{object.pk}}").click();
+                        }
+                    });
+
+                     $("#P2Psend{{object.pk}}").click(function(){
+                        
+                        $('form#pp_message_form{{object.pk}}').submit(function(e){
+                            addObject(e);
+                        });
+
+                        var message = $('#P2Pdata{{object.pk}}').val();
+                        if(message !== ''){
+                            // tell server to execute 'sendchat' and send along one parameter
+                            socket.emit('sendP2P', message, '{{pp_tag.key}}');
+                        }
+                    });
+                });
+
+    </script>
+{% endpp_ordered_tuple %}
+</div>

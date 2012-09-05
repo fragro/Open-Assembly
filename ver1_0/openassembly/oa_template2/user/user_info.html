@@ -13,7 +13,9 @@
 
             {% include 'etc/object_img_100.html' %}</a>
             {% else %}
-            {% include 'etc/object_img_100.html' %}
+            <span id="avatar">
+                {% include 'etc/object_img_100.html' %}
+            </span>
         {% endif %}
 
     {% endpp_get_contenttype_id %}
@@ -24,8 +26,7 @@
 
 {% pp_get_user_profile user=object %}
     {% if pp_profile.profile.about_me %}
-            <h2>About Me</h2>
-            <div style="margin-bottom:10px; overflow:hidden;">{{pp_profile.profile.about_me}}</div>
+            <div style="margin-bottom:25px; margin-top:10px; overflow:hidden;">{{pp_profile.profile.about_me}}</div>
     {% endif %}
 {% endpp_get_user_profile %}
 
@@ -56,19 +57,33 @@
             <label>You Trust</label>
             {{pp_subscription.count}}
         </div>
-    {% endpp_subscribee_count %}   
-    
+    {% endpp_subscribee_count %} 
+
     
 {% else %} 
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
-            <a class="btn btn_green" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">I Trust This Citizen</a> 
+            <a class="btn btn_blue" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">I Trust This Citizen</a> 
 
         {% else %}
-            <a class="btn btn_green" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
+            <a class="btn btn_blue" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
         {% endif %}
+
+        <a class="btn btn_blue" data-href="{% pp_url template='message.html' dimension='mes' object=object %}">Send Message</a>
+
+
 {% endpp_has_subscription %}
             
 
 {% endif %}
+
+
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '*' });">All</span>
+
+{% if object == user %}
+    <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });">Notifications</span>
+{% endif %}
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });">Activity</span>
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });">Trust {{object.username}}</span>
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });">{{object.username}} Trusts</span>

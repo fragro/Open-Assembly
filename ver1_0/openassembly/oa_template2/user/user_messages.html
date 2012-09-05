@@ -1,32 +1,18 @@
-{% pp_get_messages start=start end=end user=user %}
+  
+{% pp_notification_list_get start=start end=end user=object %}
 
-    <div style="display:block; margin-top:10px;"><b>Messages{% if pp_messages.unreadcount > 0 %} ({{pp_messages.unreadcount}} New){% endif %}</b></div>
+    {% for i in pp_messages.unreadnotifications %}
 
-        <ul>
-            {% for note in pp_messages.unread %}
-                <li>
-                <a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a>
-                <a data-href="{% pp_url template='messages.html' object=note.sender dimension='mes' %}">{{note.description|title }}</a>
-                </li>
-            {% endfor %}   
-        
-            {% for note in pp_messages.read %}
-                    <li>
-                       <a data-href="{% pp_url template='user_profile.html' object=note.sender %}">{{ note.sender|title }}</a>
-                       <a data-href="{% pp_url object=note.sender template='messages.html' %}">{{note.description|title }}</a>
-                    </li>
-            {% endfor %}     
-        </ul> 
-        {% endpp_get_messages %} 
-        <a data-href="{% pp_url template='user_profile.html' object=user dimension='messages' start=0 end=20 %}">(view all)</a>
+        <div class="notitem notifications">{% include 'user/notification.html' %}</div>
+
+    {% endfor %}
+
+     {% for i in pp_messages.notifications %}
+
+        <div class="notitem notifications">{% include 'user/notification.html' %}</div>
+
+     {% endfor %}
 
 
-{% if dimension == 'messages' %}
-    <ul class="pagination">
-        {% for s,e,n in pp_messages.rangelist %}
-           {% if not s > pp_messages.count %}
-            <li><a data-href="{% pp_url template='user_profile.html' dimension=dimension object=object start=s end=e %}">{% if start|add:"0" == s|add:"0" %}({{n}}){% else %}{{n}}{% endif %}</a></li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-{% endif %}
+    {% endpp_notification_list_get %} 
+

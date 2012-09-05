@@ -1,6 +1,7 @@
 
 {% load pp_url %}
 {% load topictags %}
+{% load dashboardtags %}
 
     {% pp_get_cached_data request=request %}
 
@@ -255,6 +256,7 @@
         
         <script type="text/javascript" src="/static/js/jquery-ui-1.8.21.custom.min.js"></script>
         <script type="text/javascript" src="/static/js/jquery.masonry.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.isotope.min.js"></script>
 
         <script type="text/javascript" src="/static/js/highcharts.js"></script>
 
@@ -324,6 +326,10 @@
                         EvalSound(ifconnect);
                     }
                 }
+        });
+        socket.on('updateP2P', function (username, data, object, sessionid, url) {
+                $('#message_list' + object).append('<div class="message"><div class="userinfo">' + url +  '</div><div class="text">' + data + '</div><div class="meta">' + +new Date +  ' </div></div>');
+                eval('scrollMessage' + object + '();');
         });
 
         // listener, whenever the server emits 'updateusers', this updates the username list

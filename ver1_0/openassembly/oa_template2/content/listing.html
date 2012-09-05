@@ -8,8 +8,7 @@
 {% endblock %}
 
 {% block listing %}
-
-    {% include 'content/temp_check_small.html' %}
+	<div id="temp_check_small{{object.pk}}" class="panel_list_img"></div>
     <a class="ov_hid" id="{{key}}">
 
     <a data-href="{% pp_url object=object.content_object template='detail.html' %}">
