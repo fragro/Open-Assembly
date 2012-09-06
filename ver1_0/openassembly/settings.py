@@ -50,7 +50,7 @@ try:
         os.path.join(PROJECT_ROOT, 'openassembly/static/'),
     )
 
-    MEDIA_ROOT = '/home/dotcloud/data/static/media/'
+    MEDIA_ROOT = '/home/dotcloud/data/'
     STATIC_ROOT = '/home/dotcloud/data/static/'
     MEDIA_URL = '/media/'
 
