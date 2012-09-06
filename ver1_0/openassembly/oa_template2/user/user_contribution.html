@@ -1,11 +1,10 @@
-   
-
 {% pp_get_reputation_events user=object start=start end=end %}
     {% for note in pp_reputation.reputation_events %}
         <div class="notitem activity">
 
+            <div class="time">{{note.created_dt}}</div>
 
-            <p style="display:none;" class="time"> {{note.created_dt|date:"U" }}</p>
+            <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
 
 
                         <!-- this bunch of junk just turns out to be a piece of text -->
@@ -47,7 +46,6 @@
                         {% endif %}
                     </a>
             </div>
-            <div class="time">{{note.created_dt}}</div>
         </div>
     {% endfor %} 
 

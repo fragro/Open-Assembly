@@ -1202,25 +1202,24 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 
 .content {
     padding-left:5px;
-    padding-top:5px;
     padding-right:5px;
     word-wrap:break-word;
 }
 
-.notifications .content {
+.notifications  {
     background:#CA2A15;
 }
 
-.activity .content {
+.activity {
     background:#10697D;
 }
 
-.trustme .content, .itrust .content  {
+.trustme , .itrust   {
     background:#78BA13;
 }
 
-.notitem .content {
-    height:125px;
+.notitem .content{
+    height:105px;
 }
 
 .notitem a {
@@ -1234,7 +1233,18 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .notitem .time {
     width:100%;
     background:#171717;
-    opacity:.8;
+    opacity:.9;
     color:white;
     font-weight: bold;
+    text-align:right;
 }
+
+.trustme .username, .itrust .username, .notifications .username{
+    width:100%;
+    background:#171717;
+    opacity:.95;
+    color:white;
+    font-weight: bold;
+    text-align:right;
+}
+

@@ -1,4 +1,7 @@
-<p style="display:none;" class="time"> {{i.submit_date|date:"U" }}</p>
+<p style="display:none;" class="sorttime"> {{i.submit_date|date:"U" }}</p>
+
+    <div class="time">{{i.submit_date}}</div>
+
 	<div class="content">
 
 		<div class="img">
@@ -8,5 +11,9 @@
 
 		</div>
 	</div>
-    <div class="time">{{i.submit_date}}</div>
+    <div class="username">
+        <a data-href="{% pp_url template='user_profile.html' object=i.sender%}">
+            {{i.sender.username}}
+        </a>
+    </div>
 

@@ -64,13 +64,13 @@
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
-            <a class="btn btn_blue" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">I Trust This Citizen</a> 
+            <a class="btn" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">Trust</a> 
 
         {% else %}
-            <a class="btn btn_blue" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
+            <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
         {% endif %}
 
-        <a class="btn btn_blue" data-href="{% pp_url template='message.html' dimension='mes' object=object %}">Send Message</a>
+        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}">Send Message</a>
 
 
 {% endpp_has_subscription %}
@@ -79,11 +79,11 @@
 {% endif %}
 
 
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '*' });">All</span>
+<span class="btn" onClick="$('#container{{object.pk}}').isotope({ filter: '*' });">All</span>
 
 {% if object == user %}
-    <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });">Notifications</span>
+    <span class="btn btn_red" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });">Notifications</span>
 {% endif %}
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });">Activity</span>
+<span class="btn btn_blue" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });">Activity</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });">Trust {{object.username}}</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });">{{object.username}} Trusts</span>

@@ -30,13 +30,14 @@
 	  $('#container{{object.pk}}').isotope({
           // options
             getSortData : {
-			    name : function ( $elem ) {
-			      return $elem.find('.time').text();
+			    time : function ( $elem ) {
+			      return $elem.find('.sorttime').text();
 			    },
 		  	},
           itemSelector : '.notitem',
           layoutMode : 'fitRows',
-          sortBy : 'time'
+          sortBy : 'time',
+		  sortAscending : false,
         });
 	});
 </script>
