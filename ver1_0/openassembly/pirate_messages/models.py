@@ -97,7 +97,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                     "path": settings.DOMAIN + path})
             redis_client().publish(obj.receiver, json.dumps({'message': obj.sender.username + ' said',
                 'object': str(obj.description), 'type': 'message', 'object_pk': str(obj.pk)}))
-            text = obj.sender.username  + " messaged<br>" + obj.description
+            text = obj.sender.username  + " said<br>" + obj.description
             link = obj.get_absolute_url()
         elif obj.user != reply_to.user:
             #redis_client().publish(cons.content_object.user.username, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
@@ -112,10 +112,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                         notification.send([reply_to.user], "comment_reply", {"from_user": obj.user, "user_url": settings.DOMAIN + obj.user.get_absolute_url(),
                         "notice_message": "New comment received for your " + str(rep_type) + " '" + summ + "':",
                         "reply": str(obj.text), "path": path})
-                if len(obj.text) > 30:
-                    tt = str(obj.text)[0:30] + "..."
-                else:
-                    tt = str(obj.text)
+                tt = str(obj.text)
                 text = str(obj.user.username) + " replied to your " + str(rep_type) + "<br>" + tt
                 link = obj.get_absolute_url()
                 redis_client().publish(reply_to.user.username, json.dumps({'message': obj.user.username + " commented on ",

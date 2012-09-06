@@ -3,47 +3,46 @@
 {% pp_get_reputation_events user=object start=start end=end %}
     {% for note in pp_reputation.reputation_events %}
         <div class="notitem activity">
-            <p style="display:none;" class="time"> {{note.created_dt|date:"U" }}</p>
-            <div class="content">
 
-                    <a data-href="{{note.get_absolute_url}}">
+
+            <p style="display:none;" class="time"> {{note.created_dt|date:"U" }}</p>
+
 
                         <!-- this bunch of junk just turns out to be a piece of text -->
-                        {% if note.related_object.text %}
+                        {% if note.related_object.text %}   
 
-                            {% pp_slice obj=note.related_object.text amt=30 %}
-                                {% if note.related_object.text|length > 30 %}
-                                    {{pp_tag.sliced}}[...]
-                                {% else %}
-                                    {{pp_tag.sliced}}
-                                {% endif %}
-                            {% endpp_slice %}
+                            <img src="/static/img/comment_icon_40.png">
+
+                            <div class="content">
+
+                                    <a data-href="{{note.get_absolute_url}}">
+
+                                        {{ note.related_object.text}}
+
 
                         {% else %}
 
                             {% if note.related_object.content_object.summary %}
                             
-                            {% pp_slice obj=note.related_object.content_object.summary amt=30 %}
-                                {% if note.related_object.content_object.summary|length > 30 %}
-                                    {{pp_tag.sliced}}[...]
-                                {% else %}
-                                    {{pp_tag.sliced}}
-                                {% endif %}
-                            {% endpp_slice %}      
-                                                                      
-                            {% else %}
-                                {% if note.related_object %}
+                               <img src="/static/img/idea_icon.png">
 
-                                    {% pp_slice obj=note.related_object amt=30 %}
-                                        {% if note.related_object|length > 30 %}
-                                            {{pp_tag.sliced}}[...]
-                                        {% else %}
-                                            {{pp_tag.sliced}}
-                                        {% endif %}
-                                    {% endpp_slice %}  
-                                {% else %}
-                                  ERR
-                                {% endif %}  
+                                <div class="content">
+
+                                        <a data-href="{{note.get_absolute_url}}">
+                                      
+                                             {{note.related_object.content_object.summary}}
+       
+                            {% else %}
+
+                                <img src="/static/img/vote_icon_40.png">
+
+                                <div class="content">
+
+                                        <a data-href="{{note.get_absolute_url}}">
+
+                                            Vote {{note.related_object}}
+
+
                             {% endif %}
                         {% endif %}
                     </a>

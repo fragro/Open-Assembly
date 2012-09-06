@@ -1200,8 +1200,27 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
   color: #222;
 }
 
+.content {
+    padding-left:5px;
+    padding-top:5px;
+    padding-right:5px;
+    word-wrap:break-word;
+}
+
+.notifications .content {
+    background:#CA2A15;
+}
+
+.activity .content {
+    background:#10697D;
+}
+
+.trustme .content, .itrust .content  {
+    background:#78BA13;
+}
+
 .notitem .content {
-    height:130px;
+    height:125px;
 }
 
 .notitem a {
@@ -1217,4 +1236,5 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     background:#171717;
     opacity:.8;
     color:white;
+    font-weight: bold;
 }
