@@ -17,134 +17,134 @@ settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
+#try:
+###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
+with open(os.path.expanduser('~/environment.json')) as f:
+    env = json.load(f)
+
+#DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
+#DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
+
+if env['DOTCLOUD_WWW_HTTP_URL'] == "http://openassembly1-fragro.dotcloud.com/":
+    DOMAIN_NAME = 'http://www.openassembly.org/'
+    DOMAIN = 'http://www.openassembly.org'
+else:
+    DOMAIN_NAME = env['DOTCLOUD_WWW_HTTP_URL']
+    DOMAIN = env['DOTCLOUD_WWW_HTTP_URL'][:-1]
+
+DEBUG = True
+TEMPLATE_DEBUG = False
+
+DATABASES = {
+    'default': {
+
+        'ENGINE': 'django_mongodb_engine',
+        'NAME': 'admin',
+        'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
+        'SUPPORTS_TRANSACTIONS': False,
+    }
+}
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'openassembly/static/'),
+)
+
+MEDIA_ROOT = '/home/dotcloud/store/media/'
+STATIC_ROOT = '/home/dotcloud/current/static/'
+MEDIA_URL = '/media/'
+
+# Configure Celery using the RabbitMQ credentials found in the DotCloud
+# environment.
+djcelery.setup_loader()
+
+BROKER_BACKEND = "redis"
+#BROKER_URL = 'redis://' + env['DOTCLOUD_CACHE_REDIS_PASSWORD'] + '@' + env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
+
+BROKER_HOST = env['DOTCLOUD_CACHE_REDIS_HOST']
+BROKER_PORT = int(env['DOTCLOUD_CACHE_REDIS_PORT'])
+BROKER_USER = env['DOTCLOUD_CACHE_REDIS_LOGIN']
+BROKER_PASSWORD = env['DOTCLOUD_CACHE_REDIS_PASSWORD']
+BROKER_VHOST = 0
+BROKER_DB = 0
+
+CELERY_RESULT_BACKEND = 'redis'
+REDIS_CONNECT_RETRY = True
+
 try:
-    ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
-    with open(os.path.expanduser('~/environment.json')) as f:
-        env = json.load(f)
-
-    #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
-    #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
-
-    if env['DOTCLOUD_WWW_HTTP_URL'] == "http://openassembly1-fragro.dotcloud.com/":
-        DOMAIN_NAME = 'http://www.openassembly.org/'
-        DOMAIN = 'http://www.openassembly.org'
-    else:
-        DOMAIN_NAME = env['DOTCLOUD_WWW_HTTP_URL']
-        DOMAIN = env['DOTCLOUD_WWW_HTTP_URL'][:-1]
-
-    DEBUG = True
-    TEMPLATE_DEBUG = False
-
-    DATABASES = {
-        'default': {
-
-            'ENGINE': 'django_mongodb_engine',
-            'NAME': 'admin',
-            'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
-            'SUPPORTS_TRANSACTIONS': False,
-        }
-    }
-
-    # Additional locations of static files
-    STATICFILES_DIRS = (
-        os.path.join(PROJECT_ROOT, 'openassembly/static/'),
-    )
-
-    MEDIA_ROOT = '/home/dotcloud/store/media/'
-    STATIC_ROOT = '/home/dotcloud/current/static/'
-    MEDIA_URL = '/media/'
-
-    # Configure Celery using the RabbitMQ credentials found in the DotCloud
-    # environment.
-    djcelery.setup_loader()
-
-    BROKER_BACKEND = "redis"
-    #BROKER_URL = 'redis://' + env['DOTCLOUD_CACHE_REDIS_PASSWORD'] + '@' + env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'] + '/0'
-
-    BROKER_HOST = env['DOTCLOUD_CACHE_REDIS_HOST']
-    BROKER_PORT = int(env['DOTCLOUD_CACHE_REDIS_PORT'])
-    BROKER_USER = env['DOTCLOUD_CACHE_REDIS_LOGIN']
-    BROKER_PASSWORD = env['DOTCLOUD_CACHE_REDIS_PASSWORD']
-    BROKER_VHOST = 0
-    BROKER_DB = 0
-
-    CELERY_RESULT_BACKEND = 'redis'
-    REDIS_CONNECT_RETRY = True
-
-    try:
-        ETHERPAD_API = env['ETHERPAD_API']
-    except: #maybe etherpad api is not setup yet
-        ETHERPAD_API = None
-
-
-    #SWITCHED TO REDIS
-    CACHES = {
-        'default': {
-            'BACKEND': 'redis_cache.cache.RedisCache',
-            'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'],
-            'OPTIONS': {
-                'DB': 1,
-                'PASSWORD': env['DOTCLOUD_CACHE_REDIS_PASSWORD'],
-                'PARSER_CLASS': 'redis.connection.HiredisParser'
-            },
-        },
-    }
-
-    #New NODEJS integration
-    NODEJS_HOST = env['DOTCLOUD_NODEJS_WWW_HOST']
-    NODEJS_PORT = int(env['DOTCLOUD_NODEJS_WWW_PORT'])
-
-
-except:
-    DOMAIN_NAME = 'http://localhost:8000/'
-    DOMAIN = 'http://localhost:8000'
-
-    DEBUG = True
-    TEMPLATE_DEBUG = True
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django_mongodb_engine',
-            'NAME': 'admin'
-        }
-    }
-    STATICFILES_DIRS = (
-        "static/",
-    )
-    STATIC_ROOT = 'static_dev_serve/static/'
-    MEDIA_ROOT = 'static_dev_serve/media/'
-    MEDIA_URL = '/media/'
-
-    BROKER_HOST = 'localhost'
-    BROKER_PORT = 6379
-    BROKER_URL = 'redis://localhost:6379/0'
-    BROKER_DB = 0
-    BROKER_PASSWORD = ''
-
-    CELERY_RESULT_BACKEND = BROKER_URL
-    REDIS_CONNECT_RETRY = True
-
-    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_HOST_PASSWORD = 'this is a password'
-    EMAIL_PORT = 587
-
+    ETHERPAD_API = env['ETHERPAD_API']
+except: #maybe etherpad api is not setup yet
     ETHERPAD_API = None
 
-    CACHES = {
-        'default': {
-            'BACKEND': 'redis_cache.cache.RedisCache',
-            'LOCATION': 'localhost:6379',
-            'OPTIONS': {
-                'DB': 1,
-            },
-        },
-    }
 
-    NODEJS_HOST = 'localhost'
-    NODEJS_PORT = 8080
+#SWITCHED TO REDIS
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'],
+        'OPTIONS': {
+            'DB': 1,
+            'PASSWORD': env['DOTCLOUD_CACHE_REDIS_PASSWORD'],
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
+        },
+    },
+}
+
+#New NODEJS integration
+NODEJS_HOST = env['DOTCLOUD_NODEJS_WWW_HOST']
+NODEJS_PORT = int(env['DOTCLOUD_NODEJS_WWW_PORT'])
+
+
+# except:
+#     DOMAIN_NAME = 'http://localhost:8000/'
+#     DOMAIN = 'http://localhost:8000'
+
+#     DEBUG = True
+#     TEMPLATE_DEBUG = True
+
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django_mongodb_engine',
+#             'NAME': 'admin'
+#         }
+#     }
+#     STATICFILES_DIRS = (
+#         "static/",
+#     )
+#     STATIC_ROOT = 'static_dev_serve/static/'
+#     MEDIA_ROOT = 'static_dev_serve/media/'
+#     MEDIA_URL = '/media/'
+
+#     BROKER_HOST = 'localhost'
+#     BROKER_PORT = 6379
+#     BROKER_URL = 'redis://localhost:6379/0'
+#     BROKER_DB = 0
+#     BROKER_PASSWORD = ''
+
+#     CELERY_RESULT_BACKEND = BROKER_URL
+#     REDIS_CONNECT_RETRY = True
+
+#     DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+#     EMAIL_USE_TLS = True
+#     EMAIL_HOST = 'smtp.gmail.com'
+#     EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+#     EMAIL_HOST_PASSWORD = 'this is a password'
+#     EMAIL_PORT = 587
+
+#     ETHERPAD_API = None
+
+#     CACHES = {
+#         'default': {
+#             'BACKEND': 'redis_cache.cache.RedisCache',
+#             'LOCATION': 'localhost:6379',
+#             'OPTIONS': {
+#                 'DB': 1,
+#             },
+#         },
+#     }
+
+#     NODEJS_HOST = 'localhost'
+#     NODEJS_PORT = 8080
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
