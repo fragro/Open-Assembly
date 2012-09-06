@@ -14,7 +14,11 @@ dotcloud_get_env() {
 setup_django() {
     # Create the data directories on the first push:
     if [ ! -d $data_dir/static ] ; then
-        mkdir -p $ $data_dir/static 
+        mkdir -p $ $data_dir/static
+    fi
+
+    if [ ! -d $data_dir/media ] ; then
+        mkdir -p $ $data_dir/media
     fi
 
     python $app_name/manage.py collectstatic --noinput
