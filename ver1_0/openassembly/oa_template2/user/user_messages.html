@@ -1,15 +1,20 @@
   
 {% pp_notification_list_get start=start end=end user=object %}
 
-    {% for i in pp_messages.unreadnotifications %}
 
-        <div class="notitem notifications">{% include 'user/notification.html' %}</div>
+     {% for i, count, type in pp_messages.notifications %}
 
-    {% endfor %}
+         {% if type == "read" %}
 
-     {% for i in pp_messages.notifications %}
+            <div class="notitem notifications read">{% include 'user/notification.html' %}</div>
 
-        <div class="notitem notifications">{% include 'user/notification.html' %}</div>
+        {% endif %}
+
+         {% if type == "unread" %}
+
+            <div class="notitem notifications unread">{% include 'user/notification.html' %}</div>
+
+        {% endif %}
 
      {% endfor %}
 

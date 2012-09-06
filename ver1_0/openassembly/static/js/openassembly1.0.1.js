@@ -862,3 +862,20 @@ function EvalSound(soundobj) {
       thissound.src = thissound.src;
       thissound.play();
 }
+
+function notify(dict){
+    var htmlmessage = '<h4>' + dict.message + '</h4><h3 style="width:65%;float:left;">' + dict.object + '</h3>';
+    if(dict.type == 'vote'){
+        htmlmessage = htmlmessage + '<img src="/static/img/vote_icon.png">'
+    }
+    if(dict.type == 'comment'){
+        htmlmessage = htmlmessage + '<img src="/static/img/comment_icon.png">'
+    }
+    if(dict.type == 'message'){
+        htmlmessage = htmlmessage + '<img src="/static/img/message_icon.png">'
+    }
+    if($('#dynamic').css('top') == '-200px'){
+        $('#dynamic').animate({'top':'32px'},500).delay(3000).animate({'top': '-200px'},500);
+    }
+    $('#dynamic').html(htmlmessage);    
+}

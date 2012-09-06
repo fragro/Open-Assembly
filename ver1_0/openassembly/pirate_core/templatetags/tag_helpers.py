@@ -51,7 +51,7 @@ def pp_ordered_tuple(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     key1 = kwargs.get('key1', None)
-    key2 = kwargs.get('key1', None)
+    key2 = kwargs.get('key2', None)
 
     if key1 is not None and key2 is not None:
         if key1 < key2:

@@ -274,7 +274,7 @@
         <script type="text/javascript" src="/static/js/jquery.scrollTo-1.4.2-min.js"></script>
         <script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
 
-        
+
         <!-- lots of index.html javascript moved to other files for sanity -->
         <script type="text/javascript">
 
@@ -289,21 +289,15 @@
         });
         //when the client receives an event from nodejs
         socket.on('updateUI', function(message) {
-            var dict = JSON.parse(message)
-            var htmlmessage = '<h4>' + dict.message + '</h4><h3 style="width:65%;float:left;">' + dict.object + '</h3>'
-            if(dict.type == 'vote'){
-                htmlmessage = htmlmessage + '<img src="/static/img/vote_icon.png">'
-            }
-            if(dict.type == 'comment'){
-                htmlmessage = htmlmessage + '<img src="/static/img/comment_icon.png">'
-            }
+            var dict = JSON.parse(message);
+            //first we need to deal with P2P messages and message logic, else it is a standard message
             if(dict.type == 'message'){
-                htmlmessage = htmlmessage + '<img src="/static/img/message_icon.png">'
+
             }
-            if($('#dynamic').css('top') == '-200px'){
-                $('#dynamic').animate({'top':'32px'},500).delay(3000).animate({'top': '-200px'},500);
+            else{
+                notify(dict);           
             }
-            $('#dynamic').html(htmlmessage);
+
 
         });
         // listener, whenever the server emits 'updatechat', this updates the chat body

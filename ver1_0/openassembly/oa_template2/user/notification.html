@@ -13,7 +13,7 @@
 	</div>
     <div class="username">
         <a data-href="{% pp_url template='user_profile.html' object=i.sender%}">
-            {{i.sender.username}}
+            {{i.sender.username}} {% if count %} ({{count}}) {% endif %}
         </a>
     </div>
 

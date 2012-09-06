@@ -1215,8 +1215,12 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     word-wrap:break-word;
 }
 
-.notifications  {
+.unread {
     background:#CA2A15;
+}
+
+.read {
+    background:#8D1808;
 }
 
 .activity {

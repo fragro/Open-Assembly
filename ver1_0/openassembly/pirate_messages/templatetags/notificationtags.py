@@ -11,6 +11,9 @@ from django.utils.encoding import smart_str
 from pirate_core.helpers import clean_html
 from pirate_forum.models import get_rangelist
 
+from pirate_forum.tasks import set_to_read
+
+from collections import defaultdict
 import datetime
 from pirate_signals.models import notification_send
 
@@ -111,6 +114,7 @@ def pp_notification_list_get(context, nodelist, *args, **kwargs):
             except:
                 raise ValueError('start and end arguments must be of integer type')
         count = 0
+        
         notes = Notification.objects.all()
         readnotes = notes.filter(receiver=user, is_read=True)
         count += readnotes.count()
@@ -118,21 +122,46 @@ def pp_notification_list_get(context, nodelist, *args, **kwargs):
 
         namespace['notifications'] = list(readnotes[start:end])
 
-        notes = notes.filter(receiver=user, is_read=False)
-        count += notes.count()
-        namespace['unreadcount'] = notes.count()
+        unotes = notes.filter(receiver=user, is_read=False)
+        count += unotes.count()
+        namespace['unreadcount'] = unotes.count()
         notes = notes.order_by('-submit_date')
-        for i in notes:
-            i.is_read = True
-            i.save()
 
-        namespace['unreadnotifications'] = notes
+        namespace['unreadnotifications'] = list(unotes)
+        
+
+        mesnotes = list(unotes)
+        retnotes = process_notes(mesnotes, "unread")
+
+        retnotes.extend(process_notes(readnotes, "read"))
+
+        set_to_read.apply_async(args=[unotes])
+
+        namespace['notifications'] = retnotes
+
     else:
         count = 0
     namespace['count'] = count
-    namespace['rangelist'] = get_rangelist(start, end, count)
 
     output = nodelist.render(context)
     context.pop()
 
     return output
+
+#process the notes, aggregate messages with a common sender together
+def process_notes(mesnotes, t):
+    ctype = ContentType.objects.get_for_model(Message)
+    retnotes = []
+    messages = {}
+    for i in mesnotes:
+        if i.content_type == ctype:
+            if i.sender_pk in messages:
+                messages[i.sender_pk] = (messages[i.sender_pk][0], messages[i.sender_pk][1] + 1, t)
+            else:
+                messages[i.sender_pk] = (i, 1, t)
+        else:
+            retnotes.append((i, 0, t))
+
+    retnotes.extend(messages.values())
+    return retnotes
+

@@ -1,6 +1,6 @@
 <div>
 {% load pp_url %}
-{% pp_ordered_tuple key1=user.pk key2=object.pk %}
+{% pp_ordered_tuple key1=request.user.pk key2=object.pk %}
     <form id='pp_message_form{{object.pk}}' method="post" action="">
 
     {% pp_message_form POST=request.POST receiver=object sender=user %}

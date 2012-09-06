@@ -23,13 +23,6 @@
 
 {% endpp_get_avatar %}
 
-{% pp_get_user_profile user=object %}
-    {% if pp_profile.profile.about_me %}
-            <div style="margin-bottom:25px; margin-top:10px; overflow:hidden;">{{pp_profile.profile.about_me}}</div>
-    {% endif %}
-{% endpp_get_user_profile %}
-
-
 
 <div class="circle usercircle">
     <label>{{object.date_joined|date:"d/m/y"}}</label>
@@ -60,7 +53,13 @@
 
 
 <h1 class="page_title">{{object.username}}</h1>
-    
+{% pp_get_user_profile user=object %}
+    {% if pp_profile.profile.about_me %}
+            <div style="margin-bottom:5px;">{{pp_profile.profile.about_me}}</div>
+    {% endif %}
+{% endpp_get_user_profile %}
+
+
 
 {% if user != object %}
 
@@ -72,7 +71,7 @@
             <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
         {% endif %}
 
-        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}">Send Message</a>
+        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}">Message</a>
 
 
 {% endpp_has_subscription %}
@@ -87,7 +86,7 @@
     <span class="btn btn_red" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });">Notifications</span>
 {% endif %}
 <span class="btn btn_blue" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });">Activity</span>
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });">Trust {{object.username}}</span>
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });">Trusts {{object.username}}</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });">{{object.username}} Trusts</span>
 
 </div>

@@ -8,7 +8,7 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-    {% pp_ordered_tuple key1=user.pk key2=object.pk %}
+    {% pp_ordered_tuple key1=request.user.pk key2=object.pk %}
 		<script>
 			var timestamp = new Date();
 			var delta;
