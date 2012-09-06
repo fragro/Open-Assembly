@@ -1,3 +1,4 @@
+<div class="user_info">
 {% if user == object %}
     {% pp_consensus_get object=object.pk %}
         {% include 'user/user_activity.html' %}
@@ -22,8 +23,6 @@
 
 {% endpp_get_avatar %}
 
-<h1 class="page_title">{{object.username}}</h1>
-
 {% pp_get_user_profile user=object %}
     {% if pp_profile.profile.about_me %}
             <div style="margin-bottom:25px; margin-top:10px; overflow:hidden;">{{pp_profile.profile.about_me}}</div>
@@ -31,36 +30,39 @@
 {% endpp_get_user_profile %}
 
 
-{% if user == object %}
 
-    <div>
-        <label>Member Since</label>
-        {{object.date_joined|date:"d/m/y"}}
+<div class="circle usercircle">
+    <label>{{object.date_joined|date:"d/m/y"}}</label>
+    <div class="title"> Joined </div>
+</div>
+
+ {% pp_get_reputation user=object %}
+    <div class="circle usercircle">
+         <label>{{pp_reputation.reputation}}</label>
+             <div class="title"> Contributions </div>
     </div>
+ {% endpp_get_reputation %}
+
+{% pp_subscriber_count user=object %}                
+    <div class="circle usercircle">
+       <label> {{pp_subscription.count}}</label>
+           <div class="title"> Trusted By </div>
+
+    </div>
+{% endpp_subscriber_count %}
+
+{% pp_subscribee_count user=object %}                
+    <div class="circle usercircle">
+        <label>{{pp_subscription.count}}</label>
+        <div class="title"> Trusts </div>
+    </div>
+{% endpp_subscribee_count %} 
+
+
+<h1 class="page_title">{{object.username}}</h1>
     
-     {% pp_get_reputation user=object %}
-        <div>
-            <label>Contribution</label>
-            {{pp_reputation.reputation}}
-        </div>
-     {% endpp_get_reputation %}
 
-    {% pp_subscriber_count user=object %}                
-        <div>
-            <label>Trust You</label>
-            {{pp_subscription.count}}
-        </div>
-    {% endpp_subscriber_count %}
-
-    {% pp_subscribee_count user=object %}                
-        <div style="margin-bottom:10px;">
-            <label>You Trust</label>
-            {{pp_subscription.count}}
-        </div>
-    {% endpp_subscribee_count %} 
-
-    
-{% else %} 
+{% if user != object %}
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
@@ -87,3 +89,5 @@
 <span class="btn btn_blue" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });">Activity</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });">Trust {{object.username}}</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });">{{object.username}} Trusts</span>
+
+</div>

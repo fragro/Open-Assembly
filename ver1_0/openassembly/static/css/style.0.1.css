@@ -905,8 +905,9 @@ label, b, strong {
     margin-top:10px;
 }
 #user_activity_chart {
-    height:100px;
-    width:100px;
+    margin-top:-10px;
+    height:110px;
+    width:110px;
     float:right;
 }
 .helptext {
@@ -1189,6 +1190,14 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
           transition-property:         transform, opacity;
 }
 
+.usercontainer {
+    margin-top:15px;
+}
+
+.user_info .page_title {
+    margin-bottom:15px;
+}
+
 .notitem {
   width: 150px;
   height: 150px;
@@ -1251,4 +1260,55 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .trustme img, .itrust img {
     padding-left:20px;
     width:100px;
+}
+
+.usercircle {
+    width:50px;
+    float:right;
+    margin-left:10px;
+    margin-right:10px;
+    margin-top:3px;
+
+}
+
+.usercircle .title {
+    font-weight:bold;
+    font-size:105%;
+}
+
+.usercircle label {
+    line-height:78px;
+    font-size:120%;
+    margin-left:8px;
+}
+
+/* Spinning, gradient circle; CSS only! */
+.circle {
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  text-align:center;
+  
+  background-image: -moz-radial-gradient(45px 45px 0deg, circle cover, white 25%, black 100%);
+  background-image: -webkit-radial-gradient(45px 0px, circle cover, white 25%, black 100%);
+  background-image: radial-gradient(45px 45px 0deg, circle cover, white 25%, black 100%);
+  
+  
+  /* webkit chrome, safari, mobile */
+  -webkit-animation-name: spin; 
+  -webkit-animation-duration: 3s; /* 3 seconds */
+  -webkit-animation-iteration-count: infinite; 
+  -webkit-animation-timing-function: linear;
+
+  /* mozilla ff */
+  -moz-animation-name: spin; 
+  -moz-animation-duration: 3s; /* 3 seconds */
+  -moz-animation-iteration-count: infinite; 
+  -moz-animation-timing-function: linear;
+
+  /* microsoft ie */
+  -ms-animation-name: spin; 
+  -ms-animation-duration: 3s; /* 3 seconds */
+  -ms-animation-iteration-count: infinite; 
+  -ms-animation-timing-function: linear;
 }

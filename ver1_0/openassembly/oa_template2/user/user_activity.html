@@ -12,11 +12,16 @@
                            type: 'pie',
                         },
                         title: {
-                           text: ''
+                           text: 'Reputation',
+                           verticalAlign: 'bottom',
+                           style: {
+                              color:'black',
+                           },
+                           y:8
                         },
                         yAxis: {
                            title: {
-                              text: 'Consensus'
+                              text: 'Consensus',
                            }
                         },
                         tooltip: {
@@ -43,7 +48,6 @@
                   </script>
                   
                <div id='user_activity_chart'> Chart will be rendered here </div>
-
          {% endif %}
     {% endpp_consensus_chart %}
 {% endpp_consensus_get %}
