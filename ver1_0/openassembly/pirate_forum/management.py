@@ -5,6 +5,7 @@ from pirate_reputation.models import ReputationEvent
 from django.contrib.contenttypes.models import ContentType
 from pirate_consensus.models import RatingVote, UpDownVote
 import datetime
+from pirate_messages.models import Notification
 from pirate_ranking.models import update_rankings
 
 
@@ -118,6 +119,11 @@ ph2.save()
 ph3.prevphase = ph2
 ph3.nextphase = None
 ph3.save()
+
+########TEMPORARY FIX FOR PRODUCTION AFTER DEPLOYMENT GET RID OF THIS
+for i in Notification.objects.all():
+	i.sender_pk = i.sender.pk
+	i.save()
 
 #Fix all the existing consensus objects
 ###DANGEROUS OPERATION, SHOULD ONLY BE DONE ONCE

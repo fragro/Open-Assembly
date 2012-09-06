@@ -19,8 +19,6 @@ from pirate_topics.models import Topic, get_root
 from redis_func import redis_client
 import json
 
-from django_mongodb_engine.contrib import MongoDBManager
-
 class Message(models.Model):
     sender = models.ForeignKey(User, null=True, related_name="message_sender")
     receiver = models.ForeignKey(User, related_name="message_receiver")
@@ -63,8 +61,6 @@ class Notification(models.Model):
 
     def __unicode__(self):
         return str(self.content_type) + ':' + str(self.object_pk)
-
-    objects = MongoDBManager()
 
 class MessageForm(forms.ModelForm):
 

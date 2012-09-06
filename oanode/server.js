@@ -100,17 +100,18 @@ function user_online(user){
       });
 }
 
+
+
 function socket_throughput(user, message){
   console.log("client1 channel " + user + ": " + message);
       store.get(user, function (err, reply) {
         if(reply != null){
+          //user is online
           console.log('reply from redis: ' + reply.toString());
           var sessionid = reply.toString();
           console.log(users[sessionid]['socketid']);
           io.sockets.socket(users[sessionid]['socketid']).emit('updateUI', message); 
-        }
-        else{
-          console.log(store.keys('*'));
+
         }
       });
 }
@@ -140,15 +141,13 @@ io.sockets.on('connection', function (socket) {
   // when the client emits 'sendchat', this listens and executes
   socket.on('sendP2P', function (data, room) {
     // we tell the client to execute 'updatechat' with 2 parameters
-      try{
-        store.get(users[socket.username]['username'] + room, function (err, reply) {
-          io.sockets.to(room).emit('updateP2P', users[socket.username]['username'], data, room, users[socket.username]['sessionid'], reply.toString());
-        });
+      store.get(users[socket.username]['username'] + room, function (err, reply) {
+        console.log(reply.toString());
+        console.log(room);
+        io.sockets.to(room).emit('updateP2P', users[socket.username]['username'], data, room, users[socket.username]['sessionid'], reply.toString());
+      });
 
-      }
-      catch(err){
-        io.sockets.socket(socket.id).emit('updateP2P', 'SERVER', 'Still connecting. Wait a few seconds please.', room);
-      }
+
   });
 
   //when the user subscribes to dynamic events through socket.io, register the redis SUB
@@ -162,7 +161,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   //when the user subscribes to dynamic events through socket.io, register the redis SUB
-  socket.on('subscribeP2P', function(username,  key, sessionid, url){
+  socket.on('subscribeP2P', function(username, key, sessionid, url){
     console.log('subscribed to ' + key);
     //initialize user so we can responsd to the right socket for real-time events
     socket.join(key);

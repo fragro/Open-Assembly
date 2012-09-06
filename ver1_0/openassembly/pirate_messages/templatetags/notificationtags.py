@@ -11,7 +11,7 @@ from django.utils.encoding import smart_str
 from pirate_core.helpers import clean_html
 from pirate_forum.models import get_rangelist
 
-from pirate_forum.tasks import set_to_read
+from pirate_messages.tasks import set_to_read
 
 from collections import defaultdict
 import datetime
