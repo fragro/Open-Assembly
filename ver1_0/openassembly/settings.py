@@ -50,8 +50,8 @@ try:
         os.path.join(PROJECT_ROOT, 'openassembly/static/'),
     )
 
-    MEDIA_ROOT = '/home/dotcloud/data/'
-    STATIC_ROOT = '/home/dotcloud/data/static/'
+    MEDIA_ROOT = '/home/dotcloud/store/media/'
+    STATIC_ROOT = '/home/dotcloud/current/static/'
     MEDIA_URL = '/media/'
 
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
