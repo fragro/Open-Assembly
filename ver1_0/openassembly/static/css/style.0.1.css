@@ -1219,7 +1219,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 
 .notitem .content{
-    height:105px;
+    height:110px;
 }
 
 .notitem a {
@@ -1227,7 +1227,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     font-size: 120%;
     text-decoration: none;    
 }
-.notitem img {
+.notifications img, .activity img{
     float:right;
 }
 .notitem .time {
@@ -1248,3 +1248,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     text-align:right;
 }
 
+.trustme img, .itrust img {
+    padding-left:20px;
+    width:100px;
+}
