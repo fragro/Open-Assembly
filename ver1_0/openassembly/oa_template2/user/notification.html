@@ -4,7 +4,7 @@
 		<div class="img">
 		 {% pp_get_sources object=i.sender type='img' %}{% if pp_source.cur_img %}{% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}{% else %}<img src="/static/img/faux_logo.png">{% endif %}{% endpp_get_sources %}
 
- 		<a href="{{i.link}}">{{i.text|safe}}</a>
+ 		<a data-href="{{i.link}}">{{i.text|safe}}</a>
 
 		</div>
 	</div>
