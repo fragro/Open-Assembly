@@ -35,133 +35,12 @@
                 <!-- Inbox -->
                 {% if request.user.is_authenticated %}<li><a data-href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>{% endif %}
                 <!-- Browse -->
-                <li class="dropdown">
-                    <a data-href="#"><i class="icon-white icon-list-alt icon-left"></i> Browse <i class="icon-white  icon-chevron-down icon-right"></i></a>
-                    <div class="dropdown_menu shortpad">
-                        <div class="col col3">
-                            <h3>Groups</h3>
-                            <ul>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='a' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
-
-                            </ul>
-                        </div>
-                        <div class="col col3">
-                            <h3>Proposals</h3>
-                            <ul>
-                                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='x' %}', 1, 'Proposals');">by Consensus</a><i class="icon-list-alt icon-white"></i></li>  
-                                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='n' %}', 1, 'Proposals');">by New</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='h' %}', 1, 'Proposals');">by Hot</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li>                           
-                            </ul>
-                        </div>
-                        <div class="col col3">
-                            <h3>Members</h3>
-                            <ul>
-                                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='a' %}', 1, 'Members');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='n' %}', 1, 'Members');">by New</a><i class="icon-list-alt icon-white"></i></li>
-                                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='j' %}', 1, 'Members');">by Last Login</a><i class="icon-list-alt icon-white"></i></li>
-
-                            </ul>
-                        </div>
-                        <div class="col col3 last">
-                            <h3>Site</h3>
-                            <ul>
-                                <li><a onClick="push_dashboard('{% pp_url template='location.html' %}', 1, 'Location');">Map</a><i class="icon-list-alt icon-white"></i></li>
-                            </ul>
-                        </div>
-                    </div>
-                </li>
+                {% include 'nav/browse.html' %}
                 <!-- Bookmarks -->
                 <!--Will develop this feature in the next version -->
-                {% comment %}
-                <li class="dropdown bookmark_dropdown">
-                    <a data-href="#"><i class="icon-white icon-bookmark icon-left"></i> Bookmarks <i class="icon-white  icon-chevron-down icon-right"></i></a>
-                    <div class="dropdown_menu">
-                        <div class="col col3">
-                            <h3>Groups</h3>
-                            <ul class="thumbnail_list">
-                                <li>
-                                    <a data-href="#">
-                                        <img src="http://lorempixel.com/25/25" alt="">
-                                        <p>
-                                            Lorem ipsum dolor sit amet consectetur...
-                                        </p>
-                                    </a>
-                                    <i class="icon-remove-sign icon-white"></i>
-                                </li>
-                                <li><a data-href="#">View All</a></li>
-                            </ul>
-                        </div>
-                        <div class="col col3">
-                            <h3>Proposals</h3>
-                            <ul class="thumbnail_list">
-                                <li>
-                                    <a data-href="#">
-                                        <img src="http://lorempixel.com/25/25" alt="">
-                                        <p>
-                                            Lorem ipsum dolor sit amet consectetur...
-                                        </p>
-                                    </a>
-                                    <i class="icon-remove-sign icon-white"></i>
-                                </li>
-                                <li><a data-href="#">View All</a></li>
-                            </ul>
-                        </div>
-                        <div class="col col3 last">
-                            <h3>Members</h3>
-                            <ul class="thumbnail_list">
-                                <li>
-                                    <a data-href="#">
-                                        <img src="http://lorempixel.com/25/25" alt="">
-                                        <p>
-                                            Lorem ipsum dolor sit amet consectetur...
-                                        </p>
-                                    </a>
-                                    <i class="icon-remove-sign icon-white"></i>
-                                </li>
-                                <li><a data-href="#">View All</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </li>
-                {% endcomment %}
+               {% include 'nav/bookmarks.html' %}
                 <!-- My Groups -->
-                <li class="dropdown">
-                    <a data-href="#"><i class="icon-white icon-user icon-left"></i> My Groups <i class="icon-white  icon-chevron-down icon-right"></i></a>
-                    <div class="dropdown_menu">
-                        <div class="col col2">
-                            <ul class="thumbnail_list">
-
-                                {% pp_mygroups user=request.user start=0 end=15 %}
-                                            
-                                    {% for group in pp_topic.mygroups %}  
-                                        {% include 'nav/mygroup.html' %}
-
-                                        {% if pp_topic.half == forloop.counter %}
-                                            </ul>
-                                            </div>
-                                            <div class="col col2 last">
-                                                <ul class="thumbnail_list">
-                                        {% endif %}
-                                    {% endfor %}
-
-                                     <li style="text-align:center;">
-                                        <div class="group_preview btn btn_green" style="display:inline-block; margin-top:10px;">
-                                            <a class="group_title" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
-                                        </div>
-                                    </li>
-
-                                    {% if pp_topic.count > 10 %}<li><a data-href="#">View All</a></li>{% endif %}
-                                {% endpp_mygroups %}
-
-                            </ul>
-                        </div>
-                    </div>
-                </li>
+               {% include 'nav/mygroups.html' %}
                 {% endif %}
                 {% if not request.user.is_authenticated %}
                     <li class="dropdown">
@@ -180,7 +59,7 @@
                                     <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
                                     <li><a data-href="/p/help">Help</a></li>
                                     <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
-                                    <li><a data-href="/p/report_abuse">Report Abuse/Submit Feedback</a></li>
+                                    <li><a data-href="/p/report_abuse">Submit Feedback</a></li>
                                     <li><a data-href="{% pp_url template='user.html' object=request.user %}" data-href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
                                 {% else %}
 

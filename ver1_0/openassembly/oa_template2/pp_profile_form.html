@@ -5,6 +5,10 @@
 
 {% block content %}
 
+    <h2>Edit Your Location</h2>
+    {% include 'forms/location_form.html' %}
+
+
     {% pp_get_user_profile user=request.user %}
 
         {% pp_profile_form POST=request.POST user=request.user profile=pp_profile.profile %}
@@ -45,7 +49,8 @@
                         {% else %}
                             <a class="btn btn_green"  data-href="{% pp_url template='register.html' %}">Submit</a>
                         {% endif %}
-                        
+
+
                     <script>
 
                       $("form#pp_profile_form").submit(function(e){

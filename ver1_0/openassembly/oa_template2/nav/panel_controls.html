@@ -32,11 +32,11 @@
             {% endif %}
 
             {% if dashobj.boardname == 'Chat' %}
-                <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
-                <li class="resort_dashboard"><a id="soundsctrl{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" onClick="if($('#chatsounds{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}').attr('class')=='true'){$('#chatsounds{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}').attr('class','false');$('#soundsctrl{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}').html('Turn On Sounds');}else{$('#chatsounds{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}').attr('class','true');$('#soundsctrl{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}').html('Turn Off Sounds');}">Turn Off Sounds </a></li>
+                <li class="resort_dashboard"><a id="soundsctrl{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" onClick="sound_toggle('{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}');"><i class='icon-volume-off icon-white icon-left'></i>Turn Off Sounds </a></li>
+                <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');"><i class="icon-trash icon-left icon-white"></i>Delete Panel</a></li>
 
             {% else %}
-                <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');">Delete Panel</a></li>
+                <li class="delete_panel"><a onClick="delete_dashboard('{{dashobj.pk}}');"><i class="icon-trash icon-left icon-white"></i>Delete Panel</a></li>
             {% endif %}
         </ul>
     </li>

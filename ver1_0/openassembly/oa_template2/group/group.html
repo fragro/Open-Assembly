@@ -33,6 +33,11 @@
     
 
          <div id="group_stats">
+            {% oa_location_get object=object %}
+                {% if oa_loc.places %}
+                    {{oa_loc.places}} | 
+                {% endif %}
+            {% endoa_location_get %}
             {% if object.more_info %}<a href="{{object.more_info}}">{{object.more_info}}</a> | {% endif %}
                      {% oa_get_group_settings object=object %}
                  {% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group |

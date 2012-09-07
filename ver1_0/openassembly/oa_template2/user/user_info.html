@@ -69,13 +69,13 @@
 
 {% pp_has_subscription subscriber=user subscribee=object %}
         {% if not pp_subscription.has_subscription %}
-            <a class="btn" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')">Trust</a> 
+            <a class="btn" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-up icon-left"></i>Trust</a> 
 
         {% else %}
-            <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')">Stop Trusting</a>
+            <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-down icon-left"></i>Stop Trusting</a>
         {% endif %}
 
-        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}">Message</a>
+        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
 
 
 {% endpp_has_subscription %}
@@ -84,13 +84,13 @@
 {% endif %}
 
 
-<span class="btn" onClick="$('#container{{object.pk}}').isotope({ filter: '*' });">All</span>
+<span class="btn" onClick="$('#container{{object.pk}}').isotope({ filter: '*' });"><i class="icon-home icon-left"></i>All</span>
 
 {% if object == user %}
-    <span class="btn btn_red" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });">Notifications</span>
+    <span class="btn btn_red" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });"><i class="icon-envelope icon-white icon-left"></i>Notifications</span>
 {% endif %}
-<span class="btn btn_blue" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });">Activity</span>
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });">Trusts {{object.username}}</span>
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });">{{object.username}} Trusts</span>
+<span class="btn btn_blue" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });"><i class="icon-user icon-white icon-left"></i>Activity</span>
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });"><i class="icon-arrow-left icon-white icon-left"></i>Trusts {{object.username}}</span>
+<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });"><i class="icon-arrow-right icon-white icon-left"></i>{{object.username}} Trusts</span>
 
 </div>

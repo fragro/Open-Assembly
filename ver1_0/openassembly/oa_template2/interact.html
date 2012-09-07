@@ -34,6 +34,11 @@
                         {% include 'forms/pp_edittopic_form.html' %}
                         </div>
 
+
+            <h2>Change Location</h2>
+
+                {% include 'forms/location_form.html' %}
+
             <h2>Change Image</h2>
                 {% cani object=object user=user %}
                     {% if pp_permissions.permission %}

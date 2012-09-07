@@ -8,7 +8,7 @@
                     {% if dimension == 'b' %}Best {% endif %}{% if dimension == 'c' %}Cont. {% endif %}
 
 
-                {{dashobj.boardname}}
+                Sparks
                 
                 {% else %}
                     {% if dashobj.boardname == 'Groups' %}
@@ -28,8 +28,22 @@
                         Users
                         {% else %}
 
-                            {{dashobj.boardname}}
-                        
+                            {% if dashobj.boardname == 'Location' %}
+
+                                {% if dimension == 'question' %}
+                                    Sparks
+                                {% endif %}
+                                {% if dimension == 'topic' %}
+                                        Groups
+                                {% endif %}
+                                {% if dimension  == 'user' %}
+                                        Users
+                                {% endif %}
+                                    Map
+                            {% else %}
+
+                                {{dashobj.boardname}}
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
