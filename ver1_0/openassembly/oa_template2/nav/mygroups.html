@@ -1,0 +1,32 @@
+<li class="dropdown">
+    <a data-href="#"><i class="icon-white icon-user icon-left"></i> My Groups <i class="icon-white  icon-chevron-down icon-right"></i></a>
+    <div class="dropdown_menu">
+        <div class="col col2">
+            <ul class="thumbnail_list">
+
+                {% pp_mygroups user=request.user start=0 end=15 %}
+                            
+                    {% for group in pp_topic.mygroups %}  
+                        {% include 'nav/mygroup.html' %}
+
+                        {% if pp_topic.half == forloop.counter %}
+                            </ul>
+                            </div>
+                            <div class="col col2 last">
+                                <ul class="thumbnail_list">
+                        {% endif %}
+                    {% endfor %}
+
+                     <li style="text-align:center;">
+                        <div class="group_preview btn btn_green" style="display:inline-block; margin-top:10px;">
+                            <a class="group_title" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
+                        </div>
+                    </li>
+
+                    {% if pp_topic.count > 10 %}<li><a data-href="#">View All</a></li>{% endif %}
+                {% endpp_mygroups %}
+
+            </ul>
+        </div>
+    </div>
+</li>

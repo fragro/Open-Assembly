@@ -1,0 +1,44 @@
+<li class="dropdown">
+    <a data-href="#"><i class="icon-white icon-list-alt icon-left"></i> Browse <i class="icon-white  icon-chevron-down icon-right"></i></a>
+    <div class="dropdown_menu shortpad">
+        <div class="col col3">
+            <h3>Groups</h3>
+            <ul>
+                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='a' %}', 1, 'Groups');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='n' %}', 1, 'Groups');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='o' %}', 1, 'Groups');">by Oldest</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='topic' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>
+            </ul>
+        </div>
+        <div class="col col3">
+            <h3>Sparks</h3>
+            <ul>
+                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='x' %}', 1, 'Proposals');">by Approval</a><i class="icon-list-alt icon-white"></i></li>  
+                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='n' %}', 1, 'Proposals');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='h' %}', 1, 'Proposals');">by Hot</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li> 
+                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='question' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>                        
+            </ul>
+        </div>
+        <div class="col col3">
+            <h3>Users</h3>
+            <ul>
+                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='a' %}', 1, 'Members');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='n' %}', 1, 'Members');">by New</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='j' %}', 1, 'Members');">by Last Login</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='topic' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='user' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>
+
+            </ul>
+        </div>
+        <div class="col col3 last">
+            <h3>Site</h3>
+            <ul>
+                <li><a onClick="push_dashboard('{% pp_url template='location.html' %}', 1, 'Location');">Map</a><i class="icon-list-alt icon-white"></i></li>
+                <li><a onClick="push_dashboard('{% pp_url template='chat.html' %}', 1, 'Chat');">Chat</a><i class="icon-list-alt icon-white"></i></li>
+            </ul>
+        </div>
+    </div>
+</li>

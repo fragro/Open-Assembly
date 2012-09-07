@@ -1,0 +1,42 @@
+{% load locationtags %}
+
+<form id='oa_location_form' method="post" action="">
+
+{% oa_location_form POST=request.POST user=user object=object %}
+        {{ oa_loc.form.errors }}
+
+            {{oa_loc.form.description}}            
+
+            {{oa_loc.form.form_id}}
+            {% csrf_token %}
+
+       <input class="btn" id="loc_input" type="submit" value="Enter Location">
+       <span id="submit_oa_location_form"></span>
+
+{% if oa_loc.location %}
+    {% pp_get_contenttype_id object=object %}
+        <div class="location_desc{{object.pk}}">
+            <h3>Did you mean</h3>
+            {% for text, lat, lon in oa_loc.location %}
+
+                <p>
+                    <a onclick="createLocation('{{object.pk}}', '{{pp_source.ctype_pk}}', '{{lat}}', '{{lon}}', '{{text}}');">{{text}}</a>
+                </p>
+
+            {% endfor %}
+        </div>
+    {% endpp_get_contenttype_id %}
+
+
+
+{% endif %}
+{% endoa_location_form %}
+
+        <script>
+
+          $("form#oa_location_form").submit(function(e){
+                $("#submit_oa_location_form").html("<img src='/static/img/loader.gif' class='loader'>");
+                addObject(e);
+            });
+        </script>
+</form>
