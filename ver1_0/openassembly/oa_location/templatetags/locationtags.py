@@ -77,8 +77,7 @@ def oa_location_get(context, nodelist, *args, **kwargs):
 
 	elif obj is not None and obj != 'location':
 		places = Place.objects.filter(object_pk=obj.pk)
-
-		if len(places) == 0:
+		if len(places) == 1:
 			namespace['places'] = places[0]
 	else:
 		places = Place.objects.all()
