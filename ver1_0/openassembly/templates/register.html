@@ -13,6 +13,9 @@
                         <h1> You Joined the Group "{{oa_ver.referral.topic}}"</h1>
                     {% else %}
                         <h1>{{oa_ver.errors}}</h1>
+                        
+                            {% include 'etc/register_login.html %}
+
                     {% endif %}
                 {% else %}
                 <h1>Referral Not Found</h1>

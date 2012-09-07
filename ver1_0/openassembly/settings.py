@@ -194,6 +194,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'oa_cache',
     'django_mongodb_engine',
+    'oa_location'
 )
 
 STATIC_URL = '/static/'

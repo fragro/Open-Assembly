@@ -31,3 +31,4 @@ git+https://github.com/sorl/sorl-thumbnail.git#egg=sorl
 git+https://github.com/devjones/PyEtherpadLite.git#egg=PyEtherpadLite
 django-redis==1.4.5
 git+https://github.com/boto/boto.git#egg=boto
+svn+http://geopy.googlecode.com/svn/trunk#egg=geopy

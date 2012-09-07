@@ -15,6 +15,7 @@ class Profile(models.Model):
     user = models.ForeignKey(User)
     receive_emails = models.BooleanField(default=True)
     timezone = models.CharField(max_length=50)
+    
 
     def __unicode__(self):
         return self.user.username

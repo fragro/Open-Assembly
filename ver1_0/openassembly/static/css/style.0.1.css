@@ -375,7 +375,7 @@ html {
     margin-right:1%;
 }
 .pwide3 {
-    min-width:75%;
+    min-width:74.95%;
 }
 .pwide4 {
     min-width:100%;
@@ -1199,14 +1199,19 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 
 .notitem {
-  width: 150px;
-  height: 150px;
-  margin: 5px;
-  float: left;
-  overflow: hidden;
-  position: relative;
-  background: #888;
-  color: #222;
+    width: 150px;
+    height: 150px;
+    margin: 5px;
+    float: left;
+    overflow: hidden;
+    position: relative;
+    background:white;
+    border:1px #ccc solid;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-radius: 5px 5px 0px 0px;
 }
 
 .content {
@@ -1215,50 +1220,46 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     word-wrap:break-word;
 }
 
-.unread {
-    background:#CA2A15;
-}
-
-.read {
-    background:#8D1808;
-}
-
-.activity {
-    background:#10697D;
-}
-
-.trustme , .itrust   {
-    background:#78BA13;
-}
-
 .notitem .content{
     height:110px;
 }
 
 .notitem a {
-    color:#fff;
     font-size: 120%;
     text-decoration: none;    
 }
-.notifications img, .activity img{
-    float:right;
-}
-.notitem .time {
-    width:100%;
-    background:#171717;
-    opacity:.9;
-    color:white;
-    font-weight: bold;
+.notitem .username, .notitem .time{
+    background: #f5f5f5;
+    background: -moz-linear-gradient(top,  #f5f5f5 0%, #eeeeee 99%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f5f5), color-stop(99%,#eeeeee));
+    background: -webkit-linear-gradient(top,  #f5f5f5 0%,#eeeeee 99%);
+    background: -o-linear-gradient(top,  #f5f5f5 0%,#eeeeee 99%);
+    background: -ms-linear-gradient(top,  #f5f5f5 0%,#eeeeee 99%);
+    background: linear-gradient(top,  #f5f5f5 0%,#eeeeee 99%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#eeeeee',GradientType=0 );
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-radius: 5px 5px 0px 0px;
+    border-radius: 5px 5px 0px 0px;
+    -webkit-box-shadow: inset 0px 0px 0px 1px rgba(255, 255, 255, .8);
+    -moz-box-shadow: inset 0px 0px 0px 1px rgba(255, 255, 255, .8);
+    box-shadow: inset 0px 0px 0px 1px rgba(255, 255, 255, .8);
+    color:#222;
+    text-shadow:0 1px 0 rgba(255,255,255,.9);
     text-align:right;
+    color:#222;
+    text-shadow:0 1px 0 rgba(255,255,255,.9);
+    border:1px #ccc solid;
+    font-size:1em;
+    font-weight:bold;
+    height:18px;
+
 }
 
-.trustme .username, .itrust .username, .notifications .username{
-    width:100%;
-    background:#171717;
-    opacity:.95;
-    color:white;
-    font-weight: bold;
-    text-align:right;
+.notifications img, .activity img{
+    float:right;
 }
 
 .trustme img, .itrust img {
@@ -1269,22 +1270,18 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .usercircle {
     width:50px;
     float:right;
-    margin-left:10px;
-    margin-right:10px;
+
     margin-top:3px;
-
-}
-
-.usercircle .title {
+    font-size:1.1em;
     font-weight:bold;
-    font-size:105%;
+
 }
 
 .usercircle label {
     line-height:78px;
-    font-size:120%;
+    font-size:1.1em;
     margin-left:8px;
-    color:white;
+    color:black;
 }
 
 
@@ -1308,13 +1305,14 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     margin-right:2px;
     text-decoration: none;
     font-weight: bold;
-    font-size: 150%;
     border-radius: 0px 0px 5px 5px;
 }
 
 
 .circle
 {
+    margin-left:20px;
+    margin-right:15px;
     text-align:center;
     width:70px;
     height:70px;
@@ -1322,11 +1320,17 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     -moz-border-radius: 50px;
     border-radius: 50px;
 
-    background-image: -moz-radial-gradient(45px 45px 20deg, circle cover, #787cc9 20%, #00067b 80%);
-    background-image: -webkit-radial-gradient(45px 20px, circle cover, #787cc9 20%, #00067b 80%);
-    background-image: radial-gradient(45px 45px 20deg, circle cover, #787cc9 20%, #00067b 80%);
+    background-image: -moz-radial-gradient(45px 45px 20deg, circle cover, #f5f5f5 0%, white 80%);
+    background-image: -webkit-radial-gradient(45px 20px, circle cover, #f5f5f5 0%, white 80%);
+    background-image: radial-gradient(45px 45px 20deg, circle cover, #f5f5f5 0%, white 80%);
 
     -moz-box-shadow: 0px 5px 15px #888;
     -webkit-box-shadow: 0px 5px 15px #888;
     box-shadow: 0px 5px 15px #888;  
+}
+.popup {
+    text-decoration: none;
+}
+.popup b{
+    margin-left:5px;
 }

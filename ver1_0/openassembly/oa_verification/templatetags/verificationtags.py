@@ -243,7 +243,7 @@ def oa_referral_form(context, nodelist, *args, **kwargs):
     namespace['errors'] = []
     sent = 0
 
-    if POST:
+    if POST and POST.get("form_id") == "oa_referral_form":
         form = ReferralForm(POST)
         if form.is_valid():
             email = form.cleaned_data['email']
