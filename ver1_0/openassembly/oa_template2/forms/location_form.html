@@ -1,8 +1,8 @@
 {% load locationtags %}
 
-<form id='oa_location_form' method="post" action="">
+<form id='oa_location_form{{object.pk}}' method="post" action="">
 
-{% oa_location_form POST=request.POST user=user object=object %}
+{% oa_location_form POST=request.POST user=user object=object request=request %}
         {{ oa_loc.form.errors }}
 
             {{oa_loc.form.description}}            
@@ -11,7 +11,8 @@
             {% csrf_token %}
 
        <input class="btn" id="loc_input" type="submit" value="Enter Location">
-       <span id="submit_oa_location_form"></span>
+       <span id="submit_oa_location_form{{object.pk}}"></span>
+       <span>{{oa_loc.latlong}}</span>
 
 {% if oa_loc.location %}
     {% pp_get_contenttype_id object=object %}
@@ -34,8 +35,8 @@
 
         <script>
 
-          $("form#oa_location_form").submit(function(e){
-                $("#submit_oa_location_form").html("<img src='/static/img/loader.gif' class='loader'>");
+          $("form#oa_location_form{{object.pk}}").submit(function(e){
+                $("#submit_oa_location_form{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>");
                 addObject(e);
             });
         </script>

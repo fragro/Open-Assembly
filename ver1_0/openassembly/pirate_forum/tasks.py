@@ -32,9 +32,3 @@ def patch_text(edit_pk):
     patch = mpl.make_patch(js)
     return patch_apply(patch, text)
 
-
-@task(ignore_results=True)
-def set_to_read(notes):
-    for i in notes:
-        i.is_read = True
-        i.save()

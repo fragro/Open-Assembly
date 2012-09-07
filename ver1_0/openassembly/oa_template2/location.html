@@ -6,10 +6,10 @@
 .olControlAttribution { display:none;}
 </style>
 
-{% oa_location_get object=object content_type=dimension %}
+{% oa_location_get object=object content_type=dimension type2=sort_type %}
   <script>
     $(document).ready(function(){
-
+      var lastfeature;
       function newlatlong{{dashobj.pk}}(lat, lon){
         var lonLat = new OpenLayers.LonLat( lon ,lat )
             .transform(
@@ -30,12 +30,14 @@
    
 
       {% for place in oa_loc.places %}
+
+
          var info{{place.pk}} = '<div class="popup"><a data-href="{{place.content_object.get_absolute_url}}">{% include "etc/object_img_50_place.html" %}<b>{{place.content_object}}</b></a></div>'
          var lonLat = newlatlong{{dashobj.pk}}('{{place.location.latitude}}', '{{place.location.longtitude}}');
          marker{{place.pk}} = new OpenLayers.Marker(lonLat)
          markers.addMarker(marker{{place.pk}});
          marker{{place.pk}}.events.register("click", marker{{place.pk}}, function(e){
-              popup{{place.pk}} = new OpenLayers.Popup.FramedCloud("popup",
+              popup{{place.pk}} = new OpenLayers.Popup.FramedCloud("chicken",
                            marker{{place.pk}}.lonlat,
                            new OpenLayers.Size(300, 150),
                            info{{place.pk}},
@@ -52,13 +54,20 @@
 
       {% endfor %}
    
-      if(lonLat != 'undefined'){
+      if('{{sort_type}}' == 'near'){
+        alert('success!');
+        var lonLat = newlatlong{{dashobj.pk}}('{{oa_loc.latitude}}', '{{oa_loc.longtitude}}');
         map{{dashobj.pk}}.setCenter (lonLat, zoom);
+
+      }
+      else if(lonLat != 'undefined'){
+          map{{dashobj.pk}}.setCenter (lonLat, zoom);
       }
       else{
-        var lonLat = newlatlong{{dashobj.pk}}(57,2);
-        map{{dashobj.pk}}.setCenter (0, zoom);
+          var lonLat = newlatlong{{dashobj.pk}}(57,2);
+          map{{dashobj.pk}}.setCenter (0, zoom);
       }
+      
 
 
     });

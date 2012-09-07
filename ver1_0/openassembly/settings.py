@@ -54,6 +54,9 @@ try:
     STATIC_ROOT = '/home/dotcloud/current/static/'
     MEDIA_URL = '/media/'
 
+    GEOIP_PATH = STATIC_ROOT + 'GeoLiteCity.dat'
+
+
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
     # environment.
     djcelery.setup_loader()
@@ -115,6 +118,9 @@ except:
     MEDIA_ROOT = 'static_dev_serve/media/'
     MEDIA_URL = '/media/'
 
+    GEOIP_PATH = PROJECT_ROOT + '/openassembly/static/GeoLiteCity.dat'
+
+
     BROKER_HOST = 'localhost'
     BROKER_PORT = 6379
     BROKER_URL = 'redis://localhost:6379/0'
@@ -145,6 +151,7 @@ except:
 
     NODEJS_HOST = 'localhost'
     NODEJS_PORT = 8080
+
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
@@ -194,7 +201,8 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'oa_cache',
     'django_mongodb_engine',
-    'oa_location'
+    'oa_location',
+    'pygeoip'
 )
 
 STATIC_URL = '/static/'
@@ -256,13 +264,6 @@ PISTON_DISPLAY_ERRORS = True
 OPENASSEMBLY_AGENT = 'http://localhost:8888/jsonrpc'
 OPENASSEMBLY_KEY = "frank"
 
-#django-tracking
-GOOGLE_MAPS_KEY = "ABQIAAAA_UWxUEZV5juJ_qZyeqUmfhSvVJNCP2lnT3uHeEcarivQqD0uThSON16p3Xgve_GndLyoHx3-D4JUBw"
-TRACKING_USE_GEOIP = True
-GEOIP_PATH = "static/GeoIP/"
-GEOIP_CACHE_TYPE = 1
-DEFAULT_TRACKING_TEMPLATE = 'map.html'
-
 
 # we also are going to use redis for our session cache as well.
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
@@ -313,7 +314,6 @@ LOGGING = {
     }
 }
 
-
 ########CELERY
 
 CELERY_DEFAULT_QUEUE = 'default'
@@ -344,5 +344,4 @@ except:
     EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
     EMAIL_HOST_PASSWORD = 'this is a password'
     EMAIL_PORT = 587
-
 

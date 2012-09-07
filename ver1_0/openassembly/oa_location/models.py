@@ -29,11 +29,6 @@ class Place(models.Model):
 
 	objects = MongoDBManager()
 
-	#location should be in format {'latitude' : 42, 'longtitude' : 3.14}
-	def get_nearest(self, start=0, end=20):
-		here = {'latitude' : self.location.latititude, 'longtitude' : self.location.longitude}
-		return Place.objects.raw_query({'location' : {'$near' : here}})[start:end]
-
 	def __unicode__(self):
 		return str(self.summary)
 
