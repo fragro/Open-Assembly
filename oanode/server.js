@@ -128,18 +128,19 @@ sub.on("message", function (channel, message) {
 io.sockets.on('connection', function (socket) {
 
   // when the client emits 'sendchat', this listens and executes
-  socket.on('sendchat', function (data, room) {
+  socket.on('sendchat', function(data, room) {
     // we tell the client to execute 'updatechat' with 2 parameters
       try{
         io.sockets.to(room).emit('updatechat', users[socket.username]['username'], data, room, users[socket.username]['sessionid']);
       }
       catch(err){
+        console.log(err);
         io.sockets.socket(socket.id).emit('updatechat', 'SERVER', 'Still connecting. Wait a few seconds please.', room);
       }
   });
 
   // when the client emits 'sendchat', this listens and executes
-  socket.on('sendP2P', function (data, room) {
+  socket.on('sendP2P', function(data, room) {
     // we tell the client to execute 'updatechat' with 2 parameters
       store.get(users[socket.username]['username'] + room, function (err, reply) {
         console.log(reply.toString());
@@ -156,6 +157,7 @@ io.sockets.on('connection', function (socket) {
     //initialize user so we can responsd to the right socket for real-time events
     init_user(username, sessionid, socket.id, null);
     sub.subscribe(username);
+
     store.set(username, sessionid);
     //store.expire(username, -1)
   });
@@ -165,7 +167,6 @@ io.sockets.on('connection', function (socket) {
     console.log('subscribed to ' + key);
     //initialize user so we can responsd to the right socket for real-time events
     socket.join(key);
-    socket.username = sessionid;
     //store user image url for future callbacks to server
     store.set(username + key, url);
     new_user = init_user(username, sessionid, socket.id, key);
@@ -175,6 +176,7 @@ io.sockets.on('connection', function (socket) {
 
   // when the client emits 'adduser', this listens and executes
   socket.on('adduser', function(username, sessionid, room){
+    console.log('adding user' + sessionid);
     socket.set('room', room, function() { console.log('room ' + room + ' saved'); } );
     socket.join(room);
     // we store the username in the socket session for this client

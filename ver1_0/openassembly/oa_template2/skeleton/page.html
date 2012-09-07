@@ -5,6 +5,13 @@
   <div id="page{{key}}" class="page current" style="display:block;">
 {% endif %}
 
+	  <div class="page_controls">
+
+	  	<span class="ctrl"><a onClick="tabRemove('{{key}}');">x</a></span>
+	  	<span style="font-size:180%" class="ctrl"><a onClick="toggleMinMax('{{key}}');">-</a></span>
+
+	  </div>
+
       <div class="sink">
 
       {% block content %}

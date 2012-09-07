@@ -43,8 +43,10 @@ def increase_zoom(request):
 
         db = DashboardPanel.objects.get(pk=obj_pk)
         if dim == 'X':
+            print 'yes' * 100
             db.zoom_x += 1
         if dim == 'Y':
+            print 'yes' * 100
             db.zoom_y += 1
         db.save()
 

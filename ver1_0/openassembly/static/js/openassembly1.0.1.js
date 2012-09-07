@@ -506,11 +506,12 @@ function increase_zoom(obj_pk, dim, path, dash_id, type, obj){
   $.post("/increase_zoom/", {object_pk: obj_pk, dimension: dim},
   function(data) {
       if(type == 'Chat'){
+
         console.log('chatresize');
         $('#user_container' + obj).css('height', $('#' + obj_pk).height()-30 + "px");
         adjustchat(obj_pk);
       }
-      if(type == 'Stream'){
+      if(type == 'Stream' || type == 'Location'){
         refresh_size(path, dash_id, obj_pk);
       }
   }, "json");
@@ -525,7 +526,7 @@ function decrease_zoom(obj_pk, dim, path, dash_id, type, obj){
         adjustchat(obj_pk);
         $('#user_container' + obj).css('height', $('#' + obj_pk).height()-30 + "px");
       }
-      if(type == 'Stream'){
+      if(type == 'Stream' || type == 'Location'){
         refresh_size(path, dash_id, obj_pk);
       }
   }, "json");

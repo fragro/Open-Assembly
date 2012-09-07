@@ -24,17 +24,21 @@
 {% endpp_get_avatar %}
 
 
-<div class="circle usercircle">
+<div class="usercircle circle">
     <label>{{object.date_joined|date:"d/m/y"}}</label>
     <div class="title"> Joined </div>
 </div>
 
- {% pp_get_reputation user=object %}
-    <div class="circle usercircle">
-         <label>{{pp_reputation.reputation}}</label>
-             <div class="title"> Contributions </div>
-    </div>
- {% endpp_get_reputation %}
+
+{% comment %}
+     {% pp_get_reputation user=object %}
+        <div class="circle usercircle">
+             <label>{{pp_reputation.reputation}}</label>
+                 <div class="title"> Contributions </div>
+        </div>
+     {% endpp_get_reputation %}
+{% endcomment %}
+
 
 {% pp_subscriber_count user=object %}                
     <div class="circle usercircle">

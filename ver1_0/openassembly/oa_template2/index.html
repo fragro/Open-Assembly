@@ -58,13 +58,19 @@
                                 <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li>                           
                             </ul>
                         </div>
-                        <div class="col col3 last">
+                        <div class="col col3">
                             <h3>Members</h3>
                             <ul>
                                 <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='a' %}', 1, 'Members');">Alphabetically</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='n' %}', 1, 'Members');">by New</a><i class="icon-list-alt icon-white"></i></li>
                                 <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='j' %}', 1, 'Members');">by Last Login</a><i class="icon-list-alt icon-white"></i></li>
 
+                            </ul>
+                        </div>
+                        <div class="col col3 last">
+                            <h3>Site</h3>
+                            <ul>
+                                <li><a onClick="push_dashboard('{% pp_url template='location.html' %}', 1, 'Location');">Map</a><i class="icon-list-alt icon-white"></i></li>
                             </ul>
                         </div>
                     </div>
@@ -273,7 +279,7 @@
         <script type="text/javascript" src="/static/js/openassembly1.0.1.js"></script>
         <script type="text/javascript" src="/static/js/jquery.scrollTo-1.4.2-min.js"></script>
         <script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
-
+        <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
 
         <!-- lots of index.html javascript moved to other files for sanity -->
         <script type="text/javascript">
@@ -353,18 +359,16 @@
                 {% endif %}
 
                         
-                $(document).ready(function(){
 
-                    $('#loading')
-                    .hide()  // hide it initially
-                    .ajaxStart(function() {
-                        $(this).show();
-                    })
-                    .ajaxStop(function() {
-                        $(this).hide();
-                    });
-                           
+                $('#loading')
+                .hide()  // hide it initially
+                .ajaxStart(function() {
+                    $(this).show();
+                })
+                .ajaxStop(function() {
+                    $(this).hide();
                 });
+                       
 
                 $("#dynamic").click(function() {
                     $('#dynamic').css({'top': '-200px'});
@@ -517,6 +521,7 @@
                         }
                     });
                 };
+
                 //press escape to remove content
                 function keyDown(e) {
                     var keycode = e.which

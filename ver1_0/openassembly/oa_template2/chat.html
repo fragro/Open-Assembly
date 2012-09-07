@@ -1,13 +1,3 @@
-{% comment %}
-
-{% if object.pk %}
-	<iframe class="iframe{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" src="http://webchat.freenode.net?nick={{user.username}}&channels=oa-{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}&prompt=1&uio=d4" width="100%" height="{% include 'stream/stream_height.html' %}"></iframe>
-{% else %}
-	<iframe class="iframe{% if object.pk %}{{object.pk}}{% else %}welcome_chat{% endif %}" src="http://webchat.freenode.net?nick={{user.username}}&channels=oa-welcome-aboard&prompt=1&uio=d4" width="100%" height="{% include 'stream/stream_height.html' %}"></iframe>
-{% endif %}
-
-{% endcomment %}
-<script src="http://{{settings.NODEJS_HOST}}:{{settings.NODEJS_PORT}}/socket.io/socket.io.js"></script>
 
 <script>
 		var timestamp = new Date();

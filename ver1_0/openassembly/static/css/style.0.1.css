@@ -186,7 +186,7 @@ html {
     opacity:1;
 }
 #nav .dropdown_menu .col3, #nav .col1 .col  {
-    width:180px;
+    width:120px;
 }
 #nav .dropdown_menu .col2 {
     width:280px;
@@ -346,7 +346,7 @@ html {
     opacity:1;
 }
 #pages .page {
-    z-index:999;
+    z-index:9999;
 }
 .tab_template {
     display:none;
@@ -1284,35 +1284,49 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     line-height:78px;
     font-size:120%;
     margin-left:8px;
+    color:white;
 }
 
-/* Spinning, gradient circle; CSS only! */
-.circle {
-  border-radius: 50%;
-  width: 70px;
-  height: 70px;
-  text-align:center;
-  
-  background-image: -moz-radial-gradient(45px 45px 0deg, circle cover, white 25%, black 100%);
-  background-image: -webkit-radial-gradient(45px 0px, circle cover, white 25%, black 100%);
-  background-image: radial-gradient(45px 45px 0deg, circle cover, white 25%, black 100%);
-  
-  
-  /* webkit chrome, safari, mobile */
-  -webkit-animation-name: spin; 
-  -webkit-animation-duration: 3s; /* 3 seconds */
-  -webkit-animation-iteration-count: infinite; 
-  -webkit-animation-timing-function: linear;
 
-  /* mozilla ff */
-  -moz-animation-name: spin; 
-  -moz-animation-duration: 3s; /* 3 seconds */
-  -moz-animation-iteration-count: infinite; 
-  -moz-animation-timing-function: linear;
+.page_controls {
+    right:35px;
+    top:55px;
+    position:fixed;
+    z-index:99999;
+    text-align:center;
+}
+.page_controls .ctrl a{
+    color:black;
+    opacity:0.85;
+    width:25px;
+    float:right;
+    background:#fff;
+    border-left:2px solid rgba(0,0,0,.6);
+    border-right:2px solid rgba(0,0,0,.6);
+    border-bottom:2px solid rgba(0,0,0,.6);
+    margin-left:2px;
+    margin-right:2px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 150%;
+    border-radius: 0px 0px 5px 5px;
+}
 
-  /* microsoft ie */
-  -ms-animation-name: spin; 
-  -ms-animation-duration: 3s; /* 3 seconds */
-  -ms-animation-iteration-count: infinite; 
-  -ms-animation-timing-function: linear;
+
+.circle
+{
+    text-align:center;
+    width:70px;
+    height:70px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+
+    background-image: -moz-radial-gradient(45px 45px 20deg, circle cover, #787cc9 20%, #00067b 80%);
+    background-image: -webkit-radial-gradient(45px 20px, circle cover, #787cc9 20%, #00067b 80%);
+    background-image: radial-gradient(45px 45px 20deg, circle cover, #787cc9 20%, #00067b 80%);
+
+    -moz-box-shadow: 0px 5px 15px #888;
+    -webkit-box-shadow: 0px 5px 15px #888;
+    box-shadow: 0px 5px 15px #888;  
 }
