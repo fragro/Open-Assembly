@@ -6,10 +6,10 @@
 .olControlAttribution { display:none;}
 </style>
 
-{% oa_location_get object=object content_type=dimension type2=sort_type %}
+{% oa_location_get request=request object=object content_type=dimension start=start end=end %}
   <script>
     $(document).ready(function(){
-      var lastfeature;
+      var activepopup = null;
       function newlatlong{{dashobj.pk}}(lat, lon){
         var lonLat = new OpenLayers.LonLat( lon ,lat )
             .transform(
@@ -27,16 +27,45 @@
    
       var markers = new OpenLayers.Layer.Markers( "Markers" );
       map{{dashobj.pk}}.addLayer(markers);
+
+      var size = new OpenLayers.Size(16,26);
+      var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+      var icon = new OpenLayers.Icon('/static/icons/marker.png', size, offset);
    
 
       {% for place in oa_loc.places %}
 
 
-         var info{{place.pk}} = '<div class="popup"><a data-href="{{place.content_object.get_absolute_url}}">{% include "etc/object_img_50_place.html" %}<b>{{place.content_object}}</b></a></div>'
+         var info{{place.pk}} = '<div class="popup"><a data-href="{{place.content_object.get_absolute_url}}">';
+
+         {% if place.content_type.name == 'user' %}
+
+         info{{place.pk}} = info{{place.pk}} + '{% include "etc/object_img_50_place.html" %}<b><img class="icon-left" src="/static/icons/user.png">';
+
+         {% endif %}
+
+         {% if place.content_type.name == 'topic' %}
+
+         info{{place.pk}} = info{{place.pk}} + '{% include "etc/object_img_50_place.html" %}<b><img class="icon-left" src="/static/icons/group.png">';
+
+         {% endif %}
+
+         {% if place.content_type.name == 'question' %}
+
+         info{{place.pk}} = info{{place.pk}} + '<b><i class="icon-left icon-fire"></i>';
+
+         {% endif %}
+
+          info{{place.pk}} = info{{place.pk}} + '{{place.content_object}}</b></a></div>';
+
+
          var lonLat = newlatlong{{dashobj.pk}}('{{place.location.latitude}}', '{{place.location.longtitude}}');
-         marker{{place.pk}} = new OpenLayers.Marker(lonLat)
+         marker{{place.pk}} = new OpenLayers.Marker(lonLat, icon.clone());
          markers.addMarker(marker{{place.pk}});
          marker{{place.pk}}.events.register("click", marker{{place.pk}}, function(e){
+              if(activepopup != null){
+                activepopup.destroy();
+              }
               popup{{place.pk}} = new OpenLayers.Popup.FramedCloud("chicken",
                            marker{{place.pk}}.lonlat,
                            new OpenLayers.Size(300, 150),
@@ -44,6 +73,7 @@
                            null, true);
               popup{{place.pk}}.autoSize = true;
               popup{{place.pk}}.setOpacity(0.8);
+              activepopup = popup{{place.pk}}
               popup{{place.pk}}.events.register("click", popup{{place.pk}}, function(e){
                   history.pushState({load:true, module:'leave', url: '{{place.content_object.get_absolute_url}}'}, '', '{{place.content_object.get_absolute_url}}');
                   getContent();     
@@ -54,19 +84,22 @@
 
       {% endfor %}
    
-      if('{{sort_type}}' == 'near'){
-        alert('success!');
-        var lonLat = newlatlong{{dashobj.pk}}('{{oa_loc.latitude}}', '{{oa_loc.longtitude}}');
-        map{{dashobj.pk}}.setCenter (lonLat, zoom);
-
-      }
-      else if(lonLat != 'undefined'){
+      {% if oa_loc.near %}
+          alert('success!');
+          var lonLat = newlatlong{{dashobj.pk}}('{{oa_loc.latitude}}', '{{oa_loc.longtitude}}');
           map{{dashobj.pk}}.setCenter (lonLat, zoom);
-      }
-      else{
-          var lonLat = newlatlong{{dashobj.pk}}(57,2);
-          map{{dashobj.pk}}.setCenter (0, zoom);
-      }
+
+      {% else %}
+
+        if(lonLat != 'undefined'){
+            map{{dashobj.pk}}.setCenter (lonLat, zoom);
+        }
+        else{
+            var lonLat = newlatlong{{dashobj.pk}}(57,2);
+            map{{dashobj.pk}}.setCenter (0, zoom);
+        }
+      {% endif %}[]
+
       
 
 

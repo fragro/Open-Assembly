@@ -61,32 +61,44 @@ def oa_location_get(context, nodelist, *args, **kwargs):
 	request = kwargs.get('request', None)
 	obj = kwargs.get('object', None)
 	ctype = kwargs.get('content_type', None)
-	type2 = kwargs.get('type', None)
+	start = kwargs.get('start', 0)
+	end = kwargs.get('end', 20)
 
 	namespace['places'] = []
-	#pass in a contenttype id, might be something else though
-	try:
-		ctype = ContentType.objects.get(name=ctype)
-	except:
-		ctype = None
 
-	if type2 == 'near':
-		record = get_loc_by_ip(request)
-		pt = {latitude: record['latitude'], longitude: record['longitude']}
-		namespace['places'] = get_nearest(pt)
-
-	elif obj is not None and obj != 'location':
+	#if theres a specific object set we want
+	if obj is not None and obj != 'location':
 		places = Place.objects.filter(object_pk=obj.pk)
 		if len(places) == 1:
-			namespace['places'] = places[0]
+			namespace['places'] = places
 	else:
 		places = Place.objects.all()
 		namespace['places'] = places
 
+	#pass in a contenttype id, might be something else though
 	if ctype is not None:
+		#modified ctype string to hack in near_me requests, prepend 'ip_' to content type requests
+		if ctype[0:2] == 'ip' and request is not None:
+			if request == None:
+				raise ValueError('Looks like request object is missing from a IP based lookup')
+			ctype = ctype[2:]
+			record = get_loc_by_ip(request)
+			if record is not None:
+				pt = {latitude: record['latitude'], longitude: record['longitude']}
+				namespace['places'] = get_nearest(pt)
+				namespace['near'] = True
+
+		try:
+			ctype = ContentType.objects.get(name=ctype)
+		except:
+			ctype = None
 		namespace['places'] = namespace['places'].filter(content_type=ctype)
 
-
+	if 'places' in namespace:
+		if end-start == 1:
+			namespace['places'] = namespace['places'][0]
+		else:
+			namespace['places'] = namespace['places'][start:end]
 
 	output = nodelist.render(context)
 	context.pop()
@@ -101,10 +113,12 @@ def get_loc_by_ip(request):
 		if ip is None:
 			return False
 	gi = pygeoip.GeoIP(GEOIP_PATH, pygeoip.STANDARD)
-	raise Exception
 	return gi.record_by_addr(ip)
 
 
 #location should be in format {'latitude' : 42, 'longtitude' : 3.14}
-def get_nearest(self, here, start=0, end=20):
-	return Place.objects.raw_query({'location' : {'$near' : here}})[start:end]
+def get_nearest(self, here, ctype=None):
+	if ctype is not None:
+		return Place.objects.raw_query({'location' : {'$near' : here}, 'content_type': ctype})
+	else:
+		return Place.objects.raw_query({'location' : {'$near' : here}})

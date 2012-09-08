@@ -2,15 +2,14 @@
     {% for note in pp_reputation.reputation_events %}
         <div class="notitem activity">
 
-            <div class="time">{{note.created_dt}}</div>
-
-            <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
-
-
                         <!-- this bunch of junk just turns out to be a piece of text -->
-                        {% if note.related_object.text %}   
+                        {% if note.related_object.text %}  
 
-                            <img src="/static/img/comment_icon_40.png">
+                            <span class="user_icon"><i class="icon-comment"></i></span>
+
+                            <div class="time">{{note.created_dt|timesince}} ago</div>
+
+                            <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
 
                             <div class="content">
 
@@ -22,9 +21,13 @@
                         {% else %}
 
                             {% if note.related_object.content_object.summary %}
-                            
-                               <img src="/static/img/idea_icon.png">
 
+                                <span class="user_icon"><i class="icon-fire"></i></span>
+
+                                <div class="time">{{note.created_dt|timesince}} ago</div>
+
+                                <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
+                            
                                 <div class="content">
 
                                         <a data-href="{{note.get_absolute_url}}">
@@ -33,7 +36,11 @@
        
                             {% else %}
 
-                                <img src="/static/img/vote_icon_40.png">
+                                <span class="user_icon"><i class="icon-ok-circle"></i></span>
+
+                                <div class="time">{{note.created_dt|timesince}} ago</div>
+
+                                <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
 
                                 <div class="content">
 

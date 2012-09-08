@@ -1,6 +1,10 @@
 {% load pp_url %}
 {% ifequal object.user user %}
 
+<h2>Set Location</h2>
+
+    {% include 'forms/location_form.html' %}
+
 <a class="btn btn_green" data-href="{% pp_url template='submit.html' object=object dimension='edit' %}">Edit</a>
 {% endifequal %}
 {% if object.user == user or user.is_staff %}

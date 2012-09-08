@@ -6,7 +6,8 @@
                 <div class="notitem trustme">
                         <p style="display:none;" class="sorttime"> {{i.created_dt|date:"U" }}</p>
 
-                        <div class="time">{{i.created_dt}}</div>
+                        <span class="user_icon"><i class="icon-user"></i></span>
+                        <div class="time">{{i.created_dt|timesince}} ago</div>
 
                         <div class="content">
 
@@ -34,8 +35,6 @@
         {% endfor %}
     {% endpp_get_subscribers_for_user %}
 
-
-
     {% pp_get_subscribees_for_user user=object start=start end=end %}
 
             {% for i in pp_subscription.subscribees %}
@@ -43,7 +42,8 @@
 
                     <p style="display:none;" class="sorttime"> {{i.created_dt|date:"U" }}</p>
 
-                    <div class="time">{{i.created_dt}}</div>
+                    <span class="user_icon"><i class="icon-user"></i></span>
+                    <div class="time">{{i.created_dt|timesince}} ago</div>
 
                     <div class="content">
 

@@ -361,6 +361,7 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
                     rendered_list.append({'div': c.div_id, 'type': c.jquery_cmd, 'obj_pk': obj_pk, 'html':
                             c.render(context)})
             if rendered_list == []:
+                context['request'] = request
                 val = render_to_string(rendertype + '.html', context)
                 if obj is not None:
                     rendered_list = [{'div': '#pages', 'html': val, 'type': 'append', 'obj_pk': obj.pk}]

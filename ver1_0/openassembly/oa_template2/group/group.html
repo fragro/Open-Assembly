@@ -33,7 +33,7 @@
     
 
          <div id="group_stats">
-            {% oa_location_get object=object %}
+            {% oa_location_get object=object start=0 end=1 %}
                 {% if oa_loc.places %}
                     {{oa_loc.places}} | 
                 {% endif %}
