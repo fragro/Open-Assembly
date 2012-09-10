@@ -455,10 +455,12 @@ def pp_consensus_chart(context, nodelist, *args, **kwargs):
 
         if obj.spectrum is not None:
             for i in SpectrumHolder.objects.filter(spectrum_pk=obj.spectrum.pk):
-                data.append({'name': SPECTRUM_CHOICES[int(i.vote)], 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
+                if i.value > 0:
+                    data.append({'name': SPECTRUM_CHOICES[int(i.vote)], 'y': i.value, 'color': SPECTRUM_COLORS[int(i.vote)]})
             dchart['data'] = data
             namespace['chart_data'] = str([dchart])
             if dchart['data'] != []:
+                print dchart['data']
                 namespace['chart'] = True
         if obj.rating is not None:
             rating_list = obj.rating.get_list()
