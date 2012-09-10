@@ -47,5 +47,13 @@ class ReputationSpec(models.Model):
             self.dimension = ReputationDimension.objects.null_dimension()
         super(ReputationSpec, self).save()
 
+
+def has_permission(obj, user):
+    try:
+        perm = Permission.objects.get(user=user, object_pk=obj.pk)
+        return True
+    except:
+        return False
+
 admin.site.register(PermissionsGroup)
 admin.site.register(Permission)

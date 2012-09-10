@@ -123,7 +123,7 @@ def pp_get_contenttype_id(context, nodelist, *args, **kwargs):
 
     obj = kwargs.get('object',None)
     
-    if obj is not None: 
+    if obj is not None and not isinstance(obj, basestring): 
         pk = ContentType.objects.get_for_model(obj).pk
         namespace['ctype_pk'] = pk
     

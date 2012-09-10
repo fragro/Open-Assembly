@@ -895,22 +895,49 @@ function notify(dict){
 }
 
 
+//LOCATION BASED JAVASCRIPT FOR ADDING, DELETING, and LOADING
 function createLocation(object_pk, content_type, lat, lon, desc){
 
   $.post("/create_location/", {object_pk: object_pk, content_type:content_type, lat:lat, lon:lon, desc:desc},
   function(data) {
-      if(data.FAIL === true){
-         //$(ui.item).fadeOut('slow', function() {
-          //    $(ui.sender).append(ui.item);
-          //    $(ui.item).fadeIn('slow');
-          //});
-      }
       if(data.FAIL === false){
         $('.location_desc' + object_pk).fadeOut( function(){
             $('.location_desc' + object_pk).html('<h3>Location Saved</h3>');  
           });
-          $('.location_desc' + object_pk).fadeIn();
+          $('.location_desc' + object_pk).fadeIn( function() {
+                $('#currentLocation' + object_pk).fadeOut( function(){
+                  $('#currentLocation' + object_pk).html('<span><b>Current Location:</b> ' + desc + "</span><span class='btn' onclick='deleteLocation(" + '"' + object_pk + '"' + ");'>" + '<i class="icon-warning-sign icon-left"></i>Remove</span>');  
+                });
+                $('#currentLocation' + object_pk).fadeIn();
+          });
+          $('#currentLocation' + object_pk).fadeIn();
 
+      }
+  }, "json");
+}
+
+function deleteLocation(object_pk){
+
+  $.post("/delete_location/", {object_pk: object_pk},
+  function(data) {
+      if(data.FAIL === false){
+        $('#currentLocation' + object_pk).fadeOut( function(){
+            $('#currentLocation' + object_pk).html(''); 
+            $('#currentLocation' + object_pk).fadeIn();
+          });
+
+      }
+  }, "json");
+}
+
+function loadMarkers(object_pk, content_type, start, end, dimension, dashobj_pk){
+  $.get("/moar_markers_plz/", {object_pk: object_pk, content_type:content_type, start:start, end:end, dimension:dimension, dashobj_pk:dashobj_pk},
+  function(data) {
+      if(data.FAIL === false){
+        alert('#extramarkers'  + dashobj_pk);
+        $('#extramarkers'  + dashobj_pk).append(data.html);
+        alert(data.link);
+        $('#loadmore' + dashobj_pk).html(data.link);
       }
   }, "json");
 }

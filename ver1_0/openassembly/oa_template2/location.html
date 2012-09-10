@@ -1,3 +1,8 @@
+{% pp_get_contenttype_id object=object %}
+
+<div id="loadmore{{dashobj.pk}}" class="loadmore"> {% include 'etc/load_markers.html' %} </div>
+{% endpp_get_contenttype_id %}
+
 <div id="mapdiv{{dashobj.pk}}" style="width: 100%; height: {% include 'stream/map_height.html' %}px; margin:0;"></div>
 
 
@@ -9,44 +14,51 @@
 {% oa_location_get request=request object=object content_type=dimension start=start end=end %}
   <script>
     $(document).ready(function(){
-      var activepopup = null;
+      //quick hack, our style sheet appears to be overriding a objects
+      window.activepopup = null;
       function newlatlong{{dashobj.pk}}(lat, lon){
         var lonLat = new OpenLayers.LonLat( lon ,lat )
             .transform(
               new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-              map{{dashobj.pk}}.getProjectionObject() // to Spherical Mercator Projection
+              window.map{{dashobj.pk}}.getProjectionObject() // to Spherical Mercator Projection
             );
       return lonLat;
       };
 
-      map{{dashobj.pk}} = new OpenLayers.Map("mapdiv{{dashobj.pk}}");
-      map{{dashobj.pk}}.addLayer(new OpenLayers.Layer.OSM());
+      window.map{{dashobj.pk}} = new OpenLayers.Map("mapdiv{{dashobj.pk}}");
+      window.map{{dashobj.pk}}.addLayer(new OpenLayers.Layer.OSM());
 
 
       var zoom=1;
    
-      var markers = new OpenLayers.Layer.Markers( "Markers" );
-      map{{dashobj.pk}}.addLayer(markers);
+      window.markers{{dashobj.pk}} = new OpenLayers.Layer.Markers( "Markers" );
+      window.map{{dashobj.pk}}.addLayer(window.markers{{dashobj.pk}});
 
       var size = new OpenLayers.Size(16,26);
       var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
       var icon = new OpenLayers.Icon('/static/icons/marker.png', size, offset);
    
 
-      {% for place in oa_loc.places %}
+      window.map{{dashobj.pk}}.events.register("click", window.map{{dashobj.pk}}, function(e){
+          if(window.activepopup != null){
+            window.activepopup.destroy();
+            window.activepopup = null;
+          }
+      });
 
+      {% for lat, lon, place, count in oa_loc.places %}
 
          var info{{place.pk}} = '<div class="popup"><a data-href="{{place.content_object.get_absolute_url}}">';
 
          {% if place.content_type.name == 'user' %}
 
-         info{{place.pk}} = info{{place.pk}} + '{% include "etc/object_img_50_place.html" %}<b><img class="icon-left" src="/static/icons/user.png">';
+         info{{place.pk}} = info{{place.pk}} + '<b><img class="icon-left" src="/static/icons/user.png">';
 
          {% endif %}
 
          {% if place.content_type.name == 'topic' %}
 
-         info{{place.pk}} = info{{place.pk}} + '{% include "etc/object_img_50_place.html" %}<b><img class="icon-left" src="/static/icons/group.png">';
+         info{{place.pk}} = info{{place.pk}} + '<b><img class="icon-left" src="/static/icons/group.png">';
 
          {% endif %}
 
@@ -56,15 +68,15 @@
 
          {% endif %}
 
-          info{{place.pk}} = info{{place.pk}} + '{{place.content_object}}</b></a></div>';
+          info{{place.pk}} = info{{place.pk}} + '{{place.content_object}}</b></a></div><div class="popupsummary">{{place.summary}}{% if count %} ({{count}}){% endif %}';
 
 
-         var lonLat = newlatlong{{dashobj.pk}}('{{place.location.latitude}}', '{{place.location.longtitude}}');
+         var lonLat = newlatlong{{dashobj.pk}}('{{lat}}', '{{lon}}');
          marker{{place.pk}} = new OpenLayers.Marker(lonLat, icon.clone());
-         markers.addMarker(marker{{place.pk}});
+         window.markers{{dashobj.pk}}.addMarker(marker{{place.pk}});
          marker{{place.pk}}.events.register("click", marker{{place.pk}}, function(e){
-              if(activepopup != null){
-                activepopup.destroy();
+              if(window.activepopup != null){
+                window.activepopup.destroy();
               }
               popup{{place.pk}} = new OpenLayers.Popup.FramedCloud("chicken",
                            marker{{place.pk}}.lonlat,
@@ -72,14 +84,14 @@
                            info{{place.pk}},
                            null, true);
               popup{{place.pk}}.autoSize = true;
-              popup{{place.pk}}.setOpacity(0.8);
-              activepopup = popup{{place.pk}}
+              popup{{place.pk}}.setOpacity(0.5);
+              window.activepopup = popup{{place.pk}}
               popup{{place.pk}}.events.register("click", popup{{place.pk}}, function(e){
-                  history.pushState({load:true, module:'leave', url: '{{place.content_object.get_absolute_url}}'}, '', '{{place.content_object.get_absolute_url}}');
-                  getContent();     
+                history.pushState({load:true, module:'leave', url: '{{place.content_object.get_absolute_url}}'}, '', '{{place.content_object.get_absolute_url}}');
+                getContent();     
               });
 
-              map{{dashobj.pk}}.addPopup(popup{{place.pk}});
+              window.map{{dashobj.pk}}.addPopup(popup{{place.pk}});
           });
 
       {% endfor %}
@@ -87,24 +99,25 @@
       {% if oa_loc.near %}
           alert('success!');
           var lonLat = newlatlong{{dashobj.pk}}('{{oa_loc.latitude}}', '{{oa_loc.longtitude}}');
-          map{{dashobj.pk}}.setCenter (lonLat, zoom);
+          window.map{{dashobj.pk}}.setCenter (lonLat, zoom);
 
       {% else %}
 
         if(lonLat != 'undefined'){
-            map{{dashobj.pk}}.setCenter (lonLat, zoom);
+            window.map{{dashobj.pk}}.setCenter (lonLat, zoom);
         }
         else{
             var lonLat = newlatlong{{dashobj.pk}}(57,2);
-            map{{dashobj.pk}}.setCenter (0, zoom);
+            window.map{{dashobj.pk}}.setCenter (0, zoom);
         }
-      {% endif %}[]
-
-      
-
+      {% endif %}
+      //maps loaded now initiate the load more widget
+      $('#loadmore{{dashobj.pk}}').show();
 
     });
   </script>
+
+  <div id="extramarkers{{dashobj.pk}}"></div>
 
 {% endoa_location_get %}
 

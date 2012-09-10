@@ -12,7 +12,7 @@ from ajaxapi.views import flagvote, set_loc_by_ip, del_tag, add_video_vote, upda
 from ajaxapi.views import setup_admin, confirm, add_platform, change_hash_dim, change_hash_ctype, delete_object
 from pirate_login.views import logout_view
 from pirate_consensus.views import set_ranked_vote, confirm_ranked_vote, del_confirm_ranked_vote
-from oa_location.views import create_location
+from oa_location.views import create_location, delete_location, load_markers
 
 from oa_dashboard.views import del_board, add_board, sort_board, increase_zoom, decrease_zoom, resort_board
 
@@ -78,6 +78,10 @@ urlpatterns = patterns('',
     (r'^tasks/update_ranks/', update_ranks),
     (r'^tasks/nuke_memcache/', nuke_memcache),
     (r'^create_location/', create_location),  #ajax
+    (r'^delete_location/', delete_location),  #ajax
+    (r'^moar_markers_plz/', load_markers),  #ajax
+
+
 
 )
 

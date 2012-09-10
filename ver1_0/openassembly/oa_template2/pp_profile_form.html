@@ -5,7 +5,6 @@
 
 {% block content %}
 
-    <h2>Edit Your Location</h2>
     {% include 'forms/location_form.html' %}
 
 
@@ -40,7 +39,7 @@
                         
                         {% if user.is_authenticated and user.is_active %}                                                            
                         
-                        <button class="btn btn_green" type="submit">Update Profile <i class="icon-white icon-pencil icon-right"></i></button>
+                        <button class="btn btn_green" type="submit"><i class="icon-white icon-pencil icon-left"></i>Update</button>
                         
                         <small id="submit_pp_profile_form"></small>
                         

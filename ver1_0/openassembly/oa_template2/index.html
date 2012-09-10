@@ -30,46 +30,44 @@
             <a class="nobbq" data-href="/" id="logo"><img src="/static/img/logo.png" alt=""></a><img id="loading" src="/static/img/1.gif">
             <ul id="nav">
                 {% if request.user.is_authenticated %}
-                <!-- Dashboard -->
-                <li><a data-href="/" onClick="minimizeAll();"><i class="icon-white icon-home icon-left"></i> Dashboard</a></li>
-                <!-- Inbox -->
-                {% if request.user.is_authenticated %}<li><a data-href="{% pp_url object=request.user template='inbox.html' %}"><i class="icon-white icon-envelope icon-left"></i> Inbox</a></li>{% endif %}
-                <!-- Browse -->
-                {% include 'nav/browse.html' %}
-                <!-- Bookmarks -->
-                <!--Will develop this feature in the next version -->
-               {% include 'nav/bookmarks.html' %}
-                <!-- My Groups -->
-               {% include 'nav/mygroups.html' %}
-                {% endif %}
-                {% if not request.user.is_authenticated %}
-                    <li class="dropdown">
+                    <!-- Dashboard -->
+                    <li><a data-href="/" onClick="minimizeAll();"><i class="icon-white icon-th icon-left"></i> Dashboard</a></li>
+                    <!-- Inbox -->
+                    <li><a data-href="{% pp_url template='user.html' object=request.user %}" data-href="{% pp_url template='user.html' object=request.user %}"><i class="icon-white icon-home icon-left"></i> Me</a></li>
+                    <!-- Browse -->
+                    {% include 'nav/browse.html' %}
+                    <!-- Bookmarks -->
+                    <!--Will develop this feature in the next version -->
+                   {% include 'nav/bookmarks.html' %}
+                    <!-- My Groups -->
+                   {% include 'nav/mygroups.html' %}
 
-                        <a data-href="/p/register"><i class="icon-white icon-user icon-left"></i> Register/Login</a>
-                    </li>
-                {% endif %}
-                <!-- Settings -->
-                <li class="dropdown">
+                   <li class="dropdown">
 
                     <a data-href="#"><i class="icon-white icon-cog icon-left"></i> Settings <i class="icon-white  icon-chevron-down icon-right"></i></a>
                     <div class="dropdown_menu col1 shortpad">
                         <div class="col last">
                             <ul>
-                                {% if request.user.is_authenticated %}
-                                    <li><a data-href="{% pp_url template='pp_profile_form.html' object=request.user %}">Edit Profile</a></li>
-                                    <li><a data-href="/p/help">Help</a></li>
-                                    <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
-                                    <li><a data-href="/p/report_abuse">Submit Feedback</a></li>
-                                    <li><a data-href="{% pp_url template='user.html' object=request.user %}" data-href="{% pp_url template='user.html' object=request.user %}">View Profile</a></li>
-                                {% else %}
-
-                                    <li><a data-href="/p/register">Register/Login</a></li>
-                                    <li><a data-href="/p/help">Help</a></li>
-                                {% endif %}
+                                <li><a data-href="/p/help">About</a></li>
+                                <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
+                                <li><a data-href="/p/report_abuse">Submit Feedback</a></li>
                             </ul>
                         </div>
                     </div>
                 </li>
+                {% endif %}
+                {% if not request.user.is_authenticated %}
+                    <li>
+                        {% include 'forms/headless_login.html' %}
+                    </li>
+                    <li>
+                        <a data-href="/p/register"><i class="icon-white icon-user icon-left"></i> Register</a>
+                        <li><a data-href="/p/help">About</a></li>
+
+                    </li>
+                {% endif %}
+                <!-- Settings -->
+
             </ul>
             <!-- end #nav -->
         </div>

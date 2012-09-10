@@ -1067,8 +1067,7 @@ h1 a:hover {
 html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     height:100% !important;
 }
-#panel_inner_list a {
-    height:50px;
+#panel_inner_list a{
     overflow:hidden;
 }
 #tutorial iframe { margin:10% auto; }
@@ -1197,6 +1196,11 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .user_info .page_title {
     margin-bottom:15px;
 }
+.user_icon {
+    float:left;
+    margin-right:-5px;
+    margin-left:10px;
+}
 
 .notitem {
     width: 150px;
@@ -1218,6 +1222,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     padding-left:5px;
     padding-right:5px;
     word-wrap:break-word;
+    overflow:hidden;
 }
 
 .notitem .content{
@@ -1255,6 +1260,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     font-size:1em;
     font-weight:bold;
     height:18px;
+
 
 }
 
@@ -1333,4 +1339,84 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 .popup b{
     margin-left:5px;
+}
+.popupsummary {
+    margin-left:14px;
+}
+.currentLocation span{
+    margin-right:25px;
+}
+
+.headless_login {
+    background:url('/static/img/btn-login.png') no-repeat 5px 5px #484B4F;
+    width: 100px;
+    text-align:left;
+    text-indent:40px;
+    margin:0 auto;
+    color:white;
+    font-size:1.1em;
+    font-weight:bold;
+    border-left:1px rgba(0,0,0,.2) solid;
+ 
+  /* Animations: */
+  -webkit-transition-timing-function: ease-in-out;
+  -webkit-transition-duration: .4s;
+  -webkit-transition-property: all;
+  
+  -moz-transition-timing-function: ease-in-out;
+  -moz-transition-duration: .4s;
+  -moz-transition-property: all;
+}
+
+.headless_login:hover {
+    background-image: url('/static/img/btn-login-hover.png');
+    background-position: 75px 5px;
+    text-indent: 10px;
+    cursor:pointer;
+}
+
+#pp_user_login_form {
+    height:20px;
+    max-width:100%;
+    margin-top:5px;
+    margin-right:10px;
+}
+
+.error {
+    color:white;
+    font-weight:bold;
+    font-size:1.2em;
+    margin-right:10px;
+    text-shadow:0 1px 0 #BC0E00;
+
+}
+.loadmore a:hover {
+    background: #130085;
+    background: rgba(0, 60, 136, 0.7);
+    filter: alpha(opacity=100);
+}
+
+.loadmore a{
+    width:22px;
+    height:22px;
+    z-index:999;
+    top:70px;
+    left:26px;
+    position:absolute;
+    display: block;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    line-height: 19px;
+    background: #130085; /* fallback for IE - IE6 requires background shorthand*/
+    background: rgba(0, 60, 136, 0.5);
+    filter: alpha(opacity=80);
+    -moz-border-radius: 4px;
+    -webkit-border-radius:4px;
+    -khtml-border-radius:4px;
+    color:white;
+}
+.loadmore {
+    display:none;
 }

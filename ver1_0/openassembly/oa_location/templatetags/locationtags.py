@@ -5,6 +5,9 @@ from django.db import transaction
 from django.middleware import csrf
 from django.contrib.contenttypes.models import ContentType
 from oa_location.models import LocationForm, Place
+import random
+import math
+from django.db.models import Count
 
 import pygeoip
 from settings import GEOIP_PATH
@@ -90,19 +93,41 @@ def oa_location_get(context, nodelist, *args, **kwargs):
 
 		try:
 			ctype = ContentType.objects.get(name=ctype)
+			namespace['places'] = namespace['places'].filter(content_type=ctype)
 		except:
 			ctype = None
-		namespace['places'] = namespace['places'].filter(content_type=ctype)
-
+		
+	#if we have a single location no need for jittering return it
 	if 'places' in namespace:
-		if end-start == 1:
-			namespace['places'] = namespace['places'][0]
+		if len(namespace['places']) == 1:
+			namespace['places'] = [(namespace['places'][0].location.latitude, namespace['places'][0].location.longtitude, namespace['places'][0])]
+			output = nodelist.render(context)
+			context.pop()
+			return output
 		else:
-			namespace['places'] = namespace['places'][start:end]
+			namespace['places'] = namespace['places']
+
+	#Now cluster and jitter based on number at each specific location
+	#need to transfer clusterdict to a model and store it instead
+	if namespace['places'] !=  []:
+		clusterdict = {}
+		clustered = namespace['places'].values('summary')
+		print clustered
+		for each in clustered:
+			clusterdict[each['summary']] = namespace['places'].filter(summary=each['summary']).count()
+		jittered = []
+
+		for place in namespace['places'][start:end]:
+			if clusterdict[place.summary] == 1:
+				jittered.append((place.location.latitude, place.location.longtitude, place, None))
+			else:
+				lat,lon = jitter(place.location.latitude, place.location.longtitude, clusterdict[place.summary])
+				jittered.append((lat, lon, place, clusterdict[place.summary]))
+				#raise ValueError('check lat long')
+		namespace['places'] = jittered
 
 	output = nodelist.render(context)
 	context.pop()
-
 	return output
 
 
@@ -122,3 +147,10 @@ def get_nearest(self, here, ctype=None):
 		return Place.objects.raw_query({'location' : {'$near' : here}, 'content_type': ctype})
 	else:
 		return Place.objects.raw_query({'location' : {'$near' : here}})
+
+def jitter(lat, lon, count):
+	#must be bounded by [-180, 180] but I doubt that will be an issue, not too many actions in north or south pole
+	k = .0045
+	rlat = lat + (k * math.log(count)) * (random.randrange(0,2) * -1) * (random.random() + .1)
+	rlon = lon + (k * math.log(count)) * (random.randrange(0,2) * -1) * (random.random() + .1)
+	return rlat, rlon

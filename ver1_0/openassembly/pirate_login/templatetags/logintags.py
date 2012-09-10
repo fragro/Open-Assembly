@@ -303,6 +303,7 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
             if user is not None:
                 if user.is_active:
                     login(request, user)
+                    namespace['complete'] = True
                     #check the user's current location
                     if dimension is not None:
                         try:
@@ -319,7 +320,6 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                             return HttpResponseRedirect('/')
                         except:
                             namespace['errors'] = "Illegal Referral Key"
-                    namespace['complete'] = True
                 else:
                     namespace['errors'] = "Inactive Account. Reply to the Confirmation Email!"
 
@@ -328,12 +328,13 @@ def pp_user_login_form(context, nodelist, *args, **kwargs):
                 try:
                     user_exist = User.objects.get(username=form.cleaned_data['name'])
                     #if the user exists we should get to this point
-                    namespace['errors'] = "Incorrect Password"
+                    namespace['errors'] = "Username or Password Failed"
                 except:
-                    namespace['errors'] = "Username Not Found"
+                    namespace['errors'] = "Username or Password Failed"
         else:
             #TODO: form is empty in some way, add this message to error
-            pass
+            namespace['errors'] = "Seem to be Missing Something..."
+
     else:
         form = LoginForm()
         #if return_path != None: namespace['display'] = 'display:none;' #for ajax

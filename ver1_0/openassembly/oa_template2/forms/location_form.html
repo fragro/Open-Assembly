@@ -2,6 +2,16 @@
 
 <form id='oa_location_form{{object.pk}}' method="post" action="">
 
+<h2>Set Location</h2>
+{% oa_location_get object=object start=0 end=1 %}
+        
+    <div class="currentLocation" id="currentLocation{{object.pk}}">
+        {% for lat, lon, loc in oa_loc.places %}
+            <span><b>Current Location:</b> {{ loc.summary }}</span> <span onclick="deleteLocation('{{object.pk}}');" class="btn"><i class="icon-warning-sign icon-left"></i>Remove</span>
+        {% endfor %}
+    </div>
+{% endoa_location_get %}
+
 {% oa_location_form POST=request.POST user=user object=object request=request %}
         {{ oa_loc.form.errors }}
 
@@ -10,7 +20,7 @@
             {{oa_loc.form.form_id}}
             {% csrf_token %}
 
-       <input class="btn" id="loc_input" type="submit" value="Enter Location">
+       <button class="btn" id="loc_input" type="submit"><i class='icon-globe icon-left'></i>Enter Location</button>
        <span id="submit_oa_location_form{{object.pk}}"></span>
        <span>{{oa_loc.latlong}}</span>
 
