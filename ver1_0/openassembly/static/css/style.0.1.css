@@ -1388,6 +1388,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     font-size:1.2em;
     margin-right:10px;
     text-shadow:0 1px 0 #BC0E00;
+    margin-left:10px;
 
 }
 .loadmore a:hover {
