@@ -1,0 +1,22 @@
+{% load logintags %}
+{% pp_user_login_form request=request %}
+    <form id="pp_user_login_form" action="" method="post">
+            <span class="error">{{ pp_login.errors }}</span>
+            <input type="text"  name="name" id="id_name" class="input-medium" placeholder="Username">
+            <input type="password"  name="password" id="id_password" class="input-medium" placeholder="Password">
+            {{ pp_login.form.form_id}}
+            {% csrf_token %}
+        <input type="submit" class="headless_login"></input>
+
+            <script>
+            $(document).ready(function() {
+                {% if pp_login.complete %}
+                    js_redirect('/');   
+                {% endif %}
+            });
+              $("form#pp_user_login_form").submit(function(e){
+                    addObject(e);
+              });
+            </script>
+    </form>  
+{% endpp_user_login_form %}

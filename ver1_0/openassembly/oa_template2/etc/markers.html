@@ -1,0 +1,81 @@
+
+{% oa_location_get request=request object=object content_type=dimension start=start end=end %}
+  {% if oa_loc.places|length > 0 %}
+  <script>
+      function newlatlong{{dashobj_pk}}(lat, lon){
+        var lonLat = new OpenLayers.LonLat( lon ,lat )
+            .transform(
+              new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+              window.map{{dashobj_pk}}.getProjectionObject() // to Spherical Mercator Projection
+            );
+      return lonLat;
+      };
+
+      var zoom=1;
+
+      var size = new OpenLayers.Size(16,26);
+      var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+      var icon = new OpenLayers.Icon('/static/icons/marker.png', size, offset);
+
+
+      {% for lat, lon, place, count in oa_loc.places %}
+
+         var info{{place.pk}} = '<div class="popup"><a data-href="{{place.content_object.get_absolute_url}}">';
+
+         {% if place.content_type.name == 'user' %}
+
+         info{{place.pk}} = info{{place.pk}} + '<b><img class="icon-left" src="/static/icons/user.png">';
+
+         {% endif %}
+
+         {% if place.content_type.name == 'topic' %}
+
+         info{{place.pk}} = info{{place.pk}} + '<b><img class="icon-left" src="/static/icons/group.png">';
+
+         {% endif %}
+
+         {% if place.content_type.name == 'question' %}
+
+         info{{place.pk}} = info{{place.pk}} + '<b><i class="icon-left icon-fire"></i>';
+
+         {% endif %}
+
+          info{{place.pk}} = info{{place.pk}} + '{{place.content_object}}</b></a></div><div class="popupsummary">{{place.summary}}{% if count %} ({{count}}){% endif %}';
+
+
+         var lonLat = newlatlong{{dashobj_pk}}('{{lat}}', '{{lon}}');
+         marker{{place.pk}} = new OpenLayers.Marker(lonLat, icon.clone());
+         markers{{dashobj_pk}}.addMarker(marker{{place.pk}});
+         marker{{place.pk}}.events.register("click", marker{{place.pk}}, function(e){
+              if(activepopup != null){
+                activepopup.destroy();
+              }
+              popup{{place.pk}} = new OpenLayers.Popup.FramedCloud("chicken",
+                           marker{{place.pk}}.lonlat,
+                           new OpenLayers.Size(300, 150),
+                           info{{place.pk}},
+                           null, true);
+              popup{{place.pk}}.autoSize = true;
+              popup{{place.pk}}.setOpacity(0.5);
+              window.activepopup = popup{{place.pk}}
+              popup{{place.pk}}.events.register("click", popup{{place.pk}}, function(e){
+                history.pushState({load:true, module:'leave', url: '{{place.content_object.get_absolute_url}}'}, '', '{{place.content_object.get_absolute_url}}');
+                getContent();     
+              });
+
+              window.map{{dashobj_pk}}.addPopup(popup{{place.pk}});
+          });
+
+      {% endfor %}
+
+        if(lonLat != 'undefined'){
+            window.map{{dashobj_pk}}.setCenter (lonLat, 5);
+        }
+        else{
+            var lonLat = newlatlong{{dashobj.pk}}(57,2);
+            window.map{{dashobj_pk}}.setCenter (0, zoom);
+        }
+
+  </script>
+ {% endif %}
+{% endoa_location_get %}
