@@ -1,0 +1,52 @@
+{% extends 'skeleton/page.html' %}
+
+{% load blobtags %}
+{% load consensustags %}
+
+{% block content %}
+
+{% pp_get_search_items search_key=dimension %}
+
+
+    <h2>Searching For: {{dimension}}</h2>
+    <h3>{{pp_blob.num_results}} hits</h3>
+
+    
+    {% if request.user.is_staff %}
+
+       Failed: {{ pp_blob.failed }}
+
+    {% endif %}
+
+<div>
+    {% for object_pk in pp_blob.topics.query %}
+
+       {% pp_get_topic object_pk=object_pk.pk %}
+
+            {{pp_topic.object.summary}}
+
+        {% endpp_get_topic %}
+
+    {% endfor %}
+
+    {% for key,objs in pp_blob.results.items %}
+
+        {% for obj_pk in objs.query %}
+
+        {% pp_get_object model=key object_pk=obj_pk.pk %}
+
+                    {% pp_consensus_get object=pp_blob.content_object.pk %}
+
+                        {{pp_blob.content_object}}
+
+                {% endpp_consensus_get %}
+
+            {% endpp_get_object %}
+        {% endfor %}
+
+    {% endfor %}
+
+</div>
+{% endpp_get_search_items %}
+
+{% endblock %}
