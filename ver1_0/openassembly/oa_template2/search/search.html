@@ -1,0 +1,62 @@
+{% extends 'skeleton/page.html' %}
+
+{% load blobtags %}
+{% load consensustags %}
+{% load haystacktags %}
+
+{% block content %}
+
+    <div id="oa_search_form">
+    {% oa_haystack_search search_key=dimension POST=request.POST %}
+
+    <form method="get" action="." id="haystack_form">
+
+        <h2>Search</h2>
+
+        <div style='display:none'><input type='hidden' name='form_id' value='oa_search_form' /></div>
+        <table>
+            {{ oa_search.form.as_table }}
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <input type="submit" value="Search">
+                    <span id="search_test">test</span>
+                </td>
+            </tr>
+        </table>
+
+        {% if oa_search.query %}
+            <h3>Results</h3>
+
+            {% for result in oa_search.page.object_list %}
+                <p>
+                    <a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+                </p>
+            {% empty %}
+                <p>No results found.</p>
+            {% endfor %}
+
+            {% if oa_search.page.has_previous or oa_search.page.has_next %}
+                <div>
+                    {% if oa_search.page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if oa_search.page.has_previous %}</a>{% endif %}
+                    |
+                    {% if oa_search.page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if oa_search.page.has_next %}</a>{% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            {# Show some example queries to run, maybe query syntax, something else? #}
+        {% endif %}
+
+        <script>
+              $("form#haystack_form").submit(function(e){
+                    addObject(e);
+                    var url = '/p/search/d-' + $('#id_q').val()
+                    history.replaceState({load:true, module:'leave', url: url}, '', url);
+              });
+        </script>
+    </form>
+    {% endoa_haystack_search %}
+
+</div>
+
+{% endblock %}
