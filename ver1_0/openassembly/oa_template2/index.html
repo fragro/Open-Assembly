@@ -32,6 +32,7 @@
                 {% if request.user.is_authenticated %}
                     <!-- Dashboard -->
                     <li><a data-href="/" onClick="minimizeAll();"><i class="icon-white icon-th icon-left"></i> Dashboard</a></li>
+                    {% include 'nav/create.html' %}
                     <!-- Inbox -->
                     <li><a data-href="{% pp_url template='user.html' object=request.user %}" data-href="{% pp_url template='user.html' object=request.user %}"><i class="icon-white icon-home icon-left"></i> Me</a></li>
                     <!-- Browse -->
@@ -41,8 +42,6 @@
                     {% include 'nav/bookmarks.html' %}
                     <!-- My Groups -->
                     {% include 'nav/mygroups.html' %}
-
-                    {% include 'nav/create.html' %}
 
                <li class="dropdown">
                     <a data-href="#"><i class="icon-white icon-cog icon-left"></i> Settings <i class="icon-white icon-chevron-down icon-right"></i></a>
