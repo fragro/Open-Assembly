@@ -312,7 +312,7 @@ ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp
                                                     div_id="#pp_blob_form", jquery_cmd="html")
 
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/action_form.html",
-                                                    div_id="#pp_blob_form", jquery_cmd="html", object_specific=True)
+                                                    div_id="#pp_action_form", jquery_cmd="html", object_specific=True)
 
 ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blobedit_form.html",
                                                     div_id="#pp_blobedit_form", jquery_cmd="html", object_specific=True)

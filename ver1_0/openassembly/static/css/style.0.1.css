@@ -1437,27 +1437,37 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .small {
     padding:5px;
 }
-.left {
+.left_content {
     float:left;
-    width:45%;
+    width:40%;
+    display:block;
+    height:auto;
 }
-.right{
+.right_content{
+    display:block;
+    width:49%;
     float:right;
-    width:50%;
-    margin:25px;
+    margin-right:50px;
+    margin-left:90px;
     margin-top:50px;
 }
-.right img {
+
+.right_content img {
+    width:40%;
     float:right;
-    height:500px;
+    max-width:50%;
+    height: auto;
+    width: auto\9; /* ie8 */
 }
-.right .text {
-    float:left;
-    width:26%;
-    text-align:right;
+.right_content .text {
+    float:right;
+    width:40%;
+    display:block;
+    text-align:left;
     font-size:1.4em;
     font-weight:bold;
 }
+
 .text_bubble {
     padding-bottom:10px;
 }
