@@ -1438,15 +1438,15 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     padding:5px;
 }
 .left_content {
-    float:left;
     width:40%;
     display:block;
     height:auto;
+    float:left;
 }
-.right_content{
+.right_content {
+    float:right;
     display:block;
     width:49%;
-    float:right;
     margin-right:50px;
     margin-left:90px;
     margin-top:50px;
@@ -1454,10 +1454,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 
 .right_content img {
     width:40%;
-    float:right;
-    max-width:50%;
-    height: auto;
-    width: auto\9; /* ie8 */
+
 }
 .right_content .text {
     float:right;
@@ -1468,6 +1465,11 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     font-weight:bold;
 }
 
-.text_bubble {
-    padding-bottom:10px;
+.left_oriented .right_content img, .left_oriented .right_content .text, .right_oriented .right_content .text {
+    float:right;
+}
+.right_oriented .right_content img  {
+    margin-top:15%;
+    float:left;
+    width:40%;
 }

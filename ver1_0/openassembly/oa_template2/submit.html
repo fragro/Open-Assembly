@@ -7,59 +7,61 @@
 
 {% block content%}
 
-<div class="left_content">
+<div class="left_oriented">
+    <div class="left_content">
 
-    {% if user.is_authenticated %}
-        
-            {% if dimension == 'edit' %}
+        {% if user.is_authenticated %}
+            
+                {% if dimension == 'edit' %}
 
-                <h2>Editing {{object.get_verbose_name|title}} submitted on {{object.created_dt|date:"(d/m/Y"}})</h2>
+                    <h2>Editing {{object.get_verbose_name|title}} submitted on {{object.created_dt|date:"(d/m/Y"}})</h2>
 
-                    {% include 'forms/pp_blobedit_form.html' %}
+                        {% include 'forms/pp_blobedit_form.html' %}
 
-            {% else %}
+                {% else %}
 
-                {% if object == 'submit' %}
-                
-                    {% pp_get_blob_subcontext dimension='tem' %}
-                           
+                    {% if object == 'submit' %}
+                    
+                        {% pp_get_blob_subcontext dimension='tem' %}
+                               
 
-                            {% include 'forms/pp_blob_form.html' %}
-                        
+                                {% include 'forms/pp_blob_form.html' %}
+                            
 
-                    {% endpp_get_blob_subcontext %}
+                        {% endpp_get_blob_subcontext %}
+
+                    {% endif %}
 
                 {% endif %}
 
-            {% endif %}
+        {% else %}
 
-    {% else %}
+        <h2><a data-href="{% pp_url template='register.html' %}" >Login or Register to Submit Content!</a></h2>
 
-    <h2><a data-href="{% pp_url template='register.html' %}" >Login or Register to Submit Content!</a></h2>
+        {% endif %}
 
-    {% endif %}
-
-</div>
-
-<div class="right_content">
-
-    <div class="contents">
-
-    <img src="/static/img/joyu_normal.png">
-    <p class="text triangle-right right">
-
-        A spark is a guide to let people take part in an action in the real or digital world.  
-        <br><br>
-
-        The best sparks outline a specific action that a person can do
-        alone or in a group to improve their community or themselves.
-        <br><br>
-
-        To achieve change on a global level the spark must start with you.
-
-    </p>
     </div>
 
+    <div class="right_content">
+
+        <div class="contents">
+
+        <img src="/static/img/joyu_normal.png">
+        <p class="text triangle-right right">
+
+            A spark is a guide to let people take part in an action in the real or digital world.  
+            <br><br>
+
+            The best sparks outline a specific action that a person can do
+            alone or in a group to improve their community or themselves.
+            <br><br>
+
+            To achieve change on a global level the spark must start with you.
+
+        </p>
+        </div>
+
+    </div>
 </div>
 
 {% endblock content %}

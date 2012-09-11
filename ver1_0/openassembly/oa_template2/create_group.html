@@ -5,64 +5,84 @@
 
 {% block content %}
 
-<div id="create_group">
+<div class="right_oriented">
 
-    {% pp_topic_form POST=request.POST user=user root=object %}
+    <div id="create_group" class="left_content">
 
-            {% if pp_topic.complete %}
+        {% pp_topic_form POST=request.POST user=user root=object %}
 
-            Topic Created
+                {% if pp_topic.complete %}
 
-            {% else %}
+                Topic Created
 
-                <form id="pp_topic_form" method="post" action="">
-                            {{ pp_topic.form.form_id}}
-                            
-                            <p>
-                                <b>Name of Group</b><br>
-                                {{ pp_topic.form.summary}}
-                            </p>
-                            
-                            <p style="margin-bottom:0;">
-                                <b>Short Name</b> <span class="helptext">(less than 20 char)</span><br>
-                                {{ pp_topic.form.shortname}}
-                            </p>
+                {% else %}
 
-                            <p>
-                                <b>Purpose of Group</b><br>
-                                {{ pp_topic.form.description}}
-                            </p>
-                            
-                            <p style="margin-bottom:0;">
-                                <b>Link to Outside Website</b><br>
-                                {{ pp_topic.form.more_info}}
-                            </p>
+                    <form id="pp_topic_form" method="post" action="">
+                                {{ pp_topic.form.form_id}}
+                                
+                                <p>
+                                    <b>Name of Group</b><br>
+                                    {{ pp_topic.form.summary}}
+                                </p>
+                                
+                                <p style="margin-bottom:0;">
+                                    <b>Short Name</b> <span class="helptext">(less than 20 char)</span><br>
+                                    {{ pp_topic.form.shortname}}
+                                </p>
 
-                            {{csrf_string|safe}}
-                        {% if user.is_authenticated and user.is_active %}   
-                        <div id="errors" class="errors">{{ pp_topic.errors }}</div>
-                                                         
-                        <input type="submit" class='button btn btn_green' value="Submit"><span style="color:grey;" id="submit_pp_topic_form"></span>
-                </form>
-                        {% else %} 
-                            <a class='button btn btn_green' data-href="{% pp_url template='register.html' %}">Submit</a>
-                        {% endif %}
-                <script>
+                                <p>
+                                    <b>Purpose of Group</b><br>
+                                    {{ pp_topic.form.description}}
+                                </p>
+                                
+                                <p style="margin-bottom:0;">
+                                    <b>Link to Outside Website</b><br>
+                                    {{ pp_topic.form.more_info}}
+                                </p>
 
-                  $("form#pp_topic_form").submit(function(e){
-                        $("#submit_pp_topic_form").html("<img src='/static/img/loader.gif' class='loader'>")
-                        addObject(e);
-                    });
+                                {{csrf_string|safe}}
+                            {% if user.is_authenticated and user.is_active %}   
+                            <div id="errors" class="errors">{{ pp_topic.errors }}</div>
+                                                             
+                            <input type="submit" class='button btn btn_green' value="Submit"><span style="color:grey;" id="submit_pp_topic_form"></span>
+                    </form>
+                            {% else %} 
+                                <a class='button btn btn_green' data-href="{% pp_url template='register.html' %}">Submit</a>
+                            {% endif %}
+                    <script>
 
-                </script>
+                      $("form#pp_topic_form").submit(function(e){
+                            $("#submit_pp_topic_form").html("<img src='/static/img/loader.gif' class='loader'>")
+                            addObject(e);
+                        });
 
-            {% endif %}
+                    </script>
+
+                {% endif %}
 
 
-            {% if pp_topic.complete %}
-                <span id="create_group_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
-            {% endif %}
-    {% endpp_topic_form %}
+                {% if pp_topic.complete %}
+                    <span id="create_group_side_effect" style="display:none;">["{{pp_topic.object_pk}}", "{{pp_topic.content_type}}"]</span>
+                {% endif %}
+        {% endpp_topic_form %}
+
+    </div>
+
+    <div class="right_content">
+
+        <div class="contents">
+
+        <img src="/static/img/joyu_normal.png">
+        <p class="text oval-speech-border right">
+
+            Want to create a community? <br><br> Create a group, invite your neighbors, and act together. <br><br>
+
+            The whole is greater than the sum of its parts.
+
+        </p>
+        </div>
+
+    </div>
 
 </div>
 
