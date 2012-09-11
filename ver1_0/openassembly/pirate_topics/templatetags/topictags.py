@@ -340,7 +340,7 @@ def pp_mygroups(context, nodelist, *args, **kwargs):
         namespace['mygroups'] = mygroups
 
         namespace['count'] = mygroups.count()
-        namespace['half'] = (mygroups.count() / 2) + 1
+        namespace['half'] = int(float(mygroups.count()) / 2.0)
 
     output = nodelist.render(context)
     context.pop()

@@ -107,13 +107,11 @@ html {
     width:580px;
 }
 #nav .col1 {
-    -moz-border-radius-topleft: 0px;
-    -moz-border-radius-topright: 0px;
-    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomright: 10px;
     -moz-border-radius-bottomleft: 10px;
-    -webkit-border-radius: 0px 0px 0px 10px;
-    border-radius: 0px 0px 0px 10px;
-    width:180px;
+    -webkit-border-radius: 0px 0px 10px 10px;
+    border-radius: 0px 0px 10px 10px;
+    width:100px;
 }
 #nav .shortpad {
     padding-bottom:10px;
@@ -198,6 +196,9 @@ html {
     opacity:.2;
     display:none;
     cursor:pointer;
+}
+#nav .showme {
+    display:block;
 }
 #nav .dropdown_menu li:hover i {
     display:block;
