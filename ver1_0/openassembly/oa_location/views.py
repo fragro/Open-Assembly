@@ -1,4 +1,4 @@
-from oa_location.models import Place, Point
+from oa_location.models import Place, Point, Location
 import simplejson
 from django.http import HttpResponse
 from django.contrib.contenttypes.models import ContentType
@@ -36,14 +36,14 @@ def create_location(request):
             if access_location(obj, request.user):
                 pt, is_new = Point.objects.get_or_create(latitude=lat, longtitude=lon)
                 pt.save()
-
+                loc, is_new = Location.objects.get_or_create(description = text)
                 if Place.objects.filter(object_pk=object_pk, content_type=content_type).count() > 0:
                 	pl= Place.objects.get(object_pk=object_pk, content_type=content_type)
-                	pl.text = text
+                	pl.summary = loc
                 	pl.location = pt
                 	pl.save()
                 else:
-                	loc = Place(summary=text, location=pt, object_pk=object_pk, content_type=content_type)
+                	loc = Place(summary=loc, location=pt, object_pk=object_pk, content_type=content_type)
                 	loc.save()
 
                 return HttpResponse(simplejson.dumps({'FAIL': False, 'lat': lat, 'long': lon}),

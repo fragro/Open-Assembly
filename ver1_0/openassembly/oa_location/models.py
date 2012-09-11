@@ -17,9 +17,17 @@ class Point(models.Model):
 	latitude = models.FloatField()
 	longtitude = models.FloatField()
 
+
+class Location(models.Model):
+	description = models.CharField(max_length=200)
+
+	def __unicode__(self):
+		return str(self.description)
+
+
 class Place(models.Model):
 	parent_pk = models.IntegerField(_('Parent Message PK'), blank=True, null=True)
-	summary = models.CharField(max_length=200)
+	summary = models.ForeignKey('Location', blank=True, null=True)
 	object_pk = models.CharField(_('object ID'), max_length=100)
 	content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
 	content_type = models.ForeignKey(ContentType,
@@ -30,7 +38,8 @@ class Place(models.Model):
 	objects = MongoDBManager()
 
 	def __unicode__(self):
-		return str(self.summary)
+		return str(self.summary.description)
+
 
 
 class LocationForm(forms.Form):

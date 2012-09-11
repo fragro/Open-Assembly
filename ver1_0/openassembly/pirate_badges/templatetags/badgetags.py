@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from pirate_badges.models import Badge, BadgeDimension, test_badge, BadgeType
 from pirate_core import HttpRedirectException, namespace_get, FormMixin
 from pirate_social.models import RelationshipEvent 
-from pirate_issues.models import Problem, Solution
 from pirate_deliberation.models import Argument
 from pirate_consensus.models import UpDownVote
 from django.contrib.contenttypes.models import ContentType
