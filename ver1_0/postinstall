@@ -24,6 +24,7 @@ setup_django() {
     python $app_name/manage.py collectstatic --noinput
     python waitfordb.py
     python $app_name/manage.py syncdb --noinput
+    python $app_name/manage.py rebuild_index --noinput
 }
 
 setup_django_celery() {

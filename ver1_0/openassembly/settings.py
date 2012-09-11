@@ -17,20 +17,18 @@ settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
+
+HAYSTACK_SITECONF = 'openassembly.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_INCLUDE_SPELLING = True
+
 try:
     ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
 
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-            'URL': 'http://127.0.0.1:8983/solr'
-            # ...or for multicore...
-            # 'URL': 'http://127.0.0.1:8983/solr/mysite',
-        },
-    }  
+    HAYSTACK_SOLR_URL = 'http://' + env['DOTCLOUD_SEARCH_SOLR_HOST'] + ':' + env['DOTCLOUD_SEARCH_SOLR_PORT'] + '/solr'
 
     #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
     #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
@@ -110,14 +108,8 @@ try:
 
 except:
 
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-            'URL': 'http://127.0.0.1:8983/solr'
-            # ...or for multicore...
-            # 'URL': 'http://127.0.0.1:8983/solr/mysite',
-        },
-    }  
+    HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
+
     DOMAIN_NAME = 'http://localhost:8000/'
     DOMAIN = 'http://localhost:8000'
 
@@ -178,20 +170,17 @@ MANAGERS = ADMINS
 AUTOLOAD_SITECONF = 'indexes'
 
 INSTALLED_APPS = (
-    'dbindexer',
-    'autoload',
-    'djangotoolbox',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.markup',
+    'haystack',
     'customtags',
     'tagging',
     'filetransfers',
     'pirate_core',
-    'pirate_issues',
     'pirate_deliberation',
     'pirate_permissions',
     'pirate_ranking',
@@ -222,7 +211,10 @@ INSTALLED_APPS = (
     'django_mongodb_engine',
     'oa_location',
     'pygeoip',
-    'haystack'
+    'dbindexer',
+    'autoload',
+    'djangotoolbox',
+    'oa_search', #openassemblys implementation of django-haystack
 )
 
 STATIC_URL = '/static/'

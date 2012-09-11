@@ -215,14 +215,13 @@ ppedittopicsideeffectcache, is_new = SideEffectCache.objects.get_or_create(user_
 
 
 #SEARCH RELATED
-ppsearchformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_search_form.html",
-                                div_id="#id_search", jquery_cmd="html")
 
-searchresultscache, is_new = ModelCache.objects.get_or_create(template="search.html",
+searchresultscache, is_new = ModelCache.objects.get_or_create(template="search/search.html",
                 div_id="#pages", content_type="search", main=True, jquery_cmd="append")
 searchresults_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=searchresultscache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
-
+searchformcache, is_new = UserSaltCache.objects.get_or_create(template="search/search.html",
+                         div_id="#oa_search_form", jquery_cmd="html")
 
 ###PROPOSALS
 propcache, is_new = ModelCache.objects.get_or_create(template="content/listing.html",

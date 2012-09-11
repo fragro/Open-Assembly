@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.comments.signals import comment_was_posted
-from pirate_permissions.models import Permission
 from django.utils.translation import ugettext as _
 from djangotoolbox.fields import ListField
 from django.db.models import get_model, get_app
@@ -167,7 +166,6 @@ class ForumBlob(models.Model):
     forumdimension = models.ForeignKey(ForumDimension, blank=True, null=True)
     #classification_model = models.ForeignKey(ClassModel)
     #location = models.CharField(max_length=100, blank=True, null=True)
-    permission_req = models.ForeignKey(Permission, blank=True, null=True)
     #pad = models.BooleanField(default=False, verbose_name="Allow other users to collaborate. (Leave this blank if you don't want the proposal open to edit by other users.)")
 
     def __unicode__(self):

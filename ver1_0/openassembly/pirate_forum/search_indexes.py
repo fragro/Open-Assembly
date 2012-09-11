@@ -1,9 +1,14 @@
-import search
-from search.core import startswith, porter_stemmer
-from models import Question, Nomination
+import datetime
+from haystack.indexes import *
+from haystack import site
+from pirate_forum.models import Question
 
-search.register(Question, ('summary', 'description'), search_index='autocomplete_index', indexer=startswith)
-search.register(Question, ('summary', 'description'), search_index='search_index',  indexer=porter_stemmer)
 
-search.register(Nomination, ('summary', 'description'), search_index='autocomplete_index', indexer=startswith)
-search.register(Nomination, ('summary', 'description'), search_index='search_index',  indexer=porter_stemmer)
+class QuestionIndex(SearchIndex):
+    text = CharField(document=True, use_template=True)
+
+    def index_queryset(self):
+        """Used when the entire index for model is updated."""
+        return Question.objects.all()
+
+site.register(Question, QuestionIndex)

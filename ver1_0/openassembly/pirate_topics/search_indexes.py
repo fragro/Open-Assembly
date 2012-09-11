@@ -1,10 +1,14 @@
-import search
-from search.core import startswith, porter_stemmer
-from models import Topic
-from django.contrib.auth.models import User
+import datetime
+from haystack.indexes import *
+from haystack import site
+from pirate_topics.models import Topic
 
-search.register(Topic, ('summary', 'description'), search_index='autocomplete_index', indexer=startswith)
-search.register(Topic, ('summary', 'description'), search_index='search_index',  indexer=porter_stemmer)
 
-#lets also add users for searching here
-search.register(User, ('username'), search_index='search_index',  indexer=porter_stemmer)
+class TopicIndex(SearchIndex):
+    text = CharField(document=True, use_template=True)
+
+    def index_queryset(self):
+        """Used when the entire index for model is updated."""
+        return Topic.objects.all()
+
+site.register(Topic, TopicIndex)

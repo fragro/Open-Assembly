@@ -1,31 +1,6 @@
-<div id="search_form">
-
-    <input type="text" name="search" class="input-medium"  placeholder="Search" id="id_search">
-
-    <button class="btn small" id="enter_search_parameters">Search</button>
-
-</div>
 
 <li id="submit_search_button" class="submit_search_submit">
 
-    <a><i id="search_show" class="icon-search icon-white"></i></a>
+    <a data-href="/p/search"><i id="search_show" class="icon-search icon-white"></i></a>
 
 </li>
-
-        <script>
-         
-             $("#submit_search_button").click(function(e){
-                $('#search_form').toggle();
-            });
-
-             $('#enter_search_parameters').click(function(e){
-                if($('#id_search').val() != ''){
-                    var url = '/p/search/d-' + $('#id_search').val()
-                    history.pushState({load:true, module:'leave', url: url}, '', url);
-                    getContent();
-                    $('#id_search').val(''); 
-                }
-            });
-        </script>
-
-

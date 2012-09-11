@@ -80,9 +80,7 @@ urlpatterns = patterns('',
     (r'^create_location/', create_location),  #ajax
     (r'^delete_location/', delete_location),  #ajax
     (r'^moar_markers_plz/', load_markers),  #ajax
-
-
-
+    (r'^search/', include('haystack.urls')),
 )
 
 urlpatterns += patterns('',
