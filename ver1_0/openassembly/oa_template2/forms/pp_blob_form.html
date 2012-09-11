@@ -1,9 +1,7 @@
 {% load blobtags %}
 {% load pp_url %}
 
-{% oa_ingroup object=object user=user %}
 
-    {% if pp_topic.in_group or object == 'submit' %}
 
             {% pp_blob_form POST=request.POST user=user dimension='tem' parent=object sub=pp_blob.sub %}
 
@@ -17,72 +15,54 @@
                         <script src="/static/markitup/ajax_csrf.js" type="text/javascript"></script>
                         <script type='text/javascript' src='/static/markitup/jquery.markitup.js'></script>
                         <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
-                        <form id='pp_blob_form{{object.pk}}' method="post" action="">
+                        <form id='pp_blob_form' method="post" action="">
                         <div style='display:none'><input type='hidden' name='form_id' value='pp_blob_form' /></div>
 
-                        {{pp_blob.errors}}
-
                             {% for field in pp_blob.form %}
-                                <p>
-                                <div style="float:left;">{% if field.errors %}{% for err in field.errors %}<b style="color:red;">{{ err }}</b>{% endfor %}{% endif %}</div>
-                                </p>
-                                {% if field.html_name == 'parent' and pp_blob.parent_summary or field.html_name == 'form_id' or field.html_name == 'end_of_nomination_phase' and dimension == 'tem' or field.html_name == 'decision_time' and dimension == 'tem' or field.html_name == 'timezone' and dimension == 'tem' or field.html_name == 'winners' and dimension == 'tem'%}
 
-                                {% else %}
+                                    <div class="submission">
 
-                                    {% if field.html_name == 'timezone' and dimension == 'pol' %}
-                                        
-                                        <b>Time Zone<font color="red">*</font></b>
-                                        <select name="timezone" id="id_timezone">
-                                        <option value="" ></option>
+                                    <b>{{field.label_tag}}</b>
+                                    
+                                    {% if field.errors %}{% for err in field.errors %}<b style="color:red;">{{ err }}</b>{% endfor %}{% endif %}
 
-                                            {% for timezone in pp_blob.timezones %}
-                                                {% pp_get_user_profile user=user %}
-                                                    {% if pp_profile.profile %}
-                                                        <option {% if pp_profile.profile.timezone == timezone %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
-                                                    {% else %}
-                                                        <option {% if timezone == 'US/Eastern' %}selected="selected"{% endif %} value="{{timezone}}" >{{timezone}}</option>
-                                                    {% endif %}
-                                                {% endpp_get_user_profile %}
-                                            {% endfor %}
-                                            </select>
-                                        
-                                    {% else %}
-
-                                        {% if field.html_name == 'description' %}
-
-                                        <b><label for="id_description{{object.pk}}">Description</label><font color="red">*</font>:</b> <br><textarea id="id_description{{object.pk}}" rows="10" cols="20" name="description"></textarea><script type="text/javascript">(function($) { $(document).ready(function() { $("#id_description{{object.pk}}").markItUp(mySettings); });})(jQuery);</script><br> </p>
-
-
-                                        {% else %}
-
-                                        <p>
-                                            <b>{{field.label_tag}}{% if field.field.required %}<font color="red">*</font>{% endif %}</b>
-                                            {% if field.errors %}{% for err in field.errors %}<div style="color:#d90000;">{{ err }}</div>{% endfor %}{% else %}{% if not field.help_text %}<br>{% endif %}{% endif %}{{ field }}<br>{{field.help_text}}
-                                        </p>
-
-                                        {% endif %}
-
+                                    {% if not field.help_text %}<br>{% endif %}{{ field }}{% if field.help_text %}<br>{{field.help_text}}{% endif %}
+                                    
+                                    {% if field.html_name == 'group' %}
+                                        <div><b style="color:red;">{{ pp_blob.grouperrors }}</b></div>
+                                            <h3>Your Groups</h3>
+                                            {% pp_show_blobchoices user=user %}
+                                                {% for name, url in pp_blob.choices %}
+                                                    <span class="group_choices"><a onClick="{{url}}">{{name}}</a></span>
+                                                {% endfor %}
+                                            {% endpp_show_blobchoices %}
                                     {% endif %}
 
-                                    
-                                {% endif %}
+                                    </div>
+
+
                             {% endfor %}
 
+                        {% csrf_token %}
+                        <input type="submit" class="button green btn btn_green" value="Submit" /><span id="submit_pp_blob_form{{object.pk}}"></span>
 
-                            {% csrf_token %}
-                            <input type="submit" class="button green btn btn_green" value="Submit" /><span id="submit_pp_blob_form{{object.pk}}"></span>
+                    </form> 
 
-                        </form> 
+                    <script>
 
-                        <script>
-                         
-                             $("form#pp_blob_form{{object.pk}}").submit(function(e){
-                                $("#submit_pp_blob_form{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>")
-                                addObject(e);
-                                //$('html').slideto({'highlight': false});                    
-                            });
-                        </script>
+                        //for whatever reason four spaces make their way into form, this hack seems to be the solution
+                        $(document).ready(function(){
+                            if($('#id_blobdescription').val() == '    '){
+                                $('#id_blobdescription').val('');  
+                            }
+                        });
+                     
+                         $("form#pp_blob_form{{object.pk}}").submit(function(e){
+                            $("#submit_pp_blob_form").html("<img src='/static/img/loader.gif' class='loader'>")
+                            addObject(e);
+                            //$('html').slideto({'highlight': false});                    
+                        });
+                    </script>
 
                 {% endif %}
 
@@ -92,12 +72,3 @@
 
 
             {% endpp_blob_form %}
-
-
-    {% else %}
-
-    You are not in this group.
-
-    {% endif %}
-
-{% endoa_ingroup %}

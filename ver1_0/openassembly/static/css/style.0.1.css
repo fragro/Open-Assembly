@@ -1357,6 +1357,8 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     color:white;
     font-size:1.1em;
     font-weight:bold;
+    margin:5px;
+    margin-bottom:0;
     border-left:1px rgba(0,0,0,.2) solid;
  
   /* Animations: */
@@ -1379,17 +1381,19 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 #pp_user_login_form {
     height:20px;
     max-width:100%;
-    margin-top:5px;
-    margin-right:10px;
 }
-
+#search_form {
+    margin:5px;
+    margin-bottom:0;
+    height:20px;
+    display:none;
+}
 .error {
     color:white;
     font-weight:bold;
     font-size:1.2em;
     margin-right:10px;
     text-shadow:0 1px 0 #BC0E00;
-    margin-left:10px;
 
 }
 .loadmore a:hover {
@@ -1421,4 +1425,15 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 .loadmore {
     display:none;
+}
+.group_choices {
+    margin-right:10px;
+    font-size:1.2em;
+    font-weight:bold;
+}
+.submission {
+    margin-bottom:20px;
+}
+.small {
+    padding:5px;
 }

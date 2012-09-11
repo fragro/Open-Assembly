@@ -30,6 +30,7 @@
             <a class="nobbq" data-href="/" id="logo"><img src="/static/img/logo.png" alt=""></a><img id="loading" src="/static/img/1.gif">
             <ul id="nav">
                 {% if request.user.is_authenticated %}
+                    {% include 'nav/search.html' %}
                     <!-- Dashboard -->
                     <li><a data-href="/" onClick="minimizeAll();"><i class="icon-white icon-th icon-left"></i> Dashboard</a></li>
                     {% include 'nav/create.html' %}

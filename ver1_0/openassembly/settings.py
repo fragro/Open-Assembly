@@ -22,6 +22,16 @@ try:
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
+
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+            'URL': 'http://127.0.0.1:8983/solr'
+            # ...or for multicore...
+            # 'URL': 'http://127.0.0.1:8983/solr/mysite',
+        },
+    }  
+
     #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
     #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
 
@@ -99,6 +109,15 @@ try:
 
 
 except:
+
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+            'URL': 'http://127.0.0.1:8983/solr'
+            # ...or for multicore...
+            # 'URL': 'http://127.0.0.1:8983/solr/mysite',
+        },
+    }  
     DOMAIN_NAME = 'http://localhost:8000/'
     DOMAIN = 'http://localhost:8000'
 
@@ -202,7 +221,8 @@ INSTALLED_APPS = (
     'oa_cache',
     'django_mongodb_engine',
     'oa_location',
-    'pygeoip'
+    'pygeoip',
+    'haystack'
 )
 
 STATIC_URL = '/static/'

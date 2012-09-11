@@ -40,11 +40,13 @@ def oa_location_form(context, nodelist, *args, **kwargs):
 		form = LocationForm(POST)
 		#if form is valid frab the lat/long from the geolocation service
 		if form.is_valid():
-			gn = geocoders.Google() 
-			loc = list(gn.geocode(form.cleaned_data['description'], exactly_one=False))
-			loc = [(i[0], i[1][0], i[1][1]) for i in loc[start:end]]
-			namespace['location'] = loc
-
+			gn = geocoders.Google()
+			try:
+				loc = list(gn.geocode(form.cleaned_data['description'], exactly_one=False))
+				loc = [(i[0], i[1][0], i[1][1]) for i in loc[start:end]]
+				namespace['location'] = loc
+			except Exception, e:
+				namespace['error'] = str(e)
 	else:
 		form = LocationForm()
 

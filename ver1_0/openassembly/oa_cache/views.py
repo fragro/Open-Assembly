@@ -126,7 +126,7 @@ as a reference for the template, div, and other necessary inforamtion.
             div_id = usc.div_id
             #if no ModelCache, then there are multiple elements on one page and we need to specify via div_id
             if usc.object_specific:
-                div_id += obj_id
+                    div_id += obj_id
             retkey = key.replace('/', '')
             if not usc.is_recursive:
                 render = usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),

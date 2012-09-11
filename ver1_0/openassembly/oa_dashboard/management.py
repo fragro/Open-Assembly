@@ -10,6 +10,9 @@ else:
 	for u in users[1:]:
 		u.delete()
 
+for u in User.objects.all():
+	u.save()
+
 db = DashboardPanel.objects.filter(user=AnonymousUser)
 for i in db:
 	i.delete()

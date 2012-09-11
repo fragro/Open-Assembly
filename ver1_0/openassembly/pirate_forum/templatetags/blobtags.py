@@ -6,6 +6,7 @@ from pirate_forum.models import ForumDimension, DimensionTracker
 
 from search.core import search
 from oa_cache.models import ListCache
+from django.template import Context, Template
 
 import datetime
 import pytz
@@ -384,14 +385,16 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 	#subcontext imparted to form
 	namespace['timezones'] = pytz.common_timezones
 
+	if parent == 'submit':
+		parent = None
+
 	#for editting objects
 	if edit and obj is not None:
 		blob_form, model, verbose_name = get_form(dimension)
 		blob_form = BlobEditForm
 		if POST:
-
 			#save editted form
-			form = blob_form(POST, instance=obj)
+			form = blob_form(POST, instance=obj, prefix=user.username)
 			#get info for diff
 			old_text = obj.description
 			blob = form.save(commit=False)
@@ -408,26 +411,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 			#compute diff using diff_match_patch from google
 
 			create_edit.apply_async(args=[blob.pk, user.pk, ctype.pk, new_text, old_text])
-
-			#deprecated
-			if 'link' in form.cleaned_data:
-				validate = URLValidator(verify_exists=False)
-				contype = ContentType.objects.get_for_model(blob)
-				try:
-					validate(form.cleaned_data['link'])
-					if blob.link is not None:
-						blob.link.url = form.cleaned_data['link']
-						blob.link.save()
-						blob.save()
-				except ValidationError:
-					newform = blob_form(POST)
-					namespace['form'] = newform
-					if 'http://' not in form.cleaned_data['link']:
-						namespace['errors'] = 'Invalid URL: Make sure it has http://'
-					else:
-						namespace['errors'] = 'Invalid URL: ' + str(form.cleaned_data['link'])
-					output = nodelist.render(context)
-					context.pop()
+		
 			content_type = ContentType.objects.get_for_model(obj.__class__)
 			namespace['form_complete'] = True
 			namespace['path'] = obj
@@ -436,7 +420,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 			form = blob_form(instance=obj)
 			try:
 				if obj.link is not None:
-					form = blob_form(instance=obj, initial={'link': str(obj.link)})
+					form = blob_form(instance=obj, initial={'link': str(obj.link)}, prefix=user.username)
 			except:
 				pass
 			namespace['form'] = form
@@ -450,18 +434,26 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 		#get appropriate form
 
 		if POST and user is not None:
-
-			if parent is None and obj is None:
-				comboform = ComboFormFactory(TopicForm(POST), blob_form(POST)).ComboForm()
-				#load POST
-			else:
-				comboform = ComboFormFactory(blob_form(POST)).ComboForm()
-				#load POST with no PARENT
+			comboform = ComboFormFactory(TopicForm(POST), blob_form(POST)).ComboForm()
+			namespace['form'] = comboform
 			for form in comboform._forms:
 				if form.is_valid():
 					#if this is a TopicForm, we must extract the parent
-					if 'parent' in form.cleaned_data:
-						parent = form.cleaned_data['parent']
+					if 'group' in form.cleaned_data:
+						try:
+							parent = Topic.objects.get(summary=form.cleaned_data['group'])
+							cnt = MyGroup.objects.filter(topic=parent, user=user)
+							if cnt == 0:
+								namespace['grouperrors'] = 'You are not a member of that Group.'
+								output = nodelist.render(context)
+								context.pop()
+								return output
+						except:
+							namespace['grouperrors'] = 'This Group does not exist.'
+							output = nodelist.render(context)
+							context.pop()
+							return output
+
 					else:
 						#blob form
 						if parent is not None:
@@ -477,83 +469,12 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 						if blob.parent_type != ctype:
 							parent.parent.solutions += 1
 							parent.parent.save()
-						try:
 							#####relevant to VOTING and TIME
 							now = datetime.datetime.now()
 							now = now.replace(tzinfo=pytz.utc)
-							long_term = fd.key
-							if long_term == 'pol':
-								phase_change_dt = form.cleaned_data['end_of_nomination_phase']
-								decision_dt = form.cleaned_data['decision_time']
-								if phase_change_dt == None:
-									namespace['errors'] = "Must Either Specify Long Term or set Decision Date and Time"
-									namespace['form'] = form
-									namespace['POST'] = POST, parent
-									output = nodelist.render(context)
-									context.pop()
-
-									return output
-								else:
-									err = None
-									tz = pytz.timezone(form.cleaned_data['timezone'])
-									try:
-										phase_change_dt = local_tz_to_utc(tz, form.cleaned_data['end_of_nomination_phase'])
-									except:
-										err = 'End of Nomination Phase Invalid, Make Sure each Field is Correct'
-									try:
-										decision_dt = local_tz_to_utc(tz, form.cleaned_data['decision_time'])
-									except:
-										err = 'Decision Time Invalid, Make Sure each Field is Correct'
-									if err is not None:
-										namespace['errors'] = err
-										namespace['form'] = form
-										namespace['POST'] = POST, parent
-										output = nodelist.render(context)
-										context.pop()
-										return output
-									elif phase_change_dt < now or decision_dt < now:
-										namespace['errors'] = "Cannot Set Decision or End of Nomination Time in the Past."
-										namespace['form'] = form
-										namespace['POST'] = POST, parent
-										output = nodelist.render(context)
-										context.pop()
-
-										return output
-
-							elif long_term == 'tem':
-								phase_change_dt = None
-								decision_dt = None
-
-						except:
-							raise
-
-						if sub is not None:
-							for form_key, value in sub.items():
-								setattr(blob, form_key, value)
-
 						blob.save()
 
 						contype = ContentType.objects.get_for_model(blob.__class__)
-
-						if 'link' in form.cleaned_data:
-							validate = URLValidator(verify_exists=False)
-							try:
-								validate(form.cleaned_data['link'])
-								new_link = URLSource(url=form.cleaned_data['link'], content_type=contype, object_pk=blob.pk, user=user)
-								new_link.save()
-								blob.link = new_link
-								blob.save()
-							except ValidationError:
-								newform = ComboFormFactory(TopicForm(POST, initial={'parent': parent.pk}), blob_form(POST)).ComboForm()
-								namespace['form'] = newform
-								if 'http://' not in form.cleaned_data['link']:
-									namespace['errors'] = 'Invalid URL: Make sure it has http://'
-								else:
-									namespace['errors'] = 'Invalid URL: ' + str(form.cleaned_data['link'])
-								output = nodelist.render(context)
-								context.pop()
-
-								return output
 
 						#CONSENSUS RELATED DENORMALIZATION
 						# All ForumBlobs have consensus objects attached
@@ -572,27 +493,9 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
 						if is_new:
 							cons.intiate_vote_distributions()
-							if not fd.is_child:
-
-								#create phase object
-								if phase_change_dt != None:
-									pl = PhaseLink.objects.get(phasename="nom")
-									ph, is_new = Phase.objects.get_or_create(curphase=pl,
-																		creation_dt=datetime.datetime.now(), decision_dt=decision_dt,
-																		phase_change_dt=phase_change_dt, complete=False, active=True)
-									cons.phase = ph
-									#now we want to initialize future phasechangetasks
-
-									cons.phasename = "nom"
-									cons.winners = form.cleaned_data['winners']
-									#INITIATE THIS AFTER ALL CHANGES ARE MADE !IMPORTANT
-									initiate_nextphase.apply_async(args=[cons], eta=phase_change_dt)
-								else:
-									cons.phasename = "temp"
-								cons.save()
-							elif fd.is_child:
-								cons.phasename = "Nomination"
-								cons.save()
+							#deprecated but lets holdon to phases for now
+							cons.phasename = "temp"
+							cons.save()
 
 						aso_rep_event.send(sender=user, event_score=1, user=user, initiator=user, dimension=ReputationDimension.objects.get(name=blob.get_verbose_name()), related_object=cons)
 						update_agent.send(sender=blob, type="content", params=[ContentType.objects.get_for_model(blob.__class__).app_label, verbose_name.lower(), blob.pk])
@@ -606,20 +509,19 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 						#relationship_event.send(sender=issue,obj=issue,parent=issue.topic)
 						namespace['path'] = blob
 						namespace['form_complete'] = True
-						form = ComboFormFactory(TopicForm(POST), blob_form(POST)).ComboForm()
 						#provide context with extension path
 						#raise HttpRedirectException(HttpResponseRedirect(path))
 
 				else:
-					if not (form == TopicForm() and parent is not None):
-						namespace['errors'] = form.errors
-						form = ComboFormFactory(TopicForm(POST), blob_form(POST)).ComboForm()
-						break
+					namespace['errors'] = form.errors
+					output = nodelist.render(context)
+					context.pop()
+					return output
 		else:
 			blob_form, model, verbose_name = get_form(dimension)
 			form = ComboFormFactory(TopicForm(), blob_form()).ComboForm()
+			namespace['form'] = form
 
-		namespace['form'] = form
 		namespace['POST'] = POST, parent
 
 		#try to set ids for side effects
@@ -629,15 +531,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 			ctype = ContentType.objects.get_for_model(blob)
 			namespace['content_type'] = ctype.pk
 		except:
-			pass
-
-		#check for optional fields
-		has_optional = False
-		for k, v in form.fields.items():
-			if not v.required:
-				has_optional = True
-				break
-		namespace['optional_fields'] = has_optional
+			 pass
 
 	if parent is not None:
 		if isinstance(parent, Topic):
@@ -649,7 +543,6 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 
 	output = nodelist.render(context)
 	context.pop()
-
 	return output
 
 
@@ -783,44 +676,14 @@ def pp_show_blobchoices(context, nodelist, *args, **kwargs):
 	user = kwargs.get('user', None)
 
 	choices = []
-	groups = MyGroup.objects.get(user=user)
+	groups = MyGroup.objects.filter(user=user)
 	for g in groups:
-		t = Template("{% load pp_url%}{% pp_url template='submit.html' object=object dimension='tem' %}")
+		t = Template("$('#id_group').val('{{object.topic.summary}}');")
 		c = Context({"object": g})
 		url = t.render(c)        
-		choices.appned((g.topic.summary, url))
+		choices.append((g.topic.summary, url))
 
 	namespace['choices'] = choices
-	output = nodelist.render(context)
-	context.pop()
-
-	return output
-
-
-@block
-def pp_search_form(context, nodelist, *args, **kwargs):
-
-	context.push()
-	namespace = get_namespace(context)
-
-	POST = kwargs.get('POST', None)
-	user = kwargs.get('user', None)
-
-	if POST:
-		form = SearchForm(POST)
-
-		if form.is_valid():
-			search_key = form.cleaned_data['search']
-			s = Search(search_key=search_key, time=datetime.datetime.now(), user=user)
-			s.save()
-			namespace['search_pk'] = s.pk
-			ctype = ContentType.objects.get_for_model(s)
-			namespace['content_type'] = ctype.pk
-
-	else:
-		form = SearchForm()
-
-	namespace['form'] = form
 	output = nodelist.render(context)
 	context.pop()
 
@@ -885,10 +748,14 @@ def pp_get_search_items(context, nodelist, *args, **kwargs):
 		topics = s
 		topic_num = len(s)
 
+		s = search(User, search_key)
+		users = s
+		user_num = len(s)
+
 		namespace['topics'] = topics
-		namespace['num_topics'] = topic_num
 		namespace['results'] = results
-		namespace['num_results'] = num
+		namespace['users'] = users
+		namespace['num_results'] = num + topic_num + user_num
 		namespace['failed'] = failed
 
 	output = nodelist.render(context)

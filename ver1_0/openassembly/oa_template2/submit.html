@@ -18,26 +18,12 @@
             {% else %}
 
                 {% if object == 'submit' %}
-
-                <select>
-                    {% pp_show_blobchoices user=user %}
-                    
-                        {% for name, url in pp_blob.choices %}
-                                <option value="{{name}}"><a data-href="{{url}}" onClick="tabRemove('{{key}}');">{{name}}</a></option>
-                        {% endfor %}
-
-                    {% endpp_show_blobchoices %}
-                </select>
-
-                {% else %}
                 
                     {% pp_get_blob_subcontext dimension='tem' %}
                            
-                        <span id="pp_blob_form">
 
                             {% include 'forms/pp_blob_form.html' %}
                         
-                        </span>
 
                     {% endpp_get_blob_subcontext %}
 

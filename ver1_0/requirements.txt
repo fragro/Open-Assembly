@@ -33,3 +33,4 @@ django-redis==1.4.5
 git+https://github.com/boto/boto.git#egg=boto
 svn+http://geopy.googlecode.com/svn/trunk#egg=geopy
 git+git://github.com/appliedsec/pygeoip.git#egg=pygeoip
+django-haystack

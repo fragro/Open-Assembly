@@ -213,6 +213,17 @@ ppedittopiccache, is_new = UserSaltCache.objects.get_or_create(model_cache=inter
 ppedittopicsideeffectcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppedittopiccache.pk,
         template="group/group.html", div_id="#page", jquery_cmd="html", key_specific=True)
 
+
+#SEARCH RELATED
+ppsearchformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_search_form.html",
+                                div_id="#id_search", jquery_cmd="html")
+
+searchresultscache, is_new = ModelCache.objects.get_or_create(template="search.html",
+                div_id="#pages", content_type="search", main=True, jquery_cmd="append")
+searchresults_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=searchresultscache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+
 ###PROPOSALS
 propcache, is_new = ModelCache.objects.get_or_create(template="content/listing.html",
             div_id="#panels", content_type="proposals", jquery_cmd="append")
@@ -249,10 +260,10 @@ report_abuse_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=rep
 pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=report_abuse_model_cache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
 
-
 ##FORMS
 ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
                         div_id="#pp_comment_form", jquery_cmd="html", load_last=True)
+
 ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
     template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
     is_toggle=True, object_specific=True, load_last=True)
@@ -299,6 +310,9 @@ natgattab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=natgat
                          div_id="#tab_ruler", jquery_cmd="append")
 
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blob_form.html",
+                                                    div_id="#pp_blob_form", jquery_cmd="html")
+
+ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/action_form.html",
                                                     div_id="#pp_blob_form", jquery_cmd="html", object_specific=True)
 
 ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blobedit_form.html",

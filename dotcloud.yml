@@ -19,3 +19,6 @@ nodejs:
   process: node server.js
   approot: oanode
   node_version: v0.6.5
+search:
+  type: solr
+  approot: solr

@@ -8,5 +8,6 @@ class TopicForm(forms.Form, FormMixin):
     def save(self, commit=True):
         return None
 
-    parent = forms.ModelChoiceField(queryset=Topic.clean_objects.all(),
-                                        label="Group")
+    group = forms.CharField(max_length=100,
+              widget=forms.TextInput(
+                attrs={'size': '50', 'class': 'inputText'}), initial="")
