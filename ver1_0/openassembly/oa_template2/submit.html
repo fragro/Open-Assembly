@@ -7,6 +7,8 @@
 
 {% block content%}
 
+<div class="left">
+
     {% if user.is_authenticated %}
         
             {% if dimension == 'edit' %}
@@ -36,6 +38,25 @@
     <h2><a data-href="{% pp_url template='register.html' %}" >Login or Register to Submit Content!</a></h2>
 
     {% endif %}
+
+</div>
+
+<div class="right">
+
+    <img src="/static/img/joyu_normal.png">
+
+    <p class="text triangle-right right">
+
+        Forge a new spark.<br><br>
+        Create a new plan.<br><br>
+        Show off your new blueprint.<br><br>
+        Build Critical Mass.<br><br><br>
+        Or you could just sit on Facebook all day and circlejerk to caption photos, what ever.
+
+    </p>
+
+
+</div>
 
 {% endblock content %}
 

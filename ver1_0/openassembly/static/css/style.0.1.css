@@ -1437,3 +1437,25 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .small {
     padding:5px;
 }
+.left {
+    float:left;
+    width:49%;
+}
+.right{
+    float:right;
+    width:49%;
+}
+.right img {
+    float:right;
+    height:500px;
+}
+.right .text {
+    float:left;
+    width:25%;
+    text-align:right;
+    font-size:1.3em;
+    font-weight:bold;
+}
+.text_bubble {
+    padding-bottom:10px;
+}
