@@ -27,8 +27,7 @@ try:
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
-
-    HAYSTACK_SOLR_URL = 'http://' + env['DOTCLOUD_SEARCH_SOLR_HOST'] + ':' + env['DOTCLOUD_SEARCH_SOLR_PORT'] + '/solr'
+    #HAYSTACK_SOLR_URL = 'http://' + env['DOTCLOUD_SEARCH_SOLR_HOST'] + ':' + env['DOTCLOUD_SEARCH_SOLR_PORT'] + '/solr'
 
     #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
     #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
