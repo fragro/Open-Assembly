@@ -14,15 +14,11 @@
                             </div>
                             <div class="col col2 last">
                                 <ul class="thumbnail_list">
+                                    </li>{{pp_topic.count}}</li>
+
                         {% endif %}
+
                     {% endfor %}
-
-                     <li style="text-align:center;">
-                        <div class="group_preview btn btn_green" style="display:inline-block; margin-top:10px;">
-                            <a class="group_title" data-href="{% pp_url template='create_group.html' %}"><h4>Create a New Group</h4></a>
-                        </div>
-                    </li>
-
                     {% if pp_topic.count > 10 %}<li><a data-href="#">View All</a></li>{% endif %}
                 {% endpp_mygroups %}
 

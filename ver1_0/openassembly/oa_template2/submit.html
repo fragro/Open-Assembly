@@ -8,12 +8,6 @@
 {% block content%}
 
     {% if user.is_authenticated %}
-
-        {% if dimension == 'mes' %}
-
-            {% include 'forms/pp_message_form.html' %}
-
-        {% else %}
         
             {% if dimension == 'edit' %}
 
@@ -22,24 +16,34 @@
                     {% include 'forms/pp_blobedit_form.html' %}
 
             {% else %}
-            
-                {% pp_get_blob_subcontext dimension='tem' %}
 
-                    {% pp_show_blobchoices object=object dimension='tem' user=user%}
-                       
-                            <span id="pp_blob_form">
+                {% if object == 'submit' %}
 
-                                {% include 'forms/pp_blob_form.html' %}
-                            
-                            </span>
+                <select>
+                    {% pp_show_blobchoices user=user %}
+                    
+                        {% for name, url in pp_blob.choices %}
+                                <option value="{{name}}"><a data-href="{{url}}" onClick="tabRemove('{{key}}');">{{name}}</a></option>
+                        {% endfor %}
 
                     {% endpp_show_blobchoices %}
+                </select>
 
-                {% endpp_get_blob_subcontext %}
-                   
+                {% else %}
+                
+                    {% pp_get_blob_subcontext dimension='tem' %}
+                           
+                        <span id="pp_blob_form">
+
+                            {% include 'forms/pp_blob_form.html' %}
+                        
+                        </span>
+
+                    {% endpp_get_blob_subcontext %}
+
+                {% endif %}
+
             {% endif %}
-        {% endif %}
-
 
     {% else %}
 

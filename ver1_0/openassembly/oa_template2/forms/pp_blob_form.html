@@ -3,7 +3,7 @@
 
 {% oa_ingroup object=object user=user %}
 
-    {% if pp_topic.in_group %}
+    {% if pp_topic.in_group or object == 'submit' %}
 
             {% pp_blob_form POST=request.POST user=user dimension='tem' parent=object sub=pp_blob.sub %}
 

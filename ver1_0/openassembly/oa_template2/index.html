@@ -38,21 +38,20 @@
                     {% include 'nav/browse.html' %}
                     <!-- Bookmarks -->
                     <!--Will develop this feature in the next version -->
-                   {% include 'nav/bookmarks.html' %}
+                    {% include 'nav/bookmarks.html' %}
                     <!-- My Groups -->
-                   {% include 'nav/mygroups.html' %}
+                    {% include 'nav/mygroups.html' %}
 
-                   <li class="dropdown">
+                    {% include 'nav/create.html' %}
 
-                    <a data-href="#"><i class="icon-white icon-cog icon-left"></i> Settings <i class="icon-white  icon-chevron-down icon-right"></i></a>
-                    <div class="dropdown_menu col1 shortpad">
-                        <div class="col last">
-                            <ul>
-                                <li><a data-href="/p/help">About</a></li>
-                                <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
-                                <li><a data-href="/p/report_abuse">Submit Feedback</a></li>
-                            </ul>
-                        </div>
+               <li class="dropdown">
+                    <a data-href="#"><i class="icon-white icon-cog icon-left"></i> Settings <i class="icon-white icon-chevron-down icon-right"></i></a>
+                    <div class="dropdown_menu col1 last shortpad">
+                        <ul>
+                            <li><a data-href="/p/help">About</a></li>
+                            <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
+                            <li><a data-href="/p/report_abuse">Submit Feedback</a></li>
+                        </ul>
                     </div>
                 </li>
                 {% endif %}
