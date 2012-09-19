@@ -6,14 +6,11 @@
     {% pp_message_form POST=request.POST receiver=object sender=user %}
             {{ pp_messages.form.errors }}
 
-                <textarea id="P2Pdata{{object.pk}}" rows="10" cols="40" name="description">    </textarea>                
+                <textarea id="P2Pdata{{object.pk}}" width="100%" name="description">    </textarea>                
 
                 {{pp_messages.form.form_id}}
-                    {% csrf_token %}
-           <input id="P2Psend{{object.pk}}" type="submit" value="Send Message">
-
-
-           {% if pp_messages.complete %}{% now "jS F Y H:i" %}{% endif %}
+                {% csrf_token %}
+            <input style="display:none;" id="P2Psend{{object.pk}}" type="submit" value="Send Message"> 
 
     {% endpp_message_form %}
     </form>

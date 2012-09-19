@@ -1,4 +1,4 @@
-{% extends 'skeleton/page.html' %}
+{% extends 'skeleton/message.html' %}
 
 {% load messagetags %}
 {% load pp_url %}
@@ -58,7 +58,6 @@
 		{% pp_get_messages start=start end=end user=user sender=object %}
 		<div class="messages" id="messages{{pp_tag.key}}">
 			<div id="message_list{{pp_tag.key}}">
-		    <h1>Chat With {{object.username}}</h1>
 
 		            {% for note in pp_messages.all reversed %}
 

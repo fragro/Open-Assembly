@@ -7,7 +7,7 @@
 
 
 <!DOCTYPE html>
-<html{% oa_has_dash user=request.user %} {% if not oa_dashboard.has_board %} class="not_logged_in"{% endif %} {% endoa_has_dash %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
+<html{% oa_has_dash user=request.user %} {% if not oa_dashboard.has_board %} class="not_logged_in"{% endif %} {% endoa_has_dash %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' and pp_cache.rendertype != 'message' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
     <head>
 
 
@@ -24,7 +24,7 @@
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
         <script type="text/javascript">var switchTo5x=true;</script>
         <script type="text/javascript" src="http://w.sharethis.com/button/button.js"></script>
-        <script type="text/javascript">stLight.options({publisher: "32970417-460e-4c08-89b3-8eb4271fae89"}); </script>
+
     </head>
     <body>
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
@@ -110,7 +110,7 @@
             
         </div>
         
-        <div id="overlay" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="display:auto;"{% else %}style="display:none;"{% endif %}></div>
+        <div id="overlay" {% if pp_cache.nojs and request.META.PATH_INFO != '/' and pp_cache.rendertype != 'message' %} style="display:auto;"{% else %}style="display:none;"{% endif %}></div>
         
         <!-- Tabs -->
         <div id="tabs" class="clearfix">
@@ -377,6 +377,7 @@
                      if (state && state.module === "nobbq") {
                            js_redirect(state.url);
                      }
+
                 });
                 //we're popping states for nobbq events that should be loaded the usual way...
 

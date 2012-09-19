@@ -1,6 +1,6 @@
 <script>
 
-    function toggleMinMax(t){
+    function toggleMinMax{{template}}(t){
         var curtab = $('#current_tab').html();
         var keepif = (curtab == '');
         var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
@@ -12,12 +12,15 @@
 
         if(!nempty && !is_add){
             $('#overlay').hide();
+            history.pushState({load:true, module:'noload', url: '/'}, '', '/');
             $("html").css("overflow", "auto");
 
         }
 
         if(t != curtab){
-            //add new page
+            //add new pagev
+            var url = '/p/' + '{{template}}/' + t.replace('p{{template}}', '');
+            history.pushState({load:true, module:'noload', url: url}, '', url);
             $('#page' + t).show();
             $('#overlay').show();
             $('#tab' + t).addClass('current-icon');
@@ -53,6 +56,7 @@
         sessionStorage.removeItem(tab);
         var curtab = $('#current_tab').html();
         if (curtab == tab){
+            history.pushState({load:true, module:'noload', url: '/'}, '', '/');
             $('#current_tab').html('');
             $('#overlay').hide();
             $("html").css("overflow", "auto");
@@ -66,10 +70,10 @@
 {% if object %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}');">{{object|title}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax{{template}}('{{key}}');">{{object|title}} {{rendertype|title}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{key}}"class="min_max">
-                <a onClick="toggleMinMax('{{key}}');">
+                <a onClick="toggleMinMax{{template}}('{{key}}');">
                     <i class="icon-minus-sign icon-white"></i>
                 </a>
             </li>
@@ -81,9 +85,9 @@
 {% else %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" onClick="toggleMinMax('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" onClick="toggleMinMax{{template}}('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{key}}"class="min_max"><a onClick="toggleMinMax('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>
+            <li id="minmax{{key}}"class="min_max"><a onClick="toggleMinMax{{template}}('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>
             <li><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>
