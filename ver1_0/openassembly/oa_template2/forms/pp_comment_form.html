@@ -1,18 +1,19 @@
 
 {% load commenttags %}
 {% load pp_url %}
-
     {% pp_comment_form POST=request.POST path=request.path user=user object=object%}
-        <form classs="pp_comment_form" id="pp_comment_form{{object.pk}}" method="post" action="">
+        <form id="pp_comment_form{{object.pk}}" method="post" action="">
+            <div class="pp_comment_form">
+
             <div id="errors" class="errors">{{ pp_comment.errors }}</div>
                     <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
-                    {{ pp_comment.form.text }}
+                    <textarea id="id_text{{object.pk}}" rows="10" cols="40" name="text">     </textarea>
                     {{ pp_comment.form.parent}}
                     {{pp_comment.form.form_id}}
                     {{csrf_string|safe}}
                 {% if user.is_authenticated and user.is_active %} 
                                                             
-                <span style="margin-right:10px;" id="commentsubmission{{object.pk}}"><input type="submit" class='button btn btn_green' value="Post Comment"></span>
+                <span style="margin-right:10px;" id="commentsubmission{{object.pk}}"><input id="commentsubmission{{object.pk}}button"type="submit" class='button btn btn_green' value="Post Comment"></span>
                 <a class="helptext" style="font-weight:normal; text-decoration:none;" href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>   
                 <span id="submit_pp_reply_form{{object.pk}}">
 
@@ -28,12 +29,30 @@
 
             </div>
 
-            <span id="pp_comment_form{{object.pk}}_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
-            </form>
+            <span id="pp_comment_form{{object.pk}}_side_effect" style="display:none;">
+                ["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]
+            </span>
+        </div>
 
-            {% endpp_comment_form %}
+    </form>
+
+    {% endpp_comment_form %}
+
+
+    <div class="share">
+        {% include 'share.html' %}
+    </div>
+
+
 
 <script>
+
+    $(document).ready(function(){
+        if($('#id_text{{object.pk}}').val() == '     '){
+            $('#id_text{{object.pk}}').val('');  
+        }
+    });
+
 
   $("form#pp_comment_form{{object.pk}}").submit(function(e){
         $("#submit_pp_comment_form{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>")

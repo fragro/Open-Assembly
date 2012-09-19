@@ -1542,26 +1542,27 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 .imgcomments {
     float:left;
+    display:inline;
     width:61%;
     margin-left:17.5%;
     height:100%;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(white), to(#c4c4c4));
-    background-image: -webkit-linear-gradient(white, #c4c4c4);
-    background-image: -moz-linear-gradient(white, #c4c4c4);
-    background-image: -o-linear-gradient(white, #c4c4c4);
-    background-image: linear-gradient(white, #c4c4c4);
+    background:white;
     padding:2%;
+    margin-top:2%;
 }
 .imglist a img{
     float:left;
     margin:10px;
 }
-.share {
-    text-align:center;
-    width:100%;
-    float:left;
-}
-.pp_comment_form {
+.pp_comment_form{
     width:50%;
     float:left;
+    display:block;
+}
+.share {
+    width:40%;
+    float:right;
+    margin-top:2%;
+    margin-right:10%;
+    margin-bottom:15%;
 }
