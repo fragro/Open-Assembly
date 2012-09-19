@@ -803,7 +803,7 @@ function hrefLess() {
 function minimizeAll(){
     var curtab = $('#current_tab').html();
     if(curtab !== ''){
-        history.pushState({load:true, module:'noload', url: ''}, '', '');
+        history.pushState({load:true, module:'noload', url: ''}, '', '/');
         if($('#page' + curtab).hasClass('current')){
             $('#page' + curtab).removeClass('current');
             $('#page' + curtab).hide();
@@ -950,5 +950,5 @@ function loadMarkers(object_pk, content_type, start, end, dimension, dashobj_pk)
 
 function refresh(url){
     history.pushState({load:true, module:'Reload', url: url}, '', url);
-    getContent();
+    //getContent();
 }
