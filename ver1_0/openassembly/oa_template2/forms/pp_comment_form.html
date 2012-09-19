@@ -1,9 +1,10 @@
 
 {% load commenttags %}
 {% load pp_url %}
-    {% pp_comment_form POST=request.POST path=request.path user=user object=object%}
-        <form id="pp_comment_form{{object.pk}}" method="post" action="">
-            <div class="pp_comment_form">
+    <form id="pp_comment_form{{object.pk}}" method="post" action="">
+
+        {% pp_comment_form POST=request.POST path=request.path user=user object=object%}
+        <div class="pp_comment_form">
 
             <div id="errors" class="errors">{{ pp_comment.errors }}</div>
                     <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
@@ -38,9 +39,9 @@
     {% endpp_comment_form %}
 
 
-    <div class="share">
-        {% include 'share.html' %}
-    </div>
+        <div class="share">
+            {% include 'share.html' %}
+        </div>
 
     </form>
 
