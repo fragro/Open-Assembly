@@ -12,8 +12,19 @@
         {% if user = object and user.is_authenticated %}
             <a id="avatar" data-href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
 
-            {% include 'etc/object_img_100.html' %}</a>
-            {% else %}
+            {% pp_get_sources object=object type='img' %}
+                {% if pp_source.cur_img %}
+                    {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
+                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                {% else %}
+                    <img src="/static/img/faux_logo100.png">
+                {% endif %}
+
+            {% endpp_get_sources %}
+            </a>
+
+        {% else %}
             <span id="avatar">
                 {% include 'etc/object_img_100.html' %}
             </span>
