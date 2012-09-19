@@ -11,8 +11,13 @@
 {% block listing %}
 
 	<div class="panel_list_img">{% include 'etc/object_img_50_user.html' %}</div>
-	<a class="ov_hid">
             
+
+    <div class="ov_hid" id="{{key}}">
+
 	<a data-href="{% pp_url object=object.user template='user_profile.html'%}">{{object.user}}</a>
+	
+	</div>
+
 	                        
 {% endblock %}

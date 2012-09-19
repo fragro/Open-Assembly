@@ -93,6 +93,9 @@
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });"><i class="icon-arrow-left icon-white icon-left"></i>Trusts {{object.username}}</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });"><i class="icon-arrow-right icon-white icon-left"></i>{{object.username}} Trusts</span>
 
+{% if request.user == object %}
 <a class="btn" data-href="{% pp_url template='pp_profile_form.html' object=request.user %}"><i class="icon-pencil icon-left"></i>Edit Profile</a>
+{% endif %}
+
 
 </div>

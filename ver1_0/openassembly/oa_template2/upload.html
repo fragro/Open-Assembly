@@ -6,67 +6,6 @@
 
 {% block content %}
 
-  {% if user.is_authenticated %}
-
-
-    {% cani object=object user=user %}
-
-        {% if user == object or object.user == user or pp_permissions.permission %}
-
-          {% pp_imgsource_form POST=request.POST FILE=request.FILES object=object request=request %}
-            <h2>Upload Images</h2>
-            <div style="display:block; margin-bottom:20px;">
-              <a class="button" data-href="{{object.get_absolute_url}}">Back to {{object}}</a>
-            </div>
-            
-            <form method="POST" enctype="multipart/form-data" id="custom_upload_form">
-              {% csrf_token %}
-              {% render_upload_data pp_source.upload_data %}
-              <table>{{ pp_source.form.as_p }}</table>
-              <button type="submit" class="btn btn_green">Upload <i class="icon-white icon-plus-sign icon-right"></i></button>
-            </form>
-
-          {% endpp_imgsource_form %}
-
-        <h2>Previous Images</h2>
-          {% for upload in pp_source.uploads %}
-             <div style="width:20%;float:left;">
-                  {% url pirate_sources.views.download_handler pk=upload.pk as fallback_url %}
-                  <img src="{{upload.thumbnail.url}}"><br>
-                  {% if upload.private %}<i>Private</i>{% endif %}({{ upload.file.size|filesizeformat }})<br>
-
-                  <a class="nobbq" data-href="{% firstof upload.file|public_download_url fallback_url %}">Download</a> | 
-                  <a class="nobbq" data-href="{% url pirate_sources.views.change_avatar obj_pk=obj_pk new_pk=upload.pk ctype_pk=ctype_pk %}">Choose</a>
-
-                {% if request.user.is_staff or request.user == upload.user %}
-               
-                   | <a class="nobbq" data-href="{% url pirate_sources.views.delete_handler pk=upload.pk ctype_pk=ctype_pk %}">Delete</a>
-
-                {% endif %}
-                  
-             </div>
-            {% empty %} N/A
-          {% endfor %}
-
-
-
-        </p>
-      </div>
-
-    {% else %}
-
-      wut
-
-    {% endif %}
-
-  
-  {% endcani %}   
-
-{% else %}
-
-not logged in dude
-
-{% endif %}
-
+{% include 'forms/imgsource.html' %}
 
 {% endblock %}

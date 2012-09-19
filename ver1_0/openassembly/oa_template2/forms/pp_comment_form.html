@@ -3,7 +3,7 @@
 {% load pp_url %}
 
     {% pp_comment_form POST=request.POST path=request.path user=user object=object%}
-        <form id="pp_comment_form{{object.pk}}" method="post" action="">
+        <form classs="pp_comment_form" id="pp_comment_form{{object.pk}}" method="post" action="">
             <div id="errors" class="errors">{{ pp_comment.errors }}</div>
                     <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
                     {{ pp_comment.form.text }}
@@ -18,9 +18,8 @@
 
                 <span style="color:grey;" id="submit_pp_comment_form{{object.pk}}"></span>
 
-            </form>
                     {% else %} 
-                        <a class='button' ata-href="{% pp_url template='register.html' %}">Submit</a>
+                        <a data-href="{% pp_url template='register.html' %}"><span style="margin-right:10px;" id="commentsubmission{{object.pk}}"><input type="submit" class='button btn btn_green' value="Post Comment"></span></a>
                     {% endif %}
 
             <div class='reply_comment' id='pp_formatting_help' style='display:none; overflow:hidden;'>
@@ -29,7 +28,8 @@
 
             </div>
 
-            <span id="pp_comment_form_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
+            <span id="pp_comment_form{{object.pk}}_side_effect" style="display:none;">["{{pp_comment.object_pk}}", "{{pp_comment.content_type}}"]</span>
+            </form>
 
             {% endpp_comment_form %}
 
