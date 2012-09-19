@@ -462,6 +462,7 @@ def pp_blob_form(context, nodelist, *args, **kwargs):
 						blob = form.save(commit=False)
 						blob.forumdimension = fd
 						blob.user = user
+						blob.description = form.cleaned_data['blobdescription']
 						#blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)
 						blob.parent_pk = parent.pk
 						blob.parent_type = ContentType.objects.get_for_model(parent)

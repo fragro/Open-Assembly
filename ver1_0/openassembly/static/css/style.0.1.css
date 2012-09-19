@@ -358,7 +358,6 @@ html {
     padding-bottom:40px;
     padding-left:0;
     margin-left:1%;
-    font-size:1.1em;
     overflow:hidden;
 }
 .panel {
@@ -455,6 +454,7 @@ html {
     line-height:18px;
 }
 .panel_inner {
+    font-size:1.5em;
     border:1px #ccc solid;
     border-top:0;
     padding:10px 15px 15px;
@@ -701,9 +701,6 @@ a {
 .menu {
     z-index:2;
 }
-
-
-
 /* Pressed Web - team@pressedweb.com - 6/12 */
 .tab li {
     opacity:.5;
@@ -904,6 +901,11 @@ label, b, strong {
 }
 #panel_inner_list iframe {
     margin-top:10px;
+}
+#panel_inner_list .listingdetails {
+    font-size:0.9em;
+    color:black;
+    opacity:0.3;
 }
 #user_activity_chart {
     margin-top:-10px;
@@ -1469,7 +1471,97 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     float:right;
 }
 .right_oriented .right_content img  {
-    margin-top:15%;
     float:left;
-    width:40%;
+}
+.image {
+    width:20%;
+}
+.ov_hid {
+    padding-top:10px;
+}
+.select_img {
+    width:60px;
+    padding:10px;
+}
+.imgpreview-img{
+    float:left;
+    display:block;
+    margin-bottom:25px;   
+    margin-left:17.5%;
+    width:65%;
+}
+.imgpreview-img a:hover {cursor:default;}
+.hoverbar {
+    padding:10px;
+    display:none;
+    position: absolute;
+    left: 0;
+    width:60%;
+    margin-left:20%;
+    color:#eaeaea;
+    font-weight:bold;
+    font-size:1.3em;
+    background:rgba(0,0,0,.8);
+    line-height:32px;
+
+}
+.hoverbar-bottom {
+    text-align:right;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-radius: 5px 5px 0px 0px;
+    border-radius: 5px 5px 0px 0px;
+}
+.hoverbar-top {
+    top:20px;
+    text-align:left;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-radius: 0px 0px 5px 5px;
+    border-radius: 0px 0px 5px 5px;
+}
+.hoverbar a{
+    color:#eaeaea;
+    text-decoration:none;
+    opacity:.5;
+    margin-left:25px;
+}
+.hoverbar a:hover{
+    color:#eaeaea;
+    text-decoration:none;
+    cursor:pointer;
+    opacity:1;
+}
+.imgpreview-img img { margin: 0 auto; } 
+.imgpreview {
+    background:#141414;
+}
+.imgcomments {
+    float:left;
+    width:61%;
+    margin-left:17.5%;
+    height:100%;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(white), to(#c4c4c4));
+    background-image: -webkit-linear-gradient(white, #c4c4c4);
+    background-image: -moz-linear-gradient(white, #c4c4c4);
+    background-image: -o-linear-gradient(white, #c4c4c4);
+    background-image: linear-gradient(white, #c4c4c4);
+    padding:2%;
+}
+.imglist a img{
+    float:left;
+    margin:10px;
+}
+.share {
+    text-align:center;
+    width:100%;
+    float:left;
+}
+.pp_comment_form {
+    width:50%;
+    float:left;
 }

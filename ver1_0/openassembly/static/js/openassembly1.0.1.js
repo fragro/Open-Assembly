@@ -284,13 +284,14 @@ function addObject(e){
                         else{
                           $(data2.output[item].div).html(data2.output[item].html);
                         }
-                        if(data2.output[item].scroll_to === true){
-                                var hash = location.href;
-                                var dom = $('#domain').html();
-                                var tempkey = hash.replace(dom, '');
-                                tempkey = tempkey.replace('http:', '');
-                                tempkey = tempkey.replace(/\//g,"");
-                                $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});                        }
+                        // if(data2.output[item].scroll_to === true){
+                        //         var hash = location.href;
+                        //         var dom = $('#domain').html();
+                        //         var tempkey = hash.replace(dom, '');
+                        //         tempkey = tempkey.replace('http:', '');
+                        //         tempkey = tempkey.replace(/\//g,"");
+                        //         $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});                        
+                        // }
                     }
                     //hrefLess();
                 }, "json");
@@ -410,6 +411,8 @@ function getContent(){
     d['hash'] = location.href;
     var dom = $('#domain').html();
     d['empty'] = ($('#content').is(':empty'));
+    d['width'] = screen.width;
+    d['height'] = screen.height;
     var tempkey = d['hash'].replace(dom, '');
     tempkey = tempkey.replace('http:', '');
     tempkey = tempkey.replace(/\//g,"");

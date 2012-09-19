@@ -13,6 +13,10 @@ from pirate_sources.models import IMGSource
 
 from filetransfers.api import prepare_upload, serve_file
 
+from ajaxuploader.views import AjaxFileUploader
+
+from pirate_sources.backends import S3CustomBackend
+
 
 def change_avatar(request, obj_pk=None, new_pk=None, ctype_pk=None):
     view_url = reverse('pirate_sources.views.upload_handler', args=[obj_pk, ctype_pk])
@@ -80,3 +84,7 @@ def download_handler(request, pk):
 def delete_handler(request, pk, ctype_pk):
     get_object_or_404(IMGSource, pk=pk).delete()
     return HttpResponseRedirect(reverse('pirate_sources.views.upload_handler'), args=[pk, ctype_pk])
+
+
+
+import_uploader = AjaxFileUploader(backend=S3CustomBackend, NUM_PARALLEL_PROCESSES=8)

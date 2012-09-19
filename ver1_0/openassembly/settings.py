@@ -22,7 +22,13 @@ HAYSTACK_SITECONF = 'openassembly.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_INCLUDE_SPELLING = True
 
+AWS_STORAGE_BUCKET_NAME = 'oa-public-downloads'
+AWS_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
 try:
+
     ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
@@ -106,6 +112,14 @@ try:
 
 
 except:
+
+    with open(os.path.expanduser('~/local_environment.json')) as f:
+        loc_env = json.load(f)
+
+    #FOR S3 UPLOADS
+    AWS_ACCESS_KEY_ID = loc_env['S3FS_ACCESSKEY']
+    AWS_SECRET_ACCESS_KEY =  loc_env['S3FS_SECRETKEY']
+
 
     HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
 
@@ -214,9 +228,11 @@ INSTALLED_APPS = (
     'autoload',
     'djangotoolbox',
     'oa_search', #openassemblys implementation of django-haystack
+    'storages',
+    'ajaxuploader',
 )
 
-STATIC_URL = '/static/'
+STATIC_URL = STATIC_ROOT
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 

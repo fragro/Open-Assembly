@@ -123,64 +123,6 @@ from django.forms.extras import SelectDateWidget
 import datetime
 from django.utils.translation import ugettext as _
 
-   
-class EventForm(forms.ModelForm, FormMixin):
-    
-    def save(self, commit=True):
-        newo = super(EventForm, self).save(commit=commit)
-        if newo.created_dt == None:
-            newo.created_dt = datetime.datetime.now()
-        newo.modified_dt = datetime.datetime.now()
-        return newo
-
-
-    class Meta:
-        model = Event
-        exclude = ('parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt' , 'modified_dt', 'deadline_dt' )
-              
-    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_event_form")
-    summary = forms.CharField( max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}),label="Event Name") 
-    description = forms.CharField(widget=MarkItUpWidget(),label="Description and Instructions")
-    location = forms.CharField(label="City/State/Country Location", max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}),required=True)
-    address = forms.CharField(label="Address", max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}), required=True)
-    date = forms.DateField(widget = SelectDateWidget(), required=True, label="Date")
-    time_start = forms.TimeField(widget = SelectTimeWidget(), required=True, label="Time Start")
-    time_end = forms.TimeField(widget = SelectTimeWidget(), required=True, label="Time End")
-    deadline_dt = forms.DateField(widget = SelectDateWidget(), required=False, label="Deadline for Signup")
-
-
-   
-class BoycottForm(forms.ModelForm, FormMixin):
-    
-    def save(self, commit=True):
-        newo = super(BoycottForm, self).save(commit=commit)
-        if newo.created_dt == None:
-            newo.created_dt = datetime.datetime.now()
-        newo.modified_dt = datetime.datetime.now()
-        return newo
-
-    class Meta:
-        model = Boycott
-        exclude = ('parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt' , 'modified_dt', 'deadline_dt' )
-             
-    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_boycott_form")
-    summary = forms.CharField( max_length=100,
-              widget=forms.TextInput( 
-                attrs={'size':'50', 'class':'inputText'}),label="Summary of Boycott") 
-    description = forms.CharField(widget=MarkItUpWidget(),label="Description and Instructions")
-    date = forms.DateField(widget = SelectDateWidget(),label="Date", required=False)
-    time_start = forms.TimeField(widget = SelectTimeWidget(),label="Time Start", required=False)
-    time_end = forms.TimeField(widget = SelectTimeWidget(),label="Time End",required=False)
-    target = forms.CharField(label=_("Target Corporation"), max_length=300, required=True)
-    product = forms.CharField(label=_("Target Product"), required=False)
-
-
 
 class ActionForm(forms.ModelForm, FormMixin):
     

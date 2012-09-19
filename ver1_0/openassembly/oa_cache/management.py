@@ -261,7 +261,7 @@ pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=repor
 
 ##FORMS
 ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
-                        div_id="#pp_comment_form", jquery_cmd="html", load_last=True)
+                        div_id="#pp_comment_form", jquery_cmd="html", load_last=True, object_specific=True)
 
 ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
     template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
@@ -314,6 +314,8 @@ ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/action_form.html",
                                                     div_id="#pp_action_form", jquery_cmd="html", object_specific=True)
 
+###SPARKS
+
 ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blobedit_form.html",
                                                     div_id="#pp_blobedit_form", jquery_cmd="html", object_specific=True)
 
@@ -321,6 +323,28 @@ submitcache, is_new = ModelCache.objects.get_or_create(template="submit.html",
                 div_id="#pages", content_type="submit", main=True, jquery_cmd="append")
 submit_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=submitcache.pk, template="skeleton/tab_template.html",
                          div_id="#tab_ruler", jquery_cmd="append")
+
+#########IMAGES AND SUBMISSION FORMS AND CONTENT
+
+
+imgsourceformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/imgsource.html",
+                                                    div_id="#pp_imgsource_form", jquery_cmd="html", object_specific=True)
+
+
+imgpreviewcache, is_new = ModelCache.objects.get_or_create(template="imagepreview.html", main=True,
+            div_id="#pages", content_type="imagepreview", jquery_cmd="append")
+imgpreviewtab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=imgpreviewcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="append")
+
+####IMAGE PREVIEW COMMENTING
+
+imgcomcache, is_new = ModelCache.objects.get_or_create(template="comment.html",
+    div_id="#content_children", content_type="imagepreview", is_recursive=True, object_specific=True, jquery_cmd="append")
+imgcommentslistcache, is_new = ListCache.objects.get_or_create(model_cache=imgcomcache.pk,
+        template="comments", div_id="#content_children", content_type="imagepreview", default=True)
+
+
+####USER PROFILE CACHE
 
 
 pprofilecache, is_new = ModelCache.objects.get_or_create(template="pp_profile_form.html",
