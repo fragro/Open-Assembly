@@ -51,3 +51,8 @@ http://docs.dotcloud.com/guides/s3fs/
 
 Requires Setting of Email and Password within Settings and associated EMAIL_PASSWORD in Dotcloud environment variables
 http://docs.dotcloud.com/guides/environment/
+
+####
+SOLR
+
+python manage.py build_solr_schema > ../../solr/conf/schema.xml

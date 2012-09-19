@@ -158,8 +158,11 @@ def get_root(root):
             except:
                 return None
         while parent is not None:
-            if parent.summary == '__NULL__':
-                return root
+            try:
+                if parent.summary == '__NULL__':
+                    return root
+            except:
+                return None
             root = parent
             parent = parent.parent
 
