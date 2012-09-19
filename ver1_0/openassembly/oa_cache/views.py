@@ -54,7 +54,7 @@ for more information on SideEffectCache
         usc_pk = request.GET.get('usc_pk')
         se = request.GET.get('side_effect')
         parent_pk = request.GET.get('obj_pk')
-        
+
         jsonval = simplejson.loads(se)
         #if there is side effect information
         if jsonval != None:
@@ -439,7 +439,7 @@ decreased the latency of the system.
         hashed = request.GET.get('hash', None)
         width = request.GET.get('width', None)
         height = request.GET.get('height', None)
-        extracontext = {'width': width, 'height': height}
+        extracontext = {'width': width, 'height': height, 'DOMAIN': DOMAIN}
 
         if hashed is None:
             hashed = ''
@@ -576,6 +576,8 @@ def render_hashed(request, key, user, extracontext={}):
                 ret[i['div']] = [soup]
             elif i['type'] == 'append':
                 ret[i['div']].append(soup)
+            elif i['type'] == 'prepend':
+                ret[i['div']].insert(0,soup)
             else:
                 print i['type']
                 text = ret[i['type']][len(ret[i['type']])-1].find('div', {'id': i['div'][1:]})

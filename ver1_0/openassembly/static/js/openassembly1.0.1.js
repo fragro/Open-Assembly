@@ -418,6 +418,7 @@ function getContent(){
     tempkey = tempkey.replace(/\//g,"");
     var ss = sessionStorage.getItem(tempkey);
     var state = history.state;
+    var render;
     if (typeof(state) !== 'undefined'){
       var data = state.data;
       var module = state.module;
@@ -429,6 +430,7 @@ function getContent(){
     if(ss != 'True' || module == 'Reload'){
       $.get("/load_page/", d,
         function(OAdata) {
+           var render = OAdata.rendertype;
            if(OAdata.FAIL !== true){
                   for(var item in OAdata.output){
                       if((module === 'Reload' && OAdata.output[item].div == '#tab_ruler')){
@@ -448,7 +450,7 @@ function getContent(){
                             if(OAdata.output[item].type == 'html'){
                                 $(OAdata.output[item].div).html(OAdata.output[item].html);
                             }
-                            if(OAdata.output[item].div == '#pages' && module !== 'Reload'){
+                            if(OAdata.output[item].div == '#pages' && module !== 'Reload' && OAdata.rendertype != "message"){
                                 toggleMinMax(OAdata.key);
                             }
                           }
@@ -476,7 +478,7 @@ function getContent(){
        }, "json");
 
     }
-    if (ss === 'True' && module !== 'Reload'){
+    if (ss === 'True' && module !== 'Reload' && render != "message"){
         toggleMinMax(tempkey);
     }
 }
@@ -801,6 +803,7 @@ function hrefLess() {
 function minimizeAll(){
     var curtab = $('#current_tab').html();
     if(curtab !== ''){
+        history.pushState({load:true, module:'noload', url: ''}, '', '');
         if($('#page' + curtab).hasClass('current')){
             $('#page' + curtab).removeClass('current');
             $('#page' + curtab).hide();
@@ -943,4 +946,9 @@ function loadMarkers(object_pk, content_type, start, end, dimension, dashobj_pk)
         $('#loadmore' + dashobj_pk).html(data.link);
       }
   }, "json");
+}
+
+function refresh(url){
+    history.pushState({load:true, module:'Reload', url: url}, '', url);
+    getContent();
 }

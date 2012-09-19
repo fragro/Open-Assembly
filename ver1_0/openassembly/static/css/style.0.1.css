@@ -265,6 +265,58 @@ html {
     box-sizing: border-box;
     z-index:9999;
 }
+.messagebox {
+    font-size:1.2em;
+    background:#fff;
+    position:fixed;
+    bottom:42px;
+    width:18%;
+    height:50%;
+    left:1%;
+    border:2px #333 solid;
+    z-index:9999;
+    overflow-y:scroll;
+}
+.messagebox textarea {
+    width:100%;
+    margin:0 auto;
+    padding-bottom:30px;
+}
+.message_controls {
+    width: 16%;
+    position: fixed;
+    z-index: 99999;
+    text-align: center;
+    background: white;
+    padding-left: 1%;
+    padding-bottom: 0.5%;
+
+}
+.message_controls .ctrl a{
+    color:black;
+    opacity:0.85;
+    width:25px;
+    float:right;
+    background:#fff;
+    border-left:2px solid rgba(0,0,0,.6);
+    border-right:2px solid rgba(0,0,0,.6);
+    border-bottom:2px solid rgba(0,0,0,.6);
+    margin-left:2px;
+    margin-right:2px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 0px 0px 5px 5px;
+}
+.message_controls .username {
+    font-size:1.4em;
+    font-weight:bold;
+    float:left;
+    text-align:left;
+    padding-top:1%;
+}
+.messagebox .sink {
+    padding-top:1.5%;
+}
 #tabs {
     background: #444444;
     background: -moz-linear-gradient(top,  #444444 0%, #222222 100%);
@@ -1137,10 +1189,6 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     width:20%;
     float:left;
 }
-.messages{
-    padding-left:20%;
-    padding-right:20%;
-}
 
 .message .text {
     float:right;
@@ -1565,4 +1613,30 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     margin-top:2%;
     margin-right:10%;
     margin-bottom:10%;
+}
+.gradient{
+    /* webkit example */
+    background-image: -webkit-gradient(
+      linear, right top, left top, from(rgba(255, 255, 255, 1.0)),
+      to(rgba(255, 255, 255, 0))
+    );
+
+    /* mozilla example - FF3.6+ */
+    background-image: -moz-linear-gradient(
+      right center,
+      rgba(255, 255, 255, 1.0) 20%, rgba(255, 255, 255, 0) 95%
+    );
+
+    /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(
+      gradientType=1, startColor=0, endColorStr=#FFFFFF
+    );
+
+    /* IE8 uses -ms-filter for whatever reason... */
+    -ms-filter: progid:DXImageTransform.Microsoft.gradient(
+      gradientType=1, startColor=0, endColoStr=#FFFFFF
+    );
+}
+.messages {
+    margin-top: 10%;
 }
