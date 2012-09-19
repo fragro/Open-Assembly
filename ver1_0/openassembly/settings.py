@@ -29,13 +29,13 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 try:
 
-    #FOR S3 UPLOADS
-    AWS_ACCESS_KEY_ID = env['S3FS_ACCESSKEY']
-    AWS_SECRET_ACCESS_KEY =  env['S3FS_SECRETKEY']
-
     ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
+
+    #FOR S3 UPLOADS
+    AWS_ACCESS_KEY_ID = env['S3FS_ACCESSKEY']
+    AWS_SECRET_ACCESS_KEY =  env['S3FS_SECRETKEY']
 
     HAYSTACK_SOLR_URL = env['DOTCLOUD_SEARCH_HTTP_URL']
 
