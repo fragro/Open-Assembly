@@ -1,0 +1,105 @@
+{% extends 'skeleton/page.html' %}
+{% load filetransfers %}
+{% load profiletags %}
+{% load cani %}
+
+
+{% block page %}
+
+{% if object %}
+  <div id="page{{key}}" class="imgpreview page current" style="display:block;">
+{% else %}
+  <div id="page{{key}}" class="imgpreview page current" style="display:block;">
+{% endif %}
+
+<div class="page_controls">
+
+  	<span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
+  	<span class="ctrl"><a onClick="toggleMinMax('{{key}}');"><i class="icon-minus"></i></a></span>
+
+</div>
+
+	<div class="sink">
+
+		<div id="img{{object.pk}}" class='imgpreview-img'>
+
+			  	<div class="hoverbar hoverbar-top" id="img{{object.pk}}hoverbartitle">
+			  		<a data-href="{{object.content_object.get_absolute_url}}">{{object.content_object}}</a>
+		 	 	</div>
+
+	      		{% pp_calculate_size width=width height=height img=object %}
+	      			{% thumbnail object.file pp_source.geometry upscale=false as im %}
+				        <a><img id="imgsrc{{object.pk}}"src="{{ im.url }}" width="{{pp_source.width}}"></a>
+				    {% endthumbnail %}
+	  			{% endpp_calculate_size %}
+
+				{% url pirate_sources.views.download_handler pk=object.pk as fallback_url %}
+			  	<div class="hoverbar hoverbar-bottom" id="img{{object.pk}}hoverbar">
+
+				  	<span style="float:left;display:none;color:#fdeceb;" id="delete{{object.pk}}">
+				  		<a class="errorimg">Confirm Delete<i class="icon-ok-circle icon-white"></i></a>
+				  	</span>
+				  	<a href="{% firstof object.file|public_download_url fallback_url %}"><i class="icon-download icon-white"></i>Download</a>
+				  	<a href="{{object.file.url}}" target="_blank"><i class="icon-eye-open icon-white"></i>Permalink</a>
+
+				   {% if user.is_authenticated %}
+
+					    {% cani object=object user=user %}
+
+					        {% if user == object or object.user == user or pp_permissions.permission %}
+
+					        	 <a onClick=""><i class="icon-cog icon-white"></i>Change to Current</a>
+
+		 			        	 <a onClick="$('#delete{{object.pk}}').show();"><i class="icon-remove-circle icon-white"></i>Delete</a>
+
+
+					    	{% endif %}
+
+					    {% endcani %}
+
+					{% endif %}
+
+
+				</div>
+
+
+		  </div>
+  		  	 {% include 'share.html' %}
+
+		  <div class="imgcomments">
+             {% include 'forms/pp_comment_form.html'%}
+
+	          <div id="content_children{{object.pk}}">                               
+	                               
+
+			  </div>
+          </div>
+	    <script>
+
+        $(window).resize(function(){
+            rememberTabs();
+            $('#img{{object.pk}}hoverbar').css('top', $('#imgsrc{{object.pk}}').height()-30);
+        });
+
+
+	    $('#img{{object.pk}}').hover(     
+	    	function() { 
+	    		$('#img{{object.pk}}hoverbar').css('top', $('#imgsrc{{object.pk}}').height()-30);
+	    		$("#img{{object.pk}}hoverbar").fadeIn();
+	    		$("#img{{object.pk}}hoverbartitle").fadeIn();
+
+	    	},
+	      	function() { 
+	      		$("#img{{object.pk}}hoverbar").fadeOut();
+	      	    $("#img{{object.pk}}hoverbartitle").fadeOut(); 
+	      	}
+	      );
+	    </script>
+
+      </div>
+      
+  </div>
+
+
+</div>
+{% endblock %}

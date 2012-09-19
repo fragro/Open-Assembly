@@ -1,0 +1,90 @@
+<script src="http://malsup.github.com/jquery.form.js"></script> 
+<form method="POST" enctype="multipart/form-data" id="pp_imgsource_form{{object.pk}}">
+
+ {% if user.is_authenticated %}
+
+    {% cani object=object user=user %}
+
+        {% if user == object or object.user == user or pp_permissions.permission %}
+
+          {% pp_imgsource_form POST=request.POST FILE=request.FILES object=object request=request %}
+
+
+            <h2>Upload Images</h2>
+
+        <noscript>
+            
+              <table>{{ pp_source.form.as_p }}</table>
+              <button type="submit" class="btn btn_green">Upload <i class="icon-white icon-plus-sign icon-right"></i></button>
+            <div id ="pp_imgsource_form_loading{{object.pk}}"></div>
+
+        </noscript>
+
+        <script src="/static/ajaxuploader/js/fileuploader.js" ></script>
+        <link href="/static/ajaxuploader/css/fileuploader.css" media="screen" rel="stylesheet" type="text/css" />
+       
+
+        <script>
+        {% pp_ajaximg request=request object=object %}
+
+          $(document).ready(function(){ 
+              $(function(){
+                  var uploader = new qq.FileUploader({
+                      action: "{% url my_ajax_upload %}",
+                      element: $('#file-uploader')[0],
+                      multiple: false,
+                      onAllComplete: function(uploads) {
+                          // uploads is an array of maps
+                          // the maps look like this: {file: FileObject, response: JSONServerResponse}
+                      },
+                      params: {
+                          'csrf_token': '{% csrf_token %}',
+                          'csrf_name': 'csrfmiddlewaretoken',
+                          'csrf_xname': 'X-CSRFToken',
+                      },
+                  });
+              });
+          }); 
+        {% endpp_ajaximg %}
+
+        </script>
+
+
+    <div id="file-uploader">       
+   
+    </div>
+      {% endpp_imgsource_form %}
+
+    <div class="imglist">
+
+        {% pp_get_sources object=object type='img' get='all' %}
+
+          {% for img in pp_source.sources %}
+            {% thumbnail img.file "50x50" crop="center" as im %}
+              <a data-href="{% pp_url template='imagepreview.html' object=img %}"><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></a>
+            {% endthumbnail %}
+
+          {% endfor %}
+
+      {% endpp_get_sources %}
+    </div>
+
+
+    {% else %}
+
+      WHAT DO YOU THINK YOU ARE DOING HERE?
+
+    {% endif %}
+
+  
+  {% endcani %}   
+
+{% else %}
+
+NEED TO LOGIN
+
+{% endif %}
+
+
+
+</form>
