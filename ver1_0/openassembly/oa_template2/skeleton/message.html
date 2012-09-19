@@ -1,0 +1,23 @@
+{% block page %}
+<!-- Page1 -->
+  <div id="page{{key}}" class="messagebox current" style="display:block;">
+
+	  <div class="message_controls gradient">
+    <span class="username"><a data-href="{{object.get_absolute_url}}">{{object.username}}</a></span>
+
+  	<span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
+  	<span class="ctrl"><a onClick="toggleMinMax('{{key}}');"><i class="icon-minus"></i></a></span>
+
+	  </div>
+
+      <div class="sink">
+
+      {% block content %}
+
+
+      {% endblock %}
+
+      </div>
+      
+  </div>
+{% endblock %}
