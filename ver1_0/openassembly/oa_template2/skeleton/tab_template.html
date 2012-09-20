@@ -1,79 +1,13 @@
-<script>
 
-    function toggleMinMax{{template}}(t){
-        var curtab = $('#current_tab').html();
-        var keepif = (curtab == '');
-        var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
-        var nempty = $('#pages').find('.current').length == 0;
+{% include 'nav/toggle.html' %}
 
-        if(nempty && is_add){
-            $('#overlay').show();
-        }
-
-        if(!nempty && !is_add){
-            $('#overlay').hide();
-            history.pushState({load:true, module:'noload', url: '/'}, '', '/');
-            $("html").css("overflow", "auto");
-
-        }
-
-        if(t != curtab){
-            //add new pagev
-            var url = '/p/' + '{{template}}/' + t.replace('p{{template}}', '');
-            history.pushState({load:true, module:'noload', url: url}, '', url);
-            $('#page' + t).show();
-            $('#overlay').show();
-            $('#tab' + t).addClass('current-icon');
-            $('#page' + t).addClass('current');
-            $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-            $("html").css("overflow", "hidden");
-
-            //set the current div
-            $('#current_tab').html(t);
-        }
-        else{
-            $('#current_tab').html('');
-        }
-        if(!keepif){
-            //remove the old page
-            $('#page' + curtab).removeClass('current');
-            $('#page' + curtab).hide();
-            $('#tab' + curtab).removeClass('current-icon');
-            $('#minmax' + curtab).find('i').toggleClass('icon-plus-sign icon-minus-sign');
-        }
-    };
-
-    // Closes/removes Page/Tab
-    function tabRemove(tab){
-        tabobj = $('#tabholdertab' + tab);
-        
-        //for whatever reason this stopped working...
-        //tabobj.fadeTo(600, 0, function(){
-        //    tabobj.remove();
-        //});
-        tabobj.remove();
-        $('#page' + tab).remove();
-        sessionStorage.removeItem(tab);
-        var curtab = $('#current_tab').html();
-        if (curtab == tab){
-            history.pushState({load:true, module:'noload', url: '/'}, '', '/');
-            $('#current_tab').html('');
-            $('#overlay').hide();
-            $("html").css("overflow", "auto");
-        }
-        rememberTabs();
-
-        //remove page or not?
-    };
-
-</script>
 {% if object %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax{{template}}('{{key}}');">{{object|title}} {{rendertype|title}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}', '{{template}}');">{{object|title}} {{rendertype|title}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
             <li id="minmax{{key}}"class="min_max">
-                <a onClick="toggleMinMax{{template}}('{{key}}');">
+                <a onClick="toggleMinMax('{{key}}', '{{template}}');">
                     <i class="icon-minus-sign icon-white"></i>
                 </a>
             </li>
@@ -85,9 +19,9 @@
 {% else %}
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" onClick="toggleMinMax{{template}}('{{key}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" onClick="toggleMinMax('{{key}}', '{{template}}');">{{obj_pk}}</a><span class="tab_mask">&nbsp;</span>
         <ul>
-            <li id="minmax{{key}}"class="min_max"><a onClick="toggleMinMax{{template}}('{{key}}');"><i class="icon-minus-sign icon-white"></i></a></li>
+            <li id="minmax{{key}}"class="min_max"><a onClick="toggleMinMax('{{key}}', '{{template}}');"><i class="icon-minus-sign icon-white"></i></a></li>
             <li><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
     </li>

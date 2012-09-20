@@ -1,23 +1,61 @@
 {% block page %}
 <!-- Page1 -->
   <div id="page{{key}}" class="messagebox current" style="display:block;">
+    <div onClick="toggleMinMax('{{key}}', '{{template}}');" id="messages_online{{object.pk}}" class="message_controls gradient">
+        {% pp_ordered_tuple key1=request.user.pk key2=object.pk %}
+        <a class="username" data-href="{{object.get_absolute_url}}">{{object.username}}</a></span>
 
-	  <div class="message_controls gradient">
-    <span class="username"><a data-href="{{object.get_absolute_url}}">{{object.username}}</a></span>
+        <span style="display:none;" class="true" id='chatsounds{{pp_tag.key}}'></span>
 
-  	<span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
-  	<span class="ctrl"><a onClick="toggleMinMax('{{key}}');"><i class="icon-minus"></i></a></span>
+        <span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
 
-	  </div>
+      </div>
 
       <div class="sink">
+
+
 
       {% block content %}
 
 
       {% endblock %}
 
-      </div>
+      <script>
+      function check_cur{{pp_tag.key}}(){
+          //now iterate the incrementor
+          var itr = $('#message_cntr_small{{pp_tag.key}}').html();
+          var curtab = $('#current_tab').html();
+          if(curtab != '{{key}}'){
+            $('#message_cntr_small{{pp_tag.key}}').html(parseInt(itr) + 1);
+            $('#message_cntr_small{{pp_tag.key}}').fadeIn()
+
+            if($('#chatsounds{{pp_tag.key}}').attr('class') == 'true'){
+              var delta  = new Date() - timestamp;
+              if(delta > 5000 && delta){
+                  EvalSound('audio1');
+                  timestamp = new Date();
+              }
+            }
+          }
+      }
+
+        $('#P2Pdata{{object.pk}}').focus(function(){
+            $('#message_cntr_small{{pp_tag.key}}').fadeOut(function(){
+              $('#message_cntr_small{{pp_tag.key}}').html(0);
+            });
+        });
+
+      $(document).ready (function(){
+            socket.emit('is_online', '{{object.username}}', '{{pp_tag.key}}', '{{request.session.session_key}}');
+            var tarb = $('#tab{{key}}').position();
+            if(tarb != null){
+              $('#page{{key}}').css('left', tarb.left);
+            }
+      });
+      </script>
+    {% endpp_ordered_tuple %}
+
+    </div>
       
   </div>
 {% endblock %}

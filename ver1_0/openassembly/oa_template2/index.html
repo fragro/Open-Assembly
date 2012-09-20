@@ -177,12 +177,13 @@
             var dict = JSON.parse(message);
             //first we need to deal with P2P messages and message logic, else it is a standard message
             if(dict.type == 'message'){
-
+                if($('#messages_online' + dict.object_pk).length == 0){
+                    notify(dict);
+                }
             }
             else{
                 notify(dict);           
             }
-
 
         });
         // listener, whenever the server emits 'updatechat', this updates the chat body
@@ -209,8 +210,20 @@
                 }
         });
         socket.on('updateP2P', function (username, data, object, sessionid, url) {
-                $('#message_list' + object).append('<div class="message"><div class="userinfo">' + url +  '</div><div class="text">' + data + '</div><div class="meta">' + +new Date +  ' </div></div>');
-                eval('scrollMessage' + object + '();');
+                if(username == 'SERVER' && url == 'OFFLINE'){
+                    $('#userp2p' + object).attr('src', '/static/icons/user_offline.png')
+
+                }
+                else if(username == 'SERVER' && url == 'ONLINE'){
+                    $('#userp2p' + object).attr('src', '/static/icons/user_online.png')
+
+                }
+                else{
+                    $('#message_list' + object).append('<div class="message"><div class="userinfo">' + url +  '</div><div class="text">' + data + '</div><div class="meta">' + +new Date +  ' </div></div>');
+
+                    eval('check_cur' + object + '();')
+                    eval('scrollMessage' + object + '();');
+                }
         });
 
         // listener, whenever the server emits 'updateusers', this updates the username list
@@ -370,9 +383,9 @@
                  var state = evt.originalEvent.state;
                      if (state && state.module === "leave") {
                            if(state.url == '/'){
-                            minimizeAll();
+                                minimizeAll();
                            }
-                           getContent();
+                           getContent({});
                      }
                      if (state && state.module === "nobbq") {
                            js_redirect(state.url);
@@ -394,7 +407,7 @@
                         if (allowPush(e, url, that)) {
                             e.preventDefault();
                             history.pushState({load:true, module:'leave', url: url}, '', url);
-                            getContent();            
+                            getContent({});            
                         }
                         else{ 
                             //need to load some error msg

@@ -86,7 +86,7 @@
             <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-down icon-left"></i>Stop Trusting</a>
         {% endif %}
 
-        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
+        <a class="btn" data-href="{% pp_url template='message.html' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
 
 
 {% endpp_has_subscription %}

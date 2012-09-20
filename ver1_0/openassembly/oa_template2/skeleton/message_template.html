@@ -1,63 +1,20 @@
-<script>
 
-    function toggleMinMaxMessage(t){
-        var curtab = $('#current_tab').html();
-        var keepif = (curtab == '');
-        var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
-        var nempty = $('#pages').find('.current').length == 0;
+{% include 'nav/toggle.html' %}
 
-
-        if(t != curtab){
-            //add new page
-            $('#page' + t).show();
-            $('#tab' + t).addClass('current-icon');
-            $('#page' + t).addClass('current');
-            $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-
-            //set the current div
-            $('#current_tab').html(t);
-        }
-        else{
-            $('#current_tab').html('');
-        }
-        if(!keepif){
-            //remove the old page
-            $('#page' + curtab).removeClass('current');
-            $('#page' + curtab).hide();
-            $('#tab' + curtab).removeClass('current-icon');
-            $('#minmax' + curtab).find('i').toggleClass('icon-plus-sign icon-minus-sign');
-        }
-    };
-
-    // Closes/removes Page/Tab
-    function tabRemove(tab){
-        tabobj = $('#tabholdertab' + tab);
-        
-        //for whatever reason this stopped working...
-        //tabobj.fadeTo(600, 0, function(){
-        //    tabobj.remove();
-        //});
-        tabobj.remove();
-        $('#page' + tab).remove();
-        sessionStorage.removeItem(tab);
-        var curtab = $('#current_tab').html();
-        if (curtab == tab){
-            $('#current_tab').html('');
-            $('#overlay').hide();
-            $("html").css("overflow", "auto");
-        }
-        rememberTabs();
-
-        //remove page or not?
-    };
-
-</script>
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
-        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMaxMessage('{{key}}');">{{object|title}} Message</a><span class="tab_mask">&nbsp;</span>
+        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}', '{{template}}');">
+
+
+        {% pp_ordered_tuple key1=request.user.pk key2=object.pk %}
+            <span class="username"><span class="counter" id="message_cntr_small{{pp_tag.key}}">0</span>
+
+        <img id="userp2p{{pp_tag.key}}" src="/static/icons/user_offline.png" class="icon-" style="margin-right:10px;">{{object|title}}</a><span class="tab_mask">&nbsp;</span>
+            {% endpp_ordered_tuple %}
+
         <ul>
             <li id="minmax{{key}}"class="min_max">
-                <a onClick="toggleMinMaxMessage('{{key}}');">
+                <a onClick="toggleMinMax('{{key}}', '{{template}}');">
                     <i class="icon-minus-sign icon-white"></i>
                 </a>
             </li>
