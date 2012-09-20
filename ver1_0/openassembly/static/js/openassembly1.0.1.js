@@ -790,6 +790,29 @@ function toggleMinMax(t, render){
     }
 };
 
+// Closes/removes Page/Tab
+function tabRemove(tab){
+    tabobj = $('#tabholdertab' + tab);
+    
+    //for whatever reason this stopped working...
+    //tabobj.fadeTo(600, 0, function(){
+    //    tabobj.remove();
+    //});
+    tabobj.remove();
+    $('#page' + tab).remove();
+    sessionStorage.removeItem(tab);
+    var curtab = $('#current_tab').html();
+    if (curtab == tab){
+        history.pushState({load:true, module:'noload', url: '/'}, '', '/');
+        $('#current_tab').html('');
+        $('#overlay').hide();
+        $("html").css("overflow", "auto");
+    }
+    rememberTabs();
+
+    //remove page or not?
+};
+
 
 
 // Remove's href from anchors and adds them as data attr (so browser status bars don't cover up OA's taskbar)
