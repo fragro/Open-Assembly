@@ -110,7 +110,7 @@ function support(add, subscribed, user){
             if(data.FAIL !== true){
               //$('#mygroup').append(data.group);
               history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
-              getContent();
+              getContent({});
             }
        }, "json");
   }
@@ -120,7 +120,7 @@ function support(add, subscribed, user){
             if(data.FAIL !== true){
               //$('#mygroup').append(data.group);
               history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
-              getContent();
+              getContent({});
             }
        }, "json");
   }
@@ -264,7 +264,7 @@ function addObject(e){
                             $('#current_tab').html('');
                             $('#overlay').hide();
                             $("html").css("overflow", "auto");
-                            getContent();
+                            getContent({});
                         }
                         if(data2.output[item].type == 'after'){
                             $(data2.output[item].div).after(data2.output[item].html);
@@ -367,7 +367,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                           for(var item in data2.output){
                             if(data2.output[item].type == 'redirect'){
                                   history.pushState({load:true, module:'Reload'}, '', data2.output[item].html);
-                                  getContent();
+                                  getContent({});
                             }
                             if(data2.output[item].type == 'after'){
                                 $(data2.output[item].div).after(data2.output[item].html);
@@ -402,7 +402,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
   }
 
 
-function getContent(){
+function getContent(options){
 
 //            if (currentXhr != null && typeof currentXhr != 'undefined') {
 //                currentXhr.abort();
@@ -417,28 +417,19 @@ function getContent(){
     tempkey = tempkey.replace('http:', '');
     tempkey = tempkey.replace(/\//g,"");
     var ss = sessionStorage.getItem(tempkey);
-    var state = history.state;
     var render;
-    if (typeof(state) !== 'undefined'){
-      var data = state.data;
-      var module = state.module;
-    }
-    else{
-      var data = '';
-      var module = '';
-    }
-    if(ss != 'True' || module == 'Reload'){
+    if(ss != 'True' || 'reload' in options){
       $.get("/load_page/", d,
         function(OAdata) {
            var render = OAdata.rendertype;
            if(OAdata.FAIL !== true){
                   for(var item in OAdata.output){
-                      if((module === 'Reload' && OAdata.output[item].div == '#tab_ruler')){
+                      if(('reload' in options && OAdata.output[item].div == '#tab_ruler')){
 
                       }
                       else{
-                          if(OAdata.output[item].div == '#pages' && module === 'Reload'){
-                              $(OAdata.output[item].div).html(OAdata.output[item].html);
+                          if(OAdata.output[item].div == '#pages' && 'reload' in options){
+                              $(options.div).html(OAdata.output[item].html);
                           }
                           else{
                             if(OAdata.output[item].type == 'prepend'){
@@ -450,8 +441,8 @@ function getContent(){
                             if(OAdata.output[item].type == 'html'){
                                 $(OAdata.output[item].div).html(OAdata.output[item].html);
                             }
-                            if(OAdata.output[item].div == '#pages' && module !== 'Reload' && OAdata.rendertype != "message"){
-                                toggleMinMax(OAdata.key);
+                            if(OAdata.output[item].div == '#pages' && !('reload' in options)){
+                                toggleMinMax(OAdata.key, render);
                             }
                           }
                       }
@@ -478,8 +469,8 @@ function getContent(){
        }, "json");
 
     }
-    if (ss === 'True' && module !== 'Reload' && render != "message"){
-        toggleMinMax(tempkey);
+    if (ss === 'True' && !('reload' in options) && render != 'message'){
+        toggleMinMax(tempkey, render);
     }
 }
 
@@ -743,28 +734,49 @@ function leftzoom(dashpk, path, dash_id, type, obj){
     }
 }
 
-function toggleMinMax(t){
+function toggleMinMax(t, render){
     var curtab = $('#current_tab').html();
-    var keepif = (curtab === '');
+    var keepif = (curtab == '');
     var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
-    var nempty = $('#pages').find('.current').length === 0;
+    var nempty = $('#pages').find('.current').length == 0;
+
+    if(nempty && is_add){
+        $('#overlay').show();
+    }
 
     if(!nempty && !is_add){
         $('#overlay').hide();
+        history.pushState({load:true, module:'noload', url: '/'}, '', '/');
         $("html").css("overflow", "auto");
 
     }
 
     if(t != curtab){
-        $('#overlay').show();
-        //add new page
+
+        if(render == 'message'){
+            var tarb = $('#tab' + t).position();
+            if(tarb != null){
+              $('#page' + t).css('left', tarb.left);
+            }
+            $('#overlay').hide();
+        }
+        else{
+            $('#overlay').show();
+            $("html").css("overflow", "hidden");
+        }
+
+        //add new pagev
+        var url = '/p/' + render + '/' + t.replace('p' + render, '');
+        history.pushState({load:true, module:'noload', url: url}, '', url);
         $('#page' + t).show();
         $('#tab' + t).addClass('current-icon');
         $('#page' + t).addClass('current');
         $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-        $("html").css("overflow", "hidden");
         //set the current div
         $('#current_tab').html(t);
+        if(render == 'message'){
+            $('#page' + t).scrollTo('max');
+        }
     }
     else{
         $('#current_tab').html('');
@@ -774,9 +786,11 @@ function toggleMinMax(t){
         $('#page' + curtab).removeClass('current');
         $('#page' + curtab).hide();
         $('#tab' + curtab).removeClass('current-icon');
-        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
+        $('#minmax' + curtab).find('i').toggleClass('icon-plus-sign icon-minus-sign');
     }
-}
+};
+
+
 
 // Remove's href from anchors and adds them as data attr (so browser status bars don't cover up OA's taskbar)
 //need to get rid of this, and instead identify the user agent and only return hrefs to bots we like
@@ -884,7 +898,15 @@ function sound_toggle(obj){
 
 //CREATES A NOTIFICATION TO THE USER, GENERATED BY SOCKETS
 function notify(dict){
-    var htmlmessage = '<h4>' + dict.message + '</h4><h3 style="width:65%;float:left;">' + dict.object + '</h3>';
+
+    //bit of a hack to easily access the message url though sockets
+    if(dict.type == 'message'){
+        var htmlmessage = '<a data-href="/p/message/k-'  + dict.message.replace(' said', '') + '">'
+        htmlmessage = htmlmessage + '<h4>' + dict.message + '</h4><h3 style="width:65%;float:left;">' + dict.object + '</h3>';
+    }
+    else{
+      var htmlmessage = '<h4>' + dict.message + '</h4><h3 style="width:65%;float:left;">' + dict.object + '</h3>';
+    }
     if(dict.type == 'vote'){
         htmlmessage = htmlmessage + '<img src="/static/img/vote_icon.png">'
     }
@@ -892,7 +914,7 @@ function notify(dict){
         htmlmessage = htmlmessage + '<img src="/static/img/comment_icon.png">'
     }
     if(dict.type == 'message'){
-        htmlmessage = htmlmessage + '<img src="/static/img/message_icon.png">'
+        htmlmessage = htmlmessage + '<img src="/static/img/message_icon.png"></a>'
     }
     if($('#dynamic').css('top') == '-200px'){
         $('#dynamic').animate({'top':'32px'},500).delay(3000).animate({'top': '-200px'},500);
@@ -948,7 +970,7 @@ function loadMarkers(object_pk, content_type, start, end, dimension, dashobj_pk)
   }, "json");
 }
 
-function refresh(url){
-    history.pushState({load:true, module:'Reload', url: url}, '', url);
-    //getContent();
+function refresh(url, div){
+    history.replaceState({load:true, module:'Reload', url: url}, '', url);
+    getContent({'reload':true, 'div':div});
 }

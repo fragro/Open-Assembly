@@ -270,12 +270,15 @@ html {
     background:#fff;
     position:fixed;
     bottom:42px;
-    width:18%;
+    width:20%;
+    min-width: 300px;
     height:50%;
-    left:1%;
     border:2px #333 solid;
     z-index:9999;
     overflow-y:scroll;
+}
+.messagebox:hover {
+    cursor:pointer;
 }
 .messagebox textarea {
     width:100%;
@@ -283,13 +286,14 @@ html {
     padding-bottom:30px;
 }
 .message_controls {
-    width: 16%;
     position: fixed;
+    width:18.5%;
+    min-width:276px;
     z-index: 99999;
     text-align: center;
     background: white;
-    padding-left: 1%;
-    padding-bottom: 0.5%;
+    padding-left: 10px;
+    padding-bottom: 10px;
 
 }
 .message_controls .ctrl a{
@@ -298,9 +302,6 @@ html {
     width:25px;
     float:right;
     background:#fff;
-    border-left:2px solid rgba(0,0,0,.6);
-    border-right:2px solid rgba(0,0,0,.6);
-    border-bottom:2px solid rgba(0,0,0,.6);
     margin-left:2px;
     margin-right:2px;
     text-decoration: none;
@@ -1158,6 +1159,7 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     color:grey;
 }
 .notificationbox{
+    text-decoration:none;
     position:fixed;
     top:-200px;
     left:2%;
@@ -1311,8 +1313,6 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     font-size:1em;
     font-weight:bold;
     height:18px;
-
-
 }
 
 .notifications img, .activity img{
@@ -1617,14 +1617,14 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 .gradient{
     /* webkit example */
     background-image: -webkit-gradient(
-      linear, right top, left top, from(rgba(255, 255, 255, 1.0)),
-      to(rgba(255, 255, 255, 0))
+      linear, left top, right top, from(rgba(255, 255, 255, 1.0)),
+      to(rgba(0, 0, 0, 0.8))
     );
 
     /* mozilla example - FF3.6+ */
     background-image: -moz-linear-gradient(
-      right center,
-      rgba(255, 255, 255, 1.0) 20%, rgba(255, 255, 255, 0) 95%
+      left center,
+      rgba(255, 255, 255, 1.0) 20%, rgba(0, 0, 0, 0.8) 95%
     );
 
     /* IE 5.5 - 7 */
@@ -1639,4 +1639,14 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
 }
 .messages {
     margin-top: 10%;
+}
+.counter {
+    display: none;
+    width: 100%;
+    font-weight: bold;
+    font-size:1.1em;
+    color: white;
+    background: red;
+    border-radius: 20px;
+    padding: 3px 6px 3px 6px;
 }
