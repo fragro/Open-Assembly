@@ -34,8 +34,7 @@
                       element: $('#file-uploader')[0],
                       multiple: false,
                       onAllComplete: function(uploads) {
-                          // uploads is an array of maps
-                          // the maps look like this: {file: FileObject, response: JSONServerResponse}
+                          
                       },
                       params: {
                           'csrf_token': '{% csrf_token %}',
