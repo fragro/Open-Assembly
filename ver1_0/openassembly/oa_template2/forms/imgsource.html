@@ -1,0 +1,89 @@
+<script src="http://malsup.github.com/jquery.form.js"></script> 
+<form method="POST" enctype="multipart/form-data" id="pp_imgsource_form{{object.pk}}">
+
+ {% if user.is_authenticated %}
+
+    {% cani object=object user=user %}
+
+        {% if user == object or object.user == user or pp_permissions.permission %}
+
+          {% pp_imgsource_form POST=request.POST FILE=request.FILES object=object request=request %}
+
+
+            <h2>Upload Images</h2>
+            
+              <table>{{ pp_source.form.as_p }}</table>
+              <button type="submit" class="btn btn_green">Upload <i class="icon-white icon-plus-sign icon-right"></i></button>
+            <div id ="pp_imgsource_form_loading{{object.pk}}"></div>
+
+          {% endpp_imgsource_form %}
+
+        <script>
+         
+             $("form#pp_imgsource_form{{object.pk}}").submit(function(e){
+                $("#pp_imgsource_form_loading{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>")
+                addObject(e);
+                //$('html').slideto({'highlight': false});                    
+            });
+        </script>
+        <script src="/static/ajaxuploader/js/fileuploader.js" ></script>
+        <link href="/static/ajaxuploader/css/fileuploader.css" media="screen" rel="stylesheet" type="text/css" />
+       
+
+        <script>
+
+
+          $(document).ready(function(){ 
+              $(function(){
+                  var uploader = new qq.FileUploader({
+                      action: "{% url my_ajax_upload %}",
+                      element: $('#file-uploader')[0],
+                      multiple: false,
+                      onComplete: function(id, fileName, responseJSON) {
+                          if(responseJSON.success) {
+                              alert("success!");
+                              alert(JSON.stringify(responseJSON));
+
+                          } else {
+                              alert(fileName);
+                              alert(JSON.stringify(responseJSON));
+                              alert("upload failed!");
+                          }
+                      },
+                      onAllComplete: function(uploads) {
+                          // uploads is an array of maps
+                          // the maps look like this: {file: FileObject, response: JSONServerResponse}
+                          alert("All complete!");
+                      },
+                      params: {
+                          'csrf_token': '{% csrf_token %}',
+                          'csrf_name': 'csrfmiddlewaretoken',
+                          'csrf_xname': 'X-CSRFToken',
+                      },
+                  });
+              });
+          }); 
+        </script>
+    <div id="file-uploader">       
+        <noscript>          
+            <p>Please enable JavaScript to use file uploader.</p>
+        </noscript>         
+    </div>
+
+
+    {% else %}
+
+      WHAT DO YOU THINK YOU ARE DOING HERE?
+
+    {% endif %}
+
+  
+  {% endcani %}   
+
+{% else %}
+
+NEED TO LOGIN
+
+{% endif %}
+
+</form>
