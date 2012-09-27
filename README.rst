@@ -170,10 +170,15 @@ That's it! You deployed your own verstion of OA live. If you want to make your O
 Requires Setting of Email and Password within Open-Assembly/ver1_0/openassembly/settings.py
 
     DEFAULT_FROM_EMAIL = 'myfancyemail@myhost.com'
+
     EMAIL_USE_TLS = True
+
     EMAIL_HOST = 'smtp.myhost.com'
+
     EMAIL_HOST_USER = 'myfancyemail@myhost.com'
+
     EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+    
     EMAIL_PORT = 587
 
 You also must set the EMAIL_PASSWORD environment variable in `Dotcloud environment variables <http://docs.dotcloud.com/guides/environment/>`_.
