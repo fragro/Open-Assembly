@@ -411,10 +411,6 @@ html {
     padding-bottom:40px;
     padding-left:0;
     margin-left:1%;
-<<<<<<< HEAD
-    font-size:1.3em;
-=======
->>>>>>> 8e9b4630cb6dcaa414ca52ac5037afcaa97c2bc8
     overflow:hidden;
 }
 .panel {
@@ -1653,4 +1649,4 @@ html.not_logged_in, .not_logged_in body, .not_logged_in #panels {
     background: red;
     border-radius: 20px;
     padding: 3px 6px 3px 6px;
-}
+}}
