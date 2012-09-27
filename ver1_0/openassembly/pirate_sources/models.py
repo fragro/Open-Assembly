@@ -35,53 +35,17 @@ class IMGSource(models.Model):
     object_pk = models.CharField(_('object ID'), max_length=100, blank=True, null=True)
     content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")
     user = models.ForeignKey(User, null=True, blank=True)
-    file = models.ImageField(upload_to='static/%Y/%m/%d/%H/%M/%S/')
+    file = models.ImageField(upload_to='image-%Y-%m-%d-%H')
 
     submit_date = models.DateTimeField(_('date/time submitted'), auto_now_add=True)
-    url = models.CharField(max_length=200)
-    current = models.BooleanField()
+    current = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
 
     def make(self, image, thumb_field_name):
-        im = PIL.Image.open(StringIO(''.join(image.chunks())))
-        im_io = StringIO()
-        im.save(im_io, im.format)
+    	image.seek(0)
 
-        image = InMemoryUploadedFile(im_io, thumb_field_name, '%s.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
-        im = PIL.Image.open(StringIO(''.join(image.chunks())))
-
-        src_width, src_height = im.size
-
-        if src_width > src_height:
-            small = (46, 40)
-            medium = (70, 90)
-            large = (190, 220)
-        else:
-            small = (40, 36)
-            medium = (90, 70)
-            large = (220, 190)
-        im_io = StringIO()
-        im.thumbnail(small, Image.ANTIALIAS)
-        im.save(im_io, im.format)
-        """
-        thumbnail_small = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumbsmall.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
-        im = PIL.Image.open(StringIO(''.join(image.chunks())))
-
-        im_io = StringIO()
-        im.thumbnail(medium, Image.ANTIALIAS)
-        im.save(im_io, im.format)
-
-        thumbnail = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumb.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
-        im = PIL.Image.open(StringIO(''.join(image.chunks())))
-
-        im_io = StringIO()
-        im.thumbnail(large, Image.ANTIALIAS)
-
-        im.save(im_io, im.format)
-
-        thumbnail_large = InMemoryUploadedFile(im_io, thumb_field_name, '%s_thumblarge.jpg' % image.name.rsplit('.', 1)[0], 'image/jpeg', im_io.len, None)
-        """
         self.file = image
+
         self.save()
 
     def rescale(self, data, width, height, force=True):
@@ -139,7 +103,3 @@ class VideoSource(models.Model):
     def __unicode__(self):
         return str(self.id)
     
-
-admin.site.register(VideoSource)
-admin.site.register(URLSource)
-admin.site.register(IMGSource)

@@ -19,4 +19,3 @@ class Login(models.Model):
     def __str__(self):
         return u'[%s:%s]' % (self.name, self.created_dt)
 
-admin.site.register(Login)

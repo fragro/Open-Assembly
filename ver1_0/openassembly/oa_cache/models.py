@@ -331,9 +331,3 @@ only rendered when the corresponding model_cache is rendered"""
 
     def __unicode__(self):
         return 'USC : %s -- (%s %s)' % (self.user_salt_cache, self.template, self.div_id)
-
-
-admin.site.register(UserSaltCache)
-admin.site.register(ListCache)
-admin.site.register(ModelCache)
-admin.site.register(SideEffectCache)

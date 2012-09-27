@@ -119,6 +119,3 @@ def relationship_event_del(obj, parent, **kwargs):
     
 relationship_event.connect(register_relationship_event)
 delete_relationship_event.connect(relationship_event_del)
-
-admin.site.register(RelationshipEvent)
-admin.site.register(Subscription)

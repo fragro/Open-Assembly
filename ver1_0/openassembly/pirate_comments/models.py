@@ -69,4 +69,3 @@ def get_comments(parent, start, end, dimension, ctype_list):
     return comment_tree, count
 
 
-admin.site.register(Comment)

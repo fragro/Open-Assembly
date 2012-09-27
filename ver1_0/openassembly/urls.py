@@ -14,6 +14,8 @@ from pirate_login.views import logout_view
 from pirate_consensus.views import set_ranked_vote, confirm_ranked_vote, del_confirm_ranked_vote
 from oa_location.views import create_location, delete_location, load_markers
 
+from pirate_sources.views import import_uploader
+
 from oa_dashboard.views import del_board, add_board, sort_board, increase_zoom, decrease_zoom, resort_board
 
 from oa_cache.views import load_page, nuke_memcache, update_ranks, side_effect, load_usersaltcache
@@ -139,4 +141,8 @@ urlpatterns += patterns('',
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),
+)
+
+urlpatterns += patterns('',
+ url(r'ajax-upload$', import_uploader, name="my_ajax_upload"),
 )

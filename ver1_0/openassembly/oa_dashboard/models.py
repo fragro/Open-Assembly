@@ -22,6 +22,4 @@ class DashboardPanel(models.Model):
         return str(self.user.username) + ' - ' + str(self.plank) + ' - ' + str(self.priority)
 
 
-admin.site.register(DashboardPanel)
-
 # Create your models here.

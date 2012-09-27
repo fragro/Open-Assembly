@@ -29,7 +29,7 @@
 
             {% for result in oa_search.page.object_list %}
                 <p>
-                    <a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+                    <a data-href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
                 </p>
             {% empty %}
                 <p>No results found.</p>

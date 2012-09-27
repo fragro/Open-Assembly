@@ -89,11 +89,3 @@ class PhotoUserVerifications(models.Model):
 
     def __unicode__(self):
         return '%s : %s' % (self.user.username, self.verifications)
-
-
-admin.site.register(ActionTaken)
-admin.site.register(EmailVerification)
-admin.site.register(arpv)
-admin.site.register(Referral)
-admin.site.register(PhotoVerificationTask)
-admin.site.register(PhotoUserVerifications)

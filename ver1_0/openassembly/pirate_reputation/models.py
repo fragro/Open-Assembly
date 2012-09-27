@@ -234,10 +234,6 @@ class ReputationEvent(models.Model):
                 return "/"
                 #this should only occur for the old ReputationEvents that are malformed
 
-admin.site.register(Reputation)
-admin.site.register(ReputationEvent)
-admin.site.register(ReputationDimension)
-admin.site.register(AbuseTicket)
 
 ###Cannot import from pirate_reputation.models from pirate_reputation.callbacks?
 

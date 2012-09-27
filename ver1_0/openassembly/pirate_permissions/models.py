@@ -54,6 +54,3 @@ def has_permission(obj, user):
         return True
     except:
         return False
-
-admin.site.register(PermissionsGroup)
-admin.site.register(Permission)

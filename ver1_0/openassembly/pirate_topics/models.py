@@ -163,6 +163,3 @@ def get_root(root):
             root = parent
             parent = parent.parent
 
-admin.site.register(Topic)
-admin.site.register(MyGroup)
-admin.site.register(GroupSettings)

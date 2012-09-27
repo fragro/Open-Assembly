@@ -40,5 +40,5 @@ class UserFlag(models.Model):
         return "%s: %s: %s" % (self.user, self.flag, self.mode)
 
 
-admin.site.register(Flag)
-admin.site.register(UserFlag)
+#admin.site.register(Flag)
+#admin.site.register(UserFlag)

@@ -190,6 +190,3 @@ def create_notification(obj, reply_to, **kwargs):
     create_notice_email.apply_async(args=[obj_pk, ctype_pk, reply_to, link, text])
 
 notification_send.connect(create_notification)
-admin.site.register(Notification)
-admin.site.register(Message)
-

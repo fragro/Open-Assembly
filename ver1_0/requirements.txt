@@ -1,9 +1,6 @@
-Pillow
 python-memcached==1.48
 pymongo
 git+https://github.com/django-nonrel/mongodb-engine.git#egg=django_mongodb_engine
-hg+http://bitbucket.org/wkornewald/django-nonrel#egg=Django
-hg+http://bitbucket.org/wkornewald/djangotoolbox#egg=djangotoolbox
 hg+http://bitbucket.org/fragro/django-customtags-lib#egg=customtags
 hg+http://bitbucket.org/fragro/django-tagging-multidb#egg=tagging
 hg+http://bitbucket.org/offline/django-annoying#egg=annoying
@@ -30,8 +27,11 @@ johnny-cache
 git+https://github.com/sorl/sorl-thumbnail.git#egg=sorl
 git+https://github.com/devjones/PyEtherpadLite.git#egg=PyEtherpadLite
 django-redis==1.4.5
-git+https://github.com/boto/boto.git#egg=boto
 svn+http://geopy.googlecode.com/svn/trunk#egg=geopy
 git+git://github.com/appliedsec/pygeoip.git#egg=pygeoip
 django-haystack
 pysolr
+django-storages
+ajaxuploader
+git+https://github.com/django-nonrel/django-nonrel@master
+git+https://github.com/django-nonrel/djangotoolbox@master

@@ -36,8 +36,6 @@ class Argument(ForumBlob):
     def taggable(self):
         return True
      
-admin.site.register(Stance)
-admin.site.register(Argument)
 
 from django import forms
 from django.forms.extras import SelectDateWidget

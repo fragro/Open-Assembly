@@ -47,5 +47,3 @@ class LocationForm(forms.Form):
 	form_id = forms.CharField(widget=forms.HiddenInput(), initial="oa_location_form")
 	description = forms.CharField(label="Description")
 
-
-admin.site.register(Place)

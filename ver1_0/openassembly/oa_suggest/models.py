@@ -108,8 +108,3 @@ class SuggestionForm(forms.ModelForm, FormMixin):
                 attrs={'size':'50', 'class':'inputText'}),label="Title") 
     description = forms.CharField(widget=MarkItUpWidget(),label="Description of Feature or Suggestion")
     
-        
-
-admin.site.register(Bug)
-admin.site.register(Suggestion)
-

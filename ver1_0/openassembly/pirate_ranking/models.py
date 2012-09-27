@@ -307,4 +307,3 @@ def vote_created_callback(sender, **kwargs):
 
 
 vote_created.connect(vote_created_callback)
-admin.site.register(Ranking)

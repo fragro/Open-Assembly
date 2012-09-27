@@ -119,7 +119,3 @@ def voted_on_test(args, **kwargs):
     if objs.count() >= x: return True
     else: return False
     
-    
-admin.site.register(Badge)
-admin.site.register(BadgeDimension)
-admin.site.register(BadgeType)

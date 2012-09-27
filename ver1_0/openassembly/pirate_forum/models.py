@@ -374,10 +374,3 @@ class NominationForm(forms.ModelForm):
                 attrs={'size': '50', 'class': 'inputText'}), initial="")
     description = forms.CharField(widget=forms.Textarea(), initial="")
 
-admin.site.register(View)
-admin.site.register(ForumDimension)
-admin.site.register(DimensionTracker)
-admin.site.register(Question)
-admin.site.register(Nomination)
-admin.site.register(cached_url)
-admin.site.register(Edit)
