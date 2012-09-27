@@ -117,12 +117,17 @@ try:
 
 except:
 
-    with open(os.path.expanduser('~/local_environment.json')) as f:
-        loc_env = json.load(f)
+    try:
+        with open(os.path.expanduser('~/local_environment.json')) as f:
+            loc_env = json.load(f)
+                #FOR S3 UPLOADS
+        AWS_ACCESS_KEY_ID = loc_env['S3FS_ACCESSKEY']
+        AWS_SECRET_ACCESS_KEY =  loc_env['S3FS_SECRETKEY']
 
-    #FOR S3 UPLOADS
-    AWS_ACCESS_KEY_ID = loc_env['S3FS_ACCESSKEY']
-    AWS_SECRET_ACCESS_KEY =  loc_env['S3FS_SECRETKEY']
+    except:
+        pass
+        #maybe the user is building docs
+
 
 
     HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
