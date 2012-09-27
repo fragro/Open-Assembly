@@ -4,6 +4,11 @@ from StringIO import StringIO
 import boto
 from django.conf import settings
 
+
+from django.contrib.auth.models import User
+
+from django.contrib.contenttypes.models import ContentType
+
 from ajaxuploader.backends.base import AbstractUploadBackend
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import mimetypes
@@ -27,14 +32,27 @@ class S3CustomBackend(AbstractUploadBackend):
 		#create an imgsource
 		
 		try:
-			img = IMGSource()
+
+			object_pk = request.session.get('object_pk')
+			#if there is not currently a current image we create one. if it exists, remove it's current value and create new
+			img, is_new = IMGSource.objects.get_or_create(object_pk=object_pk, current=True)
+			if not is_new:
+				img.current = False
+				img.save()
+				img = IMGSource(object_pk=object_pk, current=True)
+			#user
+			userpk = request.session.get('_auth_user_id')
+			img.user = User.objects.get(pk=userpk)
+			#contenttype
+			ctype = request.session.get('content_pk')
+			img.content_type = ContentType.objects.get(pk=ctype)
+			#objectid
 			self.buffer.seek(0)
 			mimetypes.init()
 			mime = mimetypes.guess_type(filename)
 			image = InMemoryUploadedFile(self.buffer, filename, filename, mime[0], self.buffer.len, None)
 			img.file = image
 			img.save()
-			self.buffer.close()
 
 		except Exception, e:
 			return {'pk': str(e)}

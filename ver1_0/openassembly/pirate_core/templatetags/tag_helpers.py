@@ -43,6 +43,16 @@ def percent(value):
         return '0 %'
 
 
+
+@register.filter
+def cleansignature(value):
+    if '?' not in value:
+        return value
+    t = value.index('?')
+    return value[0:t]
+
+
+
 ##gets an ordered tuple, if we want to user 2 ordered keys as another key, for example 2-way communication between
 ###users. This way the template can order keys even if received from multiple users
 @block

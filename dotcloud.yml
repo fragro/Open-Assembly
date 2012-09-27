@@ -22,3 +22,5 @@ nodejs:
 search:
   type: solr
   approot: solr
+  config:
+    solr_authentication: false

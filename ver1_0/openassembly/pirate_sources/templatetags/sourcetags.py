@@ -225,6 +225,37 @@ def pp_get_source(context, nodelist, *args, **kwargs):
 
 
 @block
+def pp_calculate_size(context, nodelist, *args, **kwargs):
+	context.push()
+	namespace = get_namespace(context)
+
+	w = kwargs.get('width', None)
+	h = kwargs.get('height', None)
+	img = kwargs.get('img', None)
+
+	if img is not None:
+		img_w = img.file.width
+		img_h = img.file.height
+
+		if w is not None and h is not None:
+			if int(img_w) > 581:
+				namespace['width'] = '100%'
+			else:
+				namespace['width'] = int(min(int(img_w), int(w)/1.625))
+			namespace['geometry'] = str(int(min(int(img_w), int(w)/1.625)))
+		else:
+			if int(img_w) > 581:
+				namespace['width'] = '100%'
+			else:
+				namespace['width'] = str(img_w) + 'px'
+			namespace['geometry'] = str(img_w)
+
+	output = nodelist.render(context)
+	context.pop()
+
+	return output
+
+@block
 def pp_get_sources(context, nodelist, *args, **kwargs):
 	context.push()
 	namespace = get_namespace(context)
@@ -233,11 +264,11 @@ def pp_get_sources(context, nodelist, *args, **kwargs):
 	t = kwargs.get('type', None)
 	get = kwargs.get('get', None)
 
-	content_type = ContentType.objects.get_for_model(obj)
-	namespace['ctype'] = content_type.pk
 
 	try:
 		if obj is not None:
+			content_type = ContentType.objects.get_for_model(obj)
+			namespace['ctype'] = content_type.pk
 			if t == 'url':
 				namespace['sources'] = URLSource.objects.filter(object_pk=obj.pk, is_video=False)
 			#namespace['videosource_list'] = URLSource.objects.filter(object_pk=obj.pk, is_video=True)
@@ -247,13 +278,42 @@ def pp_get_sources(context, nodelist, *args, **kwargs):
 					namespace['sources'] = l
 					cnt = l.count()
 					namespace['count'] = cnt
-				try:
-					namespace['cur_img'] = IMGSource.objects.get(object_pk=obj.pk, current=True)[0]
-				except:
-					namespace['cur_img'] = None
+				else:
+					try:
+						namespace['cur_img'] = IMGSource.objects.get(object_pk=obj.pk, current=True)
+					except:
+						namespace['cur_img'] = None
+						try:
+							namespace['cur_img'] = IMGSource.objects.get(pk=obj.pk, current=True)
+						except:
+							pass
+
 	except:
 		namespace['cur_img'] = None
 		namespace['sources'] = []
+
+	output = nodelist.render(context)
+	context.pop()
+
+	return output
+
+
+
+@block
+def pp_ajaximg(context, nodelist, *args, **kwargs):
+	"""
+	Modifies the request session data to prep it for AJAX requests to the Ajax image uploader.
+	"""
+	context.push()
+	namespace = get_namespace(context)
+	request = kwargs.get('request', None)
+	obj = kwargs.get('object', None)
+
+	if obj is not None and request is not None:
+		ctype = ContentType.objects.get_for_model(obj)
+
+		request.session['object_pk'] = obj.pk
+		request.session['content_pk'] = ctype.pk
 
 	output = nodelist.render(context)
 	context.pop()

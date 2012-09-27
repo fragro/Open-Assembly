@@ -54,10 +54,8 @@ for more information on SideEffectCache
         usc_pk = request.GET.get('usc_pk')
         se = request.GET.get('side_effect')
         parent_pk = request.GET.get('obj_pk')
-        try:
-            jsonval = simplejson.loads(se)
-        except:
-            jsonval = None
+
+        jsonval = simplejson.loads(se)
         #if there is side effect information
         if jsonval != None:
             obj_id, ctype_id = simplejson.loads(se)
@@ -439,6 +437,10 @@ decreased the latency of the system.
         request.session.set_expiry(0)
         data = {'output': []}
         hashed = request.GET.get('hash', None)
+        width = request.GET.get('width', None)
+        height = request.GET.get('height', None)
+        extracontext = {'width': width, 'height': height, 'DOMAIN': DOMAIN}
+
         if hashed is None:
             hashed = ''
         empty = request.GET.get('empty', None)
@@ -450,7 +452,7 @@ decreased the latency of the system.
             hashed = '/p/landing'
             #need to make this some sort of home feed for user
         if hashed[0:2] == '/p':
-            props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=False)
+            props = get_cache_or_render(request.user, hashed, empty, request=request, forcerender=False, extracontext=extracontext)
             for d in props['rendered_list']:
                 data['output'].append(d)
             if 'OBJ_KEY' in props['paramdict']:
@@ -574,6 +576,8 @@ def render_hashed(request, key, user, extracontext={}):
                 ret[i['div']] = [soup]
             elif i['type'] == 'append':
                 ret[i['div']].append(soup)
+            elif i['type'] == 'prepend':
+                ret[i['div']].insert(0,soup)
             else:
                 print i['type']
                 text = ret[i['type']][len(ret[i['type']])-1].find('div', {'id': i['div'][1:]})

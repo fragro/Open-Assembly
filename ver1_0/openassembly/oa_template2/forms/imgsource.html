@@ -11,27 +11,24 @@
 
 
             <h2>Upload Images</h2>
+
+        <noscript>
             
               <table>{{ pp_source.form.as_p }}</table>
               <button type="submit" class="btn btn_green">Upload <i class="icon-white icon-plus-sign icon-right"></i></button>
             <div id ="pp_imgsource_form_loading{{object.pk}}"></div>
 
-          {% endpp_imgsource_form %}
 
-        <script>
-         
-             $("form#pp_imgsource_form{{object.pk}}").submit(function(e){
-                $("#pp_imgsource_form_loading{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>")
-                addObject(e);
-                //$('html').slideto({'highlight': false});                    
-            });
-        </script>
+        </noscript>
+
+
         <script src="/static/ajaxuploader/js/fileuploader.js" ></script>
         <link href="/static/ajaxuploader/css/fileuploader.css" media="screen" rel="stylesheet" type="text/css" />
        
 
         <script>
 
+        {% pp_ajaximg request=request object=object %}
 
           $(document).ready(function(){ 
               $(function(){
@@ -39,21 +36,9 @@
                       action: "{% url my_ajax_upload %}",
                       element: $('#file-uploader')[0],
                       multiple: false,
-                      onComplete: function(id, fileName, responseJSON) {
-                          if(responseJSON.success) {
-                              alert("success!");
-                              alert(JSON.stringify(responseJSON));
 
-                          } else {
-                              alert(fileName);
-                              alert(JSON.stringify(responseJSON));
-                              alert("upload failed!");
-                          }
-                      },
                       onAllComplete: function(uploads) {
-                          // uploads is an array of maps
-                          // the maps look like this: {file: FileObject, response: JSONServerResponse}
-                          alert("All complete!");
+                          
                       },
                       params: {
                           'csrf_token': '{% csrf_token %}',
@@ -63,11 +48,29 @@
                   });
               });
           }); 
+
+        {% endpp_ajaximg %}
+
         </script>
+
+
     <div id="file-uploader">       
-        <noscript>          
-            <p>Please enable JavaScript to use file uploader.</p>
-        </noscript>         
+   
+    </div>
+      {% endpp_imgsource_form %}
+
+    <div class="imglist">
+
+        {% pp_get_sources object=object type='img' get='all' %}
+
+          {% for img in pp_source.sources %}
+            {% thumbnail img.file "50x50" crop="center" as im %}
+              <a data-href="{% pp_url template='imagepreview.html' object=img %}"><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></a>
+            {% endthumbnail %}
+
+          {% endfor %}
+
+      {% endpp_get_sources %}
     </div>
 
 

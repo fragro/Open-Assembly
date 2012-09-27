@@ -114,17 +114,17 @@ def oa_location_get(context, nodelist, *args, **kwargs):
 	if namespace['places'] !=  []:
 		clusterdict = {}
 		clustered = namespace['places'].values('summary')
-		print clustered
 		for each in clustered:
-			clusterdict[each['summary']] = namespace['places'].filter(summary=each['summary']).count()
+			if each['summary'] not in clusterdict:
+				clusterdict[each['summary']] = namespace['places'].filter(summary=each['summary']).count()
 		jittered = []
 
 		for place in namespace['places'][start:end]:
-			if clusterdict[place.summary] == 1:
+			if clusterdict[place.summary.pk] == 1:
 				jittered.append((place.location.latitude, place.location.longtitude, place, None))
 			else:
-				lat,lon = jitter(place.location.latitude, place.location.longtitude, clusterdict[place.summary])
-				jittered.append((lat, lon, place, clusterdict[place.summary]))
+				lat,lon = jitter(place.location.latitude, place.location.longtitude, clusterdict[place.summary.pk])
+				jittered.append((lat, lon, place, clusterdict[place.summary.pk]))
 				#raise ValueError('check lat long')
 		namespace['places'] = jittered
 

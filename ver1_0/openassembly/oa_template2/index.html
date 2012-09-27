@@ -7,7 +7,7 @@
 
 
 <!DOCTYPE html>
-<html{% oa_has_dash user=request.user %} {% if not oa_dashboard.has_board %} class="not_logged_in"{% endif %} {% endoa_has_dash %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
+<html{% oa_has_dash user=request.user %} {% if not oa_dashboard.has_board %} class="not_logged_in"{% endif %} {% endoa_has_dash %} lang="en" {% if pp_cache.nojs and request.META.PATH_INFO != '/' and pp_cache.rendertype != 'message' %} style="overflow:hidden;"{% else %}style="overflow:auto;"{% endif %}>
     <head>
 
 
@@ -22,6 +22,8 @@
         <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
         <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript">var switchTo5x=true;</script>
+        <script type="text/javascript" src="http://w.sharethis.com/button/button.js"></script>
 
     </head>
     <body>
@@ -108,7 +110,7 @@
             
         </div>
         
-        <div id="overlay" {% if pp_cache.nojs and request.META.PATH_INFO != '/' %} style="display:auto;"{% else %}style="display:none;"{% endif %}></div>
+        <div id="overlay" {% if pp_cache.nojs and request.META.PATH_INFO != '/' and pp_cache.rendertype != 'message' %} style="display:auto;"{% else %}style="display:none;"{% endif %}></div>
         
         <!-- Tabs -->
         <div id="tabs" class="clearfix">
@@ -175,12 +177,13 @@
             var dict = JSON.parse(message);
             //first we need to deal with P2P messages and message logic, else it is a standard message
             if(dict.type == 'message'){
-
+                if($('#messages_online' + dict.object_pk).length == 0){
+                    notify(dict);
+                }
             }
             else{
                 notify(dict);           
             }
-
 
         });
         // listener, whenever the server emits 'updatechat', this updates the chat body
@@ -207,8 +210,20 @@
                 }
         });
         socket.on('updateP2P', function (username, data, object, sessionid, url) {
-                $('#message_list' + object).append('<div class="message"><div class="userinfo">' + url +  '</div><div class="text">' + data + '</div><div class="meta">' + +new Date +  ' </div></div>');
-                eval('scrollMessage' + object + '();');
+                if(username == 'SERVER' && url == 'OFFLINE'){
+                    $('#userp2p' + object).attr('src', '/static/icons/user_offline.png')
+
+                }
+                else if(username == 'SERVER' && url == 'ONLINE'){
+                    $('#userp2p' + object).attr('src', '/static/icons/user_online.png')
+
+                }
+                else{
+                    $('#message_list' + object).append('<div class="message"><div class="userinfo">' + url +  '</div><div class="text">' + data + '</div><div class="meta">' + +new Date +  ' </div></div>');
+
+                    eval('check_cur' + object + '();')
+                    eval('scrollMessage' + object + '();');
+                }
         });
 
         // listener, whenever the server emits 'updateusers', this updates the username list
@@ -368,13 +383,14 @@
                  var state = evt.originalEvent.state;
                      if (state && state.module === "leave") {
                            if(state.url == '/'){
-                            minimizeAll();
+                                minimizeAll();
                            }
-                           getContent();
+                           getContent({});
                      }
                      if (state && state.module === "nobbq") {
                            js_redirect(state.url);
                      }
+
                 });
                 //we're popping states for nobbq events that should be loaded the usual way...
 
@@ -391,7 +407,7 @@
                         if (allowPush(e, url, that)) {
                             e.preventDefault();
                             history.pushState({load:true, module:'leave', url: url}, '', url);
-                            getContent();            
+                            getContent({});            
                         }
                         else{ 
                             //need to load some error msg

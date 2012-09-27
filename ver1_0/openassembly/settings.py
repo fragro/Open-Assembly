@@ -33,6 +33,10 @@ try:
     with open(os.path.expanduser('~/environment.json')) as f:
         env = json.load(f)
 
+    #FOR S3 UPLOADS
+    AWS_ACCESS_KEY_ID = env['S3FS_ACCESSKEY']
+    AWS_SECRET_ACCESS_KEY =  env['S3FS_SECRETKEY']
+
     HAYSTACK_SOLR_URL = env['DOTCLOUD_SEARCH_HTTP_URL']
 
     #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
@@ -231,6 +235,7 @@ INSTALLED_APPS = [
     'storages',
     'ajaxuploader',
 ]
+
 
 STATIC_URL = STATIC_ROOT
 

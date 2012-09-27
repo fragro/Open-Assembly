@@ -1,3 +1,4 @@
+{% block page %}
 <!-- Page1 -->
 {% if object %}
   <div id="page{{key}}" class="page current" style="display:block;">
@@ -7,8 +8,11 @@
 
 	  <div class="page_controls">
 
-	  	<span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
-  	<span class="ctrl"><a onClick="toggleMinMax('{{key}}');"><i class="icon-minus"></i></a></span>
+        <span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
+        <span class="ctrl">
+        <a onClick="refresh('/p/' + '{{template}}/' + '{{key}}'.replace('p{{template}}', ''), '#page{{key}}');"><i class="icon-refresh"></i></a>
+        </span>
+        <span class="ctrl"><a onClick="toggleMinMax('{{key}}', '{{template}}');"><i class="icon-minus"></i></a></span>
 
 	  </div>
 
@@ -22,3 +26,4 @@
       </div>
       
   </div>
+{% endblock %}

@@ -101,7 +101,7 @@ def create_notice_email(obj_pk, ctype_pk, reply_to, link, text):
                     "notice_message": obj.sender.username  + "said<br>" + obj.description,
                     "path": settings.DOMAIN + path})
             redis_client().publish(obj.receiver, json.dumps({'message': obj.sender.username + ' said',
-                'object': str(obj.description), 'type': 'message', 'object_pk': str(obj.pk)}))
+                'object': str(obj.description), 'type': 'message', 'object_pk': str(obj.sender.pk)}))
             text = obj.description
             link = obj.get_absolute_url()
         elif obj.user != reply_to.user:

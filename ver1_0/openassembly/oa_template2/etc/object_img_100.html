@@ -1,9 +1,11 @@
 {% pp_get_sources object=object type='img' %}
     {% if pp_source.cur_img %}
         {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
-            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+            <a data-href="{% pp_url template='imagepreview.html' object=pp_source.cur_img %}"><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></a>
         {% endthumbnail %}
     {% else %}
         <img src="/static/img/faux_logo100.png">
     {% endif %}
+
 {% endpp_get_sources %}
+

@@ -12,8 +12,19 @@
         {% if user = object and user.is_authenticated %}
             <a id="avatar" data-href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
 
-            {% include 'etc/object_img_100.html' %}</a>
-            {% else %}
+            {% pp_get_sources object=object type='img' %}
+                {% if pp_source.cur_img %}
+                    {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
+                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                {% else %}
+                    <img src="/static/img/faux_logo100.png">
+                {% endif %}
+
+            {% endpp_get_sources %}
+            </a>
+
+        {% else %}
             <span id="avatar">
                 {% include 'etc/object_img_100.html' %}
             </span>
@@ -75,7 +86,7 @@
             <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-down icon-left"></i>Stop Trusting</a>
         {% endif %}
 
-        <a class="btn" data-href="{% pp_url template='message.html' dimension='mes' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
+        <a class="btn" data-href="{% pp_url template='message.html' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
 
 
 {% endpp_has_subscription %}
@@ -93,6 +104,9 @@
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });"><i class="icon-arrow-left icon-white icon-left"></i>Trusts {{object.username}}</span>
 <span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });"><i class="icon-arrow-right icon-white icon-left"></i>{{object.username}} Trusts</span>
 
+{% if request.user == object %}
 <a class="btn" data-href="{% pp_url template='pp_profile_form.html' object=request.user %}"><i class="icon-pencil icon-left"></i>Edit Profile</a>
+{% endif %}
+
 
 </div>

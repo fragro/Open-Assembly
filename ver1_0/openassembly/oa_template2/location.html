@@ -88,7 +88,7 @@
               window.activepopup = popup{{place.pk}}
               popup{{place.pk}}.events.register("click", popup{{place.pk}}, function(e){
                 history.pushState({load:true, module:'leave', url: '{{place.content_object.get_absolute_url}}'}, '', '{{place.content_object.get_absolute_url}}');
-                getContent();     
+                getContent({});     
               });
 
               window.map{{dashobj.pk}}.addPopup(popup{{place.pk}});

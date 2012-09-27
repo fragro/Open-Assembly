@@ -88,7 +88,7 @@ class IMGSource(models.Model):
         return self.file.name.rsplit('/', 1)[-1]
 
     def __unicode__(self):
-        return str(self.user) + " object_pk: " + str(self.object_pk) + " " + str(self.current)
+        return str(self.content_object) + ' image ' + str(self.pk)
 
 """
 Video source files stored and accessed via amazon S3 for OpenAssembly 
@@ -102,4 +102,3 @@ class VideoSource(models.Model):
         
     def __unicode__(self):
         return str(self.id)
-    

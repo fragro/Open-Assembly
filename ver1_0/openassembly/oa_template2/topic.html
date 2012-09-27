@@ -6,7 +6,7 @@
 <!--topic source -->
 {% block li_id %}
 
-<li id="{{object.pk}}">
+<li id="{{dashobj.pk}}{{object.pk}}">
 
 {% endblock %}
 
@@ -15,8 +15,29 @@
 
         <div class="panel_list_img">{% include 'etc/object_img_50.html' %}</div>
 
-        <a class="ov_hid">
+        <div class="ov_hid">
 
         <a data-href="{{object.get_absolute_url}}" data-href="{{object.get_absolute_url}}">{{ object.summary|title }}</a> 
+
+    	</div>
+
+     <div id='{{dashobj.pk}}{{object.pk}}details' class="listingdetails">
+    	<i class="icon-fire"></i> {{object.children}} spark{{object.children|pluralize}}
+    	<i class="icon-user"></i> {{object.group_members}} member{{object.group_members|pluralize}}
+
+        {% oa_location_get object=object start=0 end=1 %}
+            {% for lat, lon, place in oa_loc.places %}
+                <i class="icon-globe"></i> {{place}} 
+            {% endfor %}
+        {% endoa_location_get %}
+    	
+    </div>
+    <script>
+
+    $('#{{dashobj.pk}}{{object.pk}}').hover(     
+    	function() { $("#{{dashobj.pk}}{{object.pk}}details").css('opacity', '1'); },
+      	function() { $("#{{dashobj.pk}}{{object.pk}}details").css('opacity', '.3'); }
+      );
+    </script>
 
 {% endblock %}

@@ -1,0 +1,25 @@
+
+{% include 'nav/toggle.html' %}
+
+<ul class="tab" id="tabholdertab{{key}}">
+    <li id="tab{{key}}" class="current-icon">
+        <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}', '{{template}}');">
+
+
+        {% pp_ordered_tuple key1=request.user.pk key2=object.pk %}
+            <span class="username"><span class="counter" id="message_cntr_small{{pp_tag.key}}">0</span>
+
+        <img id="userp2p{{pp_tag.key}}" src="/static/icons/user_offline.png" class="icon-" style="margin-right:10px;">{{object|title}}</a><span class="tab_mask">&nbsp;</span>
+            {% endpp_ordered_tuple %}
+
+        <ul>
+            <li id="minmax{{key}}"class="min_max">
+                <a onClick="toggleMinMax('{{key}}', '{{template}}');">
+                    <i class="icon-minus-sign icon-white"></i>
+                </a>
+            </li>
+
+            <li><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
+        </ul>
+    </li>
+</ul>

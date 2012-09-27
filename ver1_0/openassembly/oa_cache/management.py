@@ -152,17 +152,17 @@ for i in ModelCache.objects.all():
 usercache, is_new = ModelCache.objects.get_or_create(template="user/user.html",
                 div_id="#pages", content_type="user", main=True, jquery_cmd="append")
 user_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=usercache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 messcache, is_new = ModelCache.objects.get_or_create(template="message.html",
                 div_id="#pages", content_type="message", main=True, jquery_cmd="append")
-mess_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=messcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+mess_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=messcache.pk, template="skeleton/message_template.html",
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 uploadcache, is_new = ModelCache.objects.get_or_create(template="upload.html",
                 div_id="#pages", content_type="upload", main=True, jquery_cmd="append")
 upload_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=uploadcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_message_form.html",
                                                     div_id="#pp_message_form", jquery_cmd="html", object_specific=True)
@@ -170,7 +170,7 @@ ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp
 inboxcache, is_new = ModelCache.objects.get_or_create(template="inbox.html",
                 div_id="#pages", content_type="inbox", main=True, jquery_cmd="append")
 inbox_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=inboxcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 ##USER LISTS
 shortusercache, is_new = ModelCache.objects.get_or_create(template="user/user_short.html",
@@ -188,7 +188,7 @@ largeuserlistcache, is_new = ListCache.objects.get_or_create(model_cache=memberl
 mcache, is_new = ModelCache.objects.get_or_create(template="group/group.html",
                 div_id="#pages", content_type="group", main=True, jquery_cmd="append")
 group_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=mcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 tcache, is_new = ModelCache.objects.get_or_create(template="topic.html",
             div_id="#panels", content_type="groups", jquery_cmd="append")
@@ -200,7 +200,7 @@ topiclistcache, is_new = ListCache.objects.get_or_create(model_cache=tcache.pk,
 intercache, is_new = ModelCache.objects.get_or_create(template="interact.html",
                 div_id="#pages", content_type="interact", main=True, jquery_cmd="append")
 interact_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=intercache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 oref, is_new = UserSaltCache.objects.get_or_create(model_cache=intercache.pk, is_toggle=False,
             template="forms/oa_referral_form.html", div_id="#oa_referral_form", jquery_cmd="html", load_last=True)
@@ -219,7 +219,7 @@ ppedittopicsideeffectcache, is_new = SideEffectCache.objects.get_or_create(user_
 searchresultscache, is_new = ModelCache.objects.get_or_create(template="search/search.html",
                 div_id="#pages", content_type="search", main=True, jquery_cmd="append")
 searchresults_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=searchresultscache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 searchformcache, is_new = UserSaltCache.objects.get_or_create(template="search/search.html",
                          div_id="#oa_search_form", jquery_cmd="html")
 
@@ -232,7 +232,7 @@ proplistcache, is_new = ListCache.objects.get_or_create(model_cache=propcache.pk
 detailcache, is_new = ModelCache.objects.get_or_create(template="content/detail.html",
                 div_id="#pages", content_type="item", main=True, jquery_cmd="append")
 content_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 groupsettingsform, is_new = UserSaltCache.objects.get_or_create(is_toggle=False,
     template="forms/oa_group_settings_form.html", div_id="#oa_group_settings_form", jquery_cmd="html", load_last=True)
@@ -257,11 +257,11 @@ report_abuse_model_cache, is_new = ModelCache.objects.get_or_create(template="re
 report_abuse_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=report_abuse_model_cache.pk, template="report_abuse.html",
                                                                 div_id="#report_abuse", jquery_cmd="html")
 pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=report_abuse_model_cache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 ##FORMS
 ppcommentformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_comment_form.html",
-                        div_id="#pp_comment_form", jquery_cmd="html", load_last=True)
+                        div_id="#pp_comment_form", jquery_cmd="html", load_last=True, object_specific=True)
 
 ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
     template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
@@ -283,30 +283,30 @@ ppreplysdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=p
 pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="create_group.html",
                         div_id="#pages", jquery_cmd="append", redirect=True)
 pptopictab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pptopiccache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 
 errorcache, is_new = ModelCache.objects.get_or_create(template="404.html", main=True,
             div_id="#pages", content_type="404", jquery_cmd="append")
 
 errortab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=errorcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 helpcache, is_new = ModelCache.objects.get_or_create(template="natgathelp.html", main=True,
             div_id="#pages", content_type="natgathelp", jquery_cmd="append")
 helptab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=helpcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 resultscache, is_new = ModelCache.objects.get_or_create(template="natgatresults.html", main=True,
             div_id="#pages", content_type="natgatresults", jquery_cmd="append")
 resultstab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=resultscache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 natgatcache, is_new = ModelCache.objects.get_or_create(template="etc/faq.html", main=True,
-            div_id="#pages", content_type="help", jquery_cmd="append")
+            div_id="#pages", content_type="help", jquery_cmd="prepend")
 
 natgattab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=natgatcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blob_form.html",
                                                     div_id="#pp_blob_form", jquery_cmd="html")
@@ -317,13 +317,36 @@ ppblobformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/ac
 imgsourceformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/imgsource.html",
                                                     div_id="#pp_imgsource_form", jquery_cmd="html", object_specific=True)
 
+
 ppblobeditformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_blobedit_form.html",
                                                     div_id="#pp_blobedit_form", jquery_cmd="html", object_specific=True)
 
 submitcache, is_new = ModelCache.objects.get_or_create(template="submit.html",
                 div_id="#pages", content_type="submit", main=True, jquery_cmd="append")
 submit_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=submitcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
+
+#########IMAGES AND SUBMISSION FORMS AND CONTENT
+
+
+imgsourceformcache, is_new = UserSaltCache.objects.get_or_create(template="forms/imgsource.html",
+                                                    div_id="#pp_imgsource_form", jquery_cmd="html", object_specific=True)
+
+
+imgpreviewcache, is_new = ModelCache.objects.get_or_create(template="imagepreview.html", main=True,
+            div_id="#pages", content_type="imagepreview", jquery_cmd="append")
+imgpreviewtab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=imgpreviewcache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="prepend")
+
+####IMAGE PREVIEW COMMENTING
+
+imgcomcache, is_new = ModelCache.objects.get_or_create(template="comment.html",
+    div_id="#content_children", content_type="imagepreview", is_recursive=True, object_specific=True, jquery_cmd="append")
+imgcommentslistcache, is_new = ListCache.objects.get_or_create(model_cache=imgcomcache.pk,
+        template="comments", div_id="#content_children", content_type="imagepreview", default=True)
+
+
+####USER PROFILE CACHE
 
 
 pprofilecache, is_new = ModelCache.objects.get_or_create(template="pp_profile_form.html",
@@ -332,7 +355,7 @@ pprofilecache, is_new = ModelCache.objects.get_or_create(template="pp_profile_fo
 pprofileformcache, is_new = UserSaltCache.objects.get_or_create(template="pp_profile_form.html",
                                                     div_id="#pp_profile_form", jquery_cmd="append")
 pprofileform_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=pprofilecache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 ppeditcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
         template="forms/pp_edit_form.html", div_id="#pp_edit_form", jquery_cmd="html",
@@ -343,12 +366,12 @@ ppeditcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.p
 registercache, is_new = ModelCache.objects.get_or_create(template="etc/register.html",
                 div_id="#pages", content_type="register", main=True, jquery_cmd="append")
 register_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=registercache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 confirmcache, is_new = ModelCache.objects.get_or_create(template="confirm.html",
                 div_id="#pages", content_type="confirm", main=True, jquery_cmd="append")
 confirmation_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=confirmcache.pk, template="skeleton/tab_template.html",
-                         div_id="#tab_ruler", jquery_cmd="append")
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 #LISTCACHE FOR CHILDREN
 questionslistcache, is_new = ListCache.objects.get_or_create(model_cache=mcache.pk,

@@ -51,28 +51,27 @@ catch(e){
 app.listen(nodeport);
 
 //returns new_user, true if this user has joined this chat for the first time this session
-function init_user(username, sessionid, socketid, room){
+function init_user(username, sessionid, socketid, room, type){
   if(room != null){
     var u1 = users[sessionid];
     var new_user = true;
     if(u1){
       console.log(u1);
-      if(u1['chats'][room] == 1){
+      if(u1[type][room] == 1){
         new_user = false;
       }
       else{
-        u1['chats'][room] = 1;
+        u1[type][room] = 1;
       }
     }
     else{
-      var chatlist = {};
-      chatlist[room] = 1; 
-      users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': chatlist};
+      users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': {}, 'p2p': {}};
+      users[sessionid][type][room] = 1; 
     }
     return new_user;
   }
   else{
-    users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': {}};
+    users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': {}, 'p2p': {}};
   }
 }
 
@@ -93,6 +92,8 @@ function user_online(user){
   store.get(user, function (err, reply) {
         if(reply != null){
           return true;
+          console.log('USER ONLINE');
+          console.log(reply.toString());
         }
         else{
           return false;
@@ -169,9 +170,20 @@ io.sockets.on('connection', function (socket) {
     socket.join(key);
     //store user image url for future callbacks to server
     store.set(username + key, url);
-    new_user = init_user(username, sessionid, socket.id, key);
+    new_user = init_user(username, sessionid, socket.id, key, 'p2p');
+    io.sockets.to(key).emit('updateP2P', 'SERVER', ' ', key, sessionid, 'ONLINE');
+
 
     //store.expire(username, -1)
+  });
+
+  //chekc if the user is currently subscribed to nodejs
+  socket.on('is_online', function(username, key, sessionid){
+    is_online = user_online(username)
+    if(is_online){
+      io.sockets.socket(socket.id).emit('updateP2P', 'SERVER', ' ', key, sessionid, 'ONLINE');
+    }
+
   });
 
   // when the client emits 'adduser', this listens and executes
@@ -182,7 +194,7 @@ io.sockets.on('connection', function (socket) {
     // we store the username in the socket session for this client
     socket.username = sessionid;
     // add the client's username to the global list
-    new_user = init_user(username, sessionid, socket.id, room);
+    new_user = init_user(username, sessionid, socket.id, room, 'chats');
     init_room(room, username);
     if(new_user){
       // echo globally (all clients in that room) that a person has connected
@@ -199,6 +211,7 @@ io.sockets.on('connection', function (socket) {
     user = users[socket.username]
     if(user){
       chatlist = user['chats']
+      p2plist = user['p2p']
 
       // update list of users in chat, client-side
       for(var room in chatlist){
@@ -211,6 +224,10 @@ io.sockets.on('connection', function (socket) {
         catch(err){
 
         }
+      }
+      for(var room in p2plist){
+          io.sockets.to(room).emit('updateP2P', 'SERVER', '', room, users[socket.username]['sessionid'], 'OFFLINE');
+          store.del(users[socket.username]['username'] + room)
       }
       store.del(users[socket.username]['username'])
       delete users[socket.username];
