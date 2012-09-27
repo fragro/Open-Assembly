@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirate_messages Package &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="index.html" />
+    <link rel="up" title="openassembly Package" href="openassembly.html" />
+    <link rel="next" title="templatetags Package" href="openassembly.pirate_messages.templatetags.html" />
+    <link rel="prev" title="templatetags Package" href="openassembly.pirate_login.templatetags.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_messages.templatetags.html" title="templatetags Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_login.templatetags.html" title="templatetags Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" accesskey="U">openassembly Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirate-messages-package">
+<h1>pirate_messages Package<a class="headerlink" href="#pirate-messages-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-openassembly.pirate_messages.management">
+<span id="management-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">management</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_messages.management" title="Permalink to this headline">¶</a></h2>
+<p>Integrates django-notification into the OpenAssembly system.
+pirate_messages.models.create_notification users signals to create 
+flexible notifications from django-notifications</p>
+<dl class="function">
+<dt id="openassembly.pirate_messages.management.create_notice_types">
+<tt class="descclassname">openassembly.pirate_messages.management.</tt><tt class="descname">create_notice_types</tt><big>(</big><em>app</em>, <em>created_models</em>, <em>verbosity</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/management.html#create_notice_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.management.create_notice_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_messages.models">
+<span id="models-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">models</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_messages.models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.pirate_messages.models.Message">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_messages.models.</tt><tt class="descname">Message</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>Message(id, sender_id, receiver_id, parent_pk, description, created_dt, read)</p>
+<dl class="exception">
+<dt id="openassembly.pirate_messages.models.Message.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Message.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.pirate_messages.models.Message.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">Message.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Message.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.Message.get_absolute_url">
+<tt class="descclassname">Message.</tt><tt class="descname">get_absolute_url</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#Message.get_absolute_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.Message.get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.Message.get_next_by_created_dt">
+<tt class="descclassname">Message.</tt><tt class="descname">get_next_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.pirate_messages.models.Message.get_next_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.Message.get_previous_by_created_dt">
+<tt class="descclassname">Message.</tt><tt class="descname">get_previous_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.pirate_messages.models.Message.get_previous_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Message.objects">
+<tt class="descclassname">Message.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x476fe50&gt;</em><a class="headerlink" href="#openassembly.pirate_messages.models.Message.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Message.receiver">
+<tt class="descclassname">Message.</tt><tt class="descname">receiver</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Message.receiver" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Message.sender">
+<tt class="descclassname">Message.</tt><tt class="descname">sender</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Message.sender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_messages.models.MessageForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_messages.models.</tt><tt class="descname">MessageForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#MessageForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<dl class="class">
+<dt id="openassembly.pirate_messages.models.MessageForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#MessageForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_messages.models.MessageForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('receiver', 'sender', 'created_dt', 'read', 'parent_pk')</em><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.MessageForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#openassembly.pirate_messages.models.Message" title="openassembly.pirate_messages.models.Message"><tt class="xref py py-class docutils literal"><span class="pre">Message</span></tt></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.MessageForm.base_fields">
+<tt class="descclassname">MessageForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'description': &lt;django.forms.fields.CharField object at 0x4772890&gt;, 'form_id': &lt;django.forms.fields.CharField object at 0x4772850&gt;}</em><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.MessageForm.declared_fields">
+<tt class="descclassname">MessageForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x4772850&gt;, 'description': &lt;django.forms.fields.CharField object at 0x4772890&gt;}</em><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.MessageForm.media">
+<tt class="descclassname">MessageForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.MessageForm.save">
+<tt class="descclassname">MessageForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#MessageForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.MessageForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_messages.models.Notification">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_messages.models.</tt><tt class="descname">Notification</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#Notification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.Notification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>Notification(id, receiver_id, sender_id, text, link, content_type_id, object_pk, is_read, submit_date, group_id, sender_pk)</p>
+<dl class="exception">
+<dt id="openassembly.pirate_messages.models.Notification.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.pirate_messages.models.Notification.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">Notification.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Notification.content_object">
+<tt class="descclassname">Notification.</tt><tt class="descname">content_object</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.content_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a generic relation to any object through content-type/object-id
+fields.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Notification.content_type">
+<tt class="descclassname">Notification.</tt><tt class="descname">content_type</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.content_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.Notification.get_next_by_submit_date">
+<tt class="descclassname">Notification.</tt><tt class="descname">get_next_by_submit_date</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.get_next_by_submit_date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.Notification.get_previous_by_submit_date">
+<tt class="descclassname">Notification.</tt><tt class="descname">get_previous_by_submit_date</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.get_previous_by_submit_date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Notification.group">
+<tt class="descclassname">Notification.</tt><tt class="descname">group</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Notification.objects">
+<tt class="descclassname">Notification.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x47727d0&gt;</em><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Notification.receiver">
+<tt class="descclassname">Notification.</tt><tt class="descname">receiver</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.receiver" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_messages.models.Notification.save">
+<tt class="descclassname">Notification.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#Notification.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_messages.models.Notification.sender">
+<tt class="descclassname">Notification.</tt><tt class="descname">sender</tt><a class="headerlink" href="#openassembly.pirate_messages.models.Notification.sender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_messages.models.create_notification">
+<tt class="descclassname">openassembly.pirate_messages.models.</tt><tt class="descname">create_notification</tt><big>(</big><em>obj</em>, <em>reply_to</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/models.html#create_notification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.models.create_notification" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_messages.tasks">
+<span id="tasks-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tasks</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_messages.tasks" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-openassembly.pirate_messages.tests">
+<span id="tests-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tests</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_messages.tests" title="Permalink to this headline">¶</a></h2>
+<p>This file demonstrates two different styles of tests (one doctest and one
+unittest). These will both pass when you run &#8220;manage.py test&#8221;.</p>
+<p>Replace these with more appropriate tests for your application.</p>
+<dl class="class">
+<dt id="openassembly.pirate_messages.tests.SimpleTest">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_messages.tests.</tt><tt class="descname">SimpleTest</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/tests.html#SimpleTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.tests.SimpleTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.test.testcases.TestCase</span></tt></p>
+<dl class="method">
+<dt id="openassembly.pirate_messages.tests.SimpleTest.test_basic_addition">
+<tt class="descname">test_basic_addition</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_messages/tests.html#SimpleTest.test_basic_addition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_messages.tests.SimpleTest.test_basic_addition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests that 1 + 1 always equals 2.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_messages.views">
+<span id="views-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">views</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_messages.views" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html">templatetags Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html#module-openassembly.pirate_messages.templatetags.messagetags"><tt class="docutils literal"><span class="pre">messagetags</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html#module-openassembly.pirate_messages.templatetags.notificationtags"><tt class="docutils literal"><span class="pre">notificationtags</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirate_messages Package</a><ul>
+<li><a class="reference internal" href="#module-openassembly.pirate_messages.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_messages.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_messages.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_messages.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_messages.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="openassembly.pirate_login.templatetags.html"
+                        title="previous chapter">templatetags Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="openassembly.pirate_messages.templatetags.html"
+                        title="next chapter">templatetags Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/openassembly.pirate_messages.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_messages.templatetags.html" title="templatetags Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_login.templatetags.html" title="templatetags Package"
+             >previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

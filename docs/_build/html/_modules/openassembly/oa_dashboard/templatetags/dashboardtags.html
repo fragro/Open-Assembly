@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.oa_dashboard.templatetags.dashboardtags &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.oa_dashboard.templatetags.dashboardtags</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">pirate_core</span> <span class="kn">import</span> <span class="n">namespace_get</span>
+<span class="kn">from</span> <span class="nn">oa_dashboard.models</span> <span class="kn">import</span> <span class="n">DashboardPanel</span>
+<span class="kn">from</span> <span class="nn">oa_cache.views</span> <span class="kn">import</span> <span class="n">render_hashed</span>
+<span class="kn">from</span> <span class="nn">oa_cache.models</span> <span class="kn">import</span> <span class="n">interpret_hash</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block_decorator</span>
+
+
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">block_decorator</span><span class="p">(</span><span class="n">register</span><span class="p">)</span>
+
+<span class="n">get_namespace</span> <span class="o">=</span> <span class="n">namespace_get</span><span class="p">(</span><span class="s">&#39;oa_dashboard&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_dashboard"><a class="viewcode-back" href="../../../../openassembly.oa_dashboard.templatetags.html#openassembly.oa_dashboard.templatetags.dashboardtags.oa_get_dashboard">[docs]</a><span class="k">def</span> <span class="nf">oa_get_dashboard</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">request</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;request&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">dashboard_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dashboard_id&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">boards</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;boards&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span> <span class="ow">and</span> <span class="n">dashboard_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c">#get platform for this contenttype and user</span>
+        <span class="n">boards</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">dashboard_id</span><span class="o">=</span><span class="n">dashboard_id</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;priority&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">us</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;congress_critter&#39;</span><span class="p">)</span>
+            <span class="n">boards</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">us</span><span class="p">,</span>
+                <span class="n">dashboard_id</span><span class="o">=</span><span class="n">dashboard_id</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;priority&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="c">#for each board, render the respective information</span>
+    <span class="n">dash</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">board</span> <span class="ow">in</span> <span class="n">boards</span><span class="p">:</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">plank</span><span class="p">)</span>
+        <span class="c">#add start and end information for pagination</span>
+        <span class="n">plank</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">plank</span> <span class="o">+</span> <span class="s">&#39;/s-0/e-20&#39;</span>
+        <span class="n">renderdict</span> <span class="o">=</span> <span class="n">render_hashed</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">plank</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">extracontext</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;dashobj&#39;</span><span class="p">:</span> <span class="n">board</span><span class="p">,</span> <span class="s">&#39;TYPE&#39;</span><span class="p">:</span> <span class="s">&#39;HTML&#39;</span><span class="p">,</span> <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">})</span>
+        <span class="k">if</span> <span class="s">&#39;DIM_KEY&#39;</span> <span class="ow">in</span> <span class="n">paramdict</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">print</span> <span class="n">board</span>
+        <span class="c">#if there is a total count for a list in this we need to add that so that the dash renders it might fine</span>
+        <span class="k">if</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;counts&#39;</span><span class="p">]:</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;counts&#39;</span><span class="p">][</span><span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">dash</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;renders&#39;</span><span class="p">],</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">],</span> <span class="n">board</span><span class="p">,</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">],</span> <span class="n">dim</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">count</span><span class="p">))</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;boards&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dash</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_has_dash"><a class="viewcode-back" href="../../../../openassembly.oa_dashboard.templatetags.html#openassembly.oa_dashboard.templatetags.dashboardtags.oa_has_dash">[docs]</a><span class="k">def</span> <span class="nf">oa_has_dash</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+        <span class="c">#get platform for this contenttype and user</span>
+        <span class="n">boards</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">boards</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;has_board&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;has_board&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

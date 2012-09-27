@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_core.templatetags.pp_combo_form &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_core.templatetags.pp_combo_form</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block</span>
+<span class="kn">from</span> <span class="nn">pirate_core</span> <span class="kn">import</span> <span class="n">FormMixin</span><span class="p">,</span> <span class="n">ComboFormFactory</span><span class="p">,</span> <span class="n">namespace_get</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block_decorator</span>
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">block_decorator</span><span class="p">(</span><span class="n">register</span><span class="p">)</span>
+
+<span class="c"># this function assignment lets us reuse the same code block a bunch of places</span>
+<span class="n">get_namespace</span> <span class="o">=</span> <span class="n">namespace_get</span><span class="p">(</span><span class="s">&#39;pp_core&#39;</span><span class="p">)</span>
+
+<span class="nd">@block</span>
+<span class="k">def</span> <span class="nf">pp_combo_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="pp_combo_form"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.pp_combo_form.pp_combo_form">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    This tag is used to merge two separate forms into one form.  It does this</span>
+<span class="sd">    by performing three actions:</span>
+
+<span class="sd">    (1) It merges the fields of two separate forms into a single form with</span>
+<span class="sd">        unified error messaging, and uniqueness among field names.</span>
+<span class="sd">    (2) When provided a POST argument that matches its internally-determined</span>
+<span class="sd">        form id, it will process that form in order to produce any error messages</span>
+<span class="sd">    (3) When provided with a POST argument, it will assume that all forms</span>
+<span class="sd">        passed in as arguments will also have been instantiated with that same POST.</span>
+<span class="sd">        The validity of the MultiForm it produces will be tested; the MultiForm</span>
+<span class="sd">        iteself will loop over the individual sub-forms testing to see if each is </span>
+<span class="sd">        valid as well.  Any errors discovered will be added to its own errors.</span>
+<span class="sd">    (4) If the MultiForm is valid (and by implication the sub-forms are valid as well),</span>
+<span class="sd">        then the pp_multi_form tag will call save() on the MultiForm with commit=True, </span>
+<span class="sd">        which in turn will call save() on each of the sub-forms. If a path is not, </span>
+<span class="sd">        provided, however, the tag will call save() on the MultiForm with commit=False.</span>
+<span class="sd">    (5) If a path argument is specified and the MultiForm is successfully saved, </span>
+<span class="sd">        then the tag will raise the HttpRedirectException indicating a redirect </span>
+<span class="sd">        to the specified path.  Otherwise, it will just add the MultiForm to the context.</span>
+
+<span class="sd">    The pp_multi_form tag is compatible with form tags with the following</span>
+<span class="sd">    characteristics:</span>
+
+<span class="sd">    - Just like other form tags, these form tags should instantiate their form with</span>
+<span class="sd">      the POST if it is provided, and instantiate their form without any POST if it </span>
+<span class="sd">      is not provided.</span>
+<span class="sd">    - These form tags should only raise the HttpRedirectException when a</span>
+<span class="sd">      path is provided as an argument. If no path is provided but a POST is, then</span>
+<span class="sd">      the form should be instantiated and saved (if valid), and then added</span>
+<span class="sd">      to the context.  If no POST is provided, then the form should just be</span>
+<span class="sd">      instantiated and added to the context.</span>
+<span class="sd">    - The forms produced by these tags must contain a save() method that takes</span>
+<span class="sd">      the &quot;commit&quot; kwarg to determine whether a save() should hit the database.</span>
+<span class="sd">      This save method should be called with commit=True when a valid POST and </span>
+<span class="sd">      a path are both supplied, but it should be called with commit=False if</span>
+<span class="sd">      a valid path  is supplied but a valid POST is not.</span>
+
+<span class="sd">    Setup...</span>
+<span class="sd">    &gt;&gt;&gt; from django import template</span>
+<span class="sd">    &gt;&gt;&gt; from pirate_core import ComboFormFactory, HttpRedirectException</span>
+<span class="sd">    &gt;&gt;&gt; from pirate_issues.models import Issue, Topic</span>
+<span class="sd">    &gt;&gt;&gt; from pirate_issues.templatetags.issuetags import IssueForm</span>
+<span class="sd">    &gt;&gt;&gt; from pirate_extensions.templatetags.taggingtags import TagForm</span>
+<span class="sd">    &gt;&gt;&gt; from tagging.models import Tag, TaggedItem</span>
+
+<span class="sd">    &gt;&gt;&gt; template.add_to_builtins(&#39;customtags.templatetags.customtags&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; topic = Topic(text=&quot;Opinions and Views.&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; topic.save()</span>
+<span class="sd">    &gt;&gt;&gt; issue = Issue(text=&quot;My opinion on tax cuts.&quot;, topic=topic)</span>
+<span class="sd">    &gt;&gt;&gt; issue.save()</span>
+<span class="sd">    &gt;&gt;&gt; Tag.objects.update_tags(issue, &quot;taxes congress&quot;)</span>
+
+<span class="sd">    &gt;&gt;&gt; ts = &#39;&#39;&#39;</span>
+<span class="sd">    ...      {% pp_issue_form POST=post issue=issue %}</span>
+<span class="sd">    ...        {% pp_tag_form object=pp_issue.form.instance POST=post %}</span>
+<span class="sd">    ...          {% pp_combo_form pp_issue.form pp_tags.form POST=post path=&quot;/&quot; %}</span>
+<span class="sd">    ...            {{ pp_core.combo_form.as_p }}</span>
+<span class="sd">    ...          {% endpp_combo_form %}</span>
+<span class="sd">    ...        {% endpp_tag_form %}</span>
+<span class="sd">    ...      {% endpp_issue_form %}</span>
+<span class="sd">    ...      &#39;&#39;&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; result1 = template.Template(ts).render(template.Context({&quot;post&quot;:None, &quot;issue&quot;:None}))</span>
+<span class="sd">    &gt;&gt;&gt; &quot; &quot;.join(result1.split())</span>
+<span class="sd">    u&#39;&lt;p&gt;&lt;label for=&quot;id_topic&quot;&gt;Topic:&lt;/label&gt; &lt;select name=&quot;topic&quot; id=&quot;id_topic&quot;&gt; &lt;option value=&quot;&quot; selected=&quot;selected&quot;&gt;---------&lt;/option&gt; &lt;option value=&quot;1&quot;&gt;Opinions and Views.&lt;/option&gt; &lt;/select&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_name&quot;&gt;Name:&lt;/label&gt; &lt;input id=&quot;id_name&quot; type=&quot;text&quot; name=&quot;name&quot; value=&quot;DEF&quot; maxlength=&quot;140&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_text&quot;&gt;Text:&lt;/label&gt; &lt;textarea id=&quot;id_text&quot; rows=&quot;10&quot; cols=&quot;40&quot; name=&quot;text&quot;&gt;&lt;/textarea&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_interest&quot;&gt;Interest:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;interest&quot; value=&quot;0.0&quot; id=&quot;id_interest&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_controversy&quot;&gt;Controversy:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;controversy&quot; value=&quot;0.0&quot; id=&quot;id_controversy&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_comments&quot;&gt;Comments:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;comments&quot; value=&quot;0&quot; id=&quot;id_comments&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_tags&quot;&gt;Tags:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;tags&quot; id=&quot;id_tags&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_form_id_0&quot;&gt;Form id:&lt;/label&gt; &lt;input type=&quot;hidden&quot; name=&quot;form_id_0&quot; value=&quot;Fc8b6368985a9ad50492ccd96ee7de9e3&quot; id=&quot;id_form_id_0&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_1&quot; value=&quot;Ff5fe7ac70fa4aab31f26632adfc4e4fe&quot; id=&quot;id_form_id_1&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_2&quot; value=&quot;F02c06e8500480e06cecc20e409912a77&quot; id=&quot;id_form_id_2&quot; /&gt;&lt;/p&gt;&#39;</span>
+
+<span class="sd">    If POST or issue are completetly absent from the context it should make no difference.</span>
+<span class="sd">    #Note this doesn&#39;t currently work due to the use of native_tags, which converts unknown </span>
+<span class="sd">    #template variables to strings instead of to None as they should be handled.</span>
+<span class="sd">    #&gt;&gt;&gt; result2 = template.Template(ts).render(template.Context({}))</span>
+<span class="sd">    #&gt;&gt;&gt; &quot; &quot;.join(result2.split())</span>
+<span class="sd">    #u&#39;THIS NEEDS TO BE REPLACED&#39;</span>
+
+<span class="sd">    If an issue is included in the results, then that issue&#39;s tags should appear in the form.</span>
+<span class="sd">    &gt;&gt;&gt; result3 = template.Template(ts).render(template.Context({&quot;post&quot;:None, &quot;issue&quot;:issue}))</span>
+<span class="sd">    &gt;&gt;&gt; &quot; &quot;.join(result3.split())</span>
+<span class="sd">    u&#39;&lt;p&gt;&lt;label for=&quot;id_topic&quot;&gt;Topic:&lt;/label&gt; &lt;select name=&quot;topic&quot; id=&quot;id_topic&quot;&gt; &lt;option value=&quot;&quot;&gt;---------&lt;/option&gt; &lt;option value=&quot;1&quot; selected=&quot;selected&quot;&gt;Opinions and Views.&lt;/option&gt; &lt;/select&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_name&quot;&gt;Name:&lt;/label&gt; &lt;input id=&quot;id_name&quot; type=&quot;text&quot; name=&quot;name&quot; value=&quot;DEF&quot; maxlength=&quot;140&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_text&quot;&gt;Text:&lt;/label&gt; &lt;textarea id=&quot;id_text&quot; rows=&quot;10&quot; cols=&quot;40&quot; name=&quot;text&quot;&gt;My opinion on tax cuts.&lt;/textarea&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_interest&quot;&gt;Interest:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;interest&quot; value=&quot;0.0&quot; id=&quot;id_interest&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_controversy&quot;&gt;Controversy:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;controversy&quot; value=&quot;0.0&quot; id=&quot;id_controversy&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_comments&quot;&gt;Comments:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;comments&quot; value=&quot;0&quot; id=&quot;id_comments&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_tags&quot;&gt;Tags:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;tags&quot; id=&quot;id_tags&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_form_id_0&quot;&gt;Form id:&lt;/label&gt; &lt;input type=&quot;hidden&quot; name=&quot;form_id_0&quot; value=&quot;F3f08dc1112a3c32ed9628840b9f40dbe&quot; id=&quot;id_form_id_0&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_1&quot; value=&quot;Fe8ac33ce836a7f9e497dd37c29281eaa&quot; id=&quot;id_form_id_1&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_2&quot; value=&quot;F55b12f88c3c1bbc1272b5f1720883e25&quot; id=&quot;id_form_id_2&quot; /&gt;&lt;/p&gt;&#39;</span>
+
+<span class="sd">    Now, this tests whether or not a form submission including a POST dictionary works.</span>
+<span class="sd">    &gt;&gt;&gt; POST = {}</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;name&quot;] = &quot;Increase the pay of members of congress.&quot;</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;text&quot;] = issue.text</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;topic&quot;] = issue.topic.pk</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;form_id_0&quot;] = IssueForm.form_id(instance=issue)</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;tags&quot;] = &quot;congress budget&quot;</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;form_id_1&quot;] = TagForm.form_id(instance=issue)</span>
+
+<span class="sd">    As part of the setup, figure out what the ComboForm&#39;s form_id field name is going to be</span>
+<span class="sd">    &gt;&gt;&gt; form1 = IssueForm.create(instance=issue) # ComboForm needs form1 to be valid.</span>
+<span class="sd">    &gt;&gt;&gt; form2 = TagForm.create(instance=form1.instance) # form2 needs to be valid.</span>
+<span class="sd">    &gt;&gt;&gt; ComboForm = ComboFormFactory(form1, form2).get_form_class()</span>
+<span class="sd">    &gt;&gt;&gt; POST[&quot;form_id_2&quot;] = ComboForm.form_id()</span>
+
+<span class="sd">    &gt;&gt;&gt; try:</span>
+<span class="sd">    ...   template.Template(ts).render(template.Context({&quot;post&quot;:POST, &quot;issue&quot;:issue}))</span>
+<span class="sd">    ... except HttpRedirectException, e:</span>
+<span class="sd">    ...   exc = e.http_response_redirect</span>
+<span class="sd">    ... except template.TemplateSyntaxError, e:</span>
+<span class="sd">    ...   if hasattr(e, &#39;exc_info&#39;) and e.exc_info[0] is HttpRedirectException:</span>
+<span class="sd">    ...     exc = e.exc_info[1].http_response_redirect</span>
+<span class="sd">    &gt;&gt;&gt; exc</span>
+<span class="sd">    &lt;django.http.HttpResponseRedirect object at ...&gt;</span>
+
+<span class="sd">    &gt;&gt;&gt; issues = Issue.objects.filter(name=&quot;Increase the pay of members of congress.&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; len(list(issues))</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; tags = Tag.objects.get_for_object(issues[0])</span>
+<span class="sd">    &gt;&gt;&gt; tags</span>
+<span class="sd">    [&lt;Tag: budget&gt;, &lt;Tag: congress&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; items = TaggedItem.objects.get_by_model(Issue, tags)</span>
+<span class="sd">    &gt;&gt;&gt; items</span>
+<span class="sd">    [&lt;Issue: Increase the pay of members of congress.&gt;]</span>
+
+<span class="sd">    &gt;&gt;&gt; Issue.objects.all().delete()</span>
+<span class="sd">    &gt;&gt;&gt; TaggedItem.objects.all().delete()</span>
+<span class="sd">    &gt;&gt;&gt; Tag.objects.all().delete()</span>
+<span class="sd">    &gt;&gt;&gt; Topic.objects.all().delete()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">POST</span>    <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">path</span>    <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> 
+    <span class="n">as_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;as_name&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+   
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ComboFormFactory</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">create_form</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">as_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">[</span><span class="n">asname</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;combo_form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

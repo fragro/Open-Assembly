@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_core.forms &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_core.forms</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">from</span> <span class="nn">exceptions</span> <span class="kn">import</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.utils.datastructures</span> <span class="kn">import</span> <span class="n">SortedDict</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core</span> <span class="kn">import</span> <span class="n">HttpRedirectException</span>
+
+
+<div class="viewcode-block" id="FormMixin"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.FormMixin">[docs]</a><span class="k">class</span> <span class="nc">FormMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FormMixin.create"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.FormMixin.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">POST</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forms</span><span class="o">.</span><span class="n">BaseForm</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;pirate_core.FormMixin should be used in multiple inheritance &quot;</span>
+                            <span class="s">&quot;in combination with a django.forms.BaseForm or subclass thereof.&quot;</span><span class="p">)</span>
+
+        <span class="n">Form</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="p">{})</span>
+        <span class="n">form_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_id</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="n">Form</span><span class="o">.</span><span class="n">base_fields</span><span class="p">[</span><span class="s">&quot;form_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_id_field</span><span class="p">(</span><span class="n">form_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">POST</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_has_id</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">form_id</span><span class="p">):</span>
+                <span class="n">form</span> <span class="o">=</span> <span class="n">Form</span><span class="p">()</span> <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">Form</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">form</span> <span class="o">=</span> <span class="n">Form</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span> <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">Form</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                    <span class="n">commit</span> <span class="o">=</span> <span class="bp">False</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">True</span>
+                    <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">e</span> <span class="o">=</span> <span class="n">HttpRedirectException</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="n">form</span>
+                        <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">Form</span><span class="p">()</span> <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">Form</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">form</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FormMixin.form_id"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.FormMixin.form_id">[docs]</a>    <span class="k">def</span> <span class="nf">form_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">instance_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">instance_id</span> <span class="o">=</span> <span class="s">&quot;__&quot;</span> <span class="o">+</span> <span class="n">instance</span><span class="o">.</span><span class="n">__module__</span> <span class="o">+</span> <span class="s">&quot;__&quot;</span> <span class="o">+</span> <span class="n">instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s">&quot;pk&quot;</span><span class="p">):</span>
+                <span class="n">instance_id</span> <span class="o">+=</span> <span class="s">&quot;__&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+        <span class="n">id_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="n">instance_id</span>
+        <span class="k">return</span> <span class="s">&#39;F&#39;</span> <span class="o">+</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">id_str</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FormMixin.form_id_field"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.FormMixin.form_id_field">[docs]</a>    <span class="k">def</span> <span class="nf">form_id_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">form_id</span><span class="p">)</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FormMixin.post_has_id"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.FormMixin.post_has_id">[docs]</a>    <span class="k">def</span> <span class="nf">post_has_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">POST</span><span class="p">,</span> <span class="n">form_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">form_id</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">form_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_id</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">POST</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&quot;form_id&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">POST</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="n">form_id</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="ComboFormFactory"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.ComboFormFactory">[docs]</a><span class="k">class</span> <span class="nc">ComboFormFactory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="s">&#39;_forms&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="s">&#39;_initial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_form_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="s">&#39;_form_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form_ids</span>
+        <span class="n">base_fields</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="s">&#39;base_fields&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_fields</span>
+
+        <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">forms</span><span class="o">.</span><span class="n">BaseForm</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;All arguments to the ComboForm constructor must be forms.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="s">&#39;save&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only forms that implement a &#39;save&#39; method can be added &quot;</span>
+                                 <span class="s">&quot;to the ComboForm.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_fields_for_form</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">base_fields</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_class</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render</span><span class="p">(</span><span class="n">base_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_fields</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">base_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">rendered</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()})</span>
+
+    <span class="k">def</span> <span class="nf">_add_fields_for_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">base_fields</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The purpose of this method is to allow one field name to be reliably</span>
+<span class="sd">        used by two forms only in the narrow case that it actually is the</span>
+<span class="sd">        same data being repeated in two places.  In other words, two forms</span>
+<span class="sd">        sharing a field name may only be combined if that field is of the same</span>
+<span class="sd">        type in both forms, uses the same widget in both forms, has the same</span>
+<span class="sd">        initial value in both forms, has the same choices (if it is a choice</span>
+<span class="sd">        field) in both forms, and is not a form id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c"># form_id is special because it is built in the create method</span>
+            <span class="k">if</span> <span class="s">&quot;form_id&quot;</span> <span class="o">==</span> <span class="n">name</span> <span class="ow">and</span> \
+               <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span> <span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">)</span> <span class="ow">and</span> \
+               <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span> <span class="n">forms</span><span class="o">.</span><span class="n">MultiWidget</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Fields named &#39;form_id&#39; must use a HiddenInput widget, &quot;</span>
+                                 <span class="s">&quot;or must contain a group of HiddenInput widgets.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s">&quot;form_id&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_form_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_fields</span><span class="p">:</span>
+                <span class="c"># The initial value of the form should be preserved, even if it is not default</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+                <span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span>
+
+            <span class="k">elif</span> <span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">__class__</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Fields with the same name &#39;</span><span class="si">%s</span><span class="s">&#39; are of different &quot;</span>
+                                 <span class="s">&quot;types.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">__class__</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Fields with the same name &#39;</span><span class="si">%s</span><span class="s">&#39; use different &quot;</span>
+                                     <span class="s">&quot;widgets.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="c">#elif self._initial[name] != form.initial[name]:</span>
+            <span class="c">#    raise ValueError(&quot;The initial values of two fields with the same &quot;</span>
+            <span class="c">#                     &quot;name &#39;%s&#39; do not match (&#39;%s&#39; vs. &#39;%s&#39;)&quot;</span>
+            <span class="c">#                     % (name, self._initial[name], form.initial[name]))</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="s">&#39;choices&#39;</span><span class="p">)</span> <span class="ow">and</span> \
+                 <span class="nb">hasattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s">&#39;choices&#39;</span><span class="p">)</span> <span class="ow">and</span> \
+                 <span class="nb">set</span><span class="p">(</span><span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">choices</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Choice fields with same name &#39;</span><span class="si">%s</span><span class="s">&#39; have different &quot;</span>
+                                 <span class="s">&quot;choices.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;ComboForm&#39;</span><span class="p">):</span>
+
+            <span class="n">ComboBaseForm</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s">&#39;ComboBaseForm&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">BaseForm</span><span class="p">,),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
+
+            <span class="k">class</span> <span class="nc">ComboForm</span><span class="p">(</span><span class="n">ComboBaseForm</span><span class="p">,</span> <span class="n">FormMixin</span><span class="p">):</span>
+
+                <span class="nd">@classmethod</span>
+                <span class="k">def</span> <span class="nf">form_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                    <span class="n">form_ids</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                    <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forms</span><span class="p">:</span>
+                        <span class="n">form_ids</span> <span class="o">+=</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="n">form</span><span class="o">.</span><span class="n">__module__</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="n">form</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">form</span><span class="o">.</span><span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">form_ids</span> <span class="o">+=</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">__module__</span> <span class="o">+</span> \
+                                        <span class="s">&quot;.&quot;</span> <span class="o">+</span> <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s">&quot;pk&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                                <span class="n">form_ids</span> <span class="o">+=</span> <span class="s">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="s">&#39;F&#39;</span> <span class="o">+</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">form_ids</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+                <span class="nd">@classmethod</span>
+                <span class="k">def</span> <span class="nf">form_id_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form_id</span><span class="p">):</span>
+                    <span class="n">widgets</span> <span class="o">=</span> <span class="p">[</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),]</span>
+                    <span class="n">initial</span> <span class="o">=</span> <span class="p">[</span><span class="n">form_id</span><span class="p">,]</span>
+                    <span class="n">fields</span>  <span class="o">=</span> <span class="p">[</span><span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">widgets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+
+                    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form_ids</span><span class="p">:</span>
+                        <span class="n">fields</span> <span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                        <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+                        <span class="n">initial</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">initial</span><span class="p">)</span>
+
+                    <span class="n">widget</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">MultiWidget</span><span class="p">(</span><span class="n">widgets</span><span class="p">)</span>
+
+                    <span class="c"># this is here just because compress() needs to be implemented</span>
+                    <span class="k">class</span> <span class="nc">FormIdField</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">MultiValueField</span><span class="p">):</span>
+                        <span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="n">data</span>
+
+                    <span class="k">return</span> <span class="n">FormIdField</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">widget</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <span class="nb">super</span><span class="p">(</span><span class="n">ComboForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">_initial</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="k">def</span> <span class="nf">full_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">                    If it is the same data, two forms with the same field validate differently.</span>
+<span class="sd">                    Both of these validation outcomes should be included, with dupes removed.</span>
+<span class="sd">                    The assumption is made that the parent form has already been preped.</span>
+<span class="sd">                    &#39;&#39;&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">ErrorDict</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">_forms</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span>
+                                <span class="c"># use a set here and below to prevent duplicates</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="n">error</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="n">error</span><span class="p">])</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="n">error</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">set</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="n">error</span><span class="p">])</span>
+
+                    <span class="c"># convert from the set to the designated error class</span>
+                    <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="n">error</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="n">error</span><span class="p">])</span>
+
+                    <span class="c"># if there are no errors in the sub-fields, create cleaned_data </span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span>
+                        <span class="nb">super</span><span class="p">(</span><span class="n">ComboForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">full_clean</span><span class="p">()</span>
+                    
+                <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">_forms</span><span class="p">:</span>
+                        <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="p">)</span>
+                    
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ComboForm</span> <span class="o">=</span> <span class="n">ComboForm</span>
+
+<div class="viewcode-block" id="ComboFormFactory.get_form_class"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.ComboFormFactory.get_form_class">[docs]</a>    <span class="k">def</span> <span class="nf">get_form_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ComboForm</span>
+</div>
+<div class="viewcode-block" id="ComboFormFactory.create_form"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.ComboFormFactory.create_form">[docs]</a>    <span class="k">def</span> <span class="nf">create_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">POST</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ComboForm</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+<span class="c"># Django&#39;s built-in ImageField doesn&#39;t work on AppEngine because</span>
+<span class="c"># it relies on unavailable PIL APIs. Here&#39;s my own version that works.</span>
+</div></div>
+<div class="viewcode-block" id="image_bytes_are_valid"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.image_bytes_are_valid">[docs]</a><span class="k">def</span> <span class="nf">image_bytes_are_valid</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="AppEngineImageField"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.AppEngineImageField">[docs]</a><span class="k">class</span> <span class="nc">AppEngineImageField</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">FileField</span><span class="p">):</span>
+    <span class="n">default_error_messages</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;invalid_image&#39;</span><span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s">u&quot;Upload a valid image. The file you uploaded was either not an image or was a corrupted image.&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    
+<div class="viewcode-block" id="AppEngineImageField.clean"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.forms.AppEngineImageField.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">raw_file</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AppEngineImageField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">initial</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">raw_file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">initial</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">initial</span>
+            
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">):</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;content&#39;</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="k">if</span> <span class="nb">bytes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_messages</span><span class="p">[</span><span class="s">&#39;invalid_image&#39;</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">image_bytes_are_valid</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_messages</span><span class="p">[</span><span class="s">&#39;invalid_image&#39;</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="s">&#39;seek&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">raw_file</span><span class="o">.</span><span class="n">seek</span><span class="p">):</span>
+            <span class="n">raw_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">raw_file</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

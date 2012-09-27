@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_core.middleware &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_core.middleware</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">add_to_builtins</span>
+
+
+<span class="n">TYPE_KEY</span> <span class="o">=</span> <span class="s">&quot;t-&quot;</span>
+<span class="n">OBJ_KEY</span> <span class="o">=</span> <span class="s">&quot;o-&quot;</span>
+<span class="n">START_KEY</span> <span class="o">=</span> <span class="s">&quot;s-&quot;</span>
+<span class="n">END_KEY</span> <span class="o">=</span> <span class="s">&quot;e-&quot;</span>
+<span class="n">DIM_KEY</span> <span class="o">=</span> <span class="s">&quot;d-&quot;</span>
+<span class="n">SCROLL_KEY</span> <span class="o">=</span> <span class="s">&quot;c-&quot;</span>
+<span class="n">RETURN_KEY</span> <span class="o">=</span> <span class="s">&quot;z-&quot;</span>
+<span class="n">SIMPLEBOX_KEY</span> <span class="o">=</span> <span class="s">&quot;i-&quot;</span>
+<span class="n">SEARCH_KEY</span> <span class="o">=</span> <span class="s">&quot;r-&quot;</span>
+<span class="n">CTYPE_KEY</span> <span class="o">=</span> <span class="s">&quot;l-&quot;</span>
+<span class="n">PHASE_KEY</span> <span class="o">=</span> <span class="s">&quot;p-&quot;</span>
+<span class="n">S_KEY</span> <span class="o">=</span> <span class="s">&quot;i-&quot;</span>
+<span class="n">STR_KEY</span> <span class="o">=</span> <span class="s">&quot;k-&quot;</span>
+
+
+<div class="viewcode-block" id="human_readable_dim"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.middleware.human_readable_dim">[docs]</a><span class="k">def</span> <span class="nf">human_readable_dim</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s">&#39;h&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;Hot&#39;</span>
+    <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s">&#39;c&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;Controversial&#39;</span>
+    <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s">&#39;n&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;New&#39;</span>
+
+</div>
+<div class="viewcode-block" id="UrlMiddleware"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.middleware.UrlMiddleware">[docs]</a><span class="k">class</span> <span class="nc">UrlMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class works in conjunction with the pp_url tag to populate requests with</span>
+<span class="sd">    a model instance and/or a numerical range that can be used in pagination.</span>
+<span class="sd">    This also maintains a queue of recently visited urls, that can be used as &#39;breadcrumbs&#39;</span>
+<span class="sd">        for ease in navigation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UrlMiddleware.process_request"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.middleware.UrlMiddleware.process_request">[docs]</a>    <span class="k">def</span> <span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+
+        <span class="n">content_type_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TYPE_KEY</span><span class="p">)</span>
+        <span class="n">obj_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">OBJ_KEY</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">START_KEY</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">END_KEY</span><span class="p">)</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">DIM_KEY</span><span class="p">)</span>
+        <span class="n">scroll_to</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SCROLL_KEY</span><span class="p">)</span>
+        <span class="n">returnurl</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RETURN_KEY</span><span class="p">)</span>
+        <span class="n">simplebox</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SIMPLEBOX_KEY</span><span class="p">)</span>
+        <span class="n">search</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SEARCH_KEY</span><span class="p">)</span>
+        <span class="n">str_key</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">STR_KEY</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">search</span> <span class="o">=</span> <span class="n">search</span>
+
+        <span class="k">if</span> <span class="n">simplebox</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">simplebox</span> <span class="o">=</span> <span class="n">simplebox</span>
+
+        <span class="k">if</span> <span class="n">content_type_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">obj_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">content_type_id</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">content_type</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_id</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">str_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cached_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_label</span><span class="o">=</span><span class="s">&quot;pirate_ranking&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&quot;cached_url&quot;</span><span class="p">)</span>
+                <span class="n">cached_model</span> <span class="o">=</span> <span class="n">cached_type</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+                <span class="n">cached</span> <span class="o">=</span> <span class="n">cached_model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="n">str_key</span><span class="p">)</span>
+                <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">cached</span><span class="o">.</span><span class="n">ctype_pk</span><span class="p">)</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">content_type</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">cached</span><span class="o">.</span><span class="n">obj_pk</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">rangelist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">div</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">multiple</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">div</span><span class="p">)</span>
+            <span class="n">start_range</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">multiple</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">itr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_range</span><span class="p">,</span> <span class="n">start_range</span> <span class="o">+</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+                <span class="n">rangelist</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">itr</span><span class="p">,</span> <span class="n">itr</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
+                <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">rangelist</span> <span class="o">=</span> <span class="n">rangelist</span>
+
+        <span class="k">if</span> <span class="n">returnurl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">returnurl</span> <span class="o">=</span> <span class="n">returnurl</span>
+
+        <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">dim</span>
+
+        <span class="k">if</span> <span class="n">scroll_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">scroll_to</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">scroll_to_div</span> <span class="o">=</span> <span class="n">scroll_to</span>
+
+        <span class="k">if</span> <span class="n">obj_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="c">#deferred.defer(create_view, request.user.username, request.META.get(&#39;REMOTE_ADDR&#39;), obj_id, _countdown=10)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ##TODO:</span>
+<span class="sd">        ##THIS SHOULD BE REWRITTEN TO ONLY TAKE INTO ACCOUNT WHAT WE WANT TO SAVE</span>
+<span class="sd">        request_path = request.get_full_path()</span>
+<span class="sd">        name = request_path</span>
+<span class="sd">        if request_path != &#39;/favicon.ico&#39; and request_path[0:7] != &#39;/submit&#39; and request_path not in [&#39;update_video_votes&#39;,</span>
+<span class="sd">                    &#39;add_video_vote&#39;, &#39;/starvote/&#39;, &#39;/logout/&#39;, &#39;/spectrumvote/&#39;, &#39;/&#39;] and request_path[0:6] not in [&#39;/reset&#39;,</span>
+<span class="sd">                                                                                &#39;/uploa&#39;] and request.path[0:9] != &#39;/password&#39;:</span>
+<span class="sd">                try: request.session[&#39;currently_visiting&#39;]</span>
+<span class="sd">                except: request.session[&#39;currently_visiting&#39;] = request_path</span>
+<span class="sd">                if request.session[&#39;currently_visiting&#39;] != request_path:</span>
+<span class="sd">                    try:</span>
+<span class="sd">                        visit_list = list(request.session[&#39;last_visited&#39;])</span>
+<span class="sd">                    except:</span>
+<span class="sd">                        visit_list = []</span>
+<span class="sd">                    if len(visit_list) &gt;= 8:</span>
+<span class="sd">                        try: visit_list.pop(0)</span>
+<span class="sd">                        except: pass #no visit_list</span>
+<span class="sd">                    try: #name logic goes here</span>
+<span class="sd">                        #you have request.object and content_type</span>
+<span class="sd">                        if request.path[0:4] == &#39;/iss&#39;: #for issue list</span>
+<span class="sd">                                icon = str(request.dimension).upper()[0]</span>
+<span class="sd">                                if content_type_id is not None and obj_id is not None:</span>
+<span class="sd">                                    t_name = str(request.object.summary) + &quot; issues&quot;</span>
+<span class="sd">                                else: </span>
+<span class="sd">                                    t_nam = &quot;issues&quot;</span>
+<span class="sd">                                try: name = human_readable_dim(str(request.dimension)) + &quot; &quot; + t_nam</span>
+<span class="sd">                                except: name = &quot;hot &quot; + t_nam  </span>
+<span class="sd">                        elif request.path[0:4] == &#39;/top&#39;:</span>
+<span class="sd">                            name = &quot;topics&quot;</span>
+<span class="sd">                            icon = &#39;O&#39;</span>
+<span class="sd">                        elif request.path[0:4] == &#39;/wel&#39;:</span>
+<span class="sd">                            name = &quot;welcome&quot;</span>
+<span class="sd">                            icon = &#39;O&#39;</span>
+<span class="sd">                        elif request.path[0:4] == &#39;/faq&#39;:</span>
+<span class="sd">                            name = &#39;FAQ&#39;</span>
+<span class="sd">                            icon = &#39;O&#39;</span>
+<span class="sd">                        elif content_type_id is not None and obj_id is not None:</span>
+<span class="sd">                            if request.path[0:4] == &#39;/det&#39;: #for details</span>
+<span class="sd">                                name = str(request.object.summary)</span>
+<span class="sd">                                ctype = ContentType.objects.get(pk=content_type_id)</span>
+<span class="sd">                                icon = str(ctype)[0].upper()</span>
+<span class="sd">                            elif request.path[0:4] == &#39;/use&#39;:</span>
+<span class="sd">                                name = str(request.object.username)</span>
+<span class="sd">                                icon = &#39;U&#39;</span>
+<span class="sd">                    except:</span>
+<span class="sd">                        name = None</span>
+<span class="sd">                    try:</span>
+<span class="sd">                        if name != None and name != request_path and (name, request_path,datetime.datetime.now(),icon) not in visit_list:</span>
+<span class="sd">                            try:</span>
+<span class="sd">                                if visit_list[-1][0] != name: visit_list.append((name, request_path,datetime.datetime.now(),icon))</span>
+<span class="sd">                            except: visit_list.append((name, request_path, datetime.datetime.now(),icon))</span>
+<span class="sd">                    except KeyError: pass #first visit</span>
+<span class="sd">                    request.session[&#39;last_visited&#39;] = visit_list</span>
+<span class="sd">        if request_path != &#39;/favicon.ico&#39; and request_path[0:7] != &#39;/submit&#39; and request_path not in [&#39;update_video_votes&#39;,&#39;add_video_vote&#39;,&#39;/starvote/&#39;, &#39;/logout/&#39;, &#39;/spectrumvote/&#39;,&#39;/&#39;] and request_path[0:6] not in [&#39;/reset&#39;,&#39;/uploa&#39;] and request.path[0:9] != &#39;/password&#39;:</span>
+<span class="sd">            request.session[&#39;currently_visiting&#39;] = request_path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div></div>
+<div class="viewcode-block" id="AddToBuiltinsMiddleware"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.middleware.AddToBuiltinsMiddleware">[docs]</a><span class="k">class</span> <span class="nc">AddToBuiltinsMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AddToBuiltinsMiddleware.process_request"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.middleware.AddToBuiltinsMiddleware.process_request">[docs]</a>    <span class="k">def</span> <span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="c"># This adds all tags registered separately through native_tags to the builtins</span>
+        <span class="n">add_to_builtins</span><span class="p">(</span><span class="s">&#39;native_tags.templatetags.native&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

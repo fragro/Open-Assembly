@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_badges.models &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_badges.models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">exceptions</span> <span class="kn">import</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ValueError</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">SuspiciousOperation</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes</span> <span class="kn">import</span> <span class="n">generic</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_noop</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">pirate_signals.models</span> <span class="kn">import</span> <span class="n">notification_send</span>
+
+<span class="c"># Create your models here.</span>
+
+<span class="k">class</span> <span class="nc">BadgeType</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+      
+<span class="k">class</span> <span class="nc">BadgeDimension</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">help_text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">badge_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">BadgeType</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">modified_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">,</span>
+                                      <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;content type&#39;</span><span class="p">),</span>
+                                      <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;content_type_set_for_</span><span class="si">%(class)s</span><span class="s">&quot;</span><span class="p">,</span><span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">test_int</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c">#argument for test function</span>
+    <span class="n">test_func</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c">#see below for test functions</span>
+        
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Main badge model to tie badge dimensions to users</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">Badge</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">BadgeDimension</span><span class="p">)</span>
+    <span class="n">badge_type_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Badge Type Id&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+            
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="o">.</span><span class="n">name</span>
+    
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;user&quot;</span><span class="p">,</span> <span class="s">&quot;dimension&quot;</span><span class="p">)</span>
+        
+        
+    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;/index.html#badges/_cbadge&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+        
+
+<div class="viewcode-block" id="create_badge_dimension"><a class="viewcode-back" href="../../../openassembly.pirate_badges.html#openassembly.pirate_badges.models.create_badge_dimension">[docs]</a><span class="k">def</span> <span class="nf">create_badge_dimension</span><span class="p">(</span><span class="n">verbose_name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">badge_type</span><span class="p">,</span> <span class="n">ctype</span><span class="p">,</span> <span class="n">test_int</span><span class="p">,</span> <span class="n">test_func</span><span class="p">):</span>
+    <span class="n">bt</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">BadgeType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">badge_type</span><span class="p">)</span>
+    <span class="n">bd</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">BadgeDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">verbose_name</span><span class="o">=</span><span class="n">verbose_name</span><span class="p">,</span> 
+                        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="n">help_text</span><span class="p">,</span> 
+                        <span class="n">badge_type</span><span class="o">=</span><span class="n">bt</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">,</span>
+                        <span class="n">test_int</span><span class="o">=</span><span class="n">test_int</span><span class="p">,</span> <span class="n">test_func</span><span class="o">=</span><span class="n">test_func</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bd</span>
+    </div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Different methods for testing whether a user gets a badge or not,</span>
+<span class="sd">tests may be count of contents created, actions taken and verified,</span>
+<span class="sd">number of votes on that content, or tests unique to a single content type</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="check_badges"><a class="viewcode-back" href="../../../openassembly.pirate_badges.html#openassembly.pirate_badges.models.check_badges">[docs]</a><span class="k">def</span> <span class="nf">check_badges</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="n">new_badges</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">dims</span> <span class="o">=</span> <span class="n">BadgeDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">bd</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Badge</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span><span class="n">dimension</span><span class="o">=</span><span class="n">bd</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">savebadge</span> <span class="o">=</span> <span class="n">test_badge</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">bd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">savebadge</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">Badge</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span><span class="n">dimension</span><span class="o">=</span><span class="n">bd</span><span class="p">,</span> <span class="n">badge_type_id</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">badge_type</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">b</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">notification_send</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="n">obj</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="n">reply_to</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="test_badge"><a class="viewcode-back" href="../../../openassembly.pirate_badges.html#openassembly.pirate_badges.models.test_badge">[docs]</a><span class="k">def</span> <span class="nf">test_badge</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">bd</span><span class="o">.</span><span class="n">test_func</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">count_test</span><span class="p">({</span><span class="s">&#39;model&#39;</span><span class="p">:</span><span class="n">bd</span><span class="o">.</span><span class="n">content_type</span><span class="o">.</span><span class="n">model_class</span><span class="p">(),</span> 
+                            <span class="s">&#39;obj&#39;</span><span class="p">:</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;test_int&#39;</span><span class="p">:</span><span class="n">bd</span><span class="o">.</span><span class="n">test_int</span><span class="p">})</span>
+    <span class="k">elif</span> <span class="n">bd</span><span class="o">.</span><span class="n">test_func</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">voted_on_test</span><span class="p">({</span><span class="s">&#39;model&#39;</span><span class="p">:</span><span class="n">bd</span><span class="o">.</span><span class="n">content_type</span><span class="o">.</span><span class="n">model_class</span><span class="p">(),</span>
+                                    <span class="s">&#39;test_int&#39;</span><span class="p">:</span><span class="n">bd</span><span class="o">.</span><span class="n">test_int</span><span class="p">,</span> <span class="s">&#39;obj&#39;</span><span class="p">:</span><span class="n">obj</span><span class="p">})</span>
+    <span class="k">elif</span> <span class="n">bd</span><span class="o">.</span><span class="n">test_func</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">count_test</span><span class="p">({</span><span class="s">&#39;model&#39;</span><span class="p">:</span><span class="n">bd</span><span class="o">.</span><span class="n">content_type</span><span class="o">.</span><span class="n">model_class</span><span class="p">(),</span> 
+                            <span class="s">&#39;obj&#39;</span><span class="p">:</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;test_int&#39;</span><span class="p">:</span><span class="n">bd</span><span class="o">.</span><span class="n">test_int</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+    </div>
+<div class="viewcode-block" id="tag_test"><a class="viewcode-back" href="../../../openassembly.pirate_badges.html#openassembly.pirate_badges.models.tag_test">[docs]</a><span class="k">def</span> <span class="nf">tag_test</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;obj&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;test_int&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">Tag</span><span class="p">)</span>
+    <span class="n">objs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">initiator</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">ini_content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">:</span> <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+    </div>
+<div class="viewcode-block" id="count_test"><a class="viewcode-back" href="../../../openassembly.pirate_badges.html#openassembly.pirate_badges.models.count_test">[docs]</a><span class="k">def</span> <span class="nf">count_test</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;obj&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;test_int&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">objs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">:</span> <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+    
+    </div>
+<div class="viewcode-block" id="voted_on_test"><a class="viewcode-back" href="../../../openassembly.pirate_badges.html#openassembly.pirate_badges.models.voted_on_test">[docs]</a><span class="k">def</span> <span class="nf">voted_on_test</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;test_int&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;obj&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">objs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="n">objs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">:</span> <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

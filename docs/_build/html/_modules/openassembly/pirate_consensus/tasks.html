@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_consensus.tasks &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_consensus.tasks</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">celery.task</span> <span class="kn">import</span> <span class="n">task</span>
+<span class="kn">import</span> <span class="nn">pytz</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pyvotecore.schulze_method</span> <span class="kn">import</span> <span class="n">SchulzeMethod</span>
+<span class="kn">from</span> <span class="nn">pyvotecore.schulze_stv</span> <span class="kn">import</span> <span class="n">SchulzeSTV</span>
+<span class="kn">from</span> <span class="nn">pirate_consensus.models</span> <span class="kn">import</span> <span class="n">ConfirmRankedVote</span><span class="p">,</span> <span class="n">RankedVote</span><span class="p">,</span> <span class="n">RankedDecision</span><span class="p">,</span> <span class="n">Consensus</span><span class="p">,</span> <span class="n">UpDownVote</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">GroupSettings</span><span class="p">,</span> <span class="n">MyGroup</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scheduled phasechange task, moves consensus object from nomination</span>
+<span class="sd">to voting phase and voting to decision phase. Events should be based</span>
+<span class="sd">on a timedelta generated at the time of the proposal generation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="local_tz_to_utc"><a class="viewcode-back" href="../../../openassembly.pirate_consensus.html#openassembly.pirate_consensus.tasks.local_tz_to_utc">[docs]</a><span class="k">def</span> <span class="nf">local_tz_to_utc</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="n">phase_change_dt</span><span class="p">):</span>
+    <span class="n">dt1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">phase_change_dt</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M&#39;</span><span class="p">)</span>
+    <span class="n">dt1</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dt1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">dt1</span><span class="p">)</span>
+
+</div>
+<span class="nd">@task</span><span class="p">(</span><span class="n">ignore_result</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span><span class="o">.</span><span class="n">nextphase</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">phasname</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span><span class="o">.</span><span class="n">phasename</span>
+    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span><span class="o">.</span><span class="n">nextphase</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">complete</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="get_consensus"><a class="viewcode-back" href="../../../openassembly.pirate_consensus.html#openassembly.pirate_consensus.tasks.get_consensus">[docs]</a><span class="k">def</span> <span class="nf">get_consensus</span><span class="p">(</span><span class="n">consensus</span><span class="p">):</span>
+    <span class="n">consent</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">,</span> <span class="n">vote__gt</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">dissent</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">,</span> <span class="n">vote__lt</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cons_perc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">consent</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">consent</span> <span class="o">+</span> <span class="n">dissent</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;consent: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">consent</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;dissent: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dissent</span><span class="p">)</span>
+        <span class="n">cons_perc</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">cons_perc</span>
+</div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Run this task on Conesnsu objects attached to questions. Shifts timed decisions.</span>
+<span class="sd">Also takes care of determining the winners, so this possibly computationally expensive</span>
+<span class="sd">task is offloaded to the worker</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">ignore_result</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">initiate_nextphase</span><span class="p">(</span><span class="n">consensus</span><span class="p">):</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">initiate_nextphase</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Initiating Next Phase for: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">summary</span><span class="p">))</span>
+
+    <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span> <span class="o">=</span> <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span><span class="o">.</span><span class="n">nextphase</span>
+    <span class="n">consensus</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span><span class="o">.</span><span class="n">phasename</span>
+
+    <span class="n">mygroups</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+    <span class="n">num_members</span> <span class="o">=</span> <span class="n">mygroups</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">curphase</span><span class="o">.</span><span class="n">nextphase</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c">#get the group settings</span>
+        <span class="n">settings</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">GroupSettings</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c">#iterate decisions made</span>
+        <span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">decisions</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="c">#if this question does not pass consensus we do not accept, however ignore reporting</span>
+        <span class="c">#this gives people an opportunity to not agree with the need for the question itself</span>
+        <span class="n">consensus</span><span class="o">.</span><span class="n">consensus_percent</span> <span class="o">=</span> <span class="n">get_consensus</span><span class="p">(</span><span class="n">consensus</span><span class="p">)</span>
+        <span class="n">consensus</span><span class="o">.</span><span class="n">reporting_percent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_members</span><span class="p">)</span>
+        <span class="n">cons_passed</span> <span class="o">=</span> <span class="n">test_if_passes</span><span class="p">(</span><span class="n">consensus</span><span class="o">.</span><span class="n">consensus_percent</span><span class="p">,</span> <span class="n">consensus</span><span class="o">.</span><span class="n">reporting_percent</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">ignore_reporting</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="n">winner</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">passes</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c">#if we accept all winners no need for ranking</span>
+        <span class="k">if</span> <span class="n">consensus</span><span class="o">.</span><span class="n">winners</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c">#get nominations and ranked votes</span>
+            <span class="n">nominations</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent_pk</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="c">#currently supports single winner, in the future we check here for multiple winner or single winner</span>
+            <span class="n">confirmed</span> <span class="o">=</span> <span class="n">ConfirmRankedVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">ballot_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">user_has_ranked</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">confirmed</span><span class="p">:</span>
+                <span class="n">user_has_ranked</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+                <span class="n">rv</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">nom_cons</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">RankedVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;ranked_vote&#39;</span><span class="p">)])</span>
+                <span class="n">ballot_dict</span><span class="p">[</span><span class="n">rv</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c">#for those that didnt rank vote, we can sample from their updownvotes</span>
+            <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">user</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">)]:</span>
+                <span class="k">if</span> <span class="n">user</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_has_ranked</span><span class="p">:</span>
+                    <span class="n">user_ranks</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">print</span> <span class="n">nominations</span>
+                    <span class="k">for</span> <span class="n">nom</span> <span class="ow">in</span> <span class="n">nominations</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">vote</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">nom</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+                            <span class="n">user_ranks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vote</span><span class="p">)</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="k">print</span> <span class="s">&#39;novote: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nom</span><span class="p">)</span>
+                    <span class="n">user_ranks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">user_ranks</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">vote</span><span class="p">)</span>
+                    <span class="n">user_ranks</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+                    <span class="n">rv</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">user_ranks</span><span class="p">])</span>
+                    <span class="n">ballot_dict</span><span class="p">[</span><span class="n">rv</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c">#load up the vote dict for python-vote-core</span>
+            <span class="n">blist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ballot_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">ballot</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">ballot</span> <span class="o">!=</span> <span class="p">[]:</span>
+                    <span class="n">blist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;count&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="s">&#39;ballot&#39;</span><span class="p">:</span> <span class="n">ballot</span><span class="p">})</span>
+            <span class="k">print</span> <span class="s">&#39;calc schulze&#39;</span>
+            <span class="c">#right now there is only single winner schulze, add mechanism in for multi later on</span>
+            <span class="n">noms_passed</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">blist</span> <span class="o">!=</span> <span class="p">[]:</span>
+                <span class="c">#scz = SchulzeMethod(blist, ballot_notation=&quot;grouping&quot;).as_dict()</span>
+                <span class="n">scz</span> <span class="o">=</span> <span class="n">SchulzeSTV</span><span class="p">(</span><span class="n">blist</span><span class="p">,</span> <span class="n">required_winners</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">winners</span><span class="p">,</span> <span class="n">ballot_notation</span><span class="o">=</span><span class="s">&quot;grouping&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
+                <span class="k">print</span> <span class="n">scz</span>
+                <span class="n">schulze_winners</span> <span class="o">=</span> <span class="n">scz</span><span class="p">[</span><span class="s">&#39;winners&#39;</span><span class="p">]</span>
+                <span class="c">#make sure it passes consensus also</span>
+                <span class="k">for</span> <span class="n">nom</span> <span class="ow">in</span> <span class="n">nominations</span><span class="p">:</span>
+                    <span class="n">nom</span><span class="o">.</span><span class="n">consensus_percent</span> <span class="o">=</span> <span class="n">get_consensus</span><span class="p">(</span><span class="n">nom</span><span class="p">)</span>
+                    <span class="n">nom</span><span class="o">.</span><span class="n">reporting_percent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">nom</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_members</span><span class="p">)</span>
+                    <span class="n">nom</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="n">noms_passed</span> <span class="o">=</span> <span class="n">test_if_passes</span><span class="p">(</span><span class="n">nom</span><span class="o">.</span><span class="n">consensus_percent</span><span class="p">,</span> <span class="n">nom</span><span class="o">.</span><span class="n">reporting_percent</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">ignore_reporting</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">noms_passed</span> <span class="o">==</span> <span class="bp">True</span> <span class="ow">and</span> <span class="n">nom</span><span class="o">.</span><span class="n">pk</span> <span class="ow">in</span> <span class="n">schulze_winners</span><span class="p">:</span>
+                        <span class="n">passes</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="n">winner</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nom</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                        <span class="k">print</span> <span class="s">&#39;set winner via schulze and passing&#39;</span>
+            <span class="c">#there was no ranked winner or the ranked winner failed to consense (weird side case), cycle through all and choose</span>
+        <span class="k">if</span> <span class="n">passes</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="c">#if this is None, accept all winners</span>
+            <span class="k">if</span> <span class="n">consensus</span><span class="o">.</span><span class="n">winners</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">num_winners</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nominations</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num_winners</span> <span class="o">=</span> <span class="n">consensus</span><span class="o">.</span><span class="n">winners</span>
+            <span class="n">consensii</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">nom</span> <span class="ow">in</span> <span class="n">nominations</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_consensus</span><span class="p">(</span><span class="n">nom</span><span class="p">),</span> <span class="n">nom</span><span class="p">)</span>
+                <span class="n">consensii</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="n">nom</span><span class="o">.</span><span class="n">consensus_percent</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">nom</span><span class="o">.</span><span class="n">reporting_percent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">nom</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_members</span><span class="p">)</span>
+                <span class="n">nom</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">consensii</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">consensii</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">consensii</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">nom_cons</span><span class="p">,</span> <span class="n">nom</span> <span class="ow">in</span> <span class="n">consensii</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_winners</span><span class="p">]:</span>
+                <span class="c">##calculate reporting percentage, the best is the winner</span>
+                <span class="n">noms_passed</span> <span class="o">=</span> <span class="n">test_if_passes</span><span class="p">(</span><span class="n">nom_cons</span><span class="p">,</span> <span class="n">nom</span><span class="o">.</span><span class="n">reporting_percent</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">ignore_reporting</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">noms_passed</span><span class="p">:</span>
+                    <span class="n">winner</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nom</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                    <span class="n">passes</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">print</span> <span class="s">&#39;noms passed &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">noms_passed</span><span class="p">)</span>
+        <span class="c">#if we still haven&#39;t</span>
+        <span class="k">if</span> <span class="n">passes</span> <span class="o">==</span> <span class="bp">True</span> <span class="ow">and</span> <span class="n">cons_passed</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">consensus</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="s">&#39;pass&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">consensus</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="s">&#39;fail&#39;</span>
+
+        <span class="c">#what to do if there is no winner?</span>
+        <span class="c">#decision failed, no one voted in time</span>
+        <span class="n">rd</span> <span class="o">=</span> <span class="n">RankedDecision</span><span class="p">(</span><span class="n">passed</span><span class="o">=</span><span class="n">passes</span> <span class="ow">and</span> <span class="n">cons_passed</span><span class="p">,</span>
+                <span class="n">winner</span><span class="o">=</span><span class="n">winner</span><span class="p">,</span>
+                <span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">,</span>
+                <span class="n">consensus_percent</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">consensus_percent</span><span class="p">,</span>
+                <span class="n">reporting_percent</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">reporting_percent</span><span class="p">,</span>
+                <span class="n">submit_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="n">algorithm</span><span class="o">=</span><span class="s">&#39;Schulze Method Single Winner&#39;</span><span class="p">)</span>
+        <span class="n">rd</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">complete</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">initiate_nextphase</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">consensus</span><span class="p">],</span> <span class="n">eta</span><span class="o">=</span><span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">decision_dt</span><span class="p">)</span>
+
+    <span class="n">consensus</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">consensus</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Next Phase Transition {0} completed&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">consensus</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">summary</span><span class="p">))</span>
+
+
+<span class="c">#Tests to see if these objects pass the consensus/reporting settings of the groups</span>
+<div class="viewcode-block" id="test_if_passes"><a class="viewcode-back" href="../../../openassembly.pirate_consensus.html#openassembly.pirate_consensus.tasks.test_if_passes">[docs]</a><span class="k">def</span> <span class="nf">test_if_passes</span><span class="p">(</span><span class="n">cons_perc</span><span class="p">,</span> <span class="n">report_perc</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">ignore_reporting</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cons_perc</span> <span class="o">&gt;=</span> <span class="n">settings</span><span class="o">.</span><span class="n">consensus_percentage</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">report_perc</span> <span class="o">&gt;=</span> <span class="n">settings</span><span class="o">.</span><span class="n">percent_reporting</span> <span class="ow">or</span> <span class="n">ignore_reporting</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

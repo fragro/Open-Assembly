@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_forum.templatetags.blobtags &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_forum.templatetags.blobtags</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">ForumDimension</span><span class="p">,</span> <span class="n">DimensionTracker</span>
+
+<span class="kn">from</span> <span class="nn">search.core</span> <span class="kn">import</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">oa_cache.models</span> <span class="kn">import</span> <span class="n">ListCache</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">Template</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pytz</span>
+
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">redirect</span>
+
+<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">URLValidator</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+
+<span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">cache</span> <span class="k">as</span> <span class="n">memcache</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core.middleware</span> <span class="kn">import</span> <span class="n">TYPE_KEY</span><span class="p">,</span> <span class="n">OBJ_KEY</span><span class="p">,</span> <span class="n">DIM_KEY</span><span class="p">,</span> <span class="n">START_KEY</span><span class="p">,</span> <span class="n">END_KEY</span><span class="p">,</span> <span class="n">PHASE_KEY</span>
+
+<span class="kn">from</span> <span class="nn">pirate_ranking.models</span> <span class="kn">import</span> <span class="n">get_ranked_list</span>
+<span class="kn">from</span> <span class="nn">pirate_sources.models</span> <span class="kn">import</span> <span class="n">URLSource</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">pirate_core</span> <span class="kn">import</span> <span class="n">HttpRedirectException</span><span class="p">,</span> <span class="n">namespace_get</span>
+<span class="kn">from</span> <span class="nn">pirate_consensus.models</span> <span class="kn">import</span> <span class="n">UpDownVote</span><span class="p">,</span> <span class="n">Consensus</span><span class="p">,</span> <span class="n">Phase</span><span class="p">,</span> <span class="n">PhaseLink</span>
+<span class="kn">from</span> <span class="nn">pirate_consensus.tasks</span> <span class="kn">import</span> <span class="n">initiate_nextphase</span><span class="p">,</span> <span class="n">local_tz_to_utc</span>
+
+<span class="kn">from</span> <span class="nn">pirate_reputation.models</span> <span class="kn">import</span> <span class="n">ReputationDimension</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">ForumBlob</span><span class="p">,</span> <span class="n">Question</span><span class="p">,</span> <span class="n">Edit</span><span class="p">,</span> <span class="n">Search</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span>  <span class="n">BlobEditForm</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.tasks</span> <span class="kn">import</span> <span class="n">create_edit</span>
+<span class="kn">from</span> <span class="nn">pirate_core.forms</span> <span class="kn">import</span> <span class="n">ComboFormFactory</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span><span class="p">,</span> <span class="n">MyGroup</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.forms</span> <span class="kn">import</span> <span class="n">TopicForm</span>
+
+<span class="kn">from</span> <span class="nn">pirate_profile.models</span> <span class="kn">import</span> <span class="n">Profile</span>
+
+<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">urlize</span>
+
+<span class="kn">from</span> <span class="nn">pirate_signals.models</span> <span class="kn">import</span> <span class="n">aso_rep_event</span><span class="p">,</span> <span class="n">update_agent</span>
+
+<span class="kn">from</span> <span class="nn">pirate_badges.models</span> <span class="kn">import</span> <span class="n">check_badges</span>
+
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block_decorator</span>
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">block_decorator</span><span class="p">(</span><span class="n">register</span><span class="p">)</span>
+
+<span class="c"># this function assignment lets us reuse the same code block a bunch of places</span>
+<span class="n">get_namespace</span> <span class="o">=</span> <span class="n">namespace_get</span><span class="p">(</span><span class="s">&#39;pp_blob&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_form"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.get_form">[docs]</a><span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+	<span class="c">#grabs the appropriate form for the text input corresponding to type from TYPE_CHOICES</span>
+	<span class="n">fd</span> <span class="o">=</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">fd</span><span class="o">.</span><span class="n">get_form</span><span class="p">(),</span> <span class="n">fd</span><span class="o">.</span><span class="n">get_model</span><span class="p">(),</span> <span class="n">fd</span><span class="o">.</span><span class="n">name</span>
+
+</div>
+<div class="viewcode-block" id="get_models"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.get_models">[docs]</a><span class="k">def</span> <span class="nf">get_models</span><span class="p">():</span>
+	<span class="c">#returns a list of child models for ForumBlob</span>
+	<span class="k">return</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_content</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</div>
+<span class="nd">@register.filter</span>    
+<div class="viewcode-block" id="subtract"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.subtract">[docs]</a><span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">value</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_if_forum_blob"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_if_forum_blob">[docs]</a><span class="k">def</span> <span class="nf">pp_if_forum_blob</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Retrieves blob help text.&quot;&quot;&quot;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span>  <span class="bp">None</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">obj</span><span class="o">.</span><span class="n">get_blob_key</span><span class="p">()</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;is_blob&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;is_blob&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_blob_help_text"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_blob_help_text">[docs]</a><span class="k">def</span> <span class="nf">pp_get_blob_help_text</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Retrieves blob help text.&quot;&quot;&quot;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">t</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">fd</span> <span class="o">=</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;help_text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">help_text</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;help_text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;KeyError: &lt; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &gt;Help Text&quot;</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_blob_dim_readable"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_blob_dim_readable">[docs]</a><span class="k">def</span> <span class="nf">pp_get_blob_dim_readable</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Retrieves blob dimension in human readable format.&quot;&quot;&quot;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">t</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">f</span> <span class="o">=</span> <span class="n">get_form</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="n">f</span> <span class="o">=</span> <span class="s">&#39;Error: Human Readable Dimension Not Found&#39;</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;dim_human_readable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_questions"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_questions">[docs]</a><span class="k">def</span> <span class="nf">pp_get_questions</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Retrieves blob dimension in human readable format.&quot;&quot;&quot;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">phase</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;phase&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">parent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">start</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">end</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">))</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The argument &#39;start=&#39; and &#39;end=&#39; to the pp_get_blob_list tag must be &quot;</span>
+								 <span class="s">&quot;provided in the form of an int&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">dimension</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The argument &#39;dimension=&#39; to the pp_get_blob_list tag must be &quot;</span>
+								 <span class="s">&quot;provided in the form of an string&quot;</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="s">&#39;/p/list/&#39;</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">START_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">END_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">DIM_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="s">&#39;/p/list/&#39;</span> <span class="o">+</span> <span class="n">TYPE_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctype</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">OBJ_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">START_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">END_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">DIM_KEY</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="c">#if phase is not None:</span>
+		<span class="c">#    key += &#39;/&#39; + PHASE_KEY + str(phase)</span>
+	<span class="n">l</span> <span class="o">=</span> <span class="n">ListCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s">&#39;proposals&#39;</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="s">&#39;issues&#39;</span><span class="p">)</span>
+
+	<span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">get_or_create_list</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{},</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tot_items</span>
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;blob_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cached_list</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_blob_subcontext"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_blob_subcontext">[docs]</a><span class="k">def</span> <span class="nf">pp_get_blob_subcontext</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	   This method receives a dimension and object, then parses that for the following</span>
+<span class="sd">	   special cases where dimensions do not provide enough context to the submit.html</span>
+<span class="sd">	   template. </span>
+<span class="sd">			*Subtypes: For instance the argument blob has subtypes of Stance. </span>
+<span class="sd">					   The specified stance can then be by supplying the </span>
+<span class="sd">					   object with the id of that stance. Then the blob form is </span>
+<span class="sd">					   aware of the type that should be specifed, so it is not</span>
+<span class="sd">					   manually necessary for the user to enter stance type.</span>
+
+<span class="sd">	   THis allows the template author to specify Stance with the dimension, thus</span>
+<span class="sd">	   allowing for links to create preloaded content, for instance &quot;Submit Nay Argument&quot;.</span>
+<span class="sd">	   *This template tag must encompass the pp_blob form tag.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="c">#ARGUMENT SUBTYPES</span>
+	<span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="s">&#39;yea&#39;</span><span class="p">:</span>
+		<span class="n">arg</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">Stance</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="s">&quot;yea&quot;</span><span class="p">)</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;dimension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;arg&#39;</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;sub&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;stance&#39;</span><span class="p">:</span> <span class="n">arg</span><span class="p">}</span>
+
+	<span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="s">&#39;nay&#39;</span><span class="p">:</span>
+		<span class="n">arg</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">Stance</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="s">&quot;nay&quot;</span><span class="p">)</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;dimension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;arg&#39;</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;sub&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;stance&#39;</span><span class="p">:</span> <span class="n">arg</span><span class="p">}</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;dimension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dimension</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;sub&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_check_codes"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_check_codes">[docs]</a><span class="k">def</span> <span class="nf">pp_check_codes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">codes</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">)</span>
+	<span class="n">cached_list</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">if</span> <span class="n">codes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">codes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="n">cached_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;cache&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cached_list</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;codes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">codes</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_blob_list"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_blob_list">[docs]</a><span class="k">def</span> <span class="nf">pp_get_blob_list</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	These tests are deprecated.</span>
+
+<span class="sd">	return output will optionally look for a topic or a</span>
+<span class="sd">	rng of items in order to further refine the list.</span>
+
+<span class="sd">	*Possible Dimension Arguments:</span>
+<span class="sd">		** hot: highly intereresting articles based on issue.interest</span>
+<span class="sd">		** new: latest content based on submit date</span>
+<span class="sd">		** top: those with the most votes</span>
+<span class="sd">		** cont: controversial issues that have the userbased divided</span>
+<span class="sd">		** numc: Ranked by number of commefrom pirate_issues.models import Topic, Issue, Rankingnts</span>
+
+<span class="sd">	The default dimension is &quot;new&quot; when no dimension is specified.</span>
+
+<span class="sd">	In order to generate a url that will provide rng information to this tag via</span>
+<span class="sd">	request.rng, use a url tag of the following form:</span>
+
+<span class="sd">	{% url pp-page template=&quot;filename.html&quot; start=0 end=20 %}</span>
+
+<span class="sd">	In this way, the tag can be invoked as follows:</span>
+
+<span class="sd">	{% pp-issue-list topic=topic rng=request.rng dimension=&quot;dim&quot; %}</span>
+<span class="sd">	   Do stuff with {{ pp-issue.issue_list }}</span>
+<span class="sd">	{% endpp-issue-list %}</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="c">#user  = kwargs.pop(&#39;user&#39;,  None)</span>
+	<span class="n">parent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">start</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">end</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">child</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;child&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">))</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The argument &#39;start=&#39; and &#39;end=&#39; to the pp_get_blob_list tag must be &quot;</span>
+								 <span class="s">&quot;provided in the form of an int&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">dimension</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The argument &#39;dimension=&#39; to the pp_get_blob_list tag must be &quot;</span>
+								 <span class="s">&quot;provided in the form of an string&quot;</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="s">&#39;list/&#39;</span> <span class="o">+</span> <span class="s">&#39;/-s&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/-e&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/-d&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="s">&#39;list/-t&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctype</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/-o&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/-s&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/-e&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/-d&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+
+	<span class="n">l</span> <span class="o">=</span> <span class="n">ListCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s">&#39;item&#39;</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="s">&quot;children&quot;</span><span class="p">)</span>
+
+	<span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">get_or_create_list</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{},</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tot_items</span>
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;blob_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cached_list</span>
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;cached&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+	<span class="c">#else:</span>
+	<span class="c">#    namespace[&#39;count&#39;] = cached_list[1]</span>
+	<span class="c">#    namespace[&#39;blob_list&#39;] = cached_list[0]</span>
+	<span class="c">#    namespace[&#39;cached&#39;] = True</span>
+
+	<span class="c">#issue list must be empty</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_forumdimension"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_forumdimension">[docs]</a><span class="k">def</span> <span class="nf">pp_get_forumdimension</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">	Returns a ForumDimension object with key=dimension</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">fd</span> <span class="o">=</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="n">fd</span> <span class="o">=</span> <span class="bp">None</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;forumdimension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fd</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="TypeForm"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.TypeForm">[docs]</a><span class="k">class</span> <span class="nc">TypeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+	<span class="n">ctype</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="s">u&#39;Content Type&#39;</span><span class="p">),</span>
+		<span class="n">queryset</span><span class="o">=</span><span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_content</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">is_child</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+
+<span class="c">###SOME HELPER FUNCTIONS THAT ARE DEFERRED FOR PP_BLOB_FORM</span></div>
+<div class="viewcode-block" id="defer_dimensiontracker_update"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.defer_dimensiontracker_update">[docs]</a><span class="k">def</span> <span class="nf">defer_dimensiontracker_update</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">fd</span> <span class="o">=</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="n">d</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">DimensionTracker</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+			<span class="n">d</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="mi">1</span>
+			<span class="n">usc</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="p">(</span><span class="n">div_id</span><span class="o">=</span><span class="s">&#39;#sort&#39;</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">ranking_dim</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">):</span>
+				<span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">ranking_dim</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">parent</span><span class="p">,</span> <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">dimension</span><span class="p">}</span>
+				<span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">d</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">children</span> <span class="o">+</span> <span class="mi">1</span>
+		<span class="n">d</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="k">pass</span>
+		<span class="c">#forumdimension doesn&#39;t work</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_blob_form"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_blob_form">[docs]</a><span class="k">def</span> <span class="nf">pp_blob_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;form_id = forms.CharField(widget=forms.HiddenInput(), initial=&quot;pp-issue-form&quot;)</span>
+<span class="sd">	This block tag can create or process forms either to create or to modify issues.</span>
+<span class="sd">	Usage is as follows:</span>
+
+<span class="sd">	{% pp_blob_form POST=request.POST path=request.path parent=request.object %}</span>
+<span class="sd">	   Do stuff with {{ pp-issue.form }}.</span>
+<span class="sd">	{% endpp_blob_form %}</span>
+
+<span class="sd">	This form has become a little overloaded.</span>
+
+<span class="sd">	&#39;&#39;&#39;</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">parent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">sub</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sub&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">edit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;edit&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="c">#subcontext imparted to form</span>
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;timezones&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">common_timezones</span>
+
+	<span class="k">if</span> <span class="n">parent</span> <span class="o">==</span> <span class="s">&#39;submit&#39;</span><span class="p">:</span>
+		<span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+	<span class="c">#for editting objects</span>
+	<span class="k">if</span> <span class="n">edit</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="n">blob_form</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">get_form</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="n">blob_form</span> <span class="o">=</span> <span class="n">BlobEditForm</span>
+		<span class="k">if</span> <span class="n">POST</span><span class="p">:</span>
+			<span class="c">#save editted form</span>
+			<span class="n">form</span> <span class="o">=</span> <span class="n">blob_form</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+			<span class="c">#get info for diff</span>
+			<span class="n">old_text</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">description</span>
+			<span class="n">blob</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+			<span class="n">cleaned_data</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+			<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cleaned_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+				<span class="nb">setattr</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+			<span class="c">#blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)</span>
+			<span class="n">blob</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+			<span class="n">new_text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">description</span>
+
+			<span class="c">#create edit</span>
+			<span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+
+			<span class="c">#compute diff using diff_match_patch from google</span>
+
+			<span class="n">create_edit</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">blob</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">ctype</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">new_text</span><span class="p">,</span> <span class="n">old_text</span><span class="p">])</span>
+		
+			<span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form_complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">form</span> <span class="o">=</span> <span class="n">blob_form</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+					<span class="n">form</span> <span class="o">=</span> <span class="n">blob_form</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;link&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">link</span><span class="p">)},</span> <span class="n">prefix</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="k">pass</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+	<span class="k">elif</span> <span class="n">dimension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+				<span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+		<span class="n">blob_form</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">get_form</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="n">fd</span> <span class="o">=</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+		<span class="c">#get appropriate form</span>
+
+		<span class="k">if</span> <span class="n">POST</span> <span class="ow">and</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+			<span class="n">comboform</span> <span class="o">=</span> <span class="n">ComboFormFactory</span><span class="p">(</span><span class="n">TopicForm</span><span class="p">(</span><span class="n">POST</span><span class="p">),</span> <span class="n">blob_form</span><span class="p">(</span><span class="n">POST</span><span class="p">))</span><span class="o">.</span><span class="n">ComboForm</span><span class="p">()</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comboform</span>
+			<span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="n">comboform</span><span class="o">.</span><span class="n">_forms</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+					<span class="c">#if this is a TopicForm, we must extract the parent</span>
+					<span class="k">if</span> <span class="s">&#39;group&#39;</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">:</span>
+						<span class="k">try</span><span class="p">:</span>
+							<span class="n">parent</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">summary</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">])</span>
+							<span class="n">cnt</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+							<span class="k">if</span> <span class="n">cnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+								<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;grouperrors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;You are not a member of that Group.&#39;</span>
+								<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+								<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+								<span class="k">return</span> <span class="n">output</span>
+						<span class="k">except</span><span class="p">:</span>
+							<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;grouperrors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;This Group does not exist.&#39;</span>
+							<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+							<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+							<span class="k">return</span> <span class="n">output</span>
+
+					<span class="k">else</span><span class="p">:</span>
+						<span class="c">#blob form</span>
+						<span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+							<span class="n">parent</span><span class="o">.</span><span class="n">children</span> <span class="o">+=</span> <span class="mi">1</span>
+							<span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+						<span class="n">blob</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+						<span class="n">blob</span><span class="o">.</span><span class="n">forumdimension</span> <span class="o">=</span> <span class="n">fd</span>
+						<span class="n">blob</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+						<span class="n">blob</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;blobdescription&#39;</span><span class="p">]</span>
+						<span class="c">#blob.description = urlize(blob.description, trim_url_limit=30, nofollow=True)</span>
+						<span class="n">blob</span><span class="o">.</span><span class="n">parent_pk</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">pk</span>
+						<span class="n">blob</span><span class="o">.</span><span class="n">parent_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+						<span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">Topic</span><span class="p">)</span>
+						<span class="k">if</span> <span class="n">blob</span><span class="o">.</span><span class="n">parent_type</span> <span class="o">!=</span> <span class="n">ctype</span><span class="p">:</span>
+							<span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">solutions</span> <span class="o">+=</span> <span class="mi">1</span>
+							<span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+							<span class="c">#####relevant to VOTING and TIME</span>
+							<span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+							<span class="n">now</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+						<span class="n">blob</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+						<span class="n">contype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">blob</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+
+						<span class="c">#CONSENSUS RELATED DENORMALIZATION</span>
+						<span class="c"># All ForumBlobs have consensus objects attached</span>
+						<span class="k">try</span><span class="p">:</span>
+							<span class="n">parent_cons</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+							<span class="k">if</span> <span class="n">parent_cons</span><span class="o">.</span><span class="n">child_vote_type</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+								<span class="n">cvt</span> <span class="o">=</span> <span class="n">parent_cons</span><span class="o">.</span><span class="n">child_vote_type</span>
+							<span class="k">else</span><span class="p">:</span>
+								<span class="n">cvt</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">UpDownVote</span><span class="p">)</span>
+						<span class="k">except</span><span class="p">:</span>
+							<span class="n">cvt</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">UpDownVote</span><span class="p">)</span>
+						<span class="n">cons</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">contype</span><span class="p">,</span>
+									<span class="n">object_pk</span><span class="o">=</span><span class="n">blob</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+									<span class="n">vote_type</span><span class="o">=</span><span class="n">cvt</span><span class="p">,</span>
+									<span class="n">parent_pk</span><span class="o">=</span><span class="n">blob</span><span class="o">.</span><span class="n">parent_pk</span><span class="p">)</span>
+
+						<span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+							<span class="n">cons</span><span class="o">.</span><span class="n">intiate_vote_distributions</span><span class="p">()</span>
+							<span class="c">#deprecated but lets holdon to phases for now</span>
+							<span class="n">cons</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="s">&quot;temp&quot;</span>
+							<span class="n">cons</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+						<span class="n">aso_rep_event</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">event_score</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">initiator</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">ReputationDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">blob</span><span class="o">.</span><span class="n">get_verbose_name</span><span class="p">()),</span> <span class="n">related_object</span><span class="o">=</span><span class="n">cons</span><span class="p">)</span>
+						<span class="n">update_agent</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">blob</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;content&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">blob</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">blob</span><span class="o">.</span><span class="n">pk</span><span class="p">])</span>
+						<span class="c">#check badges for this model on creation</span>
+						<span class="n">check_badges</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+
+						<span class="c">#update the dimensiontracker, used for sorting by content type</span>
+						<span class="c">#deferred.defer(defer_dimensiontracker_update, parent, dimension)</span>
+
+						<span class="c">#if is_new: #if this is a new issue/consensus, send signal for reputation</span>
+						<span class="c">#relationship_event.send(sender=issue,obj=issue,parent=issue.topic)</span>
+						<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">blob</span>
+						<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form_complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+						<span class="c">#provide context with extension path</span>
+						<span class="c">#raise HttpRedirectException(HttpResponseRedirect(path))</span>
+
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+					<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+					<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+					<span class="k">return</span> <span class="n">output</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">blob_form</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">get_form</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+			<span class="n">form</span> <span class="o">=</span> <span class="n">ComboFormFactory</span><span class="p">(</span><span class="n">TopicForm</span><span class="p">(),</span> <span class="n">blob_form</span><span class="p">())</span><span class="o">.</span><span class="n">ComboForm</span><span class="p">()</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;POST&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">POST</span><span class="p">,</span> <span class="n">parent</span>
+
+		<span class="c">#try to set ids for side effects</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cons</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;object_pk&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">pk</span>
+			<span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;content_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctype</span><span class="o">.</span><span class="n">pk</span>
+		<span class="k">except</span><span class="p">:</span>
+			 <span class="k">pass</span>
+
+	<span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">Topic</span><span class="p">):</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;parent_summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">summary</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">ForumBlob</span><span class="p">):</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;parent_summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">summary</span>
+		<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">User</span><span class="p">):</span>
+			<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;parent_summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">username</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_blob_child_dimension"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_blob_child_dimension">[docs]</a><span class="k">def</span> <span class="nf">pp_blob_child_dimension</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Takes an object from the context, identifies the submission</span>
+<span class="sd">	dimension for it&#39;s children, and returns the dimension to the context</span>
+<span class="sd">	as a str that can be used in a pp_url to redirect to submit.html page</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;dimension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">get_blob_key</span><span class="p">())</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;dimension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_blob_edits"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_blob_edits">[docs]</a><span class="k">def</span> <span class="nf">pp_blob_edits</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Takes an object from the context, identifies the submission</span>
+<span class="sd">	dimension for it&#39;s children, and returns the dimension to the context</span>
+<span class="sd">	as a str that can be used in a pp_url to redirect to submit.html page</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">start</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="n">end</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+	<span class="n">edit_num</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;edit_num&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">edit_num</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="n">edit_num</span> <span class="o">=</span> <span class="mi">1</span>
+	<span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="n">edits</span> <span class="o">=</span> <span class="n">Edit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">)</span>
+		<span class="n">cnt</span> <span class="o">=</span> <span class="n">edits</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">cnt</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">cnt</span><span class="o">-</span><span class="n">edit_num</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;latest_edit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edits</span><span class="p">[</span><span class="n">cnt</span><span class="o">-</span><span class="n">edit_num</span><span class="p">]</span>
+				<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;latest_edit_pk&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edits</span><span class="p">[</span><span class="n">cnt</span><span class="o">-</span><span class="n">edit_num</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span>
+				<span class="c">#namespace[&#39;edits&#39;] = edits[int(start):int(end)]</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;edit_itr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">+</span>  <span class="mi">1</span> <span class="o">-</span> <span class="n">edit_num</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_blob_getchildren"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_blob_getchildren">[docs]</a><span class="k">def</span> <span class="nf">pp_blob_getchildren</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Takes an object from the context, identifies the submission</span>
+<span class="sd">	dimension for it&#39;s children, and returns the dimension to the context</span>
+<span class="sd">	as a str that can be used in a pp_url to redirect to submit.html page</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="n">mm</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">model_class</span><span class="p">()</span>
+		<span class="n">c</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_contenttypes"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_contenttypes">[docs]</a><span class="k">def</span> <span class="nf">pp_get_contenttypes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Renders a list of content types, used</span>
+<span class="sd">	for sorting the main list by content type.</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="c">#user = kwargs.get(&#39;user&#39;, None)</span>
+
+	<span class="n">fds</span> <span class="o">=</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_content</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+
+	<span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">fds</span><span class="p">:</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">d</span> <span class="o">=</span> <span class="n">DimensionTracker</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="n">fd</span><span class="p">,</span> <span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">children</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="n">blob_form</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">get_form</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+				<span class="k">if</span> <span class="ow">not</span> <span class="n">fd</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
+					<span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fd</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">verbose_name</span><span class="p">))</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">pass</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;content_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_show_blobchoices"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_show_blobchoices">[docs]</a><span class="k">def</span> <span class="nf">pp_show_blobchoices</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;Takes a choice from a list of possible objects that can be created,</span>
+<span class="sd">		and dynamically loads a form with the required and not required fields.</span>
+
+<span class="sd">		Populates the context with a pp_blob.blob_form_type, pp_blob.blob_form,</span>
+<span class="sd">		and pp_blob.blob_form_html that provide the instance with a form</span>
+<span class="sd">		and html template for inclusion in the template.</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="n">choices</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">groups</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+		<span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s">&quot;$(&#39;#id_group&#39;).val(&#39;{{object.topic.summary}}&#39;);&quot;</span><span class="p">)</span>
+		<span class="n">c</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s">&quot;object&quot;</span><span class="p">:</span> <span class="n">g</span><span class="p">})</span>
+		<span class="n">url</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>        
+		<span class="n">choices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">g</span><span class="o">.</span><span class="n">topic</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span>
+
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;choices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">choices</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_object"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_object">[docs]</a><span class="k">def</span> <span class="nf">pp_get_object</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Given an object id and model, this returns the object associated.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">model</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="n">object_pk</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object_pk&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">obj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">object_pk</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="n">obj</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+		<span class="c">#try to see if this is a ctype_pk</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+			<span class="n">obj</span> <span class="o">=</span> <span class="n">ctype</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">object_pk</span><span class="p">)</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="k">pass</span>
+	<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;content_object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_search_items"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.pp_get_search_items">[docs]</a><span class="k">def</span> <span class="nf">pp_get_search_items</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+	<span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+	<span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+	<span class="n">search_key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;search_key&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+	<span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">if</span> <span class="n">search_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+		<span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">registered</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">get_models</span><span class="p">():</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">mod</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+				<span class="k">if</span> <span class="n">mod</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registered</span><span class="p">:</span>
+					<span class="n">ctype_pk</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span><span class="o">.</span><span class="n">pk</span>
+					<span class="n">s</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">search_key</span><span class="p">)</span>
+					<span class="n">results</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ctype_pk</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span>
+					<span class="n">num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+					<span class="n">registered</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+
+		<span class="c">#search for topics</span>
+		<span class="n">s</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">Topic</span><span class="p">,</span> <span class="n">search_key</span><span class="p">)</span>
+		<span class="n">topics</span> <span class="o">=</span> <span class="n">s</span>
+		<span class="n">topic_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+		<span class="n">s</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">search_key</span><span class="p">)</span>
+		<span class="n">users</span> <span class="o">=</span> <span class="n">s</span>
+		<span class="n">user_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;topics&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">topics</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;users&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">users</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;num_results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span> <span class="o">+</span> <span class="n">topic_num</span> <span class="o">+</span> <span class="n">user_num</span>
+		<span class="n">namespace</span><span class="p">[</span><span class="s">&#39;failed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">failed</span>
+
+	<span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+	<span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="SearchForm"><a class="viewcode-back" href="../../../../openassembly.pirate_forum.templatetags.html#openassembly.pirate_forum.templatetags.blobtags.SearchForm">[docs]</a><span class="k">class</span> <span class="nc">SearchForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+	<span class="n">search</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">())</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

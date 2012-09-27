@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_consensus.templatetags.consensustags &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_consensus.templatetags.consensustags</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">simplejson</span>
+
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">MyGroup</span>
+
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core.views</span> <span class="kn">import</span> <span class="n">HttpRedirectException</span><span class="p">,</span> <span class="n">namespace_get</span>
+<span class="kn">from</span> <span class="nn">pirate_consensus.models</span> <span class="kn">import</span>  <span class="n">UpDownVote</span><span class="p">,</span> <span class="n">Consensus</span><span class="p">,</span>  <span class="n">ConfirmRankedVote</span><span class="p">,</span> <span class="n">RankedVote</span><span class="p">,</span> <span class="n">WeightedVote</span><span class="p">,</span> <span class="n">RankedDecision</span><span class="p">,</span> <span class="n">RatingVote</span><span class="p">,</span> <span class="n">SpectrumHolder</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core.widgets</span> <span class="kn">import</span> <span class="n">HorizRadioRenderer</span>
+
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block_decorator</span>
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">block_decorator</span><span class="p">(</span><span class="n">register</span><span class="p">)</span>
+
+<span class="n">RATINGS_CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Empty of Value&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;Poor&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;OK&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s">&quot;Good&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">&quot;Excellent&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">SPECTRUM_CHOICES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s">&quot;Never!&quot;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s">&quot;Strongly Disagree&quot;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s">&quot;Disagree&quot;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s">&quot;Mostly Disagree&quot;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s">&quot;Pt. of Contention&quot;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s">&quot;Meh&quot;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s">&quot;Slightly Agree&quot;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s">&quot;Mostly Agree&quot;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s">&quot;Agree&quot;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s">&quot;Strongly Agree&quot;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s">&quot;Extremely Agree&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">SPECTRUM_COLORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s">&quot;#e11010&quot;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s">&quot;#e13310&quot;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s">&quot;#e15610&quot;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s">&quot;#e17810&quot;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s">&quot;#e19b10&quot;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s">&quot;#e1be10&quot;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s">&quot;#e1e110&quot;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s">&quot;#bee110&quot;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s">&quot;#9be110&quot;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s">&quot;#78e110&quot;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s">&quot;#56e110&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">get_namespace</span> <span class="o">=</span> <span class="n">namespace_get</span><span class="p">(</span><span class="s">&#39;pp_consensus&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_ranked_decision"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_get_ranked_decision">[docs]</a><span class="k">def</span> <span class="nf">pp_get_ranked_decision</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">RankedDecision</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;ranked_decision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rv</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_ranked_vote"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_get_ranked_vote">[docs]</a><span class="k">def</span> <span class="nf">pp_get_ranked_vote</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">RankedVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">rv</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;ranked_vote&#39;</span><span class="p">)</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;objects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">.</span><span class="n">nom_cons</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rv</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">rv</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;ranked_vote&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;ranked_vote&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rnk</span> <span class="o">=</span> <span class="n">ConfirmRankedVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;confirmranked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnk</span><span class="o">.</span><span class="n">confirm</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;winner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnk</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;confirmranked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+
+<span class="c">#returns teh updownvotes pertaining to an object and a user</span></div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_votes"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_get_votes">[docs]</a><span class="k">def</span> <span class="nf">pp_get_votes</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">votes</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;vote&#39;</span><span class="p">)</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;votes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">votes</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">votes</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+
+<span class="c">#returns the reporting percentage of a consensus object</span></div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_reporting_percentage"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_get_reporting_percentage">[docs]</a><span class="k">def</span> <span class="nf">pp_get_reporting_percentage</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;group&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">votes</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;reporting&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">votes</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">groups</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;reporting&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_consensus_get"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_get">[docs]</a><span class="k">def</span> <span class="nf">pp_consensus_get</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c">#retrieves a consensus object, places that object into the context.</span>
+    <span class="c">#Within this tag block an {include} should populate the html with a</span>
+    <span class="c">#consensus_widget that uses the context provided by this tag to create</span>
+    <span class="c">#the fields for voting and observing the consensus object.</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">object_pk</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">object_pk</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;pp_consensus_get tag requires that a object id be passed &quot;</span>
+                             <span class="s">&quot;to it assigned to the &#39;object=&#39; argument, and that the str &quot;</span>
+                             <span class="s">&quot;be assigned the string value &#39;consensus.&quot;</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">object_pk</span><span class="p">)</span>
+
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;interest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interest</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;controversy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">controversy</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;votes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">votes</span>
+
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;content_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">content_type</span>
+        <span class="c">#user specific rendering of vote info</span>
+        <span class="c">#if available include it, else set to None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">updown</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">vote</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">updown</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rate</span> <span class="o">=</span> <span class="n">RatingVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">vote</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">rate</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;user_updown&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">updown</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;user_rating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rate</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;consensus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+
+<span class="c">#Creates fields for creation of a consensus object, to be added to the object that is being referenced. This form includes settings for time constraints, if allowed at the global level. Some objects such as issues require a consensus object and therefore do not have a form attached.</span></div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_consensus_form"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_form">[docs]</a><span class="k">def</span> <span class="nf">pp_consensus_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Populates the context with a ConsensusForm, allowing users to select what</span>
+<span class="sd">    voting type is applied to the object or the objects children.</span>
+<span class="sd">    </span>
+<span class="sd">    Unless the number of related objects is limited, for example solutions to </span>
+<span class="sd">    a problem, plurality voting is required. As the number of objects considered</span>
+<span class="sd">    for voting increases, it becomes increasingly impossible to rank or apply </span>
+<span class="sd">    weighted voting to the entire set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;pp_consensus_form&quot;</span><span class="p">:</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ConsensusForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">vote_type</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;vote_type&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">vote_type</span> <span class="o">==</span> <span class="s">&quot;Ranked Voting&quot;</span><span class="p">:</span>
+                <span class="n">vt</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">RankedVote</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">vote_type</span> <span class="o">==</span> <span class="s">&quot;Up/Down Voting&quot;</span><span class="p">:</span>
+                <span class="n">vt</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">UpDownVote</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">vote_type</span> <span class="o">==</span> <span class="s">&quot;Weighted Voting&quot;</span><span class="p">:</span>
+                <span class="n">vt</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">WeightedVote</span><span class="p">)</span>
+            
+            <span class="n">con</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> 
+            
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">child</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">con</span><span class="o">.</span><span class="n">child_vote_type</span> <span class="o">=</span> <span class="n">vt</span>
+                <span class="n">con</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;vote_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">child_vote_type</span>                                  
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ConsensusForm</span><span class="p">()</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">child_vote_type</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;vote_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">child_vote_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+        
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+    </div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_rating_form"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_rating_form">[docs]</a><span class="k">def</span> <span class="nf">pp_rating_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Populates the context with a RatingForm, allowing users to select what</span>
+<span class="sd">    voting type is applied to the object or the objects children.</span>
+<span class="sd">    </span>
+<span class="sd">    Unless the number of related objects is limited, for example solutions to </span>
+<span class="sd">    a problem, plurality voting is required. As the number of objects considered</span>
+<span class="sd">    for voting increases, it becomes increasingly impossible to rank or apply </span>
+<span class="sd">    weighted voting to the entire set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;pp_rating_form&quot;</span><span class="p">:</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="n">RatingForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">rating</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;rating&#39;</span><span class="p">]</span>
+            <span class="n">consensus</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">RatingVote</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">consensus</span><span class="p">,</span> <span class="n">vote</span><span class="o">=</span><span class="n">rating</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">prev_rating</span> <span class="o">=</span> <span class="n">RatingVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">RatingForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;rating&#39;</span><span class="p">:</span> <span class="n">prev_rating</span><span class="o">.</span><span class="n">vote</span><span class="p">})</span>
+        <span class="k">except</span><span class="p">:</span> <span class="n">form</span> <span class="o">=</span> <span class="n">RatingForm</span><span class="p">()</span>
+        
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+        
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_spectrum_form"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_spectrum_form">[docs]</a><span class="k">def</span> <span class="nf">pp_spectrum_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Populates the context with a SpectrumForm, allowing users to select what</span>
+<span class="sd">    voting type is applied to the object or the objects children.</span>
+<span class="sd">    </span>
+<span class="sd">    Unless the number of related objects is limited, for example solutions to </span>
+<span class="sd">    a problem, plurality voting is required. As the number of objects considered</span>
+<span class="sd">    for voting increases, it becomes increasingly impossible to rank or apply </span>
+<span class="sd">    weighted voting to the entire set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">dimenion</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;pp_spectrum_form&quot;</span><span class="p">:</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="n">SpectrumForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">rating</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;spectrum&#39;</span><span class="p">]</span>
+            <span class="n">consensus</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="c">#st = RatingVote(user=user, parent=consensus, vote=rating)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">prev_rating</span> <span class="o">=</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">SpectrumForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;spectrum&#39;</span><span class="p">:</span> <span class="n">prev_rating</span><span class="o">.</span><span class="n">vote</span><span class="p">})</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">SpectrumForm</span><span class="p">()</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_rating_js"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_rating_js">[docs]</a><span class="k">def</span> <span class="nf">pp_rating_js</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="n">RET</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">            $(function(){</span>
+<span class="s">                    $(&quot;#stars-wrapper-rate&quot;&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;&quot;).stars({</span>
+<span class="s">                       inputType: &quot;select&quot;,</span>
+<span class="s">                       callback: function(ui, type, value){</span>
+<span class="s">                            starvote(&quot;&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;, value, &quot;&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;, &quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;, &quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctype</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;);</span>
+<span class="s">                       },</span>
+<span class="s">                       captionEl: $(&quot;#stars-cap-rate&quot;),</span>
+<span class="s">                       cancelTitle:&#39;Cancel Rating&#39;,</span>
+<span class="s">                       cancelValue:-99</span>
+<span class="s">                    });</span>
+<span class="s">                });</span>
+<span class="s">            &quot;&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">RET</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">            $(function(){</span>
+<span class="s">                    $(&quot;#stars-wrapper-rate&quot;&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;&quot;).stars({</span>
+<span class="s">                       inputType: &quot;select&quot;,</span>
+<span class="s">                       callback: function(ui, type, value){</span>
+<span class="s">                            js_redirect(&#39;/p/register&#39;);</span>
+<span class="s">                       },</span>
+<span class="s">                       captionEl: $(&quot;#stars-cap-rate&quot;),</span>
+<span class="s">                       cancelTitle:&#39;Cancel Rating&#39;,</span>
+<span class="s">                       cancelValue:-99</span>
+<span class="s">                    });</span>
+<span class="s">                });</span>
+<span class="s">            &quot;&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">RET</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;rating_js&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RET</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_spectrum_js"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_spectrum_js">[docs]</a><span class="k">def</span> <span class="nf">pp_spectrum_js</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="n">RET</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">            $(function(){</span>
+<span class="s">                    $(&quot;#stars-wrapper-spec&quot;&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;&quot;).stars({</span>
+<span class="s">                       inputType: &quot;select&quot;,</span>
+<span class="s">                       callback: function(ui, type, value){</span>
+<span class="s">                            spectrumvote(&quot;&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;, value, &quot;&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;, &quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;, &quot;</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctype</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;);</span>
+<span class="s">                       },</span>
+<span class="s">                       spectrum:true,</span>
+<span class="s">                       captionEl: $(&quot;#stars-cap-spec&quot;),</span>
+<span class="s">                       cancelTitle:&#39;Cancel Vote&#39;,</span>
+<span class="s">                       cancelValue:-99</span>
+
+<span class="s">                    });</span>
+<span class="s">                });</span>
+<span class="s">            &quot;&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">RET</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">            $(function(){</span>
+<span class="s">                    $(&quot;#stars-wrapper-spec&quot;&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&quot;&quot;&quot;).stars({</span>
+<span class="s">                       inputType: &quot;select&quot;,</span>
+<span class="s">                       callback: function(ui, type, value){</span>
+<span class="s">                            js_redirect(&#39;/p/register&#39;);</span>
+<span class="s">                       },</span>
+<span class="s">                       spectrum:true,</span>
+<span class="s">                       captionEl: $(&quot;#stars-cap-spec&quot;),</span>
+<span class="s">                       cancelTitle:&#39;Cancel Vote&#39;,</span>
+<span class="s">                       cancelValue:-99</span>
+
+<span class="s">                    });</span>
+<span class="s">                });</span>
+<span class="s">            &quot;&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">RET</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;spectrum_js&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RET</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_consensus_chart"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_chart">[docs]</a><span class="k">def</span> <span class="nf">pp_consensus_chart</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does a Temp Check by grabbing the opinion data as well</span>
+<span class="sd">        as voting aggregates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c">#prepare data for highchart</span>
+        <span class="n">dchart</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;pie&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Temperature Check&#39;</span><span class="p">}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">spectrum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">SpectrumHolder</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">spectrum_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">pk</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">SPECTRUM_CHOICES</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">vote</span><span class="p">)],</span> <span class="s">&#39;y&#39;</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;color&#39;</span><span class="p">:</span> <span class="n">SPECTRUM_COLORS</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">vote</span><span class="p">)]})</span>
+            <span class="n">dchart</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;chart_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">([</span><span class="n">dchart</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dchart</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[]:</span>
+                <span class="k">print</span> <span class="n">dchart</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;chart&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">rating</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">rating_list</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">rating</span><span class="o">.</span><span class="n">get_list</span><span class="p">()</span>
+            <span class="n">tot</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">rating_list</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">+=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">num</span><span class="p">)</span>
+                <span class="n">tot</span> <span class="o">+=</span> <span class="n">num</span>
+            <span class="k">if</span> <span class="n">tot</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;mean_information&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="n">tot</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;mean_information&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;chart&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+
+<span class="c">#: render a &lt;link&gt; tag required to be added to the template at the appropriate locations.</span></div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_consensus_css"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_css">[docs]</a><span class="k">def</span> <span class="nf">pp_consensus_css</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="c"># pre-fetches all of the user votes that might be referenced by tags on the page, and stores them in the context, as a performance hack, so that the rendering of each widget does not cause a separate query to the data store. This is optional.</span></div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_consensus_user_block"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_user_block">[docs]</a><span class="k">def</span> <span class="nf">pp_consensus_user_block</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_consensus_info"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_info">[docs]</a><span class="k">def</span> <span class="nf">pp_consensus_info</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span> 
+
+</div>
+<span class="n">VOTE_TYPES</span> <span class="o">=</span> <span class="p">((</span><span class="s">&#39;Ranked Voting&#39;</span><span class="p">,</span> <span class="s">&#39;Ranked Voting&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Weighted Voting&#39;</span><span class="p">,</span><span class="s">&#39;Weighted Voting&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Up/Down Voting&#39;</span><span class="p">,</span><span class="s">&#39;Up/Down Voting&#39;</span><span class="p">))</span>
+
+<span class="c">#This shouldn&#39;t really be used in practice, consensus objects are generally automatically generated</span>
+<div class="viewcode-block" id="ConsensusForm"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm">[docs]</a><span class="k">class</span> <span class="nc">ConsensusForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This form is used to allow creation and modification of consensus objects.  The form_id</span>
+<span class="sd">    field is hidden and static and is used to allow the pp_consensus_form tag to identify </span>
+<span class="sd">    whether the POST included with the submission pertains to issues or does not.</span>
+
+<span class="sd">    By convention, the value of this hidden field should be the same as the tag that</span>
+<span class="sd">    will process the form.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+        
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_consensus_form&quot;</span><span class="p">)</span>
+    <span class="n">vote_type</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">RadioSelect</span><span class="p">(</span><span class="n">renderer</span><span class="o">=</span><span class="n">HorizRadioRenderer</span><span class="p">),</span>
+                                        <span class="n">choices</span><span class="o">=</span><span class="n">VOTE_TYPES</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                        <span class="n">label</span><span class="o">=</span><span class="s">&quot;Vote Type&quot;</span><span class="p">,</span><span class="n">initial</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>    
+                                        </div>
+<div class="viewcode-block" id="RatingForm"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.RatingForm">[docs]</a><span class="k">class</span> <span class="nc">RatingForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_rating_form&quot;</span><span class="p">)</span>
+    <span class="n">rating</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">RATINGS_CHOICES</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="SpectrumForm"><a class="viewcode-back" href="../../../../openassembly.pirate_consensus.templatetags.html#openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm">[docs]</a><span class="k">class</span> <span class="nc">SpectrumForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_spectrum_form&quot;</span><span class="p">)</span>
+    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">SPECTRUM_CHOICES</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

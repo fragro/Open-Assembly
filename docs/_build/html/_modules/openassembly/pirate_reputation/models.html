@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_reputation.models &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_reputation.models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">exceptions</span> <span class="kn">import</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ValueError</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">SuspiciousOperation</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes</span> <span class="kn">import</span> <span class="n">generic</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">djangotoolbox</span> <span class="kn">import</span> <span class="n">fields</span>
+
+<span class="kn">from</span> <span class="nn">pirate_consensus.models</span> <span class="kn">import</span> <span class="n">Consensus</span><span class="p">,</span> <span class="n">Spectrum</span><span class="p">,</span> <span class="n">Rating</span>
+
+<span class="kn">from</span> <span class="nn">pirate_signals.models</span> <span class="kn">import</span> <span class="n">aso_rep_event</span><span class="p">,</span><span class="n">aso_rep_delete</span><span class="p">,</span> <span class="n">aso_rep_change</span>
+
+<span class="c">#event_registered = Signal(providing_args=[&quot;&quot;,&quot;&quot;,&quot;&quot;])</span>
+
+
+<div class="viewcode-block" id="ReputationManager"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.ReputationManager">[docs]</a><span class="k">class</span> <span class="nc">ReputationManager</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ReputationManager.transitive_vote"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.ReputationManager.transitive_vote">[docs]</a>    <span class="k">def</span> <span class="nf">transitive_vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vote</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">old_vote</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When a vote is registered in the reputation system, the vote type</span>
+<span class="sd">        is normalized into a Consensus object stored for each user, allowing</span>
+<span class="sd">        ease in accessing distributions of other user&#39;s votes for this user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">contype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">cons</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">contype</span><span class="p">,</span>
+                                    <span class="n">object_pk</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+                                    <span class="n">vote_type</span><span class="o">=</span><span class="n">contype</span><span class="p">,</span>
+                                    <span class="n">parent_pk</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+            <span class="n">cons</span><span class="o">.</span><span class="n">intiate_vote_distributions</span><span class="p">()</span>
+        <span class="n">cons</span><span class="o">.</span><span class="n">register_vote</span><span class="p">(</span><span class="n">vote</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="n">cons</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ReputationManager.register_event"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.ReputationManager.register_event">[docs]</a>    <span class="k">def</span> <span class="nf">register_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                       <span class="n">related_object</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">initiator</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                       <span class="n">calculator</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">related_obj</span><span class="p">,</span> <span class="n">initiator</span><span class="p">,</span> <span class="n">dimension</span><span class="p">:</span> <span class="n">x</span><span class="p">),</span>
+                       <span class="n">aggregator</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">related_obj</span><span class="p">,</span> <span class="n">initiator</span><span class="p">,</span> <span class="n">aggregation</span><span class="p">:</span> <span class="n">x</span><span class="p">)):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        When an event is registered, it is possible to supply function callbacks that are used</span>
+<span class="sd">        to calculate the improvment in the single-dimension score (i.e. calculator), as well</span>
+<span class="sd">        as to calculate the improvement in the aggregate score (i.e. aggregator).</span>
+
+<span class="sd">        If neither of these are specified, which is the usual case, then the event_score is</span>
+<span class="sd">        simply used without alteration.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dimension</span> <span class="o">=</span> <span class="n">ReputationDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">null_dimension</span><span class="p">()</span>
+        <span class="n">reputations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+
+        <span class="c">## TODO: DJANGO-NONREL BUG</span>
+        <span class="c">## Maybe this isn&#39;t supposed to work (although gae does have count(), limited to 1000)</span>
+        <span class="c">#reputation_count = reputations.count()</span>
+        <span class="c">## But for some reason this doesn&#39;t work either, although it should...</span>
+        <span class="c">#reputation_count = len(reputations)</span>
+        <span class="c">## And yet this does work...</span>
+        <span class="n">reputation_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reputations</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reputation_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">reputation</span> <span class="o">=</span> <span class="n">reputations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">aggregation</span> <span class="o">=</span> <span class="n">reputation</span><span class="o">.</span><span class="n">aggregation</span>
+
+            <span class="c"># Just make sure that the aggregation was assigned properly...</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">aggregation</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">user</span> <span class="ow">and</span> <span class="n">aggregation</span><span class="o">.</span><span class="n">dimension</span> <span class="o">==</span> <span class="bp">None</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">aggreg_delta</span> <span class="o">=</span> <span class="mi">0</span>
+                         <span class="c">#TODO:for some reason the aggregation exists in the admin panel, but</span>
+                         <span class="c">#here aggregation == None</span>
+
+        <span class="k">elif</span> <span class="n">reputation_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c">#aggregations are disabled until we can find a better way to use ite</span>
+            <span class="n">aggregation</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="c">#aggregations = self.filter(user=user, dimension=None, aggregation=None)</span>
+            <span class="c">#aggregation_count = len(list(aggregations))</span>
+
+            <span class="c">#if aggregation_count == 1:</span>
+            <span class="c">#    aggregation = aggregations[0]</span>
+            <span class="c">#elif aggregation_count == 0:</span>
+            <span class="c">#    aggregation = self.model(user=user, dimension=None)</span>
+            <span class="c">#else:</span>
+            <span class="c">#    raise ValueError(&quot;More than one aggregating reputation found for user.&quot;)</span>
+
+            <span class="n">reputation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">,</span> <span class="n">aggregation</span><span class="o">=</span><span class="n">aggregation</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;More than one reputation found for user and dimension.&quot;</span><span class="p">)</span>
+
+        <span class="c">## Calculate the score delta, and then assign it</span>
+        <span class="n">score_delta</span> <span class="o">=</span> <span class="n">calculator</span><span class="p">(</span><span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">related_object</span><span class="p">,</span> <span class="n">initiator</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+        <span class="n">reputation</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="n">score_delta</span>
+        <span class="n">reputation</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="c">## Same for aggregation, if there is one</span>
+        <span class="k">if</span> <span class="n">aggregation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">aggreg_delta</span> <span class="o">=</span> <span class="n">aggregator</span><span class="p">(</span><span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">related_object</span><span class="p">,</span>
+                                      <span class="n">initiator</span><span class="p">,</span> <span class="n">aggregation</span><span class="p">)</span>
+            <span class="n">aggregation</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="n">aggreg_delta</span>
+            <span class="n">aggregation</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">aggreg_delta</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">initiator</span> <span class="o">=</span> <span class="n">user</span> <span class="k">if</span> <span class="n">initiator</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">initiator</span>
+
+        <span class="k">if</span> <span class="n">related_object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">obj_id</span> <span class="o">=</span> <span class="n">related_object</span><span class="o">.</span><span class="n">pk</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">related_object</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj_id</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">reputation_event</span> <span class="o">=</span> <span class="n">ReputationEvent</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="n">reputation</span><span class="p">,</span>
+                                           <span class="n">score_delta</span><span class="o">=</span><span class="n">score_delta</span><span class="p">,</span> <span class="n">aggregation</span><span class="o">=</span><span class="n">aggregation</span><span class="p">,</span>
+                                           <span class="n">aggregation_delta</span><span class="o">=</span><span class="n">aggreg_delta</span><span class="p">,</span>
+                                           <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">,</span> <span class="n">initiator</span><span class="o">=</span><span class="n">initiator</span><span class="p">,</span>
+                                           <span class="n">object_id</span><span class="o">=</span><span class="n">obj_id</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">)</span>
+                                           <span class="c">#related_object=related_object)</span>
+        <span class="n">reputation_event</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ReputationManager.get_user_score"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.ReputationManager.get_user_score">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dimension</span> <span class="o">=</span> <span class="n">ReputationDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">null_dimension</span><span class="p">()</span>
+
+        <span class="c">## TODO</span>
+        <span class="n">reputations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+        <span class="n">reputation_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reputations</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">reputation_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">reputations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">reputation_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;More than one reputation found for user and aspect.&quot;</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="DimensionManager"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.DimensionManager">[docs]</a><span class="k">class</span> <span class="nc">DimensionManager</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+<div class="viewcode-block" id="DimensionManager.null_dimension"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.DimensionManager.null_dimension">[docs]</a>    <span class="k">def</span> <span class="nf">null_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="DimensionManager.get"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.DimensionManager.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+</div></div>
+<span class="k">class</span> <span class="nc">AbuseTicket</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">name_of_abuser</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">link</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">description_of_abuse</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">fixed</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_of_abuser</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; - &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_dt</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FeedbackTicket</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">feedback</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; - &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_dt</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ReputationDimension</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">modified_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">DimensionManager</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+
+<span class="k">class</span> <span class="nc">Reputation</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># dimension and aggregation are None if the ReputationScore itself is an aggregation</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ReputationDimension</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">aggregation</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;self&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">modified_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">ReputationManager</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;Reputation: user=</span><span class="si">%s</span><span class="s">, score=</span><span class="si">%s</span><span class="s">, dimension=</span><span class="si">%s</span><span class="s">&gt;&quot;</span> <span class="o">%</span> \
+                                       <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;user&quot;</span><span class="p">,</span> <span class="s">&quot;dimension&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ReputationEvent</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">initiator</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;initiated_event_set&quot;</span><span class="p">)</span>
+
+    <span class="n">score</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Reputation</span><span class="p">)</span>
+    <span class="n">score_delta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">aggregation</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Reputation</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;aggregated_event_set&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">aggregation_delta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">related_object</span> <span class="o">=</span> <span class="n">generic</span><span class="o">.</span><span class="n">GenericForeignKey</span><span class="p">(</span><span class="s">&#39;content_type&#39;</span><span class="p">,</span> <span class="s">&#39;object_id&#39;</span><span class="p">)</span>
+
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">object_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ReputationEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">SuspiciousOperation</span><span class="p">(</span><span class="s">&quot;A ReputationEvent cannot be modified after it is created.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_dt</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_object</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_object</span><span class="o">.</span><span class="n">content_object</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s">&quot;/&quot;</span>
+                <span class="c">#this should only occur for the old ReputationEvents that are malformed</span>
+
+
+<span class="c">###Cannot import from pirate_reputation.models from pirate_reputation.callbacks?</span>
+
+<span class="c">#This callback takes the signal of a reputation event and</span>
+<span class="c">#calls a register_event, taking care of the calculator</span>
+<span class="c">#and aggregator functions</span>
+
+
+<div class="viewcode-block" id="register_reputation_event"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.register_reputation_event">[docs]</a><span class="k">def</span> <span class="nf">register_reputation_event</span><span class="p">(</span><span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c">#first check **kwargs for non-mandatory arguments</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span>  <span class="bp">None</span><span class="p">)</span>
+    <span class="n">initiator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;initiator&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">related_object</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;related_object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">is_vote</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_vote&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_vote</span><span class="p">:</span>
+        <span class="n">Reputation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">transitive_vote</span><span class="p">(</span><span class="n">related_object</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;register&#39;</span><span class="p">)</span>
+
+    <span class="n">Reputation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">register_event</span><span class="p">(</span><span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">initiator</span><span class="o">=</span><span class="n">initiator</span><span class="p">,</span> <span class="n">related_object</span><span class="o">=</span><span class="n">related_object</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="delete_reputation_event"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.delete_reputation_event">[docs]</a><span class="k">def</span> <span class="nf">delete_reputation_event</span><span class="p">(</span><span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c">#first check **kwargs for non-mandatory arguments</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">initiator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;initiator&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">related_object</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;related_object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj_id</span> <span class="o">=</span> <span class="n">related_object</span><span class="o">.</span><span class="n">pk</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">related_object</span><span class="p">)</span>
+
+    <span class="n">is_vote</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_vote&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_vote</span><span class="p">:</span>
+        <span class="n">Reputation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">transitive_vote</span><span class="p">(</span><span class="n">related_object</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="n">ReputationEvent</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">,</span> <span class="n">initiator</span><span class="o">=</span><span class="n">initiator</span><span class="p">,</span> <span class="n">object_id</span><span class="o">=</span><span class="n">obj_id</span><span class="p">,</span>
+                                        <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">)</span>
+        <span class="n">rep</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">rep_obj</span> <span class="o">=</span> <span class="n">Reputation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+        <span class="n">rep_obj</span><span class="o">.</span><span class="n">score</span> <span class="o">-=</span> <span class="n">event_score</span>
+        <span class="n">rep_obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+        <span class="c">#maybe this event never even existed in the case of error</span>
+
+
+<span class="c">#primarily used to adjust votes for transitive purposes</span></div>
+<div class="viewcode-block" id="change_reputation_event"><a class="viewcode-back" href="../../../openassembly.pirate_reputation.html#openassembly.pirate_reputation.models.change_reputation_event">[docs]</a><span class="k">def</span> <span class="nf">change_reputation_event</span><span class="p">(</span><span class="n">event_score</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c">#first check **kwargs for non-mandatory arguments</span>
+    <span class="n">dimension</span><span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dimension&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">initiator</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;initiator&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">related_object</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;related_object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj_id</span> <span class="o">=</span> <span class="n">related_object</span><span class="o">.</span><span class="n">pk</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">related_object</span><span class="p">)</span>
+
+    <span class="n">is_vote</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_vote&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">old_vote</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;old_vote&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_vote</span><span class="p">:</span>
+        <span class="n">Reputation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">transitive_vote</span><span class="p">(</span><span class="n">related_object</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span><span class="s">&#39;change&#39;</span><span class="p">,</span><span class="n">old_vote</span><span class="p">)</span>
+
+
+
+<span class="c">####SIGNAL RELATED</span></div>
+<span class="n">aso_rep_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">change_reputation_event</span><span class="p">)</span>  
+<span class="n">aso_rep_event</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">register_reputation_event</span><span class="p">)</span>  
+<span class="n">aso_rep_delete</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">delete_reputation_event</span><span class="p">)</span>    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

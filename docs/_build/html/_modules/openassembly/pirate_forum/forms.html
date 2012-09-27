@@ -1,0 +1,134 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_forum.forms &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_forum.forms</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">Question</span><span class="p">,</span> <span class="n">Nomination</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core.fields</span> <span class="kn">import</span> <span class="n">JqSplitDateTimeField</span>
+<span class="kn">from</span> <span class="nn">pirate_core.widgets</span> <span class="kn">import</span> <span class="n">JqSplitDateTimeWidget</span>
+
+<span class="kn">from</span> <span class="nn">markitup.widgets</span> <span class="kn">import</span> <span class="n">MarkItUpWidget</span>
+
+
+<div class="viewcode-block" id="BlobForm"><a class="viewcode-back" href="../../../openassembly.pirate_forum.html#openassembly.pirate_forum.forms.BlobForm">[docs]</a><span class="k">class</span> <span class="nc">BlobForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BlobForm.save"><a class="viewcode-back" href="../../../openassembly.pirate_forum.html#openassembly.pirate_forum.forms.BlobForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BlobForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">Nomination</span><span class="p">)</span>
+            <span class="n">newo</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="n">ctype</span>
+            <span class="n">newo</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">modified_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="BlobForm.Meta"><a class="viewcode-back" href="../../../openassembly.pirate_forum.html#openassembly.pirate_forum.forms.BlobForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Question</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="s">&#39;parent_pk&#39;</span><span class="p">,</span> <span class="s">&#39;parent_type&#39;</span><span class="p">,</span>
+            <span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;child&#39;</span><span class="p">,</span> <span class="s">&#39;children&#39;</span><span class="p">,</span> <span class="s">&#39;permission_req&#39;</span><span class="p">,</span>
+            <span class="s">&#39;created_dt&#39;</span><span class="p">,</span> <span class="s">&#39;modified_dt&#39;</span><span class="p">,</span> <span class="s">&#39;forumdimension&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">MarkItUpWidget</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;cols&#39;</span><span class="p">:</span> <span class="s">&#39;20&#39;</span><span class="p">,</span> <span class="s">&#39;rows&#39;</span><span class="p">:</span> <span class="s">&#39;10&#39;</span><span class="p">}),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">long_term</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">help_text</span><span class="o">=</span><span class="s">&quot;If this decision doesn&#39;t require a time for decision, ignore the following dates and times&quot;</span><span class="p">)</span>
+    <span class="n">end_of_nomination_phase</span> <span class="o">=</span> <span class="n">JqSplitDateTimeField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">JqSplitDateTimeWidget</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;date_class&#39;</span><span class="p">:</span> <span class="s">&#39;datepicker&#39;</span><span class="p">,</span> <span class="s">&#39;time_class&#39;</span><span class="p">:</span> <span class="s">&#39;timepicker&#39;</span><span class="p">}))</span>
+    <span class="n">decision_time</span> <span class="o">=</span> <span class="n">JqSplitDateTimeField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">JqSplitDateTimeWidget</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;date_class&#39;</span><span class="p">:</span> <span class="s">&#39;datepicker&#39;</span><span class="p">,</span> <span class="s">&#39;time_class&#39;</span><span class="p">:</span> <span class="s">&#39;timepicker&#39;</span><span class="p">}))</span>
+    <span class="n">winners</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">help_text</span><span class="o">=</span><span class="s">&quot;Number of responses to accept, leave this blank to accept all responses.&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

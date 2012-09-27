@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.oa_dashboard.views &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.oa_dashboard.views</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">import</span> <span class="nn">simplejson</span>
+<span class="kn">import</span> <span class="nn">BeautifulSoup</span>
+<span class="kn">from</span> <span class="nn">oa_dashboard.tasks</span> <span class="kn">import</span> <span class="n">async_sort_board</span><span class="p">,</span> <span class="n">async_del_board</span><span class="p">,</span> <span class="n">save_board</span>
+<span class="kn">from</span> <span class="nn">oa_cache.views</span> <span class="kn">import</span> <span class="n">render_hashed</span>
+<span class="kn">from</span> <span class="nn">oa_dashboard.models</span> <span class="kn">import</span> <span class="n">DashboardPanel</span>
+<span class="kn">from</span> <span class="nn">oa_cache.models</span> <span class="kn">import</span> <span class="n">interpret_hash</span><span class="p">,</span> <span class="n">build_hash</span>
+<span class="kn">from</span> <span class="nn">django.template.loader</span> <span class="kn">import</span> <span class="n">render_to_string</span>
+
+
+<div class="viewcode-block" id="decrease_zoom"><a class="viewcode-back" href="../../../openassembly.oa_dashboard.html#openassembly.oa_dashboard.views.decrease_zoom">[docs]</a><span class="k">def</span> <span class="nf">decrease_zoom</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span>  <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="c">#needs to popup registration dialog instead</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;object_pk&#39;</span><span class="p">]</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;dimension&#39;</span><span class="p">]</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="s">&#39;X&#39;</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">zoom_x</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="s">&#39;Y&#39;</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">zoom_y</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="increase_zoom"><a class="viewcode-back" href="../../../openassembly.oa_dashboard.html#openassembly.oa_dashboard.views.increase_zoom">[docs]</a><span class="k">def</span> <span class="nf">increase_zoom</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span>  <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="c">#needs to popup registration dialog instead</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;object_pk&#39;</span><span class="p">]</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;dimension&#39;</span><span class="p">]</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="s">&#39;X&#39;</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;yes&#39;</span> <span class="o">*</span> <span class="mi">100</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">zoom_x</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="s">&#39;Y&#39;</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;yes&#39;</span> <span class="o">*</span> <span class="mi">100</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">zoom_y</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="add_board"><a class="viewcode-back" href="../../../openassembly.oa_dashboard.html#openassembly.oa_dashboard.views.add_board">[docs]</a><span class="k">def</span> <span class="nf">add_board</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span>  <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="c">#needs to popup registration dialog instead</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;path&#39;</span><span class="p">]</span>
+            <span class="n">dashboard_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;dashboard_id&#39;</span><span class="p">]</span>
+            <span class="n">dashpk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">u&#39;dashobj&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">functype</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;type&#39;</span><span class="p">]</span>
+            <span class="n">boardname</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;boardname&#39;</span><span class="p">]</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">dimension</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="c">#for pagination</span>
+
+            <span class="k">if</span> <span class="n">functype</span> <span class="o">!=</span> <span class="s">&#39;refresh&#39;</span><span class="p">:</span>
+                <span class="n">dashobj</span> <span class="o">=</span> <span class="n">save_board</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dashboard_id</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">boardname</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dashobj</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">dashpk</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">+=</span> <span class="s">&#39;/s-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/e-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+
+            <span class="n">renderdict</span> <span class="o">=</span> <span class="n">render_hashed</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">extracontext</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">dimension</span><span class="p">,</span> <span class="s">&#39;dashobj&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="p">,</span> <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)})</span>
+
+            <span class="k">if</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;chat&#39;</span><span class="p">:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s">&#39;stream/stream_width.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;dashobj&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="p">})</span>
+                <span class="n">height</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s">&#39;stream/stream_height.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;dashobj&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="p">})</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;width&#39;</span><span class="p">:</span> <span class="n">width</span><span class="p">,</span> <span class="s">&#39;height&#39;</span><span class="p">:</span> <span class="n">height</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;counts&#39;</span><span class="p">]:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;counts&#39;</span><span class="p">][</span><span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">html</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s">&#39;nav/board_template.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">dimension</span><span class="p">,</span> <span class="s">&#39;board&#39;</span><span class="p">:</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;renders&#39;</span><span class="p">],</span> <span class="s">&#39;obj&#39;</span><span class="p">:</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">],</span> <span class="s">&#39;dashobj&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="p">,</span> <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">),</span> <span class="s">&#39;count&#39;</span><span class="p">:</span> <span class="n">count</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">functype</span> <span class="o">==</span> <span class="s">&#39;refresh&#39;</span><span class="p">:</span>
+                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s">&#39;content&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dashobj</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+                <span class="n">html</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">prettify</span><span class="p">())</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">,</span> <span class="s">&#39;dashpk&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">&#39;dashzoom_y&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="o">.</span><span class="n">zoom_y</span><span class="p">,</span> <span class="s">&#39;dashzoom_x&#39;</span><span class="p">:</span> <span class="n">dashobj</span><span class="o">.</span><span class="n">zoom_x</span><span class="p">,</span> <span class="s">&#39;rendertype&#39;</span><span class="p">:</span> <span class="n">renderdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]})</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;err&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="sort_board"><a class="viewcode-back" href="../../../openassembly.oa_dashboard.html#openassembly.oa_dashboard.views.sort_board">[docs]</a><span class="k">def</span> <span class="nf">sort_board</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span>  <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="c">#needs to popup registration dialog instead</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">sorted_str</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;sorted&#39;</span><span class="p">]</span>
+
+        <span class="n">sorted_list</span> <span class="o">=</span> <span class="n">sorted_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">async_sort_board</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">sorted_list</span><span class="p">])</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="resort_board"><a class="viewcode-back" href="../../../openassembly.oa_dashboard.html#openassembly.oa_dashboard.views.resort_board">[docs]</a><span class="k">def</span> <span class="nf">resort_board</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span>  <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="c">#needs to popup registration dialog instead</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">d_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;dashboard_id&#39;</span><span class="p">]</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;sort_key&#39;</span><span class="p">]</span>
+
+        <span class="n">dash</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">d_id</span><span class="p">)</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">dash</span><span class="o">.</span><span class="n">plank</span><span class="p">)</span>
+        <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dim</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">build_hash</span><span class="p">(</span><span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span><span class="p">,</span> <span class="n">add_domain</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">dash</span><span class="o">.</span><span class="n">plank</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">dash</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&#39;dash_id&#39;</span><span class="p">:</span> <span class="n">dash</span><span class="o">.</span><span class="n">dashboard_id</span><span class="p">,</span> <span class="s">&#39;plank&#39;</span><span class="p">:</span> <span class="n">dash</span><span class="o">.</span><span class="n">plank</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="del_board"><a class="viewcode-back" href="../../../openassembly.oa_dashboard.html#openassembly.oa_dashboard.views.del_board">[docs]</a><span class="k">def</span> <span class="nf">del_board</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span>  <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="c">#needs to popup registration dialog instead</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">u&#39;object_pk&#39;</span><span class="p">]</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">DashboardPanel</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_pk</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">dashboard_id</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">dashboard_id</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">async_del_board</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj_pk</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">dashboard_id</span><span class="p">])</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

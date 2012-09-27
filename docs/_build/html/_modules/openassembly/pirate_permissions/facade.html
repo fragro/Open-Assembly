@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_permissions.facade &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_permissions.facade</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">pirate_permissions.models</span> <span class="kn">import</span> <span class="n">PermissionsGroup</span><span class="p">,</span> <span class="n">Permission</span>
+<span class="kn">from</span> <span class="nn">pirate_reputation.models</span> <span class="kn">import</span> <span class="n">Reputation</span>
+
+
+<span class="k">def</span> <span class="nf">canI</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">permission_str</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">generic_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="canI"><a class="viewcode-back" href="../../../openassembly.pirate_permissions.html#openassembly.pirate_permissions.facade.canI">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This method is used to test whether a particular has permission to undertake a particular</span>
+<span class="sd">    action within a particular system component.  Both the permission string and the</span>
+<span class="sd">    component string are arbitrarily set by the user, the intent being to allow permissions</span>
+<span class="sd">    to be controlled at the template-level at the discression of the site designer.</span>
+
+<span class="sd">    The generic_obj argument changes the behavior of the method slightly by allowing the</span>
+<span class="sd">    user to use permissions that are marked as being &quot;component membership required&quot;.</span>
+<span class="sd">    In these cases, the user&#39;s membership in generic_obj is tested before it is determined</span>
+<span class="sd">    whether the user has the permission in question.</span>
+
+<span class="sd">    First, set up the test user, and give it a reputation score.</span>
+
+<span class="sd">    &gt;&gt;&gt; from django.contrib.auth.models import User</span>
+<span class="sd">    &gt;&gt;&gt; from pirate_reputation.models import Reputation</span>
+<span class="sd">    &gt;&gt;&gt; user = User.objects.create_user(&quot;temp_user&quot;,&quot;temp@user.net&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; Reputation.objects.register_event(100, user)</span>
+
+<span class="sd">    Second, set up the permissions that the user cannot meet.</span>
+
+<span class="sd">    &gt;&gt;&gt; from pirate_permissions.models import PermissionsGroup, Permission, ReputationSpec</span>
+<span class="sd">    &gt;&gt;&gt; component = &quot;consensus&quot;</span>
+
+<span class="sd">    &gt;&gt;&gt; perm_str1 = &quot;update_vote&quot;</span>
+<span class="sd">    &gt;&gt;&gt; group1 = PermissionsGroup(name=&quot;Voters&quot;, description=&quot;People who can vote.&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; group1.save(); </span>
+<span class="sd">    &gt;&gt;&gt; perm1  = Permission(name=perm_str1, component=component, permissions_group=group1)</span>
+<span class="sd">    &gt;&gt;&gt; perm1.save(); </span>
+<span class="sd">    &gt;&gt;&gt; spec1  = ReputationSpec(threshold=150, permissions_group=group1)</span>
+<span class="sd">    &gt;&gt;&gt; spec1.save()</span>
+
+<span class="sd">    Third, set up the permissions that the user will be able to meet.</span>
+
+<span class="sd">    &gt;&gt;&gt; perm_str2 = &quot;read_vote&quot;</span>
+<span class="sd">    &gt;&gt;&gt; group2 = PermissionsGroup(name=&quot;Viewers&quot;, description=&quot;People who can view votes.&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; group2.save(); </span>
+<span class="sd">    &gt;&gt;&gt; perm2  = Permission(name=perm_str2, component=component, permissions_group=group2)</span>
+<span class="sd">    &gt;&gt;&gt; perm2.save(); </span>
+<span class="sd">    &gt;&gt;&gt; spec2  = ReputationSpec(threshold=50, permissions_group=group2)</span>
+<span class="sd">    &gt;&gt;&gt; spec2.save()</span>
+
+<span class="sd">    &gt;&gt;&gt; canI(user, perm_str1, component)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; canI(user, perm_str2, component)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    Finally, clean everything up.</span>
+
+<span class="sd">    &gt;&gt;&gt; user.delete(); </span>
+<span class="sd">    &gt;&gt;&gt; group1.delete(); perm1.delete(); spec1.delete()</span>
+<span class="sd">    &gt;&gt;&gt; group2.delete(); perm2.delete(); spec2.delete()</span>
+<span class="sd">    &gt;&gt;&gt; ReputationEvent.objects.clear()</span>
+<span class="sd">    &gt;&gt;&gt; Reputation.objects.clear()</span>
+<span class="sd">    &gt;&gt;&gt; ReputationDimension.objects.clear()</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">permissions</span> <span class="o">=</span> <span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">permission_str</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+
+        <span class="c">### In the case that the permission is only granted to members of the generic_obj,</span>
+        <span class="c">### i.e. if permission.component_membership_required is set to True, then</span>
+        <span class="c">### this permission is only valid when the user is a member of the specified object.</span>
+        <span class="c">### If the user is a member, the user still needs to be tested according to standard</span>
+        <span class="c">### criteria</span>
+
+        <span class="k">if</span> <span class="n">permission</span><span class="o">.</span><span class="n">component_membership_required</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">generic_obj</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">generic_obj</span><span class="p">,</span> <span class="s">&quot;is_member&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">generic_obj</span><span class="o">.</span><span class="n">is_member</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+        <span class="n">group</span> <span class="o">=</span> <span class="n">permission</span><span class="o">.</span><span class="n">permissions_group</span>
+
+        <span class="c">### First, test to se if the user is explicitly a member of the group</span>
+        <span class="c">### TODO: this is not implemented because ManyToOne is not supported by django-nonrel</span>
+
+        <span class="c">#if group.user_set.filter(id=user.id).count() &gt; 0:</span>
+        <span class="c">#    return True</span>
+        
+        <span class="c">### If that is not good enough, then test to see if the user exceeds one of the </span>
+        <span class="c">### thresholds specified.</span>
+
+        <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">reputationspec_set</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">Reputation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_user_score</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">score</span><span class="o">.</span><span class="n">score</span> <span class="o">&gt;</span> <span class="n">spec</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+    
+    <span class="c"># If none of the permissions work, then the answer is false</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

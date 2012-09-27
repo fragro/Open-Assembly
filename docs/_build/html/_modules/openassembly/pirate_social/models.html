@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_social.models &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_social.models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes</span> <span class="kn">import</span> <span class="n">generic</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">django.dispatch</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">pirate_signals.models</span> <span class="kn">import</span> <span class="n">relationship_event</span><span class="p">,</span> <span class="n">delete_relationship_event</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Social module contains all references to the real world, social networks,</span>
+<span class="sd">locations, photo verification systems, etc.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Locations can correspond to users, forum_blobs, or other objects.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">city</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">country</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">object_pk</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;object ID&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">content_object</span> <span class="o">=</span> <span class="n">generic</span><span class="o">.</span><span class="n">GenericForeignKey</span><span class="p">(</span><span class="n">ct_field</span><span class="o">=</span><span class="s">&quot;content_type&quot;</span><span class="p">,</span> <span class="n">fk_field</span><span class="o">=</span><span class="s">&quot;object_pk&quot;</span><span class="p">)</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">,</span>
+                                      <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;content type&#39;</span><span class="p">),</span>
+                                      <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;content_type_set_for_</span><span class="si">%(class)s</span><span class="s">&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">zipcode</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Subscription</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">subscriber</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;subscriber&#39;</span><span class="p">),</span> <span class="n">related_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;subscriber&#39;</span><span class="p">))</span>
+    <span class="n">subscribee</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;subscribee&#39;</span><span class="p">),</span> <span class="n">related_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;subscribee&#39;</span><span class="p">))</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;date/time subscription created&#39;</span><span class="p">),</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscribee</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RelationshipEvent</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">initiator</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;initiator user&#39;</span><span class="p">),</span> <span class="n">related_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;initiator&#39;</span><span class="p">))</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;target user&#39;</span><span class="p">),</span> <span class="n">related_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;target&#39;</span><span class="p">),</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">created_on</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;date/time occured&#39;</span><span class="p">),</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">ini_content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">,</span>
+                                      <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;initiator content type&#39;</span><span class="p">),</span>
+                                      <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;ini_content_type_set_for_</span><span class="si">%(class)s</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">ini_object_pk</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;initiator object ID&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">ini_content_object</span> <span class="o">=</span> <span class="n">generic</span><span class="o">.</span><span class="n">GenericForeignKey</span><span class="p">(</span><span class="n">ct_field</span><span class="o">=</span><span class="s">&quot;ini_content_type&quot;</span><span class="p">,</span> <span class="n">fk_field</span><span class="o">=</span><span class="s">&quot;ini_object_pk&quot;</span><span class="p">)</span>
+    <span class="n">tar_content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">,</span>
+                                      <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;target content type&#39;</span><span class="p">),</span>
+                                      <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;tar_content_type_set_for_</span><span class="si">%(class)s</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">tar_object_pk</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;target object ID&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">tar_content_object</span> <span class="o">=</span> <span class="n">generic</span><span class="o">.</span><span class="n">GenericForeignKey</span><span class="p">(</span><span class="n">ct_field</span><span class="o">=</span><span class="s">&quot;tar_content_type&quot;</span><span class="p">,</span> <span class="n">fk_field</span><span class="o">=</span><span class="s">&quot;tar_object_pk&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="c"># Enforce unique tag association per object</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;relationship event&#39;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;relationship events&#39;</span><span class="p">)</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">((</span><span class="s">&#39;initiator&#39;</span><span class="p">,</span> <span class="s">&#39;ini_object_pk&#39;</span><span class="p">,</span> <span class="s">&#39;tar_object_pk&#39;</span><span class="p">),)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">u&#39;[</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initiator</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_on</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_ini_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_content_type</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="register_relationship_event"><a class="viewcode-back" href="../../../openassembly.pirate_social.html#openassembly.pirate_social.models.register_relationship_event">[docs]</a><span class="k">def</span> <span class="nf">register_relationship_event</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">ini_c_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">parent_c_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">initiator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;initiator&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">initiator</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">initiator</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">target_user</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">user</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">target_user</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="n">rel</span> <span class="o">=</span> <span class="n">RelationshipEvent</span><span class="p">(</span><span class="n">initiator</span><span class="o">=</span><span class="n">initiator</span><span class="p">,</span> 
+                                <span class="n">ini_object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+                                <span class="n">ini_content_type</span><span class="o">=</span><span class="n">ini_c_type</span><span class="p">,</span> 
+                                <span class="n">tar_object_pk</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+                                <span class="n">tar_content_type</span><span class="o">=</span><span class="n">parent_c_type</span><span class="p">,</span>
+                                <span class="n">target</span><span class="o">=</span><span class="n">target_user</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">rel</span> <span class="o">=</span> <span class="n">RelationshipEvent</span><span class="p">(</span><span class="n">initiator</span><span class="o">=</span><span class="n">initiator</span><span class="p">,</span> 
+                                <span class="n">ini_object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+                                <span class="n">ini_content_type</span><span class="o">=</span><span class="n">ini_c_type</span><span class="p">)</span>
+        <span class="n">rel</span><span class="o">.</span><span class="n">full_clean</span><span class="p">()</span>
+        <span class="n">rel</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        </div>
+<div class="viewcode-block" id="relationship_event_del"><a class="viewcode-back" href="../../../openassembly.pirate_social.html#openassembly.pirate_social.models.relationship_event_del">[docs]</a><span class="k">def</span> <span class="nf">relationship_event_del</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">ini_c_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span> <span class="n">parent_c_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">initiator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;initiator&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">initiator</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span> <span class="n">initiator</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span> 
+            <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        
+            <span class="n">rel</span> <span class="o">=</span> <span class="n">RelationshipEvent</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">initiator</span><span class="o">=</span><span class="n">initiator</span><span class="p">,</span> 
+                                <span class="n">ini_object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+                                <span class="n">tar_object_pk</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">rel</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+    
+    
+    </div>
+<span class="n">relationship_event</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">register_relationship_event</span><span class="p">)</span>
+<span class="n">delete_relationship_event</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">relationship_event_del</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

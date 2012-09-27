@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>templatetags Package &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="index.html" />
+    <link rel="up" title="pirate_comments Package" href="openassembly.pirate_comments.html" />
+    <link rel="next" title="pirate_consensus Package" href="openassembly.pirate_consensus.html" />
+    <link rel="prev" title="pirate_comments Package" href="openassembly.pirate_comments.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_consensus.html" title="pirate_consensus Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_comments.html" title="pirate_comments Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li>
+          <li><a href="openassembly.pirate_comments.html" accesskey="U">pirate_comments Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="templatetags-package">
+<h1>templatetags Package<a class="headerlink" href="#templatetags-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-openassembly.pirate_comments.templatetags.commenttags">
+<span id="commenttags-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">commenttags</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_comments.templatetags.commenttags" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">CommentForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#CommentForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<p>This form is used to allow creation and modification of comment objects.  
+It extends FormMixin in order to provide a create() class method, which
+is used to process POST, path, and object variables in a consistant way,
+and in order to automatically provide the form with a form_id.</p>
+<dl class="class">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#CommentForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('user', 'object_pk', 'content_type', 'reply_to', 'submit_date', 'is_leaf', 'is_root', 'content_object')</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Comment</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.base_fields">
+<tt class="descclassname">CommentForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'text': &lt;django.forms.fields.CharField object at 0x6361910&gt;, 'is_deleted': &lt;django.forms.fields.BooleanField object at 0x6361950&gt;}</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.declared_fields">
+<tt class="descclassname">CommentForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'text': &lt;django.forms.fields.CharField object at 0x6361910&gt;}</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.media">
+<tt class="descclassname">CommentForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.CommentForm.save">
+<tt class="descclassname">CommentForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#CommentForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.CommentForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.DeleteForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">DeleteForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#DeleteForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.DeleteForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.DeleteForm.base_fields">
+<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x4f5a3d0&gt;}</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.DeleteForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.DeleteForm.media">
+<tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.DeleteForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">ReplyForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#ReplyForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<p>This form is used to allow creation and modification of comment objects.  
+It extends FormMixin in order to provide a create() class method, which
+is used to process POST, path, and object variables in a consistant way,
+and in order to automatically provide the form with a form_id.</p>
+<dl class="class">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#ReplyForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('user', 'object_pk', 'content_type', 'reply_to', 'submit_date', 'is_leaf', 'is_root', 'content_object')</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Comment</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.base_fields">
+<tt class="descclassname">ReplyForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'text': &lt;django.forms.fields.CharField object at 0x6361a90&gt;, 'is_deleted': &lt;django.forms.fields.BooleanField object at 0x6361150&gt;, 'form_id': &lt;django.forms.fields.CharField object at 0x63613d0&gt;}</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.declared_fields">
+<tt class="descclassname">ReplyForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x63613d0&gt;, 'text': &lt;django.forms.fields.CharField object at 0x6361a90&gt;}</em><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.media">
+<tt class="descclassname">ReplyForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.ReplyForm.save">
+<tt class="descclassname">ReplyForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#ReplyForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.ReplyForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.generate_time_string">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">generate_time_string</tt><big>(</big><em>then</em>, <em>now</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#generate_time_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.generate_time_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.get_children">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">get_children</tt><big>(</big><em>object_pk</em>, <em>cur_comment</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.get_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.pp_comment_count">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">pp_comment_count</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#pp_comment_count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.pp_comment_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.pp_comment_delete">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">pp_comment_delete</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#pp_comment_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.pp_comment_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is rendered by the caching system when the user wants to delete a comment.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.pp_comment_form">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">pp_comment_form</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#pp_comment_form"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.pp_comment_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>This block tag can create or process forms either to create or to modify issues.
+Usage is as follows:</p>
+<dl class="docutils">
+<dt>{% pp_comment_form POST=request.POST object=request.object user=request.user %}</dt>
+<dd>Do stuff with {{ pp-comment.form }}.</dd>
+</dl>
+<p>{% endpp_comment_form %}</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.pp_comment_list_get">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">pp_comment_list_get</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#pp_comment_list_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.pp_comment_list_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>we have to render the tree html here, because recursive includes are not allowed in django templates
+this could be more efficient with pre/post order tree traversal, but for now this suffices.
+mptt and treebeard both are not designed for GAE, need a tree traversal library for non-rel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.render_comment">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">render_comment</tt><big>(</big><em>comment_obj</em>, <em>count</em>, <em>user</em>, <em>request</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#render_comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.render_comment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_comments.templatetags.commenttags.render_to_comment_tree_html">
+<tt class="descclassname">openassembly.pirate_comments.templatetags.commenttags.</tt><tt class="descname">render_to_comment_tree_html</tt><big>(</big><em>comment_tree</em>, <em>user</em>, <em>request</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_comments/templatetags/commenttags.html#render_to_comment_tree_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_comments.templatetags.commenttags.render_to_comment_tree_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comment tree in form:
+c_tree = [[Comment1, [Comment1_2, Comment1_3, Comment1_4]], Comment2, Comment 3]
+must be rendered as a &lt;ul&gt;...&lt;li&gt;&lt;ul&gt; ... &lt;li&gt;render_comment()&lt;/li&gt; ... &lt;/ul&gt; &lt;/li&gt; &lt;/ul&gt;</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">templatetags Package</a><ul>
+<li><a class="reference internal" href="#module-openassembly.pirate_comments.templatetags.commenttags"><tt class="docutils literal"><span class="pre">commenttags</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="openassembly.pirate_comments.html"
+                        title="previous chapter">pirate_comments Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="openassembly.pirate_consensus.html"
+                        title="next chapter">pirate_consensus Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/openassembly.pirate_comments.templatetags.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_consensus.html" title="pirate_consensus Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_comments.html" title="pirate_comments Package"
+             >previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li>
+          <li><a href="openassembly.pirate_comments.html" >pirate_comments Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

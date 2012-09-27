@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.oa_cache.models &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.oa_cache.models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.template.loader</span> <span class="kn">import</span> <span class="n">render_to_string</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render_to_response</span>
+<span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">cache</span> <span class="k">as</span> <span class="n">memcache</span>
+<span class="kn">from</span> <span class="nn">pirate_ranking.models</span> <span class="kn">import</span> <span class="n">get_ranked_list</span>
+<span class="kn">from</span> <span class="nn">pirate_comments.models</span> <span class="kn">import</span> <span class="n">get_comments</span>
+<span class="kn">from</span> <span class="nn">pirate_deliberation.models</span> <span class="kn">import</span> <span class="n">get_argument_list</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">get_topics</span><span class="p">,</span> <span class="n">get_users</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">get_children</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.core.context_processors</span> <span class="kn">import</span> <span class="n">csrf</span>
+
+<span class="kn">from</span> <span class="nn">settings</span> <span class="kn">import</span> <span class="n">DOMAIN</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core.middleware</span> <span class="kn">import</span> <span class="n">TYPE_KEY</span><span class="p">,</span> <span class="n">OBJ_KEY</span><span class="p">,</span> <span class="n">CTYPE_KEY</span><span class="p">,</span> <span class="n">PHASE_KEY</span><span class="p">,</span> <span class="n">SEARCH_KEY</span><span class="p">,</span> <span class="n">S_KEY</span><span class="p">,</span> <span class="n">STR_KEY</span>
+<span class="kn">from</span> <span class="nn">pirate_core.middleware</span> <span class="kn">import</span> <span class="n">START_KEY</span><span class="p">,</span> <span class="n">END_KEY</span><span class="p">,</span> <span class="n">DIM_KEY</span><span class="p">,</span> <span class="n">SCROLL_KEY</span><span class="p">,</span> <span class="n">RETURN_KEY</span><span class="p">,</span> <span class="n">SIMPLEBOX_KEY</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">get_pretty_url</span><span class="p">,</span> <span class="n">reverse_pretty_url</span>
+
+<span class="kn">from</span> <span class="nn">settings</span> <span class="kn">import</span> <span class="n">DOMAIN</span>
+
+
+<span class="n">DIMS</span> <span class="o">=</span> <span class="p">{</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="s">&#39;TYPE_KEY&#39;</span><span class="p">,</span> <span class="n">OBJ_KEY</span><span class="p">:</span> <span class="s">&quot;OBJ_KEY&quot;</span><span class="p">,</span> <span class="n">START_KEY</span><span class="p">:</span> <span class="s">&quot;START_KEY&quot;</span><span class="p">,</span> <span class="n">STR_KEY</span><span class="p">:</span> <span class="s">&quot;STR_KEY&quot;</span><span class="p">,</span>
+            <span class="n">END_KEY</span><span class="p">:</span> <span class="s">&quot;END_KEY&quot;</span><span class="p">,</span> <span class="n">DIM_KEY</span><span class="p">:</span> <span class="s">&quot;DIM_KEY&quot;</span><span class="p">,</span> <span class="n">S_KEY</span><span class="p">:</span> <span class="s">&quot;S_KEY&quot;</span><span class="p">,</span>
+            <span class="n">SCROLL_KEY</span><span class="p">:</span> <span class="s">&quot;SCROLL_KEY&quot;</span><span class="p">,</span> <span class="n">SEARCH_KEY</span><span class="p">:</span> <span class="s">&quot;SEARCH_KEY&quot;</span><span class="p">,</span> <span class="n">CTYPE_KEY</span><span class="p">:</span> <span class="s">&quot;CTYPE_KEY&quot;</span><span class="p">,</span> <span class="n">PHASE_KEY</span><span class="p">:</span> <span class="s">&quot;PHASE_KEY&quot;</span><span class="p">}</span>
+
+<span class="n">OPP_DIMS</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;TYPE_KEY&#39;</span><span class="p">:</span> <span class="n">TYPE_KEY</span><span class="p">,</span> <span class="s">&quot;OBJ_KEY&quot;</span><span class="p">:</span> <span class="n">OBJ_KEY</span><span class="p">,</span> <span class="s">&quot;START_KEY&quot;</span><span class="p">:</span> <span class="n">START_KEY</span><span class="p">,</span> <span class="s">&quot;STR_KEY&quot;</span><span class="p">:</span> <span class="n">STR_KEY</span><span class="p">,</span>
+            <span class="s">&quot;END_KEY&quot;</span><span class="p">:</span> <span class="n">END_KEY</span><span class="p">,</span> <span class="s">&quot;DIM_KEY&quot;</span><span class="p">:</span> <span class="n">DIM_KEY</span><span class="p">,</span> <span class="s">&quot;S_KEY&quot;</span><span class="p">:</span> <span class="n">S_KEY</span><span class="p">,</span>
+            <span class="s">&quot;SCROLL_KEY&quot;</span><span class="p">:</span> <span class="n">SCROLL_KEY</span><span class="p">,</span> <span class="s">&quot;SEARCH_KEY&quot;</span><span class="p">:</span> <span class="n">SEARCH_KEY</span><span class="p">,</span> <span class="s">&quot;CTYPE_KEY&quot;</span><span class="p">:</span> <span class="n">CTYPE_KEY</span><span class="p">,</span>  <span class="s">&quot;PHASE_KEY&quot;</span><span class="p">:</span> <span class="n">PHASE_KEY</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="initiate_update"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.initiate_update">[docs]</a><span class="k">def</span> <span class="nf">initiate_update</span><span class="p">(</span><span class="n">obj_pk</span><span class="p">,</span> <span class="n">content_pk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method is designed to allow objects to access the oa_cache and update their rendered memcache file.</span>
+<span class="sd">    If these objects</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="c">#update the listing.html</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">ModelCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="s">&quot;listing.html&quot;</span><span class="p">)</span>
+    <span class="c">#update the detail_dyn.html</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">ModelCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="s">&quot;detail_dyn.html&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="interpret_hash"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.interpret_hash">[docs]</a><span class="k">def</span> <span class="nf">interpret_hash</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">DOMAIN</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">retdict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">rendertype</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c">#rendertype = rendertype[1:]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rendertype</span><span class="p">)</span>
+        <span class="n">num_fields</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">itr</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
+            <span class="c">#if this is the last field, check for hashes and remove them</span>
+            <span class="k">if</span> <span class="n">itr</span> <span class="o">==</span> <span class="n">num_fields</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">dim</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="n">idx</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="n">int_key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">val</span>
+            <span class="n">int_key</span> <span class="o">=</span> <span class="n">DIMS</span><span class="p">[</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">int_key</span> <span class="o">==</span> <span class="s">&#39;STR_KEY&#39;</span><span class="p">:</span>
+                <span class="n">ctype_pk</span><span class="p">,</span> <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">reverse_pretty_url</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="n">retdict</span><span class="p">[</span><span class="s">&#39;OBJ_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj_pk</span>
+                <span class="n">retdict</span><span class="p">[</span><span class="s">&#39;TYPE_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctype_pk</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">retdict</span><span class="p">[</span><span class="n">int_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rendertype</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">retdict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">retdict</span>
+
+</div>
+<div class="viewcode-block" id="build_hash"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.build_hash">[docs]</a><span class="k">def</span> <span class="nf">build_hash</span><span class="p">(</span><span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span><span class="p">,</span> <span class="n">add_domain</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="s">&#39;/p/&#39;</span> <span class="o">+</span> <span class="n">rendertype</span>
+    <span class="n">obj_pk</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;OBJ_KEY&#39;</span><span class="p">:</span>
+            <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;TYPE_KEY&#39;</span><span class="p">:</span>
+            <span class="n">ctype_pk</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">OPP_DIMS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">obj_pk</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj_str</span> <span class="o">=</span> <span class="n">get_pretty_url</span><span class="p">(</span><span class="n">ctype_pk</span><span class="p">,</span> <span class="n">obj_pk</span><span class="p">)</span>
+            <span class="n">l</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">OPP_DIMS</span><span class="p">[</span><span class="s">&#39;STR_KEY&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj_str</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">OPP_DIMS</span><span class="p">[</span><span class="s">&#39;OBJ_KEY&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj_pk</span>
+            <span class="n">l</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">OPP_DIMS</span><span class="p">[</span><span class="s">&#39;TYPE_KEY&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ctype_pk</span>
+    <span class="k">if</span> <span class="n">add_domain</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">l</span>
+    <span class="k">return</span> <span class="n">l</span>
+
+</div>
+<div class="viewcode-block" id="ModelCache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.ModelCache">[docs]</a><span class="k">class</span> <span class="nc">ModelCache</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores references to cached objects with template</span>
+<span class="sd">that will be inserted at div_id. content_type</span>
+<span class="sd">references if this Model is a listing type for lists if</span>
+<span class="sd">it is a ListCache, or a detailed content item/user if otherwise.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">div_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">main</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">is_recursive</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">jquery_cmd</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">object_specific</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ModelCache.recursive_render"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.ModelCache.recursive_render">[docs]</a>    <span class="k">def</span> <span class="nf">recursive_render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="p">):</span>
+        <span class="n">ret_html</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="c">#context[&#39;count&#39;] = len(tree[1])</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">forcerender</span> <span class="o">==</span> <span class="bp">True</span> <span class="ow">or</span> <span class="n">forcerender</span> <span class="o">==</span> <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                    <span class="n">ret_html</span> <span class="o">+=</span> <span class="s">&#39;&lt;ul id=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.html&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.html&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot;&gt;&#39;</span> <span class="o">+</span> <span class="n">val</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">ret_html</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_render</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&lt;/ul&gt;&lt;/ul&gt;&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ret_html</span> <span class="o">+=</span> <span class="s">&#39;&lt;/ul&gt;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="n">context</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">forcerender</span> <span class="o">==</span> <span class="bp">True</span> <span class="ow">or</span> <span class="n">forcerender</span> <span class="o">==</span> <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                    <span class="n">ret_html</span> <span class="o">+=</span> <span class="s">&#39;&lt;ul id=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.html&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot; class=&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.html&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot;&gt;&#39;</span> <span class="o">+</span> <span class="n">val</span> <span class="o">+</span> <span class="s">&quot;&lt;/ul&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">ret_html</span>
+</div>
+<div class="viewcode-block" id="ModelCache.render"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.ModelCache.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="c">#gets from cache or renders an atomic object given template</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recursive</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-anon&#39;</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">forcerender</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                <span class="c">#obj = render_to_string(self.template, context)</span>
+                <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_render</span><span class="p">([</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]],</span> <span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+</div>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ListCache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.ListCache">[docs]</a><span class="k">class</span> <span class="nc">ListCache</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">model_cache</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">div_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">default</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ListCache.get_or_create_list"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.ListCache.get_or_create_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_or_create_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">paramdict</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="c">#returns list of rendered objs</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">forcerender</span><span class="p">:</span>
+            <span class="n">cached_list</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tot_items</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">cache</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">forcerender</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">paramdict</span> <span class="o">==</span> <span class="p">{}:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">rtype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">ctype_id</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;TYPE_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">obj_id</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;OBJ_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;START_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;END_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">dimension</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">ctype_list</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">phasekey</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;PHASE_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ctype_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">obj_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">ctype_id</span><span class="p">)</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">content_type</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">end</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;START_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;END_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+
+            <span class="k">if</span> <span class="n">dimension</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="s">&#39;h&#39;</span>
+                <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;hn&#39;</span>
+
+            <span class="c">#later these functions can be rendered via some loosely coupled method</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;issues&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_ranked_list</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;comments&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_comments</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;yea&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_argument_list</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="s">&quot;yea&quot;</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;nay&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_argument_list</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="s">&quot;nay&quot;</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;children&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_ranked_list</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;topics&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_topics</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">==</span> <span class="s">&#39;users&#39;</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_users</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">get_ranked_list</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="c">#TODO</span>
+            <span class="c">#elif self.template == &#39;users&#39;:</span>
+            <span class="c">#    func = get_topics</span>
+            <span class="c">#    update = True</span>
+
+            <span class="n">kwr</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;parent&#39;</span><span class="p">:</span> <span class="n">parent</span><span class="p">,</span> <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;START_KEY&#39;</span><span class="p">],</span>
+                                <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="p">[</span><span class="s">&#39;END_KEY&#39;</span><span class="p">],</span> <span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">dimension</span><span class="p">,</span> <span class="s">&#39;ctype_list&#39;</span><span class="p">:</span> <span class="n">ctype_list</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">phasekey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">kwr</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phasekey</span>
+            <span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                <span class="n">codes</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">)</span>
+                <span class="c">#stores all the encoded pages for tasks/update_ranks</span>
+                <span class="n">newkey</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">codes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">codes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">paramdict</span>
+                    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">codes</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+                <span class="c">#save newly rendered list</span>
+            <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span>
+</div>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="UserSaltCache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.UserSaltCache">[docs]</a><span class="k">class</span> <span class="nc">UserSaltCache</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;User salt renders based on object and user,</span>
+<span class="sd">only rendered when the corresponding model_cache is rendered&quot;&quot;&quot;</span>
+    <span class="n">model_cache</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s">&#39;Object_ID&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">div_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">jquery_cmd</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">is_recursive</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">#if this is a toggled DIV, when re-rendered we want to toggle again</span>
+    <span class="n">is_toggle</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">#is this object DIV specific or required an object pk appended</span>
+    <span class="c">#set to TRUE if you want it OA_CACHE to append an object pk</span>
+    <span class="n">object_specific</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">#if this usersalt is associated with a different context, we need to redirect to that context</span>
+    <span class="n">redirect</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">#if this userSalt object is only used in a single page</span>
+    <span class="c">#we want all other views to turn off the user salt, by replacing it with an empty salt</span>
+    <span class="c">#thus if this model_cache is OPPOSITE, the model cache is the only one that doesn&#39;t</span>
+    <span class="c">#render an empty in this DIV_ID</span>
+    <span class="n">opposite</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">#should we cache this non-dynamic html?</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">###does this object need to be loaded last on the page, for instance if an anchor needs to be placed first</span>
+    <span class="n">load_last</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">###if we should only load when the user prompts us to load</span>
+    <span class="n">persistent</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c">###persistent to a single dashboard</span>
+
+<div class="viewcode-block" id="UserSaltCache.recursive_render"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.UserSaltCache.recursive_render">[docs]</a>    <span class="k">def</span> <span class="nf">recursive_render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">ret_html</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c">#context[&#39;count&#39;] = len(tree[1])</span>
+                <span class="n">ret_html</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">),</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">ret_html</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recursive_render</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">context</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="c">#context[&#39;count&#39;] = 0</span>
+                <span class="n">ret_html</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret_html</span>
+</div>
+<div class="viewcode-block" id="UserSaltCache.render"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.UserSaltCache.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recursive</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; - &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">)</span>
+                <span class="n">cached</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cached</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">forcerender</span><span class="p">:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">r</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">cached</span>
+            <span class="k">return</span> <span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_render</span><span class="p">([</span><span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]],</span> <span class="n">context</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">obj</span>
+</div>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="SideEffectCache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.SideEffectCache">[docs]</a><span class="k">class</span> <span class="nc">SideEffectCache</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;User salt renders based on object and user,</span>
+<span class="sd">only rendered when the corresponding model_cache is rendered&quot;&quot;&quot;</span>
+    <span class="n">user_salt_cache</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s">&#39;Object_ID&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">div_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">jquery_cmd</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="c">#is this object DIV specific or required an object pk appended</span>
+    <span class="c">#set to TRUE if you want it OA_CACHE to append an object pk</span>
+    <span class="n">object_specific</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">key_specific</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">scroll_to</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SideEffectCache.render"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.models.SideEffectCache.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;USC : </span><span class="si">%s</span><span class="s"> -- (</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_salt_cache</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">div_id</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

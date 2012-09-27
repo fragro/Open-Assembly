@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_core.widgets &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_core.widgets</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.forms.extras.widgets</span> <span class="kn">import</span> <span class="n">SelectDateWidget</span>
+<span class="kn">from</span> <span class="nn">django.forms.widgets</span> <span class="kn">import</span> <span class="n">Widget</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span> <span class="n">MultiWidget</span>
+<span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.forms.widgets</span> <span class="kn">import</span> <span class="n">DateInput</span><span class="p">,</span> <span class="n">TextInput</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">strftime</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;SelectTimeWidget&#39;</span><span class="p">,</span> <span class="s">&#39;SplitSelectDateTimeWidget&#39;</span><span class="p">)</span>
+
+<span class="c"># Attempt to match many time formats:</span>
+<span class="c"># Example: &quot;12:34:56 P.M.&quot;  matches:</span>
+<span class="c"># (&#39;12&#39;, &#39;34&#39;, &#39;:56&#39;, &#39;56&#39;, &#39;P.M.&#39;, &#39;P&#39;, &#39;.&#39;, &#39;M&#39;, &#39;.&#39;)</span>
+<span class="c"># (&#39;12&#39;, &#39;34&#39;, &#39;:56&#39;, &#39;56&#39;, &#39;P.M.&#39;)</span>
+<span class="c"># Note that the colon &quot;:&quot; before seconds is optional, but only if seconds are omitted</span>
+<span class="n">time_pattern</span> <span class="o">=</span> <span class="s">r&#39;(\d\d?):(\d\d)(:(\d\d))? *([aApP]\.?[mM]\.?)?$&#39;</span>
+
+<span class="n">RE_TIME</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">time_pattern</span><span class="p">)</span>
+<span class="c"># The following are just more readable ways to access re.matched groups:</span>
+<span class="n">HOURS</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">MINUTES</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">SECONDS</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">MERIDIEM</span> <span class="o">=</span> <span class="mi">4</span>
+
+<div class="viewcode-block" id="SelectTimeWidget"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.widgets.SelectTimeWidget">[docs]</a><span class="k">class</span> <span class="nc">SelectTimeWidget</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Widget that splits time input into &lt;select&gt; elements.</span>
+<span class="sd">    Allows form to show as 24hr: &lt;hour&gt;:&lt;minute&gt;:&lt;second&gt;, (default)</span>
+<span class="sd">    or as 12hr: &lt;hour&gt;:&lt;minute&gt;:&lt;second&gt; &lt;am|pm&gt; </span>
+<span class="sd">    </span>
+<span class="sd">    Also allows user-defined increments for minutes/seconds</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hour_field</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">_hour&#39;</span>
+    <span class="n">minute_field</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">_minute&#39;</span>
+    <span class="n">second_field</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">_second&#39;</span> 
+    <span class="n">meridiem_field</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">_meridiem&#39;</span>
+    <span class="n">twelve_hr</span> <span class="o">=</span> <span class="bp">False</span> <span class="c"># Default to 24hr.</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hour_step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">minute_step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">second_step</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">twelve_hr</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        hour_step, minute_step, second_step are optional step values for</span>
+<span class="sd">        for the range of values for the associated select element</span>
+<span class="sd">        twelve_hr: If True, forces the output to be in 12-hr format (rather than 24-hr)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">attrs</span> <span class="ow">or</span> <span class="p">{}</span>
+        
+        <span class="k">if</span> <span class="n">twelve_hr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">twelve_hr</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># Do 12hr (rather than 24hr)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="s">&#39;a.m.&#39;</span> <span class="c"># Default to Morning (A.M.)</span>
+        
+        <span class="k">if</span> <span class="n">hour_step</span> <span class="ow">and</span> <span class="n">twelve_hr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hours</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="n">hour_step</span><span class="p">)</span> 
+        <span class="k">elif</span> <span class="n">hour_step</span><span class="p">:</span> <span class="c"># 24hr, with stepping.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hours</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="n">hour_step</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">twelve_hr</span><span class="p">:</span> <span class="c"># 12hr, no stepping</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hours</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c"># 24hr, no stepping</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hours</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">24</span><span class="p">)</span> 
+
+        <span class="k">if</span> <span class="n">minute_step</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minutes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="n">minute_step</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minutes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">second_step</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="n">second_step</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SelectTimeWidget.render"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.widgets.SelectTimeWidget.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span> <span class="c"># try to get time values from a datetime.time object (value)</span>
+            <span class="n">hour_val</span><span class="p">,</span> <span class="n">minute_val</span><span class="p">,</span> <span class="n">second_val</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">second</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twelve_hr</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">hour_val</span> <span class="o">&gt;=</span> <span class="mi">12</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="s">&#39;p.m.&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="s">&#39;a.m.&#39;</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">hour_val</span> <span class="o">=</span> <span class="n">minute_val</span> <span class="o">=</span> <span class="n">second_val</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">RE_TIME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">time_groups</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">();</span>
+                    <span class="n">hour_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_groups</span><span class="p">[</span><span class="n">HOURS</span><span class="p">])</span> <span class="o">%</span> <span class="mi">24</span> <span class="c"># force to range(0-24)</span>
+                    <span class="n">minute_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_groups</span><span class="p">[</span><span class="n">MINUTES</span><span class="p">])</span> 
+                    <span class="k">if</span> <span class="n">time_groups</span><span class="p">[</span><span class="n">SECONDS</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">second_val</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">second_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_groups</span><span class="p">[</span><span class="n">SECONDS</span><span class="p">])</span>
+                    
+                    <span class="c"># check to see if meridiem was passed in</span>
+                    <span class="k">if</span> <span class="n">time_groups</span><span class="p">[</span><span class="n">MERIDIEM</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="n">time_groups</span><span class="p">[</span><span class="n">MERIDIEM</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c"># otherwise, set the meridiem based on the time</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twelve_hr</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">hour_val</span> <span class="o">&gt;=</span> <span class="mi">12</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="s">&#39;p.m.&#39;</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="s">&#39;a.m.&#39;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="o">=</span> <span class="bp">None</span>
+                    
+
+        <span class="c"># If we&#39;re doing a 12-hr clock, there will be a meridiem value, so make sure the</span>
+        <span class="c"># hours get printed correctly</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twelve_hr</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">hour_val</span> <span class="o">&gt;</span> <span class="mi">12</span> <span class="ow">and</span> <span class="n">hour_val</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
+                <span class="n">hour_val</span> <span class="o">=</span> <span class="n">hour_val</span> <span class="o">%</span> <span class="mi">12</span>
+        <span class="k">elif</span> <span class="n">hour_val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">hour_val</span> <span class="o">=</span> <span class="mi">12</span>
+            
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s">&#39;id&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+            <span class="n">id_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">id_</span> <span class="o">=</span> <span class="s">&#39;id_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">name</span>
+
+        <span class="c"># For times to get displayed correctly, the values MUST be converted to unicode</span>
+        <span class="c"># When Select builds a list of options, it checks against Unicode values</span>
+        <span class="n">hour_val</span> <span class="o">=</span> <span class="s">u&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">hour_val</span>
+        <span class="n">minute_val</span> <span class="o">=</span> <span class="s">u&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">minute_val</span>
+        <span class="n">second_val</span> <span class="o">=</span> <span class="s">u&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">second_val</span>
+
+        <span class="n">hour_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours</span><span class="p">]</span>
+        <span class="n">local_attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_attrs</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hour_field</span> <span class="o">%</span> <span class="n">id_</span><span class="p">)</span>
+        <span class="n">select_html</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">hour_choices</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hour_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="n">hour_val</span><span class="p">,</span> <span class="n">local_attrs</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select_html</span><span class="p">)</span>
+
+        <span class="n">minute_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minutes</span><span class="p">]</span>
+        <span class="n">local_attrs</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minute_field</span> <span class="o">%</span> <span class="n">id_</span>
+        <span class="n">select_html</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">minute_choices</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minute_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="n">minute_val</span><span class="p">,</span> <span class="n">local_attrs</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select_html</span><span class="p">)</span>
+
+        <span class="n">second_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%.2d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">]</span>
+        <span class="n">local_attrs</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_field</span> <span class="o">%</span> <span class="n">id_</span>
+        <span class="n">select_html</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">second_choices</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="n">second_val</span><span class="p">,</span> <span class="n">local_attrs</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select_html</span><span class="p">)</span>
+    
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twelve_hr</span><span class="p">:</span>
+            <span class="c">#  If we were given an initial value, make sure the correct meridiem gets selected.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>  <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">):</span>
+                    <span class="n">meridiem_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;p.m.&#39;</span><span class="p">,</span><span class="s">&#39;p.m.&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;a.m.&#39;</span><span class="p">,</span><span class="s">&#39;a.m.&#39;</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">meridiem_choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;a.m.&#39;</span><span class="p">,</span><span class="s">&#39;a.m.&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;p.m.&#39;</span><span class="p">,</span><span class="s">&#39;p.m.&#39;</span><span class="p">)]</span>
+
+            <span class="n">local_attrs</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_attrs</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_field</span> <span class="o">%</span> <span class="n">id_</span>
+            <span class="n">select_html</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">meridiem_choices</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meridiem_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meridiem_val</span><span class="p">,</span> <span class="n">local_attrs</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select_html</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="s">u&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="SelectTimeWidget.id_for_label"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.widgets.SelectTimeWidget.id_for_label">[docs]</a>    <span class="k">def</span> <span class="nf">id_for_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">_hour&#39;</span> <span class="o">%</span> <span class="n">id_</span></div>
+    <span class="n">id_for_label</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">id_for_label</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SelectTimeWidget.value_from_datadict"><a class="viewcode-back" href="../../../openassembly.pirate_core.html#openassembly.pirate_core.widgets.SelectTimeWidget.value_from_datadict">[docs]</a>    <span class="k">def</span> <span class="nf">value_from_datadict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c"># if there&#39;s not h:m:s data, assume zero:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hour_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># hour</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minute_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># minute </span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># second</span>
+
+        <span class="n">meridiem</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meridiem_field</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="c">#NOTE: if meridiem is None, assume 24-hr</span>
+        <span class="k">if</span> <span class="n">meridiem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">meridiem</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">+</span><span class="mi">12</span><span class="p">)</span><span class="o">%</span><span class="mi">24</span> 
+            <span class="k">elif</span> <span class="n">meridiem</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">h</span><span class="p">)</span> <span class="ow">and</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">s</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    
+    </div></div>
+<span class="k">class</span> <span class="nc">HorizRadioRenderer</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">RadioSelect</span><span class="o">.</span><span class="n">renderer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; this overrides widget method to put radio buttons horizontally</span>
+<span class="sd">        instead of vertically.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Outputs radios&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="s">u&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">u&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]))</span>
+
+
+<span class="k">class</span> <span class="nc">JqSplitDateTimeWidget</span><span class="p">(</span><span class="n">MultiWidget</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">time_format</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">date_class</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&#39;date_class&#39;</span><span class="p">]</span>
+        <span class="n">time_class</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&#39;time_class&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&#39;date_class&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">attrs</span><span class="p">[</span><span class="s">&#39;time_class&#39;</span><span class="p">]</span>
+
+        <span class="n">time_attrs</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">time_attrs</span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_class</span>
+        <span class="n">date_attrs</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">date_attrs</span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_class</span>
+
+        <span class="n">widgets</span> <span class="o">=</span> <span class="p">(</span><span class="n">DateInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="n">date_attrs</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">),</span>
+                   <span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="n">time_attrs</span><span class="p">),</span> <span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="n">time_attrs</span><span class="p">),</span>
+                   <span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;AM&#39;</span><span class="p">,</span><span class="s">&#39;AM&#39;</span><span class="p">),(</span><span class="s">&#39;PM&#39;</span><span class="p">,</span><span class="s">&#39;PM&#39;</span><span class="p">)]))</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">JqSplitDateTimeWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">widgets</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">decompress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+            <span class="n">hour</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%I&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+            <span class="n">minute</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%M&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+            <span class="n">meridian</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%p&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">meridian</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">format_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rendered_widgets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of rendered widgets (as strings), it inserts an HTML</span>
+<span class="sd">        linebreak between them.</span>
+
+<span class="sd">        Returns a Unicode string representing the HTML for the whole lot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;Date: </span><span class="si">%s</span><span class="s">&lt;br/&gt;Time: </span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rendered_widgets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rendered_widgets</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                <span class="n">rendered_widgets</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">rendered_widgets</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="k">class</span> <span class="nc">Media</span><span class="p">:</span>
+        <span class="n">css</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="n">js</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s">&quot;js/jqsplitdatetime.js&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

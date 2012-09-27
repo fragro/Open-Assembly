@@ -1,0 +1,662 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_topics.templatetags.topictags &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_topics.templatetags.topictags</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+
+<span class="kn">from</span> <span class="nn">pirate_permissions.models</span> <span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">PermissionsGroup</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="kn">from</span> <span class="nn">markitup.widgets</span> <span class="kn">import</span> <span class="n">MarkItUpWidget</span>
+
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span><span class="p">,</span> <span class="n">MyGroup</span><span class="p">,</span> <span class="n">GroupSettings</span><span class="p">,</span> <span class="n">get_root</span>
+<span class="kn">from</span> <span class="nn">pirate_core.views</span> <span class="kn">import</span> <span class="n">namespace_get</span>
+
+<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">urlize</span>
+
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block_decorator</span>
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">block_decorator</span><span class="p">(</span><span class="n">register</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">get_rangelist</span>
+
+
+<span class="n">get_namespace</span> <span class="o">=</span> <span class="n">namespace_get</span><span class="p">(</span><span class="s">&#39;pp_topic&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_topic_if_content"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_get_topic_if_content">[docs]</a><span class="k">def</span> <span class="nf">pp_get_topic_if_content</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">ctype_obj</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">Topic</span><span class="p">)</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">ctype</span> <span class="o">==</span> <span class="n">ctype_obj</span><span class="p">:</span>
+        <span class="c">#if object is a topic</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="k">elif</span> <span class="n">obj</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_root"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_get_root">[docs]</a><span class="k">def</span> <span class="nf">pp_get_root</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">get_root</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;root&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span>
+    <span class="c">#except:</span>
+    <span class="c">#    namespace[&#39;root&#39;] = None</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_check_siblings"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_check_siblings">[docs]</a><span class="k">def</span> <span class="nf">pp_check_siblings</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">topics</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">in_child</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">topics</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mygroup</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+            <span class="n">in_child</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;ingroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_child</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
+    <span class="c">#except:</span>
+    <span class="c">#    namespace[&#39;root&#39;] = None</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_topic"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_get_topic">[docs]</a><span class="k">def</span> <span class="nf">pp_get_topic</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">object_pk</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;object_pk&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">topicname</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;topicname&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">topicname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">topic</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">summary</span><span class="o">=</span><span class="n">topicname</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">topic</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">topic</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_child_blob_key</span><span class="p">():</span>
+                    <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">summary</span> <span class="o">!=</span> <span class="s">&#39;__NULL__&#39;</span><span class="p">:</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">parent</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">object_pk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">object_pk</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">topic</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">top</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;topic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">topic</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_add_mygroup"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_add_mygroup">[docs]</a><span class="k">def</span> <span class="nf">pp_add_mygroup</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">topic</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">mygroup</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">)</span>
+    <span class="n">topic</span><span class="o">.</span><span class="n">group_members</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_topic_hierarchy"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_get_topic_hierarchy">[docs]</a><span class="k">def</span> <span class="nf">pp_get_topic_hierarchy</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This block tag will grab the parent of a topic. Each Topic object contains</span>
+<span class="sd">    a parent or if a root node contains a null value. In this case the object returned</span>
+<span class="sd">    is either that parent, or the None object.</span>
+
+<span class="sd">    {% pp_get_topic_hierarchy topic = object %}</span>
+<span class="sd">       Do stuff with {{ pp_topic.hierarchy }}</span>
+<span class="sd">    {% endpp_get_topic_hierarchy %}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">root</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">root</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Topic</span><span class="p">):</span>
+
+        <span class="n">hierarchy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">hierarchy</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
+
+        <span class="k">while</span> <span class="n">parent</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">summary</span> <span class="o">!=</span> <span class="s">&#39;__NULL__&#39;</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">hierarchy</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">hierarchy</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;hierarchy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hierarchy</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_get_topic_list"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_get_topic_list">[docs]</a><span class="k">def</span> <span class="nf">pp_get_topic_list</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This block tag will grab a list of topics. This also takes an argument &#39;topic&#39;</span>
+<span class="sd">    allowing the template to specify a root topic, in which case each child of this topic</span>
+<span class="sd">    will be included in &#39;children&#39;.</span>
+
+<span class="sd">    In order to generate a url that will provide rng information to this tag via</span>
+<span class="sd">    request.range, use a url tag of the following form:</span>
+
+<span class="sd">    {% url pp-page template=&quot;filename.html&quot; start=0 end=20 %}</span>
+
+<span class="sd">    In this way, the tag can be invoked as follows:</span>
+
+<span class="sd">    {% pp_get_topic_list range=request.range topic = root_topic %}</span>
+<span class="sd">       Do stuff with {{ pp_topic.topic_list }}</span>
+<span class="sd">    {% endpp_get_topic_list %}</span>
+
+<span class="sd">    &gt;&gt;&gt; from pirate_issues.models import Topic</span>
+<span class="sd">    &gt;&gt;&gt; topic = Topic(text = &quot;newtopic&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; topic.save()</span>
+<span class="sd">    &gt;&gt;&gt; topic2 = Topic(text = &quot;childtopic&quot;, parent = topic)</span>
+<span class="sd">    &gt;&gt;&gt; topic2.save()</span>
+<span class="sd">    &gt;&gt;&gt; topic3 = Topic(text = &quot;nexttopic&quot;, parent = topic2)</span>
+<span class="sd">    &gt;&gt;&gt; Topic.objects.all()</span>
+<span class="sd">    [&lt;Topic: taxes&gt;, &lt;Topic: debt&gt;, &lt;Topic: A test topic.&gt;, &lt;Topic: newtopic&gt;, &lt;Topic: childtopic&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; Topic.clean_objects.filter(parent = topic)</span>
+<span class="sd">    [&lt;Topic: childtopic&gt;]</span>
+<span class="sd">    &gt;&gt;&gt; Topic.clean_objects.filter(parent = Topic.objects.null_dimension())</span>
+<span class="sd">    []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">topic_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">root</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Topic</span><span class="p">):</span>
+        <span class="n">topic_list</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-children&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">topic_list</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">null_dimension</span><span class="p">())</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-children&#39;</span><span class="p">)</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;topic_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">topic_list</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">topic_list</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_ingroup"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.oa_ingroup">[docs]</a><span class="k">def</span> <span class="nf">oa_ingroup</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">in_group</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;in_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;in_group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_mygroup_users"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.oa_mygroup_users">[docs]</a><span class="k">def</span> <span class="nf">oa_mygroup_users</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mygroups</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="n">mygroups</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">mygroups</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">mygroups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">mygroups</span> <span class="o">=</span> <span class="n">mygroups</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)]</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;rangelist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_rangelist</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">cnt</span><span class="p">)</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;groups&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mygroups</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnt</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_group_settings"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.oa_get_group_settings">[docs]</a><span class="k">def</span> <span class="nf">oa_get_group_settings</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">s</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">GroupSettings</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;settings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_mygroups"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_mygroups">[docs]</a><span class="k">def</span> <span class="nf">pp_mygroups</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+        <span class="n">mygroups</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)[</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)]</span>
+
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;mygroups&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mygroups</span>
+
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mygroups</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;half&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">mygroups</span><span class="o">.</span><span class="n">count</span><span class="p">())</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="n">_slugify_strip_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;[^\w\s-]&#39;</span><span class="p">)</span>
+<span class="n">_slugify_hyphenate_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;[-\s]+&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_slugify</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalizes string, converts to lowercase, removes non-alpha characters,</span>
+<span class="sd">    and converts spaces to hyphens.</span>
+
+<span class="sd">    From Django&#39;s &quot;django/template/defaultfilters.py&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">unicodedata</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s">&#39;NFKD&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span> <span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">_slugify_strip_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">_slugify_hyphenate_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_getcreate_setting"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_getcreate_setting">[docs]</a><span class="k">def</span> <span class="nf">pp_getcreate_setting</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">topic</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">topic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">settings</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">GroupSettings</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;settings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settings</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_topic_form"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_topic_form">[docs]</a><span class="k">def</span> <span class="nf">pp_topic_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This block tag can create or process forms eitfrom genericview.views import HttpRedirectException, namespace_gether to create or to modify arguments.</span>
+<span class="sd">    Usage is as follows:</span>
+
+<span class="sd">    {% pp_topic_form POST=request.POST path=request.path topic=pp_topic.topic root=some_topic %}</span>
+<span class="sd">       Do stuff with {{ pp_topic.form }}.</span>
+<span class="sd">    {% endpp_topic_form %}</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;root&#39;</span><span class="p">,</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">null_dimension</span><span class="p">())</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">and</span> <span class="p">(</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;create_group&quot;</span> <span class="ow">or</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;pp_edittopic_form&quot;</span><span class="p">)</span><span class="ow">and</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">TopicForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span> <span class="k">if</span> <span class="n">topic</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">EditTopicForm</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">topic</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">new_topic</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="c">#edit old group</span>
+            <span class="k">if</span> <span class="n">topic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">new_topic</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">new_topic</span><span class="o">.</span><span class="n">is_featured</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">new_topic</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">urlize</span><span class="p">(</span><span class="n">new_topic</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">trim_url_limit</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">nofollow</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">new_topic</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">_slugify</span><span class="p">(</span><span class="n">new_topic</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+                <span class="c">#let&#39;s see if there are any groups with this shortname or full name</span>
+            <span class="c">#raise HttpRedirectException(HttpResponseRedirect(&quot;/topics.html&quot;))</span>
+            <span class="c">#create new group</span>
+            <span class="k">if</span> <span class="n">topic</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">new_topic</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">new_topic</span><span class="p">)</span>
+                <span class="c">#create Facilitator permissions for group creator</span>
+                <span class="n">new_topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">new_topic</span><span class="o">.</span><span class="n">group_members</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">new_topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">perm_group</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PermissionsGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;Facilitator&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;Permission group for Facilitation of Online Working Groups&quot;</span><span class="p">)</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="n">Permission</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;facilitator-permission&#39;</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">,</span>
+                            <span class="n">object_pk</span><span class="o">=</span><span class="n">new_topic</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">permissions_group</span><span class="o">=</span><span class="n">perm_group</span><span class="p">,</span> <span class="n">component_membership_required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">perm</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">mg</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">new_topic</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_topic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">new_topic</span><span class="p">)</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;content_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctype</span><span class="o">.</span><span class="n">pk</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;object_pk&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_topic</span><span class="o">.</span><span class="n">pk</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="n">root</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Topic</span><span class="p">):</span>
+                    <span class="n">new_topic</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">root</span>
+                    <span class="n">new_topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_topic</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">null_dimension</span><span class="p">()</span>
+                    <span class="n">new_topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">TopicForm</span><span class="p">()</span> <span class="k">if</span> <span class="n">topic</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">EditTopicForm</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">topic</span><span class="p">)</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="pp_setting_form"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.pp_setting_form">[docs]</a><span class="k">def</span> <span class="nf">pp_setting_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This block tag can create or process forms eitfrom genericview.views import HttpRedirectException, namespace_gether to create or to modify arguments.</span>
+<span class="sd">    Usage is as follows:</span>
+
+<span class="sd">    {% pp_topic_form POST=request.POST path=request.path topic=pp_topic.topic root=some_topic %}</span>
+<span class="sd">       Do stuff with {{ pp_topic.form }}.</span>
+<span class="sd">    {% endpp_topic_form %}</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">setting</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;oa_group_settings_form&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">SettingsForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span> <span class="k">if</span> <span class="n">setting</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">SettingsForm</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">setting</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">SettingsForm</span><span class="p">()</span> <span class="k">if</span> <span class="n">setting</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">SettingsForm</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">setting</span><span class="p">)</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="InviteForm"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.InviteForm">[docs]</a><span class="k">class</span> <span class="nc">InviteForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="InviteForm.save"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.InviteForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SettingsForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="InviteForm.Meta"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.InviteForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">GroupSettings</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;oa_group_settings_form&quot;</span><span class="p">)</span>
+</div>
+<span class="n">streamproviderchoices</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="s">&#39;None&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;U&#39;</span><span class="p">,</span> <span class="s">&#39;UStream&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;L&#39;</span><span class="p">,</span> <span class="s">&#39;Livestream&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="SettingsForm"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.SettingsForm">[docs]</a><span class="k">class</span> <span class="nc">SettingsForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SettingsForm.save"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.SettingsForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SettingsForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="SettingsForm.Meta"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.SettingsForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">GroupSettings</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;topic&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;oa_group_settings_form&quot;</span><span class="p">)</span>
+    <span class="n">stream_provider</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">streamproviderchoices</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TopicForm"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.TopicForm">[docs]</a><span class="k">class</span> <span class="nc">TopicForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TopicForm.save"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.TopicForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">TopicForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="TopicForm.Meta"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.TopicForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Topic</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="s">&#39;children&#39;</span><span class="p">,</span> <span class="s">&#39;is_featured&#39;</span><span class="p">,</span> <span class="s">&#39;slug&#39;</span><span class="p">,</span> <span class="s">&#39;group_members&#39;</span><span class="p">,</span> <span class="s">&#39;decisions&#39;</span><span class="p">,</span> <span class="s">&#39;solutions&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;create_group&quot;</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span>  <span class="n">label</span><span class="o">=</span><span class="s">&quot;Comprehensive Name of the Group&quot;</span><span class="p">)</span>
+    <span class="n">shortname</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Short Name (20 Characters or Less)&quot;</span><span class="p">)</span>
+    <span class="n">more_info</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Link to Group Website&quot;</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Group Description&quot;</span><span class="p">)</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+
+<span class="c">#hack to get around markitup selecting divs and</span>
+<span class="c">#applying itself twice when two forms are on the same page</span></div>
+<div class="viewcode-block" id="EditTopicForm"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.EditTopicForm">[docs]</a><span class="k">class</span> <span class="nc">EditTopicForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EditTopicForm.save"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.EditTopicForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EditTopicForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="EditTopicForm.Meta"><a class="viewcode-back" href="../../../../openassembly.pirate_topics.templatetags.html#openassembly.pirate_topics.templatetags.topictags.EditTopicForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Topic</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="s">&#39;children&#39;</span><span class="p">,</span> <span class="s">&#39;is_featured&#39;</span><span class="p">,</span> <span class="s">&#39;slug&#39;</span><span class="p">,</span> <span class="s">&#39;group_members&#39;</span><span class="p">,</span> <span class="s">&#39;decisions&#39;</span><span class="p">,</span> <span class="s">&#39;solutions&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_topic_form&quot;</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span><span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span><span class="s">&#39;inputText&#39;</span><span class="p">}),</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Comprehensive Name of the Group&quot;</span><span class="p">)</span>
+    <span class="n">shortname</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span><span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span><span class="s">&#39;inputText&#39;</span><span class="p">}),</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Short Name (20 Characters or Less)&quot;</span><span class="p">)</span>
+    <span class="n">more_info</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Link to Group Website&quot;</span><span class="p">)</span> 
+    <span class="n">description</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Edit Description&quot;</span><span class="p">)</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_edittopic_form&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

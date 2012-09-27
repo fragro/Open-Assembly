@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirate_forum Package &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="index.html" />
+    <link rel="up" title="openassembly Package" href="openassembly.html" />
+    <link rel="next" title="templatetags Package" href="openassembly.pirate_forum.templatetags.html" />
+    <link rel="prev" title="templatetags Package" href="openassembly.pirate_flags.templatetags.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_forum.templatetags.html" title="templatetags Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_flags.templatetags.html" title="templatetags Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" accesskey="U">openassembly Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirate-forum-package">
+<h1>pirate_forum Package<a class="headerlink" href="#pirate-forum-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-openassembly.pirate_forum.forms">
+<span id="forms-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">forms</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.forms" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.pirate_forum.forms.BlobForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.forms.</tt><tt class="descname">BlobForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/forms.html#BlobForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<dl class="class">
+<dt id="openassembly.pirate_forum.forms.BlobForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_forum/forms.html#BlobForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_forum.forms.BlobForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('parent', 'parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt', 'modified_dt', 'forumdimension')</em><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.forms.BlobForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Question</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.forms.BlobForm.base_fields">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x64b1290&gt;, 'description': &lt;django.forms.fields.CharField object at 0x6389850&gt;, 'long_term': &lt;django.forms.fields.BooleanField object at 0x6389d90&gt;, 'end_of_nomination_phase': &lt;pirate_core.fields.JqSplitDateTimeField object at 0x6389050&gt;, 'decision_time': &lt;pirate_core.fields.JqSplitDateTimeField object at 0x64839d0&gt;, 'winners': &lt;django.forms.fields.IntegerField object at 0x649da90&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.forms.BlobForm.declared_fields">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x64b1290&gt;, 'description': &lt;django.forms.fields.CharField object at 0x6389850&gt;, 'long_term': &lt;django.forms.fields.BooleanField object at 0x6389d90&gt;, 'end_of_nomination_phase': &lt;pirate_core.fields.JqSplitDateTimeField object at 0x6389050&gt;, 'decision_time': &lt;pirate_core.fields.JqSplitDateTimeField object at 0x64839d0&gt;, 'winners': &lt;django.forms.fields.IntegerField object at 0x649da90&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.forms.BlobForm.media">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.forms.BlobForm.save">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/forms.html#BlobForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.forms.BlobForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_forum.management">
+<span id="management-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">management</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.management" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="openassembly.pirate_forum.management.main">
+<tt class="descclassname">openassembly.pirate_forum.management.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/management.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.management.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_forum.models">
+<span id="models-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">models</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.BlobEditForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">BlobEditForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#BlobEditForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#BlobEditForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('parent', 'parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt', 'modified_dt', 'forumdimension')</em><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Question</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.base_fields">
+<tt class="descclassname">BlobEditForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x4785690&gt;, 'description': &lt;django.forms.fields.CharField object at 0x4785e90&gt;, 'blobsummary': &lt;django.forms.fields.CharField object at 0x4785dd0&gt;, 'blobdescription': &lt;django.forms.fields.CharField object at 0x4785a50&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.declared_fields">
+<tt class="descclassname">BlobEditForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'blobsummary': &lt;django.forms.fields.CharField object at 0x4785dd0&gt;, 'blobdescription': &lt;django.forms.fields.CharField object at 0x4785a50&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.media">
+<tt class="descclassname">BlobEditForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.BlobEditForm.save">
+<tt class="descclassname">BlobEditForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#BlobEditForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.BlobEditForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.BlobForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">BlobForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#BlobForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.BlobForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#BlobForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('parent', 'parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt', 'modified_dt', 'forumdimension', 'description')</em><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Question</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobForm.base_fields">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x4776a50&gt;, 'blobdescription': &lt;django.forms.fields.CharField object at 0x4776dd0&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobForm.declared_fields">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x4776a50&gt;, 'blobdescription': &lt;django.forms.fields.CharField object at 0x4776dd0&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.BlobForm.media">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.BlobForm.save">
+<tt class="descclassname">BlobForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#BlobForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.BlobForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.DimensionManager">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">DimensionManager</tt><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#DimensionManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.DimensionManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.manager.Manager</span></tt></p>
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.DimensionManager.register">
+<tt class="descname">register</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#DimensionManager.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.DimensionManager.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.ForumBlob">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">ForumBlob</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#ForumBlob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.ForumBlob.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#ForumBlob.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_forum.models.ForumBlob.Meta.abstract">
+<tt class="descname">abstract</tt><em class="property"> = False</em><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.Meta.abstract" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.ForumBlob.child">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">child</tt><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.child" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.ForumBlob.forumdimension">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">forumdimension</tt><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.forumdimension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.ForumBlob.get_absolute_url">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">get_absolute_url</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#ForumBlob.get_absolute_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.ForumBlob.get_blob_key">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">get_blob_key</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#ForumBlob.get_blob_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.get_blob_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.ForumBlob.get_next_by_created_dt">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">get_next_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.get_next_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.ForumBlob.get_previous_by_created_dt">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">get_previous_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.get_previous_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.ForumBlob.parent">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">parent</tt><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a generic relation to any object through content-type/object-id
+fields.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.ForumBlob.parent_type">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">parent_type</tt><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.parent_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.ForumBlob.taggable">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">taggable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#ForumBlob.taggable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.taggable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.ForumBlob.user">
+<tt class="descclassname">ForumBlob.</tt><tt class="descname">user</tt><a class="headerlink" href="#openassembly.pirate_forum.models.ForumBlob.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.NominationForm">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">NominationForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em>, <em>instance=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#NominationForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.models.ModelForm</span></tt></p>
+<dl class="class">
+<dt id="openassembly.pirate_forum.models.NominationForm.Meta">
+<em class="property">class </em><tt class="descname">Meta</tt><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#NominationForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="openassembly.pirate_forum.models.NominationForm.Meta.exclude">
+<tt class="descname">exclude</tt><em class="property"> = ('parent', 'parent_pk', 'parent_type', 'user', 'child', 'children', 'permission_req', 'created_dt', 'modified_dt', 'forumdimension', 'random')</em><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.NominationForm.Meta.model">
+<tt class="descname">model</tt><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Nomination</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.NominationForm.base_fields">
+<tt class="descclassname">NominationForm.</tt><tt class="descname">base_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x4785f10&gt;, 'description': &lt;django.forms.fields.CharField object at 0x4785fd0&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.NominationForm.declared_fields">
+<tt class="descclassname">NominationForm.</tt><tt class="descname">declared_fields</tt><em class="property"> = {'summary': &lt;django.forms.fields.CharField object at 0x4785f10&gt;, 'description': &lt;django.forms.fields.CharField object at 0x4785fd0&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.models.NominationForm.media">
+<tt class="descclassname">NominationForm.</tt><tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.models.NominationForm.save">
+<tt class="descclassname">NominationForm.</tt><tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#NominationForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.NominationForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_forum.models.get_children">
+<tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">get_children</tt><big>(</big><em>parent</em>, <em>start</em>, <em>end</em>, <em>dimension</em>, <em>ctype_list</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.get_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_forum.models.get_pretty_url">
+<tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">get_pretty_url</tt><big>(</big><em>ctype_pk</em>, <em>obj_pk</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#get_pretty_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.get_pretty_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_forum.models.get_rangelist">
+<tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">get_rangelist</tt><big>(</big><em>start</em>, <em>end</em>, <em>count</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#get_rangelist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.get_rangelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a rangelist for pagination</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_forum.models.reverse_pretty_url">
+<tt class="descclassname">openassembly.pirate_forum.models.</tt><tt class="descname">reverse_pretty_url</tt><big>(</big><em>obj_str</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/models.html#reverse_pretty_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.models.reverse_pretty_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_forum.search_indexes">
+<span id="search-indexes-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">search_indexes</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.search_indexes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.pirate_forum.search_indexes.QuestionIndex">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.search_indexes.</tt><tt class="descname">QuestionIndex</tt><big>(</big><em>model</em>, <em>backend=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/search_indexes.html#QuestionIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.search_indexes.QuestionIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">haystack.indexes.SearchIndex</span></tt></p>
+<dl class="attribute">
+<dt id="openassembly.pirate_forum.search_indexes.QuestionIndex.fields">
+<tt class="descname">fields</tt><em class="property"> = {'text': &lt;haystack.fields.CharField object at 0x438a090&gt;}</em><a class="headerlink" href="#openassembly.pirate_forum.search_indexes.QuestionIndex.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.pirate_forum.search_indexes.QuestionIndex.index_queryset">
+<tt class="descname">index_queryset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/search_indexes.html#QuestionIndex.index_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.search_indexes.QuestionIndex.index_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used when the entire index for model is updated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_forum.tasks">
+<span id="tasks-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tasks</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.tasks" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-openassembly.pirate_forum.tests">
+<span id="tests-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tests</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.tests" title="Permalink to this headline">¶</a></h2>
+<p>This file demonstrates two different styles of tests (one doctest and one
+unittest). These will both pass when you run &#8220;manage.py test&#8221;.</p>
+<p>Replace these with more appropriate tests for your application.</p>
+<dl class="class">
+<dt id="openassembly.pirate_forum.tests.SimpleTest">
+<em class="property">class </em><tt class="descclassname">openassembly.pirate_forum.tests.</tt><tt class="descname">SimpleTest</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/tests.html#SimpleTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.tests.SimpleTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.test.testcases.TestCase</span></tt></p>
+<dl class="method">
+<dt id="openassembly.pirate_forum.tests.SimpleTest.test_basic_addition">
+<tt class="descname">test_basic_addition</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_forum/tests.html#SimpleTest.test_basic_addition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_forum.tests.SimpleTest.test_basic_addition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests that 1 + 1 always equals 2.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.pirate_forum.views">
+<span id="views-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">views</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_forum.views" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="openassembly.pirate_forum.templatetags.html">templatetags Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_forum.templatetags.html#module-openassembly.pirate_forum.templatetags.blobtags"><tt class="docutils literal"><span class="pre">blobtags</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirate_forum Package</a><ul>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.pirate_forum.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="openassembly.pirate_flags.templatetags.html"
+                        title="previous chapter">templatetags Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="openassembly.pirate_forum.templatetags.html"
+                        title="next chapter">templatetags Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/openassembly.pirate_forum.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_forum.templatetags.html" title="templatetags Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.pirate_flags.templatetags.html" title="templatetags Package"
+             >previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

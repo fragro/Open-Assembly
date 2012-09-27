@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_forum.management &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_forum.management</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">ForumDimension</span><span class="p">,</span> <span class="n">DimensionTracker</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span>
+<span class="kn">from</span> <span class="nn">pirate_consensus.models</span> <span class="kn">import</span> <span class="n">Consensus</span><span class="p">,</span> <span class="n">PhaseLink</span><span class="p">,</span> <span class="n">Phase</span>
+<span class="kn">from</span> <span class="nn">pirate_reputation.models</span> <span class="kn">import</span> <span class="n">ReputationEvent</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">pirate_consensus.models</span> <span class="kn">import</span> <span class="n">RatingVote</span><span class="p">,</span> <span class="n">UpDownVote</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pirate_messages.models</span> <span class="kn">import</span> <span class="n">Notification</span>
+<span class="kn">from</span> <span class="nn">pirate_ranking.models</span> <span class="kn">import</span> <span class="n">update_rankings</span>
+
+
+<span class="c">#ForumDimension.objects.register(key=&#39;pro&#39;, name=&#39;Problem&#39;,</span>
+<span class="c">#	help_text =&#39;Got a problem in the community? Describe your problem and seek the expertise of others.&#39;,</span>
+<span class="c">#	app_label = &#39;pirate_issues&#39;, model_class_name=&#39;Problem&#39;, form_class_name=&#39;ProblemForm&#39;)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;sol&#39;, name=&#39;Solution&#39;, help_text=&#39;Create a new solution for this problem.&#39;,</span>
+<span class="c">#								app_label=&#39;pirate_issues&#39; , model_class_name= &#39;Solution&#39;, form_class_name=&#39;SolutionForm&#39;, is_child=True)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;pol&#39;, name=&#39;Policy&#39;, help_text=&quot;Policy statements are concise descriptions of some political stance, much like the planks of a modern political party&#39;s platform.&quot;,</span>
+<span class="c">#								app_label=&#39;pirate_issues&#39;, model_class_name=&#39;Policy&#39; , form_class_name=&#39;PolicyForm&#39;)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;yea&#39;, name=&quot;Yea Argument&quot;, help_text=&quot;Argue for their claims!&quot;, app_label=&#39;pirate_deliberation&#39;,</span>
+<span class="c">#								 model_class_name=&#39;Argument&#39;, form_class_name=&#39;YeaArgumentForm&#39;, is_child=True)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;nay&#39;, name=&quot;Nay Argument&quot;, help_text=&quot;Argue against their claims!&quot;, app_label=&#39;pirate_deliberation&#39;,</span>
+<span class="c">#								 model_class_name=&#39;Argument&#39;, form_class_name=&#39;NayArgumentForm&#39;, is_child=True)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;mes&#39;, name=&#39;Message&#39;, help_text=&#39;&#39;, app_label=&#39;pirate_messages&#39;,</span>
+<span class="c">#								model_class_name=&#39;Message&#39;, form_class_name=&#39;MessageForm&#39;,is_content=False)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;fil&#39;, name=&#39;Film&#39;, help_text= &#39;Upload Film for Genome Project&#39;, </span>
+<span class="c">#								app_label=&#39;oa_filmgenome&#39;, model_class_name=&#39;Film&#39;, form_class_name=&#39;FilmForm&#39;, is_admin=True)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;sce&#39;, name=&#39;Scene&#39;, help_text=&#39;Upload Scene for Genome Project&#39;,</span>
+<span class="c">#								app_label=&#39;oa_filmgenome&#39;, model_class_name=&#39;Scene&#39;, form_class_name=&#39;SceneForm&#39;, is_admin=True)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;bug&#39;, name=&#39;Bug&#39;, help_text=&#39;File a bug report and help improve Open Assembly&#39;,#</span>
+<span class="c">#								app_label=&#39;oa_suggest&#39;, model_class_name=&#39;Bug&#39;, form_class_name=&#39;BugForm&#39;,)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;sug&#39;, name=&#39;Suggestion&#39;, help_text=&#39;Got an idea for a feature? Let us know.&#39;,</span>
+<span class="c">#								app_label=&#39;oa_suggest&#39; , model_class_name=&#39;Suggestion&#39; , form_class_name=&#39;SuggestionForm&#39;,)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;eve&#39;, name= &quot;Event&quot;, help_text=&#39;Create a new political action.&#39;,</span>
+<span class="c">#								app_label=&#39;pirate_actions&#39;, model_class_name=&#39;Action&#39;, form_class_name=&#39;ActionForm&#39;)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;act&#39;, name= &quot;Action&quot;, help_text=&#39;Upload an event or create your own.&#39;,</span>
+<span class="c">#								app_label=&#39;pirate_actions&#39;, model_class_name=&#39;Event&#39;, form_class_name=&#39;EventForm&#39;)</span>
+
+<span class="c">#ForumDimension.objects.register(key=&#39;boy&#39;, name= &quot;Boycott&quot;, help_text=&#39;Boycotts are an excellent way to fight the corporate abuse of power. Please include reasoning for boycott and the target.&#39;,</span>
+<span class="c">#								app_label=&#39;pirate_actions&#39;, model_class_name=&#39;Boycott&#39;, form_class_name=&#39;BoycottForm&#39;)</span>
+
+
+<span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s">&#39;nom&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;Response&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s">&#39;Respond to a Proposal&#39;</span><span class="p">,</span>
+								<span class="n">app_label</span><span class="o">=</span><span class="s">&#39;pirate_forum&#39;</span><span class="p">,</span> <span class="n">model_class_name</span><span class="o">=</span><span class="s">&#39;Nomination&#39;</span><span class="p">,</span> <span class="n">form_class_name</span><span class="o">=</span><span class="s">&#39;NominationForm&#39;</span><span class="p">,</span> <span class="n">is_child</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s">&#39;pol&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;Proposal&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s">&#39;Single Policy with Timed Decision. Nominate your ideas for policy or action and then vote on those. Optionally you can also rank the resulting ideas.&#39;</span><span class="p">,</span>
+								<span class="n">app_label</span><span class="o">=</span><span class="s">&#39;pirate_forum&#39;</span><span class="p">,</span> <span class="n">model_class_name</span><span class="o">=</span><span class="s">&#39;Question&#39;</span><span class="p">,</span> <span class="n">form_class_name</span><span class="o">=</span><span class="s">&#39;BlobForm&#39;</span><span class="p">)</span>
+
+<span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s">&#39;tem&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;Temp. Check&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s">&#39;Temperature Check of idea over time, no set time for decision&#39;</span><span class="p">,</span>
+								<span class="n">app_label</span><span class="o">=</span><span class="s">&#39;pirate_forum&#39;</span><span class="p">,</span> <span class="n">model_class_name</span><span class="o">=</span><span class="s">&#39;Question&#39;</span><span class="p">,</span> <span class="n">form_class_name</span><span class="o">=</span><span class="s">&#39;BlobForm&#39;</span><span class="p">)</span>
+
+
+<span class="c">#######GET OR CREATE OA_CACHE</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../openassembly.pirate_forum.html#openassembly.pirate_forum.management.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+	<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">RatingVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+			<span class="n">cons</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">parent</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">parent_pk</span> <span class="o">=</span> <span class="n">cons</span><span class="o">.</span><span class="n">parent_pk</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+	<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">UpDownVote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+			<span class="n">cons</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">parent</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">parent_pk</span> <span class="o">=</span> <span class="n">cons</span><span class="o">.</span><span class="n">parent_pk</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<span class="c">#	for i in ReputationEvent.objects.all():</span>
+<span class="c">#		consensus = i.related_object</span>
+<span class="c">#		try:</span>
+<span class="c">#			print str(consensus)</span>
+<span class="c">#		except:</span>
+<span class="c">#			i.delete()</span>
+	<span class="k">for</span> <span class="n">exist</span> <span class="ow">in</span> <span class="n">DimensionTracker</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+		<span class="n">exist</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+	<span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+		<span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">ForumDimension</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+			<span class="c">#issue_list = Consensus.objects.all()</span>
+			<span class="c">#issue_list = issue_list.filter(parent_pk=topic.pk)</span>
+			<span class="c">#type_class = ContentType.objects.get(app_label=str(fd.app_label), model=str(fd.model_class_name).lower())</span>
+			<span class="c">#issue_list = issue_list.filter(content_type=type_class)</span>
+			<span class="n">d</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">DimensionTracker</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">topic</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
+			<span class="c">#d.children = issue_list.count()</span>
+			<span class="n">d</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</div>
+<span class="k">for</span> <span class="n">cons</span> <span class="ow">in</span> <span class="n">Consensus</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+	<span class="n">update_rankings</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;null&#39;</span><span class="p">,</span> <span class="n">cons</span><span class="p">])</span>
+
+
+<span class="c">### CREATE THE PHASELINKS and LINKS BETWEEN THEM</span>
+
+<span class="n">ph1</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PhaseLink</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">phasename</span><span class="o">=</span><span class="s">&quot;nom&quot;</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&quot;pose your question&quot;</span><span class="p">)</span>
+<span class="n">ph2</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PhaseLink</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">phasename</span><span class="o">=</span><span class="s">&quot;vote&quot;</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&quot;nominate a solution and debate&quot;</span><span class="p">)</span>
+<span class="n">ph3</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PhaseLink</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">phasename</span><span class="o">=</span><span class="s">&quot;decision&quot;</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s">&quot;vote to make a decision&quot;</span><span class="p">)</span>
+
+
+<span class="n">ph1</span><span class="o">.</span><span class="n">prevphase</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">ph1</span><span class="o">.</span><span class="n">nextphase</span> <span class="o">=</span> <span class="n">ph2</span>
+<span class="n">ph1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="n">ph2</span><span class="o">.</span><span class="n">prevphase</span> <span class="o">=</span> <span class="n">ph1</span>
+<span class="n">ph2</span><span class="o">.</span><span class="n">nextphase</span> <span class="o">=</span> <span class="n">ph3</span>
+<span class="n">ph2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="n">ph3</span><span class="o">.</span><span class="n">prevphase</span> <span class="o">=</span> <span class="n">ph2</span>
+<span class="n">ph3</span><span class="o">.</span><span class="n">nextphase</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">ph3</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c">########TEMPORARY FIX FOR PRODUCTION AFTER DEPLOYMENT GET RID OF THIS</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Notification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+	<span class="n">i</span><span class="o">.</span><span class="n">sender_pk</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">sender</span><span class="o">.</span><span class="n">pk</span>
+	<span class="n">i</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c">#Fix all the existing consensus objects</span>
+<span class="c">###DANGEROUS OPERATION, SHOULD ONLY BE DONE ONCE</span>
+
+<span class="c">#for cons in Consensus.objects.all():</span>
+<span class="c">#	ph = Phase(consensus=cons, curphase=ph3,</span>
+<span class="c">#				creation_dt=datetime.datetime.now(), decision_dt=datetime.datetime.now(),</span>
+<span class="c">#				phase_change_dt=datetime.datetime.now(), complete=True, active=True)</span>
+<span class="c">#	ph.save()</span>
+<span class="c">#	cons.phase = ph</span>
+<span class="c">#	cons.save()</span>
+
+<span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

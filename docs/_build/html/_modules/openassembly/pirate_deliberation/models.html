@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_deliberation.models &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_deliberation.models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes</span> <span class="kn">import</span> <span class="n">generic</span>
+<span class="kn">from</span> <span class="nn">tagging.models</span> <span class="kn">import</span> <span class="n">Tag</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">ForumBlob</span>
+
+    
+<span class="c">#Stance is a type of argument -- probably specified by admin</span>
+<div class="viewcode-block" id="Stance"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.Stance">[docs]</a><span class="k">class</span> <span class="nc">Stance</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span>
+
+<span class="c">#An argument of {arg_type} that is attached to an Issue </span>
+<span class="c">#This should be a oa-wikipage instance</span></div>
+<div class="viewcode-block" id="Argument"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.Argument">[docs]</a><span class="k">class</span> <span class="nc">Argument</span><span class="p">(</span><span class="n">ForumBlob</span><span class="p">):</span>
+    <span class="n">stance</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Stance</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;argument&#39;</span><span class="p">)</span>
+        <span class="c">#help_text = _(&#39;Supply an Argument for your position.&#39;)</span>
+    
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span>
+
+<div class="viewcode-block" id="Argument.get_verbose_name"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.Argument.get_verbose_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_verbose_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span>
+    </div>
+<div class="viewcode-block" id="Argument.get_blob_key"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.Argument.get_blob_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_blob_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;arg&#39;</span>
+</div>
+<div class="viewcode-block" id="Argument.taggable"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.Argument.taggable">[docs]</a>    <span class="k">def</span> <span class="nf">taggable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+     
+</div></div>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.forms.extras</span> <span class="kn">import</span> <span class="n">SelectDateWidget</span>
+<span class="kn">from</span> <span class="nn">pirate_deliberation.models</span> <span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Stance</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.forms</span> <span class="kn">import</span> <span class="n">BlobForm</span>
+<span class="kn">from</span> <span class="nn">pirate_core.forms</span> <span class="kn">import</span> <span class="n">FormMixin</span>
+<span class="kn">from</span> <span class="nn">pirate_core.widgets</span> <span class="kn">import</span> <span class="n">HorizRadioRenderer</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">markitup.widgets</span> <span class="kn">import</span> <span class="n">MarkItUpWidget</span>
+
+
+<div class="viewcode-block" id="NayArgumentForm"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.NayArgumentForm">[docs]</a><span class="k">class</span> <span class="nc">NayArgumentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">,</span> <span class="n">FormMixin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NayArgumentForm.save"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.NayArgumentForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">NayArgumentForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">modified_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">stance</span><span class="p">,</span> <span class="n">news</span> <span class="o">=</span> <span class="n">Stance</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="s">&#39;nay&#39;</span><span class="p">)</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="NayArgumentForm.Meta"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.NayArgumentForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Argument</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;parent_pk&#39;</span><span class="p">,</span> <span class="s">&#39;parent_type&#39;</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;child&#39;</span><span class="p">,</span> <span class="s">&#39;children&#39;</span><span class="p">,</span> <span class="s">&#39;permission_req&#39;</span><span class="p">,</span> <span class="s">&#39;created_dt&#39;</span><span class="p">,</span> <span class="s">&#39;modified_dt&#39;</span><span class="p">,</span> <span class="s">&#39;deadline_dt&#39;</span><span class="p">,</span> <span class="s">&#39;location&#39;</span><span class="p">,</span> <span class="s">&#39;stance&#39;</span> <span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_argument_form_nay&quot;</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;inputText&#39;</span><span class="p">}),</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Summary of Argument&quot;</span><span class="p">)</span>
+    <span class="n">nay_description</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;100&#39;</span><span class="p">}),</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Description&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="YeaArgumentForm"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.YeaArgumentForm">[docs]</a><span class="k">class</span> <span class="nc">YeaArgumentForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">,</span> <span class="n">FormMixin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="YeaArgumentForm.save"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.YeaArgumentForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">YeaArgumentForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">modified_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">stance</span><span class="p">,</span> <span class="n">news</span> <span class="o">=</span> <span class="n">Stance</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="s">&#39;yea&#39;</span><span class="p">)</span>
+        <span class="n">newo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="YeaArgumentForm.Meta"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.YeaArgumentForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Argument</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;parent_pk&#39;</span><span class="p">,</span> <span class="s">&#39;parent_type&#39;</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;child&#39;</span><span class="p">,</span> <span class="s">&#39;children&#39;</span><span class="p">,</span> <span class="s">&#39;permission_req&#39;</span><span class="p">,</span> <span class="s">&#39;created_dt&#39;</span> <span class="p">,</span> <span class="s">&#39;modified_dt&#39;</span><span class="p">,</span> <span class="s">&#39;deadline_dt&#39;</span><span class="p">,</span> <span class="s">&#39;location&#39;</span><span class="p">,</span> <span class="s">&#39;stance&#39;</span> <span class="p">)</span>
+               </div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_argument_form_yea&quot;</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span> 
+                <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span><span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">:</span><span class="s">&#39;inputText&#39;</span><span class="p">}),</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Summary of Argument&quot;</span><span class="p">)</span> 
+    <span class="n">yea_description</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="s">&#39;100&#39;</span><span class="p">}),</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Description&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_argument_list"><a class="viewcode-back" href="../../../openassembly.pirate_deliberation.html#openassembly.pirate_deliberation.models.get_argument_list">[docs]</a><span class="k">def</span> <span class="nf">get_argument_list</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">ctype_list</span><span class="p">):</span>
+    <span class="n">arg_list</span> <span class="o">=</span> <span class="n">Argument</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">arg_type</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">Stance</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rng</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The argument &#39;start=&#39; and &#39;end=&#39; to the pp_get_argument_list tag must be &quot;</span>
+                                 <span class="s">&quot;provided either in the form of an int&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+        <span class="n">arg_list</span> <span class="o">=</span> <span class="n">arg_list</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">parent_pk</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-created_dt&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arg_type</span><span class="p">:</span>
+        <span class="n">arg_list</span> <span class="o">=</span> <span class="n">arg_list</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">stance</span><span class="o">=</span><span class="n">arg_type</span><span class="p">)</span>
+    <span class="c">#get total number of arguments</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">arg_list</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rng</span><span class="p">:</span>
+        <span class="n">arg_list</span> <span class="o">=</span> <span class="n">arg_list</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">arg_list</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">arg_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">arg_list</span><span class="p">,</span> <span class="n">count</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

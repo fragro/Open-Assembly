@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_messages.models &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_messages.models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes</span> <span class="kn">import</span> <span class="n">generic</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">Template</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">django.dispatch</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pirate_profile.models</span> <span class="kn">import</span> <span class="n">Profile</span>
+<span class="kn">from</span> <span class="nn">pirate_signals.models</span> <span class="kn">import</span> <span class="n">notification_send</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">markitup.widgets</span> <span class="kn">import</span> <span class="n">MarkItUpWidget</span>
+<span class="kn">from</span> <span class="nn">notification</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">notification</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">from</span> <span class="nn">pirate_comments.models</span> <span class="kn">import</span> <span class="n">Comment</span>
+<span class="kn">from</span> <span class="nn">celery.task</span> <span class="kn">import</span> <span class="n">task</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span><span class="p">,</span> <span class="n">get_root</span>
+<span class="kn">from</span> <span class="nn">redis_func</span> <span class="kn">import</span> <span class="n">redis_client</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="Message"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;message_sender&quot;</span><span class="p">)</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;message_receiver&quot;</span><span class="p">)</span>
+    <span class="n">parent_pk</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Parent Message PK&#39;</span><span class="p">),</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">1200</span><span class="p">)</span>
+    <span class="n">created_dt</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">read</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;[...]&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Message.get_absolute_url"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.Message.get_absolute_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s">&quot;{</span><span class="si">% lo</span><span class="s">ad pp_url%}{% pp_url template=&#39;message.html&#39; object=object %}&quot;</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">Context</span><span class="p">({</span><span class="s">&quot;object&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Notification"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.Notification">[docs]</a><span class="k">class</span> <span class="nc">Notification</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;notification_receiver&quot;</span><span class="p">)</span>
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;notification_sender&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">1200</span><span class="p">)</span>
+    <span class="n">link</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ContentType</span><span class="p">,</span>
+                                      <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;content type&#39;</span><span class="p">),</span>
+                                      <span class="n">related_name</span><span class="o">=</span><span class="s">&quot;content_type_set_for_</span><span class="si">%(class)s</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">object_pk</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;object ID&#39;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">content_object</span> <span class="o">=</span> <span class="n">generic</span><span class="o">.</span><span class="n">GenericForeignKey</span><span class="p">(</span><span class="n">ct_field</span><span class="o">=</span><span class="s">&quot;content_type&quot;</span><span class="p">,</span> <span class="n">fk_field</span><span class="o">=</span><span class="s">&quot;object_pk&quot;</span><span class="p">)</span>
+    <span class="n">is_read</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">()</span>
+    <span class="n">submit_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s">&quot;date_sent&quot;</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Topic</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">sender_pk</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Notification.save"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.Notification.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender_pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="o">.</span><span class="n">pk</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Notification</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_pk</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MessageForm"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.MessageForm">[docs]</a><span class="k">class</span> <span class="nc">MessageForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MessageForm.save"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.MessageForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">newo</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MessageForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">newo</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newo</span>
+</div>
+<div class="viewcode-block" id="MessageForm.Meta"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.MessageForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Message</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;receiver&#39;</span><span class="p">,</span> <span class="s">&#39;sender&#39;</span><span class="p">,</span> <span class="s">&#39;created_dt&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="s">&#39;parent_pk&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_message_form&quot;</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Description&quot;</span><span class="p">)</span>
+
+</div>
+<span class="nd">@task</span><span class="p">(</span><span class="n">ignore_result</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">create_notice_email</span><span class="p">(</span><span class="n">obj_pk</span><span class="p">,</span> <span class="n">ctype_pk</span><span class="p">,</span> <span class="n">reply_to</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">ctype_pk</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">ctype</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_pk</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">profile</span> <span class="o">=</span> <span class="n">Profile</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">send_email</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">receive_emails</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">send_email</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reply_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">rep_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">reply_to</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rep_type</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">user_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">content_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">user_type</span> <span class="ow">and</span> <span class="n">rep_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">user_type</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">content_type</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;message&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">send_email</span><span class="p">:</span>
+                    <span class="n">notification</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">receiver</span><span class="p">],</span> <span class="s">&quot;message_received&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;from_user&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s">&quot;user_url&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">sender</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">(),</span>
+                    <span class="s">&quot;notice_message&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">sender</span><span class="o">.</span><span class="n">username</span>  <span class="o">+</span> <span class="s">&quot;said&lt;br&gt;&quot;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                    <span class="s">&quot;path&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">path</span><span class="p">})</span>
+            <span class="n">redis_client</span><span class="p">()</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">receiver</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">sender</span><span class="o">.</span><span class="n">username</span> <span class="o">+</span> <span class="s">&#39; said&#39;</span><span class="p">,</span>
+                <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">description</span><span class="p">),</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;message&#39;</span><span class="p">,</span> <span class="s">&#39;object_pk&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)}))</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">description</span>
+            <span class="n">link</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span> <span class="o">!=</span> <span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+            <span class="c">#redis_client().publish(cons.content_object.user.username, json.dumps({&#39;message&#39;: &#39;Someone voted on&#39;, &#39;object&#39;: str(cons.content_object.summary), &#39;type&#39;: &#39;vote&#39;, &#39;object_pk&#39;: str(cons.content_object.pk)}))</span>
+            <span class="c">#if this notification is a comment_reply</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">content_type</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;comment&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;comment&#39;</span><span class="p">:</span>
+                    <span class="n">summ</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">summ</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">send_email</span><span class="p">:</span>
+                        <span class="k">print</span> <span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span>
+                        <span class="n">notification</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="p">],</span> <span class="s">&quot;comment_reply&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;from_user&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="s">&quot;user_url&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">(),</span>
+                        <span class="s">&quot;notice_message&quot;</span><span class="p">:</span> <span class="s">&quot;New comment received for your &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &#39;&quot;</span> <span class="o">+</span> <span class="n">summ</span> <span class="o">+</span> <span class="s">&quot;&#39;:&quot;</span><span class="p">,</span>
+                        <span class="s">&quot;reply&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="s">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">})</span>
+                <span class="n">tt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; replied to your &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&lt;br&gt;&quot;</span> <span class="o">+</span> <span class="n">tt</span>
+                <span class="n">link</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+                <span class="n">redis_client</span><span class="p">()</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span> <span class="o">+</span> <span class="s">&quot; commented on &quot;</span><span class="p">,</span>
+                    <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">summ</span><span class="p">),</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;comment&#39;</span><span class="p">,</span> <span class="s">&#39;object_pk&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)}))</span>
+
+            <span class="c">#if notification is an action_reply</span>
+            <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">content_type</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;action taken&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">send_email</span><span class="p">:</span>
+                        <span class="n">notification</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="p">],</span> <span class="s">&quot;action_reply&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;from_user&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="s">&quot;user_url&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">(),</span>
+                        <span class="s">&quot;notice_message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; acted on your &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">summary</span><span class="p">),</span>
+                        <span class="s">&quot;path&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">path</span><span class="p">})</span>
+
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; acted on your &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span>
+                <span class="n">link</span> <span class="o">=</span> <span class="n">reply_to</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">content_type</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;argument&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">send_email</span><span class="p">:</span>
+                        <span class="n">notification</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="p">],</span> <span class="s">&quot;argument_reply&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;from_user&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="s">&quot;user_url&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">(),</span>
+                        <span class="s">&quot;notice_message&quot;</span><span class="p">:</span> <span class="s">&quot;New argument received for your &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">summary</span><span class="p">),</span>
+                        <span class="s">&quot;path&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOMAIN</span> <span class="o">+</span> <span class="n">path</span><span class="p">})</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; created an argument for your &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rep_type</span><span class="p">)</span>
+                <span class="n">link</span> <span class="o">=</span> <span class="n">reply_to</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+                <span class="c">#push to nodejs through redis</span>
+                <span class="n">redis_client</span><span class="p">()</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span> <span class="o">+</span> <span class="s">&#39; made an argument on&#39;</span><span class="p">,</span>
+                        <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">reply_to</span><span class="o">.</span><span class="n">summary</span><span class="p">),</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;argument&#39;</span><span class="p">,</span> <span class="s">&#39;object_pk&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)}))</span>
+
+            <span class="c">#if notification is badge_received</span>
+
+        <span class="c">#elif str(content_type) == &#39;badge&#39;:</span>
+        <span class="c">#    content_type = ContentType.objects.get_for_model(User)</span>
+        <span class="c">#    path = &quot;/index.html#user/t-&quot; + str(content_type.pk) + &quot;/o-&quot; + str(obj.user.pk)</span>
+        <span class="c">#    if send_email:</span>
+        <span class="c">#            notification.send([reply_to.user], &quot;badge_received&quot;, {&quot;from_user&quot;: obj.user,</span>
+        <span class="c">#        &quot;notice_message&quot;: str(obj.user.username) + &quot;, you&#39;ve received a &quot; + str(rep_type) + &quot; &#39;&quot; + str(reply_to.dimension.name) + &quot;&#39;:&quot;,</span>
+        <span class="c">#        &quot;path&quot;: settings.DOMAIN_NAME + path})</span>
+        <span class="c">#    text = &quot;you received a &quot; + str(reply_to.dimension.name) + &quot; badge&quot;</span>
+        <span class="c">#    link = reply_to.get_absolute_url()</span>
+
+            <span class="c">#if notification is a child_reply</span>
+
+            <span class="c">#if notification is a message_received</span>
+
+            <span class="c">#if notification is support_Created</span>
+
+            <span class="c">#if notification is an argument_reply</span>
+  
+    <span class="k">if</span> <span class="n">link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user_type</span> <span class="o">!=</span> <span class="n">rep_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">reply_to</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+
+                <span class="n">notif</span> <span class="o">=</span> <span class="n">Notification</span><span class="p">(</span><span class="n">receiver</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">receiver</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                    <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">,</span> <span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">is_read</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">submit_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">notif</span> <span class="o">=</span> <span class="n">Notification</span><span class="p">(</span><span class="n">receiver</span><span class="o">=</span><span class="n">reply_to</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                    <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">rep_type</span><span class="p">,</span> <span class="n">object_pk</span><span class="o">=</span><span class="n">reply_to</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">is_read</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">submit_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">get_root</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">notif</span> <span class="o">=</span> <span class="n">Notification</span><span class="p">(</span><span class="n">receiver</span><span class="o">=</span><span class="n">reply_to</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+                <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">rep_type</span><span class="p">,</span> <span class="n">object_pk</span><span class="o">=</span><span class="n">reply_to</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">is_read</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">submit_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">notif</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="create_notification"><a class="viewcode-back" href="../../../openassembly.pirate_messages.html#openassembly.pirate_messages.models.create_notification">[docs]</a><span class="k">def</span> <span class="nf">create_notification</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">reply_to</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c">#obj specifies the obj being replied to, new_obj specifies the new object</span>
+
+    <span class="n">link</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;link&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span>
+    <span class="n">ctype_pk</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">pk</span>
+    <span class="n">create_notice_email</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj_pk</span><span class="p">,</span> <span class="n">ctype_pk</span><span class="p">,</span> <span class="n">reply_to</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">text</span><span class="p">])</span>
+</div>
+<span class="n">notification_send</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">create_notification</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

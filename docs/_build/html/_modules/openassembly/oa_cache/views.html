@@ -1,0 +1,709 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.oa_cache.views &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.oa_cache.views</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">cache</span> <span class="k">as</span> <span class="n">memcache</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span><span class="p">,</span> <span class="n">QueryDict</span>
+<span class="kn">import</span> <span class="nn">simplejson</span>
+<span class="kn">from</span> <span class="nn">django.template.loader</span> <span class="kn">import</span> <span class="n">render_to_string</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">oa_cache.models</span> <span class="kn">import</span> <span class="n">ListCache</span><span class="p">,</span> <span class="n">ModelCache</span><span class="p">,</span> <span class="n">UserSaltCache</span><span class="p">,</span> <span class="n">interpret_hash</span><span class="p">,</span> <span class="n">SideEffectCache</span>
+<span class="kn">from</span> <span class="nn">pirate_forum.models</span> <span class="kn">import</span> <span class="n">create_view</span><span class="p">,</span> <span class="n">get_rangelist</span>
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">RequestContext</span>
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">settings</span> <span class="kn">import</span> <span class="n">DOMAIN</span>
+<span class="kn">from</span> <span class="nn">oa_cache.tasks</span> <span class="kn">import</span> <span class="n">track_visitors</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">BeautifulSoup</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ListType</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+
+
+<div class="viewcode-block" id="get_object_or_none"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.get_object_or_none">[docs]</a><span class="k">def</span> <span class="nf">get_object_or_none</span><span class="p">(</span><span class="n">ctype_id</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Returns object with ID and ContentType ID</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ctype_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">obj_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">ctype_id</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">obj_id</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">ctype_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">content_type</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">obj_id</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">obj</span>
+
+</div>
+<div class="viewcode-block" id="side_effect"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.side_effect">[docs]</a><span class="k">def</span> <span class="nf">side_effect</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Initiates AJAX side effects, for instance if a user</span>
+<span class="sd">creates a new object, it renders that new object into the</span>
+<span class="sd">page and deferrs a pre-rendering task for that list</span>
+<span class="sd">and object.</span>
+
+<span class="sd">This allows the user to see the immediate effect of the</span>
+<span class="sd">action while ensuring low-latency. See the oa_cache.models</span>
+<span class="sd">for more information on SideEffectCache</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&quot;GET&quot;</span><span class="p">:</span>
+        <span class="n">rendered_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">usc_pk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;usc_pk&#39;</span><span class="p">)</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;side_effect&#39;</span><span class="p">)</span>
+        <span class="n">parent_pk</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;obj_pk&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">jsonval</span> <span class="o">=</span> <span class="n">simplejson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">se</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">jsonval</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c">#if there is side effect information</span>
+        <span class="k">if</span> <span class="n">jsonval</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">obj_id</span><span class="p">,</span> <span class="n">ctype_id</span> <span class="o">=</span> <span class="n">simplejson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">se</span><span class="p">)</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object_or_none</span><span class="p">(</span><span class="n">ctype_id</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span>
+            <span class="n">usc</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">usc_pk</span><span class="p">)</span>
+            <span class="c">#First, check to see if we need to switch context</span>
+            <span class="c">#EDGE-CASE: if user is viewing comments and submits argument</span>
+            <span class="k">if</span> <span class="n">usc</span><span class="o">.</span><span class="n">redirect</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;scroll_to&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;redirect&#39;</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">path</span><span class="p">})</span>
+            <span class="c">#Now render side effects if they haven&#39;t been rendered by the change in context</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sideeffects</span> <span class="o">=</span> <span class="n">SideEffectCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_salt_cache</span><span class="o">=</span><span class="n">usc</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sideeffects</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">key_specific</span><span class="p">:</span>
+                        <span class="n">div</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">object_specific</span><span class="p">:</span>
+                        <span class="n">div</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parent_pk</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">div</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">div_id</span>
+                    <span class="c">#if usc.model_cache is not None:</span>
+                    <span class="c">#    if obj == None:</span>
+                    <span class="c">#        user = obj</span>
+                    <span class="c">#    else:</span>
+                    <span class="c">#        user = obj.user</span>
+                        <span class="c">#deferred.defer(usc.model_cache.render, {&#39;object&#39;: obj, &#39;user&#39;: user}, True)</span>
+
+                    <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;scroll_to&#39;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">scroll_to</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">div</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                                        <span class="n">s</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;salted&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">}))})</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rendered_list</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;FAIL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="c">#deferred.defer(get_cache_or_render, request.user, key, False, True, None)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">#if the side effect is null</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;FAIL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Malformed JSON from UserSaltCache Form&quot;</span>
+        <span class="k">if</span> <span class="s">&#39;application/json&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;HTTP_ACCEPT&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                                <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="post_cache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.post_cache">[docs]</a><span class="k">def</span> <span class="nf">post_cache</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">div</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Posts an AJAX response to the cache using the UserSaltCache object</span>
+<span class="sd">as a reference for the template, div, and other necessary inforamtion.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">rendered_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">div_id</span><span class="o">=</span><span class="s">&#39;#&#39;</span> <span class="o">+</span> <span class="n">div</span><span class="p">)</span>
+
+        <span class="n">csrf_val</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">COOKIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;csrftoken&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">csrf_t</span> <span class="o">=</span> <span class="s">&quot;&lt;div style=&#39;display:none&#39;&gt;&lt;input type=&#39;hidden&#39; value=&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">csrf_val</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; name=&#39;csrfmiddlewaretoken&#39;&gt;&lt;/div&gt;&quot;</span>
+        <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">u</span><span class="p">:</span>
+            <span class="c">#object might be specified in the POST data, if obj specific data in form</span>
+            <span class="n">obj_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object_pk&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">ctype_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;content_type&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="c">#if the object is not specificed in POST or this UserSaltCache has no associated ModelCache</span>
+            <span class="k">if</span> <span class="n">obj_id</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">usc</span><span class="o">.</span><span class="n">object_specific</span><span class="p">:</span>
+                <span class="n">ctype_id</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;TYPE_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="n">obj_id</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;OBJ_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="c">#get the object related to USC</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object_or_none</span><span class="p">(</span><span class="n">ctype_id</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span>
+            <span class="n">div_id</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span>
+            <span class="c">#if no ModelCache, then there are multiple elements on one page and we need to specify via div_id</span>
+            <span class="k">if</span> <span class="n">usc</span><span class="o">.</span><span class="n">object_specific</span><span class="p">:</span>
+                    <span class="n">div_id</span> <span class="o">+=</span> <span class="n">obj_id</span>
+            <span class="n">retkey</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">usc</span><span class="o">.</span><span class="n">is_recursive</span><span class="p">:</span>
+                <span class="n">render</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">),</span>
+                                <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">retkey</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;csrf_string&#39;</span><span class="p">:</span> <span class="n">csrf_t</span><span class="p">,</span>
+                                <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}))</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_id</span><span class="p">,</span> <span class="s">&#39;usc_pk&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">&#39;toggle&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">is_toggle</span><span class="p">,</span>
+                                        <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">render</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c">#if it&#39;s recursive we need to also render all the children USCs</span>
+                <span class="n">recursive_list</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">retkey</span><span class="p">,</span> <span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">),</span>
+                        <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;csrf_string&#39;</span><span class="p">:</span> <span class="n">csrf_t</span><span class="p">,</span> <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}))</span>
+                <span class="k">for</span> <span class="n">html</span><span class="p">,</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">recursive_list</span><span class="p">:</span>
+                    <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_id</span><span class="p">,</span> <span class="s">&#39;usc_pk&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">&#39;toggle&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">is_toggle</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">})</span>
+
+            <span class="c">#NOW we must update all the c#!landingorresponding lists affected by this in the background: args, comments, etc.</span>
+            <span class="c">#deferred.defer(commit_update, None, key)</span>
+        <span class="k">return</span> <span class="n">rendered_list</span><span class="p">,</span> <span class="n">paramdict</span>
+
+</div>
+<div class="viewcode-block" id="get_cache_or_render"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.get_cache_or_render">[docs]</a><span class="k">def</span> <span class="nf">get_cache_or_render</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">extracontext</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get_cache_or_render is required for objects to be returned by</span>
+<span class="sd">    AJAX requests based on the type of object. This pre-renders</span>
+<span class="sd">    content so that it is quickly accessible using the oa_cache</span>
+<span class="sd">    models to interface with templates and div ids derived from css.</span>
+<span class="sd">    This allows designers to still maintain what templates are pre-rendered</span>
+<span class="sd">    to improve response time.</span>
+
+<span class="sd">    Forms cannot be rendered in this way, as the POST request is sent</span>
+<span class="sd">    to pirate_core.views.welcome_page, the root of www.openassembly.org/</span>
+<span class="sd">    **instead we use JS method adObject in detail_dyn.html</span>
+
+<span class="sd">    To overcome this only specified cached content in:</span>
+<span class="sd">        src/pirate_core/templatetags/pp_url/TEMPLATE_DICT</span>
+
+
+<span class="sd">    *** There are a lot of repeated prgramming patterns throughout this function and it</span>
+<span class="sd">        could easily be optimized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#init</span>
+    <span class="n">tot_items</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">rendered_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">load_last</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c">#need to determine the computational load of adding all the settings dict to the context, if any. Should be a heavier memory load at most, but</span>
+    <span class="c">#I don&#39;t see how this could slow down the cpu necessarily if we are using hashing</span>
+    <span class="n">extracontext</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;template&#39;</span><span class="p">:</span> <span class="n">rendertype</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;key&#39;</span><span class="p">:</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">),</span> <span class="s">&#39;settings&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">})</span>
+
+    <span class="c">#get the obj if it exists</span>
+    <span class="n">ctype_id</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;TYPE_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj_id</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;OBJ_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">scroll_to</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;SCROLL_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;PHASE_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object_or_none</span><span class="p">(</span><span class="n">ctype_id</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;rendered_list&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s">&#39;dead_link.html&#39;</span><span class="p">),</span> <span class="s">&#39;ctype_id&#39;</span><span class="p">:</span> <span class="n">ctype_id</span><span class="p">,</span> <span class="s">&#39;obj_id&#39;</span><span class="p">:</span> <span class="n">obj_id</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="s">&#39;#content&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">}],</span>
+                     <span class="s">&#39;paramdict&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s">&#39;render&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">dimension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">empty</span><span class="p">:</span>
+        <span class="n">render</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">render</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c">#model specific code: if this is an item or user render that obj first</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ModelCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">rendertype</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">rendertype</span> <span class="o">==</span> <span class="s">&#39;item&#39;</span> <span class="ow">or</span> <span class="n">rendertype</span> <span class="o">==</span> <span class="s">&#39;user&#39;</span> <span class="ow">or</span> <span class="n">rendertype</span> <span class="o">==</span> <span class="s">&#39;arpv&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">render</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rendertype</span> <span class="o">==</span> <span class="s">&#39;user&#39;</span><span class="p">:</span>
+            <span class="n">forcerender</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">contextual</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+                    <span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                    <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;START_KEY&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;END_KEY&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)}</span>
+        <span class="c">#if theres no obj, specify the user as the main object</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">contextual</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">contextual</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rendertype</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">contextual</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+        <span class="c">#set obj pk</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">contextual</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">content_type</span>
+        <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span>
+            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">contextual</span><span class="p">))})</span>
+        <span class="n">usc</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">load_last</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">u</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">usc</span><span class="o">.</span><span class="n">object_specific</span><span class="p">:</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                       <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">contextual</span><span class="p">))})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                       <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">contextual</span><span class="p">))})</span>
+
+    <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">csrf_val</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">COOKIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;csrftoken&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">csrf_t</span> <span class="o">=</span> <span class="s">&quot;&lt;div style=&#39;display:none&#39;&gt;&lt;input type=&#39;hidden&#39; value=&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">csrf_val</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&#39; name=&#39;csrfmiddlewaretoken&#39;&gt;&lt;/div&gt;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">csrf_t</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c">#list specific code:loads after model so detailed content is loaded first</span>
+    <span class="c">#if we aren&#39;t renderind the main content, we only want to render the list associated with scrolling</span>
+    <span class="c">###Warning: this breaks if you try to display two lists on one page</span>
+    <span class="k">if</span> <span class="n">dimension</span><span class="p">:</span>
+        <span class="n">lists</span> <span class="o">=</span> <span class="n">ListCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">rendertype</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">dimension</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dimension</span> <span class="ow">or</span> <span class="n">lists</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">lists</span> <span class="o">=</span> <span class="n">ListCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">rendertype</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lists</span><span class="p">:</span>
+        <span class="n">m_pk</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">model_cache</span>
+        <span class="n">lm</span> <span class="o">=</span> <span class="n">ModelCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">m_pk</span><span class="p">)</span>
+        <span class="c">#if we aren&#39;t forcerendering, try to get rendered_list from memcache</span>
+        <span class="n">renders</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">forcerender</span><span class="p">:</span>
+            <span class="c">#renders[0] -&gt; rendered_list | renders[1] -&gt; cached_list | renders[2] -&gt; tot_items</span>
+            <span class="n">renders</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">pk</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">renders</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">forcerender</span><span class="p">:</span>
+            <span class="n">renders</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c">#get list of objects to be rendered</span>
+            <span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">get_or_create_list</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">paramdict</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="n">forcerender</span><span class="p">)</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">lm</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">object_specific</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cached_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">renders</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">})</span>
+            <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="n">cached_list</span><span class="p">:</span>
+                <span class="c">#render each object in the list</span>
+                <span class="k">if</span> <span class="n">li</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">li</span><span class="p">,</span> <span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">dimension</span><span class="p">}</span>
+                    <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+                    <span class="n">html</span> <span class="o">=</span> <span class="n">lm</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="n">forcerender</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">lm</span><span class="o">.</span><span class="n">object_specific</span><span class="p">:</span>
+                        <span class="n">renders</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">),</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">})</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">renders</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">lm</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">li</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">),</span>
+                                <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">li</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">li</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+                                <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span> <span class="s">&#39;csrf_string&#39;</span><span class="p">:</span> <span class="n">csrf_t</span><span class="p">,</span>
+                                <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}</span>
+                    <span class="k">except</span><span class="p">:</span>
+                            <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">),</span>
+                                <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">li</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+                                <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span> <span class="s">&#39;csrf_string&#39;</span><span class="p">:</span> <span class="n">csrf_t</span><span class="p">,</span>
+                                <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}</span>
+                    <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+                    <span class="c">#user requested this, not auto-update. generate user specific html</span>
+                    <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">sp</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">usc</span><span class="o">.</span><span class="n">is_recursive</span><span class="p">:</span>
+                            <span class="n">retdiv</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">li</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                            <span class="n">renders</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">retdiv</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                            <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">))})</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c">#if it&#39;s recursive we need to also render all the children USCs</span>
+                            <span class="n">recursive_list</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">))</span>
+                            <span class="k">for</span> <span class="n">html</span><span class="p">,</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">recursive_list</span><span class="p">:</span>
+                                <span class="n">renders</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pk</span><span class="p">),</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">})</span>  
+            <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">pk</span><span class="p">),</span> <span class="p">(</span><span class="n">renders</span><span class="p">,</span> <span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">renders</span><span class="p">,</span> <span class="n">cached_list</span><span class="p">,</span> <span class="n">tot_items</span> <span class="o">=</span> <span class="n">renders</span>
+        <span class="n">rendered_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">renders</span><span class="p">)</span>
+        <span class="n">counts</span><span class="p">[</span><span class="n">rendertype</span><span class="p">]</span> <span class="o">=</span> <span class="n">tot_items</span>
+        <span class="c">#add usersaltcache if there is request data</span>
+        <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c">#Get Dybamic inputs not linked to a user</span>
+            <span class="n">lu</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">lm</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">object_specific</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">opposite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">load_last</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                                    <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span>
+                                    <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">lu</span><span class="p">:</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                                    <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">))})</span>
+
+            <span class="c">#now add all the UserSaltCache objects from this page</span>
+            <span class="c">#THIS REQUIRES A REQUEST OBJECT FO&#39; CSRF</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                                <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span>
+                                <span class="s">&#39;csrf_string&#39;</span><span class="p">:</span> <span class="n">csrf_t</span><span class="p">,</span> <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+            <span class="c">#for usc in u:</span>
+            <span class="c">#    rendered_list.append({&#39;test&#39;: &#39;test&#39;, &#39;obj_pk&#39;: obj.pk, &#39;div&#39;: usc.div_id, &#39;type&#39;: usc.jquery_cmd, &#39;html&#39;:</span>
+            <span class="c">#                usc.render(RequestContext(request, context))})</span>
+            <span class="c">#load last for list caches</span>
+            <span class="n">lu</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">lm</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">load_last</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">lu</span><span class="p">:</span>
+                <span class="n">load_last</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                                    <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">))})</span>
+
+        <span class="c">#USER SALT CACHCES WITH DYNAMIC RESPONSES ARE DONE</span>
+        <span class="k">if</span> <span class="n">tot_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">lm</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">div_id</span><span class="o">=</span><span class="s">&quot;#rangelist&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="n">rangelist</span> <span class="o">=</span> <span class="n">get_rangelist</span><span class="p">(</span><span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;START_KEY&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;END_KEY&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">tot_items</span><span class="p">)</span>
+                <span class="n">html</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;rangelist&#39;</span><span class="p">:</span> <span class="n">rangelist</span><span class="p">,</span>
+                        <span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;START_KEY&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;END_KEY&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+                        <span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}))</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="s">&#39;#pages&#39;</span><span class="p">,</span> <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">rendered_list</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;search&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;SEARCH_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">),</span>
+                            <span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                             <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;csrf_string&#39;</span><span class="p">:</span> <span class="n">csrf_t</span><span class="p">,</span> <span class="s">&#39;template&#39;</span><span class="p">:</span> <span class="n">rendertype</span><span class="p">}</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rendertype</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rendertype</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="c">#first try for free floating usersaltcache forms...</span>
+            <span class="n">usc</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">rendertype</span> <span class="o">+</span> <span class="s">&#39;.html&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">usc</span><span class="p">:</span>
+                <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+                <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                            <span class="n">u</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)})</span>
+                <span class="n">cached</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cached</span><span class="p">:</span>
+                    <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                            <span class="n">c</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)})</span>
+            <span class="k">if</span> <span class="n">rendered_list</span> <span class="o">==</span> <span class="p">[]:</span>
+                <span class="n">context</span><span class="p">[</span><span class="s">&#39;request&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="n">rendertype</span> <span class="o">+</span> <span class="s">&#39;.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">rendered_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="s">&#39;#pages&#39;</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;append&#39;</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">}]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rendered_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="s">&#39;#pages&#39;</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;append&#39;</span><span class="p">}]</span>
+
+    <span class="c">#render all the user salt caches associated with this listindex.html#topics/_s0/_e20/_dh</span>
+    <span class="c">#i.e. the Sort By: is a user salt cache</span>
+    <span class="n">lu</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">opposite</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c">#exclude if model is available</span>
+        <span class="n">lu</span> <span class="o">=</span> <span class="n">lu</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">lu</span><span class="p">:</span>
+        <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span>  <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">({</span><span class="s">&#39;request&#39;</span><span class="p">:</span> <span class="n">request</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">})})</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">model_cache</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">load_last</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">dimension</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span>
+            <span class="s">&#39;obj_pk&#39;</span><span class="p">:</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extracontext</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">usc</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+            <span class="n">html</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">))</span>
+            <span class="n">rendered_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span><span class="p">,</span>  <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">html</span><span class="p">})</span>
+    <span class="n">rendered_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_last</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;counts&#39;</span><span class="p">:</span> <span class="n">counts</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;rendered_list&#39;</span><span class="p">:</span> <span class="n">rendered_list</span><span class="p">,</span> <span class="s">&#39;paramdict&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="p">,</span> <span class="s">&#39;render&#39;</span><span class="p">:</span> <span class="n">render</span><span class="p">,</span> <span class="s">&#39;scroll_to&#39;</span><span class="p">:</span> <span class="n">scroll_to</span><span class="p">,</span> <span class="s">&#39;rendertype&#39;</span><span class="p">:</span> <span class="n">rendertype</span><span class="p">}</span>
+
+</div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Automatically updates ranked list of different views accessed,</span>
+<span class="sd">to reduce latency</span>
+
+<span class="sd">In the future this update will be dynamic</span>
+<span class="sd">conditional on the activity of</span>
+<span class="sd">that page view.#list/_s0/_e20/_dhn</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="commit_update"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.commit_update">[docs]</a><span class="k">def</span> <span class="nf">commit_update</span><span class="p">(</span><span class="n">user_pk</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="c">##TODO: bad patch here, somethings storing keys incorrectly, trach it down and kill it</span>
+    <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;#&#39;</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;#&#39;</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">get_cache_or_render</span><span class="p">(</span><span class="n">user_pk</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="update_ranks"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.update_ranks">[docs]</a><span class="k">def</span> <span class="nf">update_ranks</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">codes</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">codes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">codes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">memcache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">goto</span> <span class="o">=</span> <span class="s">&#39;/200.html&#39;</span>
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">arg_dict</span> <span class="ow">in</span> <span class="n">codes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c">#deferred.defer(commit_update, None, key, _countdown=60)</span>
+                <span class="k">pass</span>
+        <span class="n">goto</span> <span class="o">=</span> <span class="s">&#39;/200.html&#39;</span>
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="load_page"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.load_page">[docs]</a><span class="k">def</span> <span class="nf">load_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the main function of OpenAssembly. It sends AJAX requests to the oa_cache</span>
+<span class="sd">models, each responsible for rendering. oa_cache is responsible for the rendering and caching of lists, items,</span>
+<span class="sd">and user information. Using an AJAX GET/POST and caching system has greatly</span>
+<span class="sd">decreased the latency of the system.</span>
+
+<span class="sd">*Each cache is specified by a unique &#39;key&#39; value and corresponding &#39;paramdict&#39; that</span>
+<span class="sd"> is passed around the various functions. Some parameters of the system include</span>
+<span class="sd"> START, END, DIMENSION, SCROLL_TO, and more parameters can be added as needed.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;output&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">hashed</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;hash&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hashed</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">hashed</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">empty</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;empty&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">hashed</span> <span class="o">=</span> <span class="n">hashed</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">DOMAIN</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hashed</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hashed</span> <span class="o">==</span> <span class="s">&#39;/&#39;</span> <span class="ow">and</span> <span class="n">empty</span> <span class="o">!=</span> <span class="s">&#39;false&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="n">hashed</span> <span class="o">=</span> <span class="s">&#39;/p/landing&#39;</span>
+        <span class="k">elif</span> <span class="n">hashed</span> <span class="o">==</span> <span class="s">&#39;/&#39;</span> <span class="ow">and</span> <span class="n">empty</span> <span class="o">!=</span> <span class="s">&#39;false&#39;</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">():</span>
+            <span class="n">hashed</span> <span class="o">=</span> <span class="s">&#39;/p/landing&#39;</span>
+            <span class="c">#need to make this some sort of home feed for user</span>
+        <span class="k">if</span> <span class="n">hashed</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;/p&#39;</span><span class="p">:</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="n">get_cache_or_render</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">hashed</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;rendered_list&#39;</span><span class="p">]:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s">&#39;output&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s">&#39;OBJ_KEY&#39;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;paramdict&#39;</span><span class="p">]:</span>
+                <span class="n">obj_pk</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;paramdict&#39;</span><span class="p">][</span><span class="s">&#39;OBJ_KEY&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj_pk</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">create_view</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;REMOTE_ADDR&#39;</span><span class="p">),</span> <span class="n">obj_pk</span><span class="p">,</span> <span class="n">hashed</span><span class="p">,</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]])</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;FAIL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;SCROLL_KEY&#39;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;paramdict&#39;</span><span class="p">]:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s">&#39;scroll_to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;#&#39;</span> <span class="o">+</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;paramdict&#39;</span><span class="p">][</span><span class="s">&#39;SCROLL_KEY&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">#data[&#39;FAIL&#39;] = hashed</span>
+            <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&#39;redirect&#39;</span><span class="p">:</span> <span class="n">hashed</span><span class="p">}),</span>
+                                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+        <span class="c">#track visitors</span>
+        <span class="n">track_visitors</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;application/json&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;HTTP_ACCEPT&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;FAIL&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+        <span class="c">#we just want to update the request changes and return what is rendered</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">QueryDict</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">hashed</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;hash&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c">#cut off javascript &#39;form[...]&#39;&#39; in key to get ...</span>
+            <span class="n">q</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">q</span><span class="p">[</span><span class="s">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hashed</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">POST</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="n">div</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">&#39;form_id&#39;</span><span class="p">]</span>
+        <span class="n">rendered_list</span><span class="p">,</span> <span class="n">param_dict</span> <span class="o">=</span> <span class="n">post_cache</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">hashed</span><span class="p">,</span> <span class="n">div</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rendered_list</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;debug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">div</span>
+        <span class="c">#now we want to post to the cache and re-render the appropriate part of the page</span>
+        <span class="k">if</span> <span class="s">&#39;application/json&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;HTTP_ACCEPT&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="load_usersaltcache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.load_usersaltcache">[docs]</a><span class="k">def</span> <span class="nf">load_usersaltcache</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the main function of OpenAssembly. It sends AJAX requests to the oa_cache</span>
+<span class="sd">models, each responsible for rendering. oa_cache is responsible for the rendering and caching of lists, items,</span>
+<span class="sd">and user information. Using an AJAX GET/POST and caching system has greatly</span>
+<span class="sd">decreased the latency of the system.</span>
+
+<span class="sd">*Each cache is specified by a unique &#39;key&#39; value and corresponding &#39;paramdict&#39; that</span>
+<span class="sd"> is passed around the various functions. Some parameters of the system include</span>
+<span class="sd"> START, END, DIMENSION, SCROLL_TO, and more parameters can be added as needed.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;output&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">hashed</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;hash&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">div</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">rendertype</span><span class="p">,</span> <span class="n">paramdict</span> <span class="o">=</span> <span class="n">interpret_hash</span><span class="p">(</span><span class="n">hashed</span><span class="p">)</span>
+
+        <span class="n">ctype_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctype_pk&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">obj_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;obj_pk&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">get_object_or_none</span><span class="p">(</span><span class="n">ctype_id</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span>
+
+        <span class="n">usc</span> <span class="o">=</span> <span class="n">UserSaltCache</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">div_id</span><span class="o">=</span><span class="n">div</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">usc</span><span class="o">.</span><span class="n">object_specific</span><span class="p">:</span>
+            <span class="n">div_id</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span> <span class="o">+</span> <span class="n">obj_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">div_id</span> <span class="o">=</span> <span class="n">usc</span><span class="o">.</span><span class="n">div_id</span>
+        <span class="n">render</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;div&#39;</span><span class="p">:</span> <span class="n">div_id</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">usc</span><span class="o">.</span><span class="n">jquery_cmd</span><span class="p">,</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                    <span class="n">usc</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DIM_KEY&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                    <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s">&#39;sort_type&#39;</span><span class="p">:</span> <span class="n">paramdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;CTYPE_KEY&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)}))}</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">render</span><span class="p">]</span>
+        <span class="c">#deferred.defer(create_view, request.user.username, request.META.get(&#39;REMOTE_ADDR&#39;), props[&#39;paramdict&#39;].get(&#39;OBJ_ID&#39;, None), _countdown=10)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;FAIL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="s">&#39;application/json&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;HTTP_ACCEPT&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">simplejson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                                    <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="render_hashed"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.render_hashed">[docs]</a><span class="k">def</span> <span class="nf">render_hashed</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">extracontext</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="c">###Need to get all of the rendered html</span>
+    <span class="c">###and integrate via Beautiful</span>
+    <span class="k">if</span> <span class="s">&#39;TYPE&#39;</span> <span class="ow">in</span> <span class="n">extracontext</span><span class="p">:</span>
+        <span class="n">htmlrender</span> <span class="o">=</span> <span class="n">extracontext</span><span class="p">[</span><span class="s">&#39;TYPE&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;HTML&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">htmlrender</span> <span class="o">=</span> <span class="s">&#39;JS&#39;</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="p">[</span><span class="s">&#39;PATH_INFO&#39;</span><span class="p">]</span>
+    <span class="n">empty</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+    <span class="n">retdict</span> <span class="o">=</span> <span class="n">get_cache_or_render</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">forcerender</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">extracontext</span><span class="o">=</span><span class="n">extracontext</span><span class="p">)</span>
+    <span class="n">rendered_list</span> <span class="o">=</span> <span class="n">retdict</span><span class="p">[</span><span class="s">&#39;rendered_list&#39;</span><span class="p">]</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rendered_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="k">print</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39; &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;html&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">ListType</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;html&#39;</span><span class="p">]:</span>
+                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                    <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">soup</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;append&#39;</span><span class="p">:</span>
+                    <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c">#print i[&#39;div&#39;] + &#39; : &#39; + i[&#39;type&#39;]</span>
+            <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;html&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s">&#39;#pages&#39;</span> <span class="ow">in</span> <span class="n">ret</span> <span class="ow">and</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;#tab_ruler&#39;</span> <span class="ow">and</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s">&#39;#pages&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]})</span>
+                <span class="c">#print text</span>
+                <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">text</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BeautifulSoup</span><span class="o">.</span><span class="n">NavigableString</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;html&#39;</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;html&#39;</span><span class="p">:</span>
+                <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">soup</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;append&#39;</span><span class="p">:</span>
+                <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]][</span><span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]])</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="s">&#39;div&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]})</span>
+                <span class="c">#print text</span>
+                <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">text</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BeautifulSoup</span><span class="o">.</span><span class="n">NavigableString</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s">&#39;html&#39;</span><span class="p">]))</span>
+    <span class="n">rendertype</span> <span class="o">=</span> <span class="n">retdict</span><span class="p">[</span><span class="s">&#39;rendertype&#39;</span><span class="p">]</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ret</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="n">prettify</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">htmlrender</span><span class="p">:</span>
+            <span class="n">final</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;renders&#39;</span><span class="p">:</span> <span class="n">final</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">:</span> <span class="n">retdict</span><span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">],</span> <span class="s">&#39;rendertype&#39;</span><span class="p">:</span> <span class="n">rendertype</span><span class="p">,</span> <span class="s">&#39;counts&#39;</span><span class="p">:</span> <span class="n">retdict</span><span class="p">[</span><span class="s">&#39;counts&#39;</span><span class="p">]}</span>
+
+</div>
+<div class="viewcode-block" id="load_page_ret"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.load_page_ret">[docs]</a><span class="k">def</span> <span class="nf">load_page_ret</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+</div>
+<div class="viewcode-block" id="nuke_memcache"><a class="viewcode-back" href="../../../openassembly.oa_cache.html#openassembly.oa_cache.views.nuke_memcache">[docs]</a><span class="k">def</span> <span class="nf">nuke_memcache</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">:</span>
+        <span class="n">codes</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">codes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">codes</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">memcache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;rank_update_codes&quot;</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+            <span class="n">goto</span> <span class="o">=</span> <span class="s">&#39;/200.html&#39;</span>
+            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">arg_dict</span> <span class="ow">in</span> <span class="n">codes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">memcache</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">goto</span> <span class="o">=</span> <span class="s">&#39;/200.html&#39;</span>
+            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span>
+    <span class="n">goto</span> <span class="o">=</span> <span class="s">&#39;/200.html&#39;</span>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

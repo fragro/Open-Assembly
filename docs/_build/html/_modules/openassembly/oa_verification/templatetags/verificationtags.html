@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.oa_verification.templatetags.verificationtags &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.oa_verification.templatetags.verificationtags</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="kn">from</span> <span class="nn">oa_verification.models</span> <span class="kn">import</span> <span class="n">EmailVerification</span>
+<span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">sha</span>
+<span class="kn">from</span> <span class="nn">django.core.mail</span> <span class="kn">import</span> <span class="n">send_mail</span>
+
+<span class="kn">from</span> <span class="nn">oa_verification.models</span> <span class="kn">import</span> <span class="n">ActionTaken</span>
+
+<span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">MyGroup</span>
+
+<span class="kn">from</span> <span class="nn">settings</span> <span class="kn">import</span> <span class="n">DOMAIN_NAME</span><span class="p">,</span> <span class="n">EMAIL_HOST_USER</span>
+
+<span class="kn">from</span> <span class="nn">pirate_permissions.models</span> <span class="kn">import</span> <span class="n">PermissionsGroup</span><span class="p">,</span> <span class="n">Permission</span>
+
+<span class="kn">from</span> <span class="nn">pirate_core</span> <span class="kn">import</span> <span class="n">HttpRedirectException</span><span class="p">,</span> <span class="n">namespace_get</span><span class="p">,</span> <span class="n">FormMixin</span>
+
+<span class="kn">from</span> <span class="nn">pirate_signals.models</span> <span class="kn">import</span> <span class="n">aso_rep_event</span><span class="p">,</span> <span class="n">notification_send</span><span class="p">,</span> <span class="n">relationship_event</span>
+
+
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pirate_sources.models</span> <span class="kn">import</span> <span class="n">IMGSource</span>
+<span class="kn">from</span> <span class="nn">oa_verification.models</span> <span class="kn">import</span> <span class="n">arpv</span><span class="p">,</span> <span class="n">PhotoVerificationTask</span><span class="p">,</span> <span class="n">PhotoUserVerifications</span><span class="p">,</span> <span class="n">Referral</span>
+<span class="kn">from</span> <span class="nn">oa_verification.forms</span> <span class="kn">import</span> <span class="n">arpvForm</span><span class="p">,</span> <span class="n">ReferralForm</span>
+<span class="kn">from</span> <span class="nn">pirate_core.widgets</span> <span class="kn">import</span> <span class="n">HorizRadioRenderer</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">customtags.decorators</span> <span class="kn">import</span> <span class="n">block_decorator</span>
+<span class="n">register</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Library</span><span class="p">()</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">block_decorator</span><span class="p">(</span><span class="n">register</span><span class="p">)</span>
+
+<span class="n">get_namespace</span> <span class="o">=</span> <span class="n">namespace_get</span><span class="p">(</span><span class="s">&#39;oa_ver&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ActionTakenForm"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.ActionTakenForm">[docs]</a><span class="k">class</span> <span class="nc">ActionTakenForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ActionTakenForm.save"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.ActionTakenForm.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">new_source</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ActionTakenForm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="n">commit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_source</span>
+</div>
+<div class="viewcode-block" id="ActionTakenForm.Meta"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.ActionTakenForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">ActionTaken</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="s">&#39;content_object&#39;</span><span class="p">,</span><span class="s">&#39;object_pk&#39;</span><span class="p">,</span><span class="s">&#39;content_type&#39;</span><span class="p">)</span>
+</div>
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;pp_actiontaken_form&quot;</span><span class="p">)</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_actiontaken_form"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_actiontaken_form">[docs]</a><span class="k">def</span> <span class="nf">oa_actiontaken_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;detail.html&#39;</span> <span class="o">+</span> <span class="s">&quot;?_t=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">content_type</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;&amp;_o=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">POST</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ActionTakenForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">newobj</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">newobj</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+            <span class="n">newobj</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="n">content_type</span>
+            <span class="n">newobj</span><span class="o">.</span><span class="n">object_pk</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span>
+            <span class="n">newobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">notification_send</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">newobj</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">newobj</span><span class="p">,</span> <span class="n">reply_to</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">relationship_event</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">newobj</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">newobj</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+
+            <span class="c">#raise HttpRedirectException(HttpResponseRedirect(path))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ActionTakenForm</span><span class="p">()</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_actiontaken"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_actiontaken">[docs]</a><span class="k">def</span> <span class="nf">oa_get_actiontaken</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">ActionTaken</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="n">action_taken</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">url</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;verb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">verb</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;verb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Action Taken&quot;</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">action_taken</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;has_action_taken&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_taken</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_verifications"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_verifications">[docs]</a><span class="k">def</span> <span class="nf">oa_get_verifications</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">PhotoUserVerifications</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">verifications</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">Referral</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">accepted_user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_referral"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_referral">[docs]</a><span class="k">def</span> <span class="nf">oa_get_referral</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">Referral</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;referral&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_activate_referral"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_activate_referral">[docs]</a><span class="k">def</span> <span class="nf">oa_activate_referral</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">Referral</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="ow">or</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ref</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="n">ref</span><span class="o">.</span><span class="n">referred_user</span> <span class="o">=</span> <span class="n">user</span>
+            <span class="n">ref</span><span class="o">.</span><span class="n">accepted_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">ref</span><span class="o">.</span><span class="n">accepted</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">ref</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">topic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">myg</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">ref</span><span class="o">.</span><span class="n">topic</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Email not associated with this account. &lt;br&gt; Log into account associated with &lt;i&gt;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">email</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &lt;/i&gt;and try again.&#39;</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;referral&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="FacilitatorsForm"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.FacilitatorsForm">[docs]</a><span class="k">class</span> <span class="nc">FacilitatorsForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+
+    <span class="n">form_id</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="s">&quot;oa_facilitators_form&quot;</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_facilitators_form"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_facilitators_form">[docs]</a><span class="k">def</span> <span class="nf">oa_facilitators_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">new_topic</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;oa_facilitators_form&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">FacilitatorsForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">])</span>
+                <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">new_topic</span><span class="p">)</span>
+                <span class="c">#create Facilitator permissions for group creator</span>
+                <span class="n">perm_group</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PermissionsGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;Facilitator&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;Permission group for Facilitation of Online Working Groups&quot;</span><span class="p">)</span>
+                <span class="n">perm</span><span class="p">,</span> <span class="n">newperm</span> <span class="o">=</span> <span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;facilitator-permission&#39;</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">,</span>
+                            <span class="n">object_pk</span><span class="o">=</span><span class="n">new_topic</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">permissions_group</span><span class="o">=</span><span class="n">perm_group</span><span class="p">,</span> <span class="n">component_membership_required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">mg</span><span class="p">,</span> <span class="n">newgr</span> <span class="o">=</span> <span class="n">MyGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">new_topic</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+                    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;done&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39; added&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;done&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39; already facilitator&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Account with login name &quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;&quot; not Found&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">FacilitatorsForm</span><span class="p">()</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_referral_form"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_referral_form">[docs]</a><span class="k">def</span> <span class="nf">oa_referral_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sent</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;oa_referral_form&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ReferralForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">email</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span>
+            <span class="n">email_list</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">email_list</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ref</span> <span class="o">=</span> <span class="n">Referral</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Referral Key Already Used for this group and email: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="c">#create referral</span>
+                    <span class="n">salt</span> <span class="o">=</span> <span class="n">sha</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]</span>
+                    <span class="n">activation_key</span> <span class="o">=</span> <span class="n">sha</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">salt</span> <span class="o">+</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                    <span class="n">ref</span> <span class="o">=</span> <span class="n">Referral</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">created_dt</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                                    <span class="n">key</span><span class="o">=</span><span class="n">activation_key</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">accepted</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                    <span class="n">ref</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="c">#send referral email</span>
+                    <span class="n">email_subject</span> <span class="o">=</span> <span class="s">&#39;OpenAssembly Referral&#39;</span>
+                    <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+                        <span class="n">email_subject</span> <span class="o">+=</span> <span class="s">&quot; to Group &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">shortname</span><span class="p">)</span>
+                    <span class="n">email_body</span> <span class="o">=</span> <span class="s">&quot;You&#39;ve been referred to OpenAssembly by </span><span class="si">%s</span><span class="s">. </span><span class="se">\n\n</span><span class="s">To join as a verified user:</span><span class="se">\n\n</span><span class="si">%s</span><span class="s">p/register/d-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">DOMAIN_NAME</span><span class="p">,</span>
+                        <span class="n">ref</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">send_mail</span><span class="p">(</span><span class="n">email_subject</span><span class="p">,</span>
+                              <span class="n">email_body</span><span class="p">,</span>
+                              <span class="s">&#39;fragro@gmail.com&#39;</span><span class="p">,</span>
+                              <span class="p">[</span><span class="n">email</span><span class="p">])</span>
+                    <span class="n">sent</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;Mail sent to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sent</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; recipients&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ReferralForm</span><span class="p">()</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_ver_form"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_ver_form">[docs]</a><span class="k">def</span> <span class="nf">oa_ver_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;form_id = forms.CharField(widget=forms.HiddenInput(), initial=&quot;pp_arpv_form&quot;)</span>
+<span class="sd">    This block tag creates instances of anonymous photo verification tags, and makes sure</span>
+<span class="sd">    that the users exist, they are not the same, and</span>
+<span class="sd">    Usage is as follows:</span>
+
+<span class="sd">    {% pp_arpv_form POST=request.POST user=request.user%}</span>
+<span class="sd">       Do stuff with {{ pp_arpv.form }}.</span>
+<span class="sd">    {% endpp_arpv_form%}</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">FILE</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;FILE&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">ctype</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">POST</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">arpvForm</span><span class="p">(</span><span class="n">POST</span><span class="p">,</span> <span class="n">FILE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">userobj1</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user1&#39;</span><span class="p">))</span>
+                <span class="n">test1</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">test1</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">userobj2</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user2&#39;</span><span class="p">))</span>
+                <span class="n">test2</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">test2</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">userobj1</span> <span class="o">==</span> <span class="n">userobj2</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;The users are the same&#39;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">test1</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;User1 does not Exist&#39;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">test2</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;User2 does not Exist&#39;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">test1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test2</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Neither User Exists&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">photo</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;photo&#39;</span><span class="p">]</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">arpv</span><span class="p">(</span><span class="n">user1</span><span class="o">=</span><span class="n">userobj1</span><span class="p">,</span> <span class="n">user2</span><span class="o">=</span><span class="n">userobj2</span><span class="p">,</span> <span class="n">photo</span><span class="o">=</span><span class="n">photo</span><span class="p">)</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">submit_user</span> <span class="o">=</span> <span class="n">user</span>
+                <span class="c">#if the submit user is one of the photo users, this should be normal</span>
+                <span class="k">if</span> <span class="n">temp</span><span class="o">.</span><span class="n">submit_user</span> <span class="o">==</span> <span class="n">userobj1</span><span class="p">:</span>
+                    <span class="n">temp</span><span class="o">.</span><span class="n">user1Confirm</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">elif</span> <span class="n">temp</span><span class="o">.</span><span class="n">submit_user</span> <span class="o">==</span> <span class="n">userobj2</span><span class="p">:</span>
+                    <span class="n">temp</span><span class="o">.</span><span class="n">user2Confirm</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">created_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="c">#now that we have saved the arpv, send out notifications for confirmation</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">temp</span><span class="o">.</span><span class="n">user1Confirm</span><span class="p">:</span>
+                    <span class="n">link</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;Click Here to Confirm a Photo of You from &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+                    <span class="n">notification_send</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">reply_to</span><span class="o">=</span><span class="n">userobj1</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">temp</span><span class="o">.</span><span class="n">user2Confirm</span><span class="p">:</span>
+                    <span class="n">link</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;Click Here to Confirm a Photo of You from &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+                    <span class="n">notification_send</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">reply_to</span><span class="o">=</span><span class="n">userobj2</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+                <span class="c">#raise HttpRedirectException(HttpResponseRedirect(returnurl))</span>
+                <span class="n">form</span> <span class="o">=</span> <span class="n">arpvForm</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">arpvs</span> <span class="o">=</span> <span class="n">arpv</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">submit_user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;photo_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">photo</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arpvs</span><span class="p">]</span>
+                <span class="n">form</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s">&#39;photo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">queryset</span> <span class="o">=</span> <span class="n">IMGSource</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">)</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;arpvs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arpvs</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Invalid Entry. Make Sure You Have Selected a Photo and 2 Users&#39;</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">arpvForm</span><span class="p">()</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s">&#39;photo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">queryset</span> <span class="o">=</span> <span class="n">IMGSource</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c">#if user is not None:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">arpvForm</span><span class="p">()</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s">&#39;photo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">queryset</span> <span class="o">=</span> <span class="n">IMGSource</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">object_pk</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">ctype</span><span class="p">)</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="n">CHOICES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;YES&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;NO&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="ARPVConfirmForm"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.ARPVConfirmForm">[docs]</a><span class="k">class</span> <span class="nc">ARPVConfirmForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">choose</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">CHOICES</span><span class="p">,</span>
+            <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">RadioSelect</span><span class="p">())</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_ver_confirm_form"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_ver_confirm_form">[docs]</a><span class="k">def</span> <span class="nf">oa_ver_confirm_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;arpv&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">POST</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;form_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;oa_arpv_task_form&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ARPVConfirmForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="c">#set the appropriate user as confirmed</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;choose&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s">&#39;1&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="n">val</span><span class="o">.</span><span class="n">user1</span><span class="p">:</span>
+                    <span class="n">val</span><span class="o">.</span><span class="n">user1Confirm</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">elif</span> <span class="n">user</span> <span class="o">==</span> <span class="n">val</span><span class="o">.</span><span class="n">user2</span><span class="p">:</span>
+                    <span class="n">val</span><span class="o">.</span><span class="n">user2Confirm</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">val</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">user1Confirm</span> <span class="ow">and</span> <span class="n">val</span><span class="o">.</span><span class="n">user2Confirm</span><span class="p">:</span>
+                    <span class="n">create_task</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="n">user1</span><span class="p">)</span>
+                    <span class="n">create_task</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="n">user2</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">HttpRedirectException</span><span class="p">(</span><span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s">&#39;arpv_thanks.html&#39;</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s">&#39;0&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HttpRedirectException</span><span class="p">(</span><span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s">&#39;arpv_flag.html&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ARPVConfirmForm</span><span class="p">()</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="create_task"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.create_task">[docs]</a><span class="k">def</span> <span class="nf">create_task</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="c">#creates photo verification tasks for each pair of photos</span>
+    <span class="n">old_arpvs1</span> <span class="o">=</span> <span class="n">arpv</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user1</span><span class="o">=</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+    <span class="n">old_arpvs2</span> <span class="o">=</span> <span class="n">arpv</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user2</span><span class="o">=</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+    <span class="n">create</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">old_arpvs1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">old_arpvs2</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c">#if the mirror of this task has already been created</span>
+            <span class="n">old_task</span> <span class="o">=</span> <span class="n">PhotoVerificationTask</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pv1</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">pv2</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                        <span class="n">user1</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">user1</span><span class="p">,</span> <span class="n">user2</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">user2</span><span class="p">,</span>
+                        <span class="n">user3</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">user1</span><span class="p">,</span> <span class="n">user4</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">user2</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c">#the mirror doesn&#39;t exist, get or create task</span>
+            <span class="n">new_task</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PhotoVerificationTask</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">pv1</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">pv2</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>
+                            <span class="n">user1</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">user1</span><span class="p">,</span> <span class="n">user2</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">user2</span><span class="p">,</span>
+                            <span class="n">user3</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">user1</span><span class="p">,</span> <span class="n">user4</span><span class="o">=</span><span class="n">val</span><span class="o">.</span><span class="n">user2</span><span class="p">,</span>
+                            <span class="n">created_dt</span><span class="o">=</span><span class="n">create</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+                <span class="n">new_task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_ver_task"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_ver_task">[docs]</a><span class="k">def</span> <span class="nf">oa_ver_task</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This form checks to see if the user has permission</span>
+<span class="sd">        to perform this task, then if so provide</span>
+<span class="sd">        task form.</span>
+
+<span class="sd">        If user responds, we save the task as verified and complete</span>
+<span class="sd">        and normalize out the verification to the users and photos</span>
+<span class="sd">        themselves.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">POST</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;task&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">()</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">:</span>
+        <span class="c">#for now only expose task to staff</span>
+        <span class="k">if</span> <span class="n">POST</span> <span class="ow">and</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">ARPVConfirmForm</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                <span class="n">choice</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s">&#39;choose&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s">&#39;1&#39;</span><span class="p">:</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">complete</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">verification</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">verified_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">verified_by</span> <span class="o">=</span> <span class="n">user</span>
+                    <span class="c">#normalize verifications to each photo</span>
+                    <span class="c">#ERR: for some reason we cannot pickle get_user?</span>
+                    <span class="c">#deferred.defer(normalize, task, _countdown=60)</span>
+                    <span class="n">normalize</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s">&#39;0&#39;</span><span class="p">:</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">complete</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">verification</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">verified_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">verified_by</span> <span class="o">=</span> <span class="n">user</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="c">#form = ARPVConfirmForm()</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form_complete&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Verification Complete. Thankyou.&#39;</span>
+                <span class="c">#raise HttpRedirectException(HttpResponseRedirect(&#39;arpv_task.html&#39;))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">errors</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">ARPVConfirmForm</span><span class="p">()</span>
+            <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="c">#normalizes our verification as a background task</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">pv1</span><span class="o">.</span><span class="n">verifications</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">pv2</span><span class="o">.</span><span class="n">verifications</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c">#normalize to user</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">user1</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">user2</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">user3</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">user4</span><span class="p">):</span>
+        <span class="n">d</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">username</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">val</span><span class="p">,</span> <span class="n">is_new</span> <span class="o">=</span> <span class="n">PhotoUserVerifications</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">u</span><span class="p">)</span>
+            <span class="n">val</span><span class="o">.</span><span class="n">verifications</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">val</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">pv1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">pv2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_arpvs"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_arpvs">[docs]</a><span class="k">def</span> <span class="nf">oa_get_arpvs</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;form_id = forms.CharField(widget=forms.HiddenInput(), initial=&quot;pp_arpv_form&quot;)</span>
+<span class="sd">    This block tag creates instances of anonymous photo verification tags, and makes sure</span>
+<span class="sd">    that the users exist, they are not the same, and</span>
+<span class="sd">    Usage is as follows:</span>
+
+<span class="sd">    {% oa_get_arpvs  user=request.user%}</span>
+<span class="sd">       Do stuff with {{ oa_arpv.arpvs }}.</span>
+<span class="sd">    {% endoa_get_arpvs %}</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">arpv_img</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">arpvs</span> <span class="o">=</span> <span class="n">arpv</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">submit_user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arpv_img</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">arpvs</span> <span class="o">=</span> <span class="n">arpv</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">photo</span><span class="o">=</span><span class="n">arpv_img</span><span class="p">)</span>
+    <span class="n">used_photos</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">photo</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arpvs</span><span class="p">]</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;arpvs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arpvs</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arpvs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;photo_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">used_photos</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_users"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_users">[docs]</a><span class="k">def</span> <span class="nf">oa_get_users</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;users&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">users</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_task_count"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_task_count">[docs]</a><span class="k">def</span> <span class="nf">oa_get_task_count</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="n">PhotoVerificationTask</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">complete</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="c">#if this user is in either photo, he can&#39;t do the task</span>
+
+    <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<span class="nd">@block</span>
+<div class="viewcode-block" id="oa_get_task"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.oa_get_task">[docs]</a><span class="k">def</span> <span class="nf">oa_get_task</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">nodelist</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">namespace</span> <span class="o">=</span> <span class="n">get_namespace</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="n">PhotoVerificationTask</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">complete</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="c">#if this user is in either photo, he can&#39;t do the task</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-created_dt&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">itr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="n">tasks</span><span class="p">[</span><span class="n">itr</span><span class="p">]</span>
+            <span class="c">#check if user is eligible for task</span>
+            <span class="k">if</span> <span class="n">is_eligible</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+                <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;task&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span>
+                <span class="k">break</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Sorry, Tasks unavailable: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tasks</span><span class="o">.</span><span class="n">count</span><span class="p">())</span> <span class="o">+</span> <span class="s">&#39; tasks.&#39;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">nodelist</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="is_eligible"><a class="viewcode-back" href="../../../../openassembly.oa_verification.templatetags.html#openassembly.oa_verification.templatetags.verificationtags.is_eligible">[docs]</a><span class="k">def</span> <span class="nf">is_eligible</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">t</span><span class="o">.</span><span class="n">user1</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">t</span><span class="o">.</span><span class="n">user2</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">t</span><span class="o">.</span><span class="n">user3</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">t</span><span class="o">.</span><span class="n">user4</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

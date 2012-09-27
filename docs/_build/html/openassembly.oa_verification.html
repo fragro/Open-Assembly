@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>oa_verification Package &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="index.html" />
+    <link rel="up" title="openassembly Package" href="openassembly.html" />
+    <link rel="next" title="templatetags Package" href="openassembly.oa_verification.templatetags.html" />
+    <link rel="prev" title="templatetags Package" href="openassembly.oa_search.templatetags.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.oa_verification.templatetags.html" title="templatetags Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.oa_search.templatetags.html" title="templatetags Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" accesskey="U">openassembly Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="oa-verification-package">
+<h1>oa_verification Package<a class="headerlink" href="#oa-verification-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-openassembly.oa_verification.forms">
+<span id="forms-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">forms</span></tt> Module<a class="headerlink" href="#module-openassembly.oa_verification.forms" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.oa_verification.forms.ReferralForm">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.forms.</tt><tt class="descname">ReferralForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/forms.html#ReferralForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.forms.ReferralForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
+<dl class="attribute">
+<dt id="openassembly.oa_verification.forms.ReferralForm.base_fields">
+<tt class="descname">base_fields</tt><em class="property"> = {'email': &lt;django.forms.fields.CharField object at 0x5659190&gt;}</em><a class="headerlink" href="#openassembly.oa_verification.forms.ReferralForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.forms.ReferralForm.media">
+<tt class="descname">media</tt><a class="headerlink" href="#openassembly.oa_verification.forms.ReferralForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.forms.ReferralForm.save">
+<tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/forms.html#ReferralForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.forms.ReferralForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.oa_verification.forms.arpvForm">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.forms.</tt><tt class="descname">arpvForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/forms.html#arpvForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.forms.arpvForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
+<dl class="attribute">
+<dt id="openassembly.oa_verification.forms.arpvForm.base_fields">
+<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x5659490&gt;, 'user1': &lt;django.forms.models.ModelChoiceField object at 0x5659150&gt;, 'user2': &lt;django.forms.models.ModelChoiceField object at 0x56595d0&gt;, 'photo': &lt;django.forms.models.ModelChoiceField object at 0x5659850&gt;}</em><a class="headerlink" href="#openassembly.oa_verification.forms.arpvForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.forms.arpvForm.media">
+<tt class="descname">media</tt><a class="headerlink" href="#openassembly.oa_verification.forms.arpvForm.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.forms.arpvForm.save">
+<tt class="descname">save</tt><big>(</big><em>commit=True</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/forms.html#arpvForm.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.forms.arpvForm.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.oa_verification.models">
+<span id="models-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">models</span></tt> Module<a class="headerlink" href="#module-openassembly.oa_verification.models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="openassembly.oa_verification.models.ActionTaken">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.models.</tt><tt class="descname">ActionTaken</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#ActionTaken"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>ActionTaken(id, user_id, content_type_id, object_pk, url, verb)</p>
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.ActionTaken.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.ActionTaken.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">ActionTaken.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.ActionTaken.content_object">
+<tt class="descclassname">ActionTaken.</tt><tt class="descname">content_object</tt><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken.content_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a generic relation to any object through content-type/object-id
+fields.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.ActionTaken.content_type">
+<tt class="descclassname">ActionTaken.</tt><tt class="descname">content_type</tt><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken.content_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.ActionTaken.objects">
+<tt class="descclassname">ActionTaken.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x47994d0&gt;</em><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.ActionTaken.user">
+<tt class="descclassname">ActionTaken.</tt><tt class="descname">user</tt><a class="headerlink" href="#openassembly.oa_verification.models.ActionTaken.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.oa_verification.models.EmailVerification">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.models.</tt><tt class="descname">EmailVerification</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#EmailVerification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>EmailVerification(id, user_id, activation_key, key_expires)</p>
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.EmailVerification.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.EmailVerification.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">EmailVerification.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.EmailVerification.get_next_by_key_expires">
+<tt class="descclassname">EmailVerification.</tt><tt class="descname">get_next_by_key_expires</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification.get_next_by_key_expires" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.EmailVerification.get_previous_by_key_expires">
+<tt class="descclassname">EmailVerification.</tt><tt class="descname">get_previous_by_key_expires</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification.get_previous_by_key_expires" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.EmailVerification.objects">
+<tt class="descclassname">EmailVerification.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x479e110&gt;</em><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.EmailVerification.user">
+<tt class="descclassname">EmailVerification.</tt><tt class="descname">user</tt><a class="headerlink" href="#openassembly.oa_verification.models.EmailVerification.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.oa_verification.models.PhotoUserVerifications">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.models.</tt><tt class="descname">PhotoUserVerifications</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#PhotoUserVerifications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.PhotoUserVerifications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>PhotoUserVerifications(id, user_id, verifications)</p>
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.PhotoUserVerifications.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoUserVerifications.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.PhotoUserVerifications.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">PhotoUserVerifications.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoUserVerifications.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoUserVerifications.objects">
+<tt class="descclassname">PhotoUserVerifications.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x479f710&gt;</em><a class="headerlink" href="#openassembly.oa_verification.models.PhotoUserVerifications.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoUserVerifications.user">
+<tt class="descclassname">PhotoUserVerifications.</tt><tt class="descname">user</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoUserVerifications.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.models.</tt><tt class="descname">PhotoVerificationTask</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#PhotoVerificationTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>PhotoVerificationTask(id, pv1_id, pv2_id, user1_id, user2_id, user3_id, user4_id, created_dt, verified_by_id, verified_dt, verification, complete)</p>
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.objects">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x479f310&gt;</em><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.pv1">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">pv1</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.pv1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.pv2">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">pv2</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.pv2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.user1">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">user1</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.user1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.user2">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">user2</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.user2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.user3">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">user3</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.user3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.user4">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">user4</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.user4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.PhotoVerificationTask.verified_by">
+<tt class="descclassname">PhotoVerificationTask.</tt><tt class="descname">verified_by</tt><a class="headerlink" href="#openassembly.oa_verification.models.PhotoVerificationTask.verified_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.oa_verification.models.Referral">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.models.</tt><tt class="descname">Referral</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#Referral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.Referral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>Referral(id, user_id, referred_user_id, created_dt, accepted_dt, key, accepted, email, topic_id)</p>
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.Referral.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.oa_verification.models.Referral.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.Referral.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">Referral.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.oa_verification.models.Referral.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.Referral.get_next_by_created_dt">
+<tt class="descclassname">Referral.</tt><tt class="descname">get_next_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.oa_verification.models.Referral.get_next_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.Referral.get_previous_by_created_dt">
+<tt class="descclassname">Referral.</tt><tt class="descname">get_previous_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.oa_verification.models.Referral.get_previous_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.Referral.objects">
+<tt class="descclassname">Referral.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x4799cd0&gt;</em><a class="headerlink" href="#openassembly.oa_verification.models.Referral.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.Referral.referred_user">
+<tt class="descclassname">Referral.</tt><tt class="descname">referred_user</tt><a class="headerlink" href="#openassembly.oa_verification.models.Referral.referred_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.Referral.topic">
+<tt class="descclassname">Referral.</tt><tt class="descname">topic</tt><a class="headerlink" href="#openassembly.oa_verification.models.Referral.topic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.Referral.user">
+<tt class="descclassname">Referral.</tt><tt class="descname">user</tt><a class="headerlink" href="#openassembly.oa_verification.models.Referral.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="openassembly.oa_verification.models.arpv">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.models.</tt><tt class="descname">arpv</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#arpv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.arpv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></tt></p>
+<p>arpv(id, photo_id, submit_user_id, user1_id, user2_id, user1Confirm, user2Confirm, verifications, created_dt)</p>
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.arpv.DoesNotExist">
+<em class="property">exception </em><tt class="descname">DoesNotExist</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="openassembly.oa_verification.models.arpv.MultipleObjectsReturned">
+<em class="property">exception </em><tt class="descclassname">arpv.</tt><tt class="descname">MultipleObjectsReturned</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.arpv.get_absolute_url">
+<tt class="descclassname">arpv.</tt><tt class="descname">get_absolute_url</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/models.html#arpv.get_absolute_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.models.arpv.get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.arpv.get_next_by_created_dt">
+<tt class="descclassname">arpv.</tt><tt class="descname">get_next_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.oa_verification.models.arpv.get_next_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="openassembly.oa_verification.models.arpv.get_previous_by_created_dt">
+<tt class="descclassname">arpv.</tt><tt class="descname">get_previous_by_created_dt</tt><big>(</big><em>*moreargs</em>, <em>**morekwargs</em><big>)</big><a class="headerlink" href="#openassembly.oa_verification.models.arpv.get_previous_by_created_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.objects">
+<tt class="descclassname">arpv.</tt><tt class="descname">objects</tt><em class="property"> = &lt;django.db.models.manager.Manager object at 0x479e550&gt;</em><a class="headerlink" href="#openassembly.oa_verification.models.arpv.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.photo">
+<tt class="descclassname">arpv.</tt><tt class="descname">photo</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.photo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.photo_verification1">
+<tt class="descclassname">arpv.</tt><tt class="descname">photo_verification1</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.photo_verification1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.photo_verification2">
+<tt class="descclassname">arpv.</tt><tt class="descname">photo_verification2</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.photo_verification2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.submit_user">
+<tt class="descclassname">arpv.</tt><tt class="descname">submit_user</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.submit_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.user1">
+<tt class="descclassname">arpv.</tt><tt class="descname">user1</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.user1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="openassembly.oa_verification.models.arpv.user2">
+<tt class="descclassname">arpv.</tt><tt class="descname">user2</tt><a class="headerlink" href="#openassembly.oa_verification.models.arpv.user2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.oa_verification.tests">
+<span id="tests-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tests</span></tt> Module<a class="headerlink" href="#module-openassembly.oa_verification.tests" title="Permalink to this headline">¶</a></h2>
+<p>This file demonstrates writing tests using the unittest module. These will pass
+when you run &#8220;manage.py test&#8221;.</p>
+<p>Replace this with more appropriate tests for your application.</p>
+<dl class="class">
+<dt id="openassembly.oa_verification.tests.SimpleTest">
+<em class="property">class </em><tt class="descclassname">openassembly.oa_verification.tests.</tt><tt class="descname">SimpleTest</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/tests.html#SimpleTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.tests.SimpleTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.test.testcases.TestCase</span></tt></p>
+<dl class="method">
+<dt id="openassembly.oa_verification.tests.SimpleTest.test_basic_addition">
+<tt class="descname">test_basic_addition</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/openassembly/oa_verification/tests.html#SimpleTest.test_basic_addition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.oa_verification.tests.SimpleTest.test_basic_addition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests that 1 + 1 always equals 2.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-openassembly.oa_verification.views">
+<span id="views-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">views</span></tt> Module<a class="headerlink" href="#module-openassembly.oa_verification.views" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="openassembly.oa_verification.templatetags.html">templatetags Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_verification.templatetags.html#module-openassembly.oa_verification.templatetags.verificationtags"><tt class="docutils literal"><span class="pre">verificationtags</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">oa_verification Package</a><ul>
+<li><a class="reference internal" href="#module-openassembly.oa_verification.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.oa_verification.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.oa_verification.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-openassembly.oa_verification.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="openassembly.oa_search.templatetags.html"
+                        title="previous chapter">templatetags Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="openassembly.oa_verification.templatetags.html"
+                        title="next chapter">templatetags Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/openassembly.oa_verification.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="openassembly.oa_verification.templatetags.html" title="templatetags Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="openassembly.oa_search.templatetags.html" title="templatetags Package"
+             >previous</a> |</li>
+        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

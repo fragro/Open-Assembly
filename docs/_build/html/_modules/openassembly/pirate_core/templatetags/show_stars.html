@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openassembly.pirate_core.templatetags.show_stars &mdash; ver1_0  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="ver1_0  documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openassembly.pirate_core.templatetags.show_stars</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">Library</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">TemplateSyntaxError</span><span class="p">,</span> <span class="n">VariableDoesNotExist</span><span class="p">,</span> <span class="n">resolve_variable</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="n">register</span> <span class="o">=</span> <span class="n">Library</span><span class="p">()</span>
+
+<span class="n">DIV_TEMPLATE</span>	<span class="o">=</span> <span class="s">&quot;&lt;div id=</span><span class="se">\&quot;</span><span class="s">star_strip_</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&gt;&quot;</span>
+<span class="n">END_DIV_TEMPLATE</span><span class="o">=</span> <span class="s">&quot;&lt;/div&gt;&quot;</span>
+<span class="n">IMG_TEMPLATE</span>	<span class="o">=</span> <span class="s">&quot;&lt;img border=</span><span class="se">\&quot;</span><span class="s">0</span><span class="se">\&quot;</span><span class="s"> src=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s"> alt=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">/&gt;&quot;</span>
+<span class="n">EX_IMG_TEMPLATE</span>	<span class="o">=</span> <span class="s">&quot;&lt;img onClick=</span><span class="se">\&quot;</span><span class="s">javascript: hoverStar(</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">);</span><span class="se">\&quot;</span><span class="s"> onmouseout=</span><span class="se">\&quot;</span><span class="s">javascript: restoreStar(</span><span class="si">%s</span><span class="s">);</span><span class="se">\&quot;</span><span class="s"> onmouseover=</span><span class="se">\&quot;</span><span class="s">javascript: clickStar(&#39;</span><span class="si">%s</span><span class="s">&#39;, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">);</span><span class="se">\&quot;</span><span class="s"> border=</span><span class="se">\&quot;</span><span class="s">0</span><span class="se">\&quot;</span><span class="s"> src=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s"> alt=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">/&gt;&quot;</span>
+<span class="n">STARS</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="mf">0.0</span><span class="p">:</span>	<span class="p">(</span><span class="s">&quot;No Star&quot;</span><span class="p">,</span> <span class="s">&quot;/static/images/star_0.0.gif&quot;</span><span class="p">),</span>
+	<span class="mf">0.25</span><span class="p">:</span>	<span class="p">(</span><span class="s">&quot;Quarter Star&quot;</span><span class="p">,</span> <span class="s">&quot;/static/images/star_0.25.gif&quot;</span><span class="p">),</span>
+	<span class="mf">0.5</span><span class="p">:</span>	<span class="p">(</span><span class="s">&quot;Half Star&quot;</span><span class="p">,</span> <span class="s">&quot;/static/images/star_0.5.gif&quot;</span><span class="p">),</span>
+	<span class="mf">0.75</span><span class="p">:</span>	<span class="p">(</span><span class="s">&quot;Three Quarter Star&quot;</span><span class="p">,</span> <span class="s">&quot;/static/images/star_0.75.gif&quot;</span><span class="p">),</span>
+	<span class="mf">1.0</span><span class="p">:</span>	<span class="p">(</span><span class="s">&quot;Full Star&quot;</span><span class="p">,</span> <span class="s">&quot;/static/images/star_1.0.gif&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">ROUNDERS</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s">&quot;full&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+	<span class="s">&quot;half&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+	<span class="s">&quot;quarter&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+<span class="n">CMD_PATTERN</span>	<span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^show_stars (.*) of (\d*) round to (</span><span class="si">%s</span><span class="s">)$&quot;</span> <span class="o">%</span> <span class="s">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ROUNDERS</span><span class="p">))</span>
+<span class="n">EX_CMD_PATTERN</span>	<span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^show_stars (.*) of (\d*) round to (</span><span class="si">%s</span><span class="s">) on change call (\w*) with (.*)$&quot;</span> <span class="o">%</span> <span class="s">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ROUNDERS</span><span class="p">))</span>
+<span class="n">JS_TEMPLATE</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">&lt;script type=&quot;text/javascript&quot;&gt;</span>
+
+<span class="s">var starSaves = new Hash();</span>
+
+<span class="s">function hoverStar(id, pos)</span>
+<span class="s">{</span>
+<span class="s">    </span>
+<span class="s">	var starStrip = $(&#39;star_strip_&#39; + id);</span>
+<span class="s">	    if (starSaves.keys().indexOf(id) == -1)</span>
+<span class="s">	    {</span>
+<span class="s">		    var starSave = new Array();</span>
+<span class="s">		    var imgs = starStrip.select(&quot;img&quot;)</span>
+<span class="s">		    for (var i = 0; i &lt; imgs.length; i++)</span>
+<span class="s">		    {</span>
+<span class="s">			    starSave[starSave.length] = imgs[i].src;</span>
+<span class="s">			    if (i &lt; pos)</span>
+<span class="s">				    imgs[i].src = &quot;/static/images/star_1.0.gif&quot;;</span>
+<span class="s">			    else</span>
+<span class="s">				    imgs[i].src = &quot;/static/images/star_0.0.gif&quot;;</span>
+<span class="s">			</span>
+<span class="s">		    }</span>
+<span class="s">		    starSaves.set(id, starSave);</span>
+<span class="s">	    }</span>
+<span class="s">	    </span>
+<span class="s">	}</span>
+<span class="s">};</span>
+
+<span class="s">function clickStar(chainTo, id, pos)</span>
+<span class="s">{</span>
+<span class="s">	try</span>
+<span class="s">	{</span>
+<span class="s">        eval(chainTo + &#39;(&#39; + id  + &#39;, &#39; + pos + &#39;);&#39;);</span>
+<span class="s">	}</span>
+<span class="s">	catch (err)</span>
+<span class="s">	{</span>
+<span class="s">        console.log(err);</span>
+
+<span class="s">	}</span>
+<span class="s">	var starStrip = $(&#39;star_strip_&#39; + id);</span>
+<span class="s">	var imgs = starStrip.select(&quot;img&quot;)</span>
+<span class="s">	for (var i = 0; i &lt; imgs.length; i++)</span>
+<span class="s">	{</span>
+<span class="s">		if (i &lt; pos)</span>
+<span class="s">			imgs[i].src = &quot;/static/images/star_1.0.gif&quot;;</span>
+<span class="s">		else</span>
+<span class="s">			imgs[i].src = &quot;/static/images/star_0.0.gif&quot;;</span>
+<span class="s">		</span>
+<span class="s">	}</span>
+<span class="s">	starSaves.unset(id);</span>
+<span class="s">};</span>
+
+<span class="s">function restoreStar(id)</span>
+<span class="s">{</span>
+<span class="s">	srcs = starSaves.get(id);</span>
+<span class="s">	if (srcs == undefined)</span>
+<span class="s">		return;</span>
+<span class="s">	var starStrip = $(&#39;star_strip_&#39; + id);</span>
+<span class="s">	var imgs = starStrip.select(&quot;img&quot;);</span>
+<span class="s">	for (var i = 0; i &lt; srcs.length; i++)</span>
+<span class="s">	{</span>
+<span class="s">		imgs[i].src = srcs[i];</span>
+<span class="s">	}</span>
+<span class="s">	starSaves.unset(id);</span>
+<span class="s">};</span>
+
+
+<span class="s">&lt;/script&gt;</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ShowStarsNode"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.ShowStarsNode">[docs]</a><span class="k">class</span> <span class="nc">ShowStarsNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Default rounding is to the whole unit &quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stars</span><span class="p">,</span> <span class="n">total_stars</span><span class="p">,</span> <span class="n">round_to</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">stars</span> <span class="o">=</span> <span class="n">stars</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">total_stars</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_stars</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">rounder</span> <span class="o">=</span> <span class="n">ROUNDERS</span><span class="p">[</span><span class="n">round_to</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">handler</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span>
+
+<div class="viewcode-block" id="ShowStarsNode.merge_star"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.ShowStarsNode.merge_star">[docs]</a>	<span class="k">def</span> <span class="nf">merge_star</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">fraction</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+		<span class="n">alt</span><span class="p">,</span> <span class="n">src</span> <span class="o">=</span> <span class="n">STARS</span><span class="p">[</span><span class="n">fraction</span><span class="p">]</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
+			<span class="n">pos</span> <span class="o">+=</span> <span class="mi">1</span>
+			<span class="k">return</span> <span class="n">EX_IMG_TEMPLATE</span> <span class="o">%</span> <span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_URL</span> <span class="o">+</span> <span class="n">src</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">IMG_TEMPLATE</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_URL</span> <span class="o">+</span> <span class="n">src</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ShowStarsNode.render"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.ShowStarsNode.render">[docs]</a>	<span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">stars</span> <span class="o">=</span> <span class="n">resolve_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stars</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+		<span class="k">except</span> <span class="n">VariableDoesNotExist</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">stars</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stars</span><span class="p">)</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s">&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">identifier</span> <span class="o">=</span> <span class="n">resolve_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+		<span class="k">except</span> <span class="n">VariableDoesNotExist</span><span class="p">:</span>
+			<span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span>
+
+		<span class="n">stars</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">stars</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounder</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounder</span>
+		<span class="n">fraction</span><span class="p">,</span> <span class="n">integer</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">modf</span><span class="p">(</span><span class="n">stars</span><span class="p">)</span>
+		<span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
+			<span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DIV_TEMPLATE</span> <span class="o">%</span> <span class="n">identifier</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_stars</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">integer</span><span class="p">:</span>
+				<span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_star</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">identifier</span><span class="p">))</span>
+			<span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">integer</span> <span class="ow">and</span> <span class="n">fraction</span><span class="p">:</span>
+				<span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_star</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fraction</span><span class="p">,</span> <span class="n">identifier</span><span class="p">))</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_star</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">identifier</span><span class="p">))</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
+			<span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">END_DIV_TEMPLATE</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="ShowStarsScriptNode"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.ShowStarsScriptNode">[docs]</a><span class="k">class</span> <span class="nc">ShowStarsScriptNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<div class="viewcode-block" id="ShowStarsScriptNode.render"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.ShowStarsScriptNode.render">[docs]</a>	<span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">JS_TEMPLATE</span>
+</div></div>
+<div class="viewcode-block" id="do_show_stars"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.do_show_stars">[docs]</a><span class="k">def</span> <span class="nf">do_show_stars</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">syntax_error</span><span class="p">():</span>
+		<span class="k">raise</span> <span class="n">TemplateSyntaxError</span><span class="p">(</span><span class="s">&quot;example: show_stars &lt;value&gt; of &lt;total&gt; round to </span><span class="si">%s</span><span class="s"> [on change call &lt;handler&gt; with &lt;identifier&gt;]&quot;</span> <span class="o">%</span> <span class="s">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ROUNDERS</span><span class="p">))</span>
+	<span class="n">args</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+		<span class="n">match</span> <span class="o">=</span> <span class="n">CMD_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
+		<span class="n">match</span> <span class="o">=</span> <span class="n">EX_CMD_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">syntax_error</span><span class="p">()</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+		<span class="n">syntax_error</span><span class="p">()</span>
+	<span class="k">return</span> <span class="n">ShowStarsNode</span><span class="p">(</span><span class="o">*</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>   
+</div>
+<div class="viewcode-block" id="do_show_stars_script"><a class="viewcode-back" href="../../../../openassembly.pirate_core.templatetags.html#openassembly.pirate_core.templatetags.show_stars.do_show_stars_script">[docs]</a><span class="k">def</span> <span class="nf">do_show_stars_script</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">ShowStarsScriptNode</span><span class="p">()</span>
+</div>
+<span class="n">register</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="s">&quot;show_stars&quot;</span><span class="p">,</span> <span class="n">do_show_stars</span><span class="p">)</span>
+<span class="n">register</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="s">&quot;show_stars_script&quot;</span><span class="p">,</span> <span class="n">do_show_stars_script</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">ver1_0  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Author.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
