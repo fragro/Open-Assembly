@@ -9,29 +9,33 @@ Open Assembly Installation
 
 We recommend PIP and VirtualEnv to satisfy dependencies.
 
-
-	::
 	$ sudo apt-get install python-pip
+
 	$ sudo pip install virtualenv
 
 Now setup the structure of the development folder and create the OA virtualenv
 
-	:: 
 	$ mkdir OA
+
 	$ cd OA
+
 	$ git clone git://github.com/fragro/Open-Assembly.git
+
 	$ mkdir OA_ENV
+
 	$ virtualenv OA_ENV
+
 	$ source OA_ENV/bin/activate
+
 	$ cd Open-Assembly/ver1_0
+
 	$ pip install -r requirements.txt
 
 
 The MongoDB server
 ####
 
-    ::
-	sudo apt-get install mongodb
+    $ sudo apt-get install mongodb
 
 Redis
 ####
@@ -40,16 +44,16 @@ Goto http://redis.io/download and download/install the newest stable version or 
 
 If you aren't using Redis for anything else we recommend placing the redis-2.4.17 directory in the OA folder.
 
-    ::
+    
 	$ cd ../../
 
-	::
 	$ wget http://redis.googlecode.com/files/redis-2.4.17.tar.gz
+
 	$ tar xzf redis-2.4.17.tar.gz
+
 	$ cd redis-2.4.17
+
 	$ make
-
-
 
 Node.js
 ####
@@ -59,26 +63,27 @@ Node.js
 Run the Development Server
 ####
 
-Now Open a Terminal and Run the Django Server
+Now Open a Terminal, navigate to Open-Assembly/ver1_0/openassembly and Run the Django Server
 
-.. code-block:: bash
 	$ python manage.py syncdb (if this fails try it until it succeeds)
+
 	$ python manage.py runserver
 
 Start the Redis Server
+----
 
-.. warning::
-	You must run the Redis server before running the node.js or Celery servers
+WARNING: You must run the Redis server before running the node.js or Celery servers
 
-.. code-block:: bash
 	$ src/redis-server
 
-In another Terminal Run Celery
 
-.. code-block:: bash
+In another Terminal Run Celery
+----
+
 	$ python manage.py celeryd
 
-Go To:
+Usage
+----
 
 http://localhost:8000/setup_admin/
 
@@ -87,8 +92,6 @@ test content to develop on. Soon we will release an anonymized exported database
 
 For more debug information in Celery, include:
 
-
-.. code-block:: bash
 	$ python manage.py celeryd -l DEBUG
 
 
@@ -99,11 +102,13 @@ To push to production we recommend Dotcloud.
 
 
 Using Dotcloud
+----
 
 Requires Setting of Email and Password within Settings and associated EMAIL_PASSWORD in Dotcloud environment variables
 http://docs.dotcloud.com/guides/environment/
 
 Another Host
+----
 
 Open Assembly is configured to use dotcloud but you
 can use your own host fairly easily, you'll need to change the settings.py file in the project to
