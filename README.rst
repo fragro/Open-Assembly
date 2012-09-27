@@ -42,10 +42,9 @@ This should be sufficient for debian servers.
 Redis Server
 ####
 
-Goto http://redis.io/download and download/install the newest stable version or follow these instructions.
+Go `here <http://redis.io/download and download/install>`_ and install the newest stable version or follow these instructions.
 
 If you aren't using Redis for anything else we recommend placing the redis-2.4.17 directory in the OA folder.
-
     
 	wget http://redis.googlecode.com/files/redis-2.4.17.tar.gz
 
@@ -68,7 +67,7 @@ Install node.js and npm on Ubuntu
 
 	sudo apt-get install nodejs npm
 
-Or follow the instructions here: https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+Or follow the instructions `here <https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager>`_.
 
 
 Solr
@@ -137,11 +136,9 @@ Navigate to the OA/ directory in a new terminal.
 Usage
 ----
 
-External hyperlinks, like 
-
 You should be ready to go with your dev Redis, Django, Celery, Solr, and Node.js servers up and running. Using Chrome, Firefox, Safari, or Opera and goto `Admin Setup <http://localhost:8000/setup_admin/>`_ to create an administrative account with the username 'admin' and password 'password'. Now you can begin to create groups and test content to develop on.
 
-For usage information checkout our `tutorial <http://www.youtube.com/watch?v=_TzoR66HcYM>`_
+For help in understanind the OA user interface checkout our `tutorial <http://www.youtube.com/watch?v=_TzoR66HcYM>`_.
 
 
 *****
@@ -154,27 +151,36 @@ To push to production we recommend Dotcloud. It is actually much easier to push 
 Using Dotcloud
 ####
 
-Dotcloud makes deploying Open Assembly easy. First create an account with dotcloud and install the CLI
-
-http://docs.dotcloud.com/0.4/firststeps/install/
+Dotcloud makes deploying Open Assembly easy. First create an account with dotcloud and install the CLI `here <http://docs.dotcloud.com/0.4/firststeps/install/>`_
 
 Next you just need to create a sandbox app in dotcloud. Replace ''appname'' with what you want to call your deployment of OA.
 
 	dotcloud create appname
 
-Navigate to the Open-Assembly/ folder and push to dotcloud.
+First clone from git if you did not do so setting up a development server.
+
+	git clone git://github.com/fragro/Open-Assembly.git
+
+Then navigate to the Open-Assembly/ folder and push to dotcloud.
 
 	dotcloud push appname
 
 That's it! You deployed your own verstion of OA live. If you want to make your OA deployment scalable and reliable you will need to access the billing details from Dotcloud and your app to Live, but sandbox apps will work for small groups that don't mind using the dotcloud URL
 
-Requires Setting of Email and Password within Settings and associated EMAIL_PASSWORD in Dotcloud environment variables
+Requires Setting of Email and Password within Open-Assembly/ver1_0/openassembly/settings.py
 
-http://docs.dotcloud.com/guides/environment/
+    DEFAULT_FROM_EMAIL = 'myfancyemail@myhost.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.myhost.com'
+    EMAIL_HOST_USER = 'myfancyemail@myhost.com'
+    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+    EMAIL_PORT = 587
 
-Another Host
+You also must set the EMAIL_PASSWORD environment variable in `Dotcloud environment variables <http://docs.dotcloud.com/guides/environment/>`_.
+
+	dotcloud var set appname EMAIL_PASSWORD=mysecretpassword
+
+Other Hosts
 ####
 
-Open Assembly is configured to use dotcloud but you
-can use your own host fairly easily, you'll need to change the settings.py file in the project to
-reflect your own Redis/MongoDB/Node/Celery Servers. If anyone has success deploying to a different host we would appreciate what requirements are involved.
+Open Assembly is configured to use dotcloud but you can use your own host fairly easily with the pip requirements file, you'll need to change the settings.py file in the project to reflect your own Redis/MongoDB/Node/Celery Servers. If anyone has success deploying to a different host we would appreciate feedback on your experience.
