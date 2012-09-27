@@ -10,13 +10,13 @@ Open Assembly Installation
 We recommend PIP and VirtualEnv to satisfy dependencies.
 
 
-.. code-block:: bash
+	::
 	$ sudo apt-get install python-pip
 	$ sudo pip install virtualenv
 
 Now setup the structure of the development folder and create the OA virtualenv
 
-.. code-block:: bash
+	:: 
 	$ mkdir OA
 	$ cd OA
 	$ git clone git://github.com/fragro/Open-Assembly.git
@@ -30,7 +30,7 @@ Now setup the structure of the development folder and create the OA virtualenv
 The MongoDB server
 ####
 
-.. code-block:: bash
+    ::
 	sudo apt-get install mongodb
 
 Redis
@@ -40,10 +40,10 @@ Goto http://redis.io/download and download/install the newest stable version or 
 
 If you aren't using Redis for anything else we recommend placing the redis-2.4.17 directory in the OA folder.
 
-.. code-block:: bash
+    ::
 	$ cd ../../
 
-.. code-block:: bash
+	::
 	$ wget http://redis.googlecode.com/files/redis-2.4.17.tar.gz
 	$ tar xzf redis-2.4.17.tar.gz
 	$ cd redis-2.4.17
