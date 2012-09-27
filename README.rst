@@ -80,9 +80,15 @@ If you aren't using Solr for anything else we recommend placing the apache-solr-
 
 	tar xzf apache-solr-3.6.1.tgz
 
-Now replace the schema.xml in your local version with OA's schema.xml, which contains the necessary hooks to our database.
+Now replace the schema.xml in your local version with OA's schema.xml, which contains the necessary hooks to our database. First remove the old schema. Assuming the Solr directory is in OA/
 
 	rm apache-solr-3.6.1/example/solr/conf/schema.xml
+
+Now grab the schema from Open-Assembly/solr/conf/schema.xml
+
+	cp Open-Assembly/solr/conf/schema.xml apache-solr-3.6.1/example/solr/conf/
+
+Now the Solr server should be ready to jive with our Django DB schema.
 
 
 Run the Development Server
@@ -122,14 +128,20 @@ For more debug information in Celery inlude the DEBUG flag.
 Start Solr Server
 ----
 
+Navigate to the OA/ directory in a new terminal.
+
+	cd apache-solr-3.6.1/example
+
+	java -jar start.jar
 
 Usage
 ----
 
-http://localhost:8000/setup_admin/
+External hyperlinks, like 
 
-To create an administrative account with the username 'admin' and password 'password'. Now you can begin to create groups and
-test content to develop on. Soon we will release an anonymized exported database to experiment with.
+You should be ready to go with your dev Redis, Django, Celery, Solr, and Node.js servers up and running. Using Chrome, Firefox, Safari, or Opera and goto `Admin Setup <http://localhost:8000/setup_admin/>`_ to create an administrative account with the username 'admin' and password 'password'. Now you can begin to create groups and test content to develop on.
+
+For usage information checkout our `tutorial <http://www.youtube.com/watch?v=_TzoR66HcYM>`_
 
 
 *****
