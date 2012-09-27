@@ -85,8 +85,6 @@ Now replace the schema.xml in your local version with OA's schema.xml, which con
 	rm apache-solr-3.6.1/example/solr/conf/schema.xml
 
 
-
-
 Run the Development Server
 ####
 
@@ -125,9 +123,6 @@ Start Solr Server
 ----
 
 
-
-
-
 Usage
 ----
 
@@ -145,7 +140,7 @@ To push to production we recommend Dotcloud. It is actually much easier to push 
 
 
 Using Dotcloud
-----
+####
 
 Dotcloud makes deploying Open Assembly easy. First create an account with dotcloud and install the CLI
 
@@ -166,7 +161,7 @@ Requires Setting of Email and Password within Settings and associated EMAIL_PASS
 http://docs.dotcloud.com/guides/environment/
 
 Another Host
-----
+####
 
 Open Assembly is configured to use dotcloud but you
 can use your own host fairly easily, you'll need to change the settings.py file in the project to
