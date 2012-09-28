@@ -133,6 +133,14 @@ Navigate to the OA/ directory in a new terminal.
 
 	java -jar start.jar
 
+
+Start Node.js Server
+----
+
+Navigate to the Open-Assembly/oanode directory in a new terminal.
+
+	node server.js
+
 Usage
 ----
 
