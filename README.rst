@@ -57,7 +57,7 @@ If you aren't using Redis for anything else we recommend placing the redis-2.4.1
 Node.js
 ####
 
-Install node.js and npm on Ubuntu
+Install node.js and npm on Ubuntu.
 
 	sudo apt-get install python-software-properties
 
@@ -66,6 +66,10 @@ Install node.js and npm on Ubuntu
 	sudo apt-get update
 
 	sudo apt-get install nodejs npm
+
+Now you need to install the dependencies. Goto Open-Assembly/oanode/ and run the command
+
+	npm install
 
 Or follow the instructions `here <https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager>`_.
 
