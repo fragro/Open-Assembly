@@ -150,17 +150,17 @@ class ForumBlob(models.Model):
     summary = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(max_length=5000, blank=True, null=True)
 
-    parent_type = models.ForeignKey(ContentType, verbose_name=_('parent content type'),
+    parent_type = models.ForeignKey(ContentType, verbose_name='parent content type',
                                             related_name="%(app_label)s_%(class)s_parent",
                                             blank=True, null=True)
-    parent_pk = models.CharField(_('Parent PK'), max_length=100, blank=True, null=True)
+    parent_pk = models.CharField('Parent PK', max_length=100, blank=True, null=True)
     parent = generic.GenericForeignKey(ct_field="parent_type", fk_field="parent_pk")
-    child = models.ForeignKey(ContentType, verbose_name=_('child content type'),
+    child = models.ForeignKey(ContentType, verbose_name='child content type',
                                             related_name="%(app_label)s_%(class)s_child",
                                             blank=True, null=True)
     children = models.IntegerField(default=0, blank=True, null=True)
-    created_dt = models.DateTimeField(_('Date Published'), auto_now_add=True)
-    modified_dt = models.DateTimeField(_('Date Modified'), blank=True, null=True)
+    created_dt = models.DateTimeField('Date Published', auto_now_add=True)
+    modified_dt = models.DateTimeField('Date Modified', blank=True, null=True)
     #deadline_dt = models.DateTimeField(_('Date Deadline'), blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
     forumdimension = models.ForeignKey(ForumDimension, blank=True, null=True)
@@ -189,7 +189,7 @@ class ForumBlob(models.Model):
 class Question(ForumBlob):
 
     class Meta:
-        verbose_name = _('question')
+        verbose_name = 'question'
 
     def __unicode__(self):
         return self.summary
@@ -209,7 +209,7 @@ class Nomination(ForumBlob):
     random = models.FloatField(default=0)
 
     class Meta:
-        verbose_name = _('nomination')
+        verbose_name = 'nomination'
 
     def __unicode__(self):
         return self.summary
@@ -230,10 +230,10 @@ class Nomination(ForumBlob):
 class Edit(models.Model):
     user = models.ForeignKey(User)
     time = models.DateTimeField(auto_now_add=True)
-    object_type = models.ForeignKey(ContentType, verbose_name=_('parent content type'),
+    object_type = models.ForeignKey(ContentType, verbose_name='parent content type',
                                             related_name="%(app_label)s_%(class)s_parent",
                                             blank=True, null=True)
-    object_pk = models.CharField(_('Object PK'), max_length=100, blank=True, null=True)
+    object_pk = models.CharField('Object PK', max_length=100, blank=True, null=True)
     content_object = generic.GenericForeignKey(ct_field="object_type", fk_field="object_pk")
     edit_diff = models.CharField(max_length=10000)
 

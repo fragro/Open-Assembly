@@ -65,6 +65,12 @@ def pp_get_messages(context, nodelist, *args, **kwargs):
 
         namespace['rangelist'] = get_rangelist(start, end, count)
 
+    else if user is not None:
+        namespace['all'] = Message.objects.filter(receiver=user).order_by('-created_dt')
+        namespace['count'] = namespace['all'].count()
+        namespace['all'] = namespace['all'][start:end]
+
+
     output = nodelist.render(context)
     context.pop()
 

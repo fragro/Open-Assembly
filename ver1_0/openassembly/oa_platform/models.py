@@ -68,7 +68,5 @@ def update(**kwargs):
 
 update_agent.connect(update)
 
-admin.site.register(Platform)
-admin.site.register(PlatformDimension)
 
 # Create your models here.
