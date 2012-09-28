@@ -73,7 +73,6 @@ Now you need to install the dependencies. Goto Open-Assembly/oanode/ and run the
 	npm install
 
 
-
 Solr
 ####
 
