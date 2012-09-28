@@ -114,7 +114,7 @@ WARNING: You must run the Redis server before running the node.js or Celery serv
 Start Celery Server
 ----
 
-	Navigate back to the Open-Assembly/ver1_0/openassembly folder where the Django server is located. OA uses django-celery to run background tasks. 
+Navigate back to the Open-Assembly/ver1_0/openassembly folder where the Django server is located. OA uses django-celery to run background tasks. 
 
 	python manage.py celeryd
 
@@ -178,7 +178,7 @@ Requires Setting of Email and Password within Open-Assembly/ver1_0/openassembly/
     EMAIL_HOST_USER = 'myfancyemail@myhost.com'
 
     EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
-    
+
     EMAIL_PORT = 587
 
 You also must set the EMAIL_PASSWORD environment variable in `Dotcloud environment variables <http://docs.dotcloud.com/guides/environment/>`_.
