@@ -3,10 +3,34 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ver1_0's documentation!
-==================================
+Welcome to Open Assembly's documentation!
+=======================================================
 
-Contents:
+
+Installation
+#############
+
+.. toctree::
+   :maxdepth: 4
+
+   installation
+
+For Designers
+############################
+
+.. toctree::
+   :maxdepth: 4
+
+   templatetagsintro
+
+
+.. toctree::
+   :maxdepth: 4
+   
+   templatetags
+
+Documentation
+##############
 
 .. toctree::
    :maxdepth: 4

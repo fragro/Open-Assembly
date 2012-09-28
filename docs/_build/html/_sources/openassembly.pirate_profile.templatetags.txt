@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`profiletags` Module
+:mod:`profiletags`
 -------------------------
 
 .. automodule:: openassembly.pirate_profile.templatetags.profiletags

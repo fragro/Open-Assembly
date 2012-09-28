@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`argumenttags` Module
+:mod:`argumenttags`
 --------------------------
 
 .. automodule:: openassembly.pirate_deliberation.templatetags.argumenttags

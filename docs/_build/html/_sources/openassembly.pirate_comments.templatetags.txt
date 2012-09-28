@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`commenttags` Module
+:mod:`commenttags` 
 -------------------------
 
 .. automodule:: openassembly.pirate_comments.templatetags.commenttags

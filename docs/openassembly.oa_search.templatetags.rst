@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`haystacktags` Module
+:mod:`haystacktags`
 --------------------------
 
 .. automodule:: openassembly.oa_search.templatetags.haystacktags

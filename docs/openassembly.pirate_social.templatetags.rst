@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`feedtags` Module
+:mod:`feedtags`
 ----------------------
 
 .. automodule:: openassembly.pirate_social.templatetags.feedtags
@@ -9,7 +7,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`subscriptiontags` Module
+:mod:`subscriptiontags`
 ------------------------------
 
 .. automodule:: openassembly.pirate_social.templatetags.subscriptiontags
@@ -17,7 +15,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`usertags` Module
+:mod:`usertags`
 ----------------------
 
 .. automodule:: openassembly.pirate_social.templatetags.usertags

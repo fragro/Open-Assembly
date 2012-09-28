@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`sourcetags` Module
+:mod:`sourcetags`
 ------------------------
 
 .. automodule:: openassembly.pirate_sources.templatetags.sourcetags

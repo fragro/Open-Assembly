@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`dashboardtags` Module
+:mod:`dashboardtags`
 ---------------------------
 
 .. automodule:: openassembly.oa_dashboard.templatetags.dashboardtags

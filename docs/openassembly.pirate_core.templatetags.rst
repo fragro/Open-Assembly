@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`json_filters` Module
+:mod:`json_filters`
 --------------------------
 
 .. automodule:: openassembly.pirate_core.templatetags.json_filters
@@ -9,7 +7,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`pp_combo_form` Module
+:mod:`pp_combo_form`
 ---------------------------
 
 .. automodule:: openassembly.pirate_core.templatetags.pp_combo_form
@@ -17,7 +15,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`pp_url` Module
+:mod:`pp_url`
 --------------------
 
 .. automodule:: openassembly.pirate_core.templatetags.pp_url
@@ -25,7 +23,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`show_stars` Module
+:mod:`show_stars`
 ------------------------
 
 .. automodule:: openassembly.pirate_core.templatetags.show_stars
@@ -33,7 +31,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`tag_helpers` Module
+:mod:`tag_helpers`
 -------------------------
 
 .. automodule:: openassembly.pirate_core.templatetags.tag_helpers

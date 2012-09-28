@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`blobtags` Module
+:mod:`blobtags`
 ----------------------
 
 .. automodule:: openassembly.pirate_forum.templatetags.blobtags

@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`cani` Module
+:mod:`cani`
 ------------------
 
 .. automodule:: openassembly.pirate_permissions.templatetags.cani
@@ -9,7 +7,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`groups` Module
+:mod:`groups`
 --------------------
 
 .. automodule:: openassembly.pirate_permissions.templatetags.groups

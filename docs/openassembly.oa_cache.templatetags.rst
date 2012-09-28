@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`cachetags` Module
+:mod:`cachetags`
 -----------------------
 
 .. automodule:: openassembly.oa_cache.templatetags.cachetags

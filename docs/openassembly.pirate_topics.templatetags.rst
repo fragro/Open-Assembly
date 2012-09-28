@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`topictags` Module
+:mod:`topictags`
 -----------------------
 
 .. automodule:: openassembly.pirate_topics.templatetags.topictags

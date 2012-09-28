@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`flagtags` Module
+:mod:`flagtags`
 ----------------------
 
 .. automodule:: openassembly.pirate_flags.templatetags.flagtags

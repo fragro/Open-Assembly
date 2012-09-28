@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`reputationtags` Module
+:mod:`reputationtags`
 ----------------------------
 
 .. automodule:: openassembly.pirate_reputation.templatetags.reputationtags

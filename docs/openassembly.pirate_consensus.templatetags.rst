@@ -1,11 +1,8 @@
-templatetags Package
-====================
 
-:mod:`consensustags` Module
----------------------------
+:mod:`consensustags`
+--------------------------
 
 .. automodule:: openassembly.pirate_consensus.templatetags.consensustags
     :members:
-    :undoc-members:
     :show-inheritance:
 

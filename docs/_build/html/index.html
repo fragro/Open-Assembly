@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to ver1_0’s documentation! &mdash; ver1_0  documentation</title>
+    <title>Welcome to Open Assembly’s documentation! &mdash; OA  documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,8 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ver1_0  documentation" href="#" />
-    <link rel="next" title="openassembly Package" href="openassembly.html" /> 
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="OA  documentation" href="#" />
+    <link rel="next" title="Installing Development Server" href="installation.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,9 +40,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="openassembly.html" title="openassembly Package"
+          <a href="installation.html" title="Installing Development Server"
              accesskey="N">next</a> |</li>
-        <li><a href="#">ver1_0  documentation</a> &raquo;</li> 
+        <li><a href="#">OA  documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,192 +51,334 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-ver1-0-s-documentation">
-<h1>Welcome to ver1_0&#8217;s documentation!<a class="headerlink" href="#welcome-to-ver1-0-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="welcome-to-open-assembly-s-documentation">
+<h1>Welcome to Open Assembly&#8217;s documentation!<a class="headerlink" href="#welcome-to-open-assembly-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing Development Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#open-assembly-installation">Open Assembly Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#the-mongodb-server">The MongoDB server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#redis-server">Redis Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#node-js">Node.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#solr">Solr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#run-the-development-server">Run the Development Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#start-redis-server">Start Redis Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#start-celery-server">Start Celery Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#start-solr-server">Start Solr Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#start-node-js-server">Start Node.js Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#deploying-production-server">Deploying Production Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#using-dotcloud">Using Dotcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#other-hosts">Other Hosts</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="for-designers">
+<h2>For Designers<a class="headerlink" href="#for-designers" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="templatetagsintro.html">Decoupling Design and Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templatetagsintro.html#so-what-does-a-template-tag-function-look-like">So what does a template tag function look like?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="templatetagsintro.html#pp-url-links">pp_url Links</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="templatetags.html">Django Template Tags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_cache.templatetags.html"><tt class="docutils literal"><span class="pre">cachetags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_dashboard.templatetags.html"><tt class="docutils literal"><span class="pre">dashboardtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_location.templatetags.html"><tt class="docutils literal"><span class="pre">locationtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_search.templatetags.html"><tt class="docutils literal"><span class="pre">haystacktags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_verification.templatetags.html"><tt class="docutils literal"><span class="pre">verificationtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_badges.templatetags.html"><tt class="docutils literal"><span class="pre">badgetags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_comments.templatetags.html"><tt class="docutils literal"><span class="pre">commenttags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_consensus.templatetags.html"><tt class="docutils literal"><span class="pre">consensustags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_core.templatetags.html"><tt class="docutils literal"><span class="pre">json_filters</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.pp_combo_form"><tt class="docutils literal"><span class="pre">pp_combo_form</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.pp_url"><tt class="docutils literal"><span class="pre">pp_url</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.show_stars"><tt class="docutils literal"><span class="pre">show_stars</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.tag_helpers"><tt class="docutils literal"><span class="pre">tag_helpers</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_deliberation.templatetags.html"><tt class="docutils literal"><span class="pre">argumenttags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_flags.templatetags.html"><tt class="docutils literal"><span class="pre">flagtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_forum.templatetags.html"><tt class="docutils literal"><span class="pre">blobtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_login.templatetags.html"><tt class="docutils literal"><span class="pre">logintags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html"><tt class="docutils literal"><span class="pre">messagetags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html#module-openassembly.pirate_messages.templatetags.notificationtags"><tt class="docutils literal"><span class="pre">notificationtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_permissions.templatetags.html"><tt class="docutils literal"><span class="pre">cani</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_permissions.templatetags.html#module-openassembly.pirate_permissions.templatetags.groups"><tt class="docutils literal"><span class="pre">groups</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_profile.templatetags.html"><tt class="docutils literal"><span class="pre">profiletags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_reputation.templatetags.html"><tt class="docutils literal"><span class="pre">reputationtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_social.templatetags.html"><tt class="docutils literal"><span class="pre">feedtags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_social.templatetags.html#module-openassembly.pirate_social.templatetags.subscriptiontags"><tt class="docutils literal"><span class="pre">subscriptiontags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_social.templatetags.html#module-openassembly.pirate_social.templatetags.usertags"><tt class="docutils literal"><span class="pre">usertags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_sources.templatetags.html"><tt class="docutils literal"><span class="pre">sourcetags</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_topics.templatetags.html"><tt class="docutils literal"><span class="pre">topictags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="openassembly.html">openassembly Package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="openassembly.html#module-openassembly.settings"><tt class="docutils literal"><span class="pre">settings</span></tt> Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="openassembly.html#module-openassembly.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="openassembly.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html">oa_cache Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html">oa_dashboard Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_location.html">oa_location Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_location.html#module-openassembly.oa_location.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_location.html#module-openassembly.oa_location.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_location.html#module-openassembly.oa_location.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_location.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_search.html">oa_search Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_search.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_verification.html">oa_verification Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_verification.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_actions.html">pirate_actions Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_actions.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_badges.html">pirate_badges Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_badges.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_comments.html">pirate_comments Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_comments.html#module-openassembly.pirate_comments.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_comments.html#module-openassembly.pirate_comments.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_comments.html#module-openassembly.pirate_comments.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_comments.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html">pirate_consensus Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html">pirate_core Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#id1"><tt class="docutils literal"><span class="pre">pirate_core</span></tt> Package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.fields"><tt class="docutils literal"><span class="pre">fields</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.helpers"><tt class="docutils literal"><span class="pre">helpers</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.middleware"><tt class="docutils literal"><span class="pre">middleware</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#widgets-module"><tt class="docutils literal"><span class="pre">widgets</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_deliberation.html">pirate_deliberation Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.choices"><tt class="docutils literal"><span class="pre">choices</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_deliberation.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_flags.html">pirate_flags Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_flags.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html">pirate_forum Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_login.html">pirate_login Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.backends"><tt class="docutils literal"><span class="pre">backends</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_login.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html">pirate_messages Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_permissions.html">pirate_permissions Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.facade"><tt class="docutils literal"><span class="pre">facade</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_profile.html">pirate_profile Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_profile.html#module-openassembly.pirate_profile.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_profile.html#module-openassembly.pirate_profile.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_profile.html#module-openassembly.pirate_profile.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_profile.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_reputation.html">pirate_reputation Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_reputation.html#module-openassembly.pirate_reputation.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_reputation.html#module-openassembly.pirate_reputation.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_reputation.html#module-openassembly.pirate_reputation.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_reputation.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_social.html">pirate_social Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.html#module-openassembly.pirate_social.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.html#module-openassembly.pirate_social.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.html#module-openassembly.pirate_social.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_sources.html">pirate_sources Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.backends"><tt class="docutils literal"><span class="pre">backends</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_sources.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html">pirate_topics Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_cache.html">oa_cache Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html#module-openassembly.oa_cache.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_cache.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_cache.templatetags.html"><tt class="docutils literal"><span class="pre">cachetags</span></tt></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_dashboard.html">oa_dashboard Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html#module-openassembly.oa_dashboard.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_dashboard.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_dashboard.templatetags.html"><tt class="docutils literal"><span class="pre">dashboardtags</span></tt></a></li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_location.html">oa_location Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_location.html#module-openassembly.oa_location.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_location.html#module-openassembly.oa_location.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_location.html#module-openassembly.oa_location.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_location.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_location.templatetags.html"><tt class="docutils literal"><span class="pre">locationtags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_search.html">oa_search Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_search.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_search.templatetags.html"><tt class="docutils literal"><span class="pre">haystacktags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.oa_verification.html">oa_verification Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_verification.html#module-openassembly.oa_verification.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.oa_verification.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.oa_verification.templatetags.html"><tt class="docutils literal"><span class="pre">verificationtags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_actions.html">pirate_actions Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_actions.html#module-openassembly.pirate_actions.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_actions.html#subpackages">Subpackages</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_badges.html">pirate_badges Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_badges.html#module-openassembly.pirate_badges.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_badges.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_badges.templatetags.html"><tt class="docutils literal"><span class="pre">badgetags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_comments.html">pirate_comments Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_comments.html#module-openassembly.pirate_comments.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_comments.html#module-openassembly.pirate_comments.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_comments.html#module-openassembly.pirate_comments.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_comments.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_comments.templatetags.html"><tt class="docutils literal"><span class="pre">commenttags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_consensus.html">pirate_consensus Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html#module-openassembly.pirate_consensus.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_consensus.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_consensus.templatetags.html"><tt class="docutils literal"><span class="pre">consensustags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_core.html">pirate_core Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#id1"><tt class="docutils literal"><span class="pre">pirate_core</span></tt> Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.fields"><tt class="docutils literal"><span class="pre">fields</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.helpers"><tt class="docutils literal"><span class="pre">helpers</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.middleware"><tt class="docutils literal"><span class="pre">middleware</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#module-openassembly.pirate_core.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#widgets-module"><tt class="docutils literal"><span class="pre">widgets</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_core.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.templatetags.html"><tt class="docutils literal"><span class="pre">json_filters</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.pp_combo_form"><tt class="docutils literal"><span class="pre">pp_combo_form</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.pp_url"><tt class="docutils literal"><span class="pre">pp_url</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.show_stars"><tt class="docutils literal"><span class="pre">show_stars</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_core.templatetags.html#module-openassembly.pirate_core.templatetags.tag_helpers"><tt class="docutils literal"><span class="pre">tag_helpers</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_deliberation.html">pirate_deliberation Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.choices"><tt class="docutils literal"><span class="pre">choices</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_deliberation.html#module-openassembly.pirate_deliberation.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_deliberation.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_deliberation.templatetags.html"><tt class="docutils literal"><span class="pre">argumenttags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_flags.html">pirate_flags Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_flags.html#module-openassembly.pirate_flags.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_flags.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_flags.templatetags.html"><tt class="docutils literal"><span class="pre">flagtags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_forum.html">pirate_forum Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#module-openassembly.pirate_forum.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_forum.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_forum.templatetags.html"><tt class="docutils literal"><span class="pre">blobtags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_login.html">pirate_login Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.backends"><tt class="docutils literal"><span class="pre">backends</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_login.html#module-openassembly.pirate_login.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_login.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_login.templatetags.html"><tt class="docutils literal"><span class="pre">logintags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_messages.html">pirate_messages Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.management"><tt class="docutils literal"><span class="pre">management</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.tasks"><tt class="docutils literal"><span class="pre">tasks</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html#module-openassembly.pirate_messages.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_messages.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html"><tt class="docutils literal"><span class="pre">messagetags</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_messages.templatetags.html#module-openassembly.pirate_messages.templatetags.notificationtags"><tt class="docutils literal"><span class="pre">notificationtags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_permissions.html">pirate_permissions Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.facade"><tt class="docutils literal"><span class="pre">facade</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_permissions.html#module-openassembly.pirate_permissions.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_permissions.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.templatetags.html"><tt class="docutils literal"><span class="pre">cani</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_permissions.templatetags.html#module-openassembly.pirate_permissions.templatetags.groups"><tt class="docutils literal"><span class="pre">groups</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_profile.html">pirate_profile Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_profile.html#module-openassembly.pirate_profile.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_profile.html#module-openassembly.pirate_profile.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_profile.html#module-openassembly.pirate_profile.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_profile.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_profile.templatetags.html"><tt class="docutils literal"><span class="pre">profiletags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_reputation.html">pirate_reputation Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_reputation.html#module-openassembly.pirate_reputation.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_reputation.html#module-openassembly.pirate_reputation.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_reputation.html#module-openassembly.pirate_reputation.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_reputation.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_reputation.templatetags.html"><tt class="docutils literal"><span class="pre">reputationtags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_social.html">pirate_social Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_social.html#module-openassembly.pirate_social.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_social.html#module-openassembly.pirate_social.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_social.html#module-openassembly.pirate_social.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_social.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.templatetags.html"><tt class="docutils literal"><span class="pre">feedtags</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.templatetags.html#module-openassembly.pirate_social.templatetags.subscriptiontags"><tt class="docutils literal"><span class="pre">subscriptiontags</span></tt></a></li>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_social.templatetags.html#module-openassembly.pirate_social.templatetags.usertags"><tt class="docutils literal"><span class="pre">usertags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_sources.html">pirate_sources Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.backends"><tt class="docutils literal"><span class="pre">backends</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_sources.html#module-openassembly.pirate_sources.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_sources.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_sources.templatetags.html"><tt class="docutils literal"><span class="pre">sourcetags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="openassembly.pirate_topics.html">pirate_topics Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.forms"><tt class="docutils literal"><span class="pre">forms</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.models"><tt class="docutils literal"><span class="pre">models</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.search_indexes"><tt class="docutils literal"><span class="pre">search_indexes</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.tests"><tt class="docutils literal"><span class="pre">tests</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html#module-openassembly.pirate_topics.views"><tt class="docutils literal"><span class="pre">views</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openassembly.pirate_topics.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="openassembly.pirate_topics.templatetags.html"><tt class="docutils literal"><span class="pre">topictags</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -255,15 +398,24 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to ver1_0&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#">Welcome to Open Assembly&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#for-designers">For Designers</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation">Documentation</a><ul>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="openassembly.html"
-                        title="next chapter">openassembly Package</a></p>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installing Development Server</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -296,13 +448,13 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="openassembly.html" title="openassembly Package"
+          <a href="installation.html" title="Installing Development Server"
              >next</a> |</li>
-        <li><a href="#">ver1_0  documentation</a> &raquo;</li> 
+        <li><a href="#">OA  documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2012, Author.
+        &copy; Copyright 2012, Frank Grove.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

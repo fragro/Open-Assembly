@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`badgetags` Module
+:mod:`badgetags`
 -----------------------
 
 .. automodule:: openassembly.pirate_badges.templatetags.badgetags

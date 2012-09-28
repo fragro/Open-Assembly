@@ -1,25 +1,6 @@
 openassembly Package
 ====================
 
-:mod:`settings` Module
-----------------------
-
-.. automodule:: openassembly.settings
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`tasks` Module
--------------------
-
-.. automodule:: openassembly.tasks
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-Subpackages
------------
-
 .. toctree::
 
     openassembly.oa_cache

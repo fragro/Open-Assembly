@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>templatetags Package &mdash; ver1_0  documentation</title>
+    <title>consensustags &mdash; OA  documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ver1_0  documentation" href="index.html" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="OA  documentation" href="index.html" />
     <link rel="up" title="pirate_consensus Package" href="openassembly.pirate_consensus.html" />
     <link rel="next" title="pirate_core Package" href="openassembly.pirate_core.html" />
     <link rel="prev" title="pirate_consensus Package" href="openassembly.pirate_consensus.html" /> 
@@ -46,7 +47,7 @@
         <li class="right" >
           <a href="openassembly.pirate_consensus.html" title="pirate_consensus Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+        <li><a href="index.html">OA  documentation</a> &raquo;</li>
           <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li>
           <li><a href="openassembly.pirate_consensus.html" accesskey="U">pirate_consensus Package</a> &raquo;</li> 
       </ul>
@@ -57,74 +58,14 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="templatetags-package">
-<h1>templatetags Package<a class="headerlink" href="#templatetags-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-openassembly.pirate_consensus.templatetags.consensustags">
-<span id="consensustags-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">consensustags</span></tt> Module<a class="headerlink" href="#module-openassembly.pirate_consensus.templatetags.consensustags" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm">
-<em class="property">class </em><tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">ConsensusForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#ConsensusForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
-<p>This form is used to allow creation and modification of consensus objects.  The form_id
-field is hidden and static and is used to allow the pp_consensus_form tag to identify 
-whether the POST included with the submission pertains to issues or does not.</p>
-<p>By convention, the value of this hidden field should be the same as the tag that
-will process the form.</p>
-<dl class="attribute">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm.base_fields">
-<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x65dff10&gt;, 'vote_type': &lt;django.forms.fields.ChoiceField object at 0x65dffd0&gt;}</em><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm.base_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm.media">
-<tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.ConsensusForm.media" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.RatingForm">
-<em class="property">class </em><tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">RatingForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#RatingForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.RatingForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
-<dl class="attribute">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.RatingForm.base_fields">
-<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x65df310&gt;, 'rating': &lt;django.forms.fields.ChoiceField object at 0x65dfe90&gt;}</em><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.RatingForm.base_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.RatingForm.media">
-<tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.RatingForm.media" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm">
-<em class="property">class </em><tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">SpectrumForm</tt><big>(</big><em>data=None</em>, <em>files=None</em>, <em>auto_id='id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.util.ErrorList'&gt;</em>, <em>label_suffix=':'</em>, <em>empty_permitted=False</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#SpectrumForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
-<dl class="attribute">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm.base_fields">
-<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x65dac90&gt;, 'spectrum': &lt;django.forms.fields.ChoiceField object at 0x65daf10&gt;}</em><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm.base_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm.media">
-<tt class="descname">media</tt><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.SpectrumForm.media" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="module-openassembly.pirate_consensus.templatetags.consensustags">
+<span id="consensustags"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">consensustags</span></tt><a class="headerlink" href="#module-openassembly.pirate_consensus.templatetags.consensustags" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_chart">
 <tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_consensus_chart</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_consensus_chart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_chart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does a Temp Check by grabbing the opinion data as well
 as voting aggregates.</p>
 </dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_css">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_consensus_css</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_consensus_css"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_css" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_form">
@@ -140,37 +81,92 @@ weighted voting to the entire set.</p>
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_get">
 <tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_consensus_get</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_consensus_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Consensus objects tie an object to all of the voting information for that object.
+This tag populates the pp_consensus namespace with a consensus object and related information,
+including the interest, votes, and controversy of the object. If you provide the <em>user</em>
+parameter to the template tag, it also populates the context with user specific voting info.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> (<em>str</em>) &#8211; id of django.db.models.Model object</li>
+<li><strong>user</strong> &#8211; djngo.contrib.auth.models.User object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><dl class="first docutils">
+<dt>pp_consensus.consensus</dt>
+<dd><p class="first last">This is the consensus object itself</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>pp_consensus.interest</dt>
+<dd><p class="first last">Holds the interest integer generated by the ranking algorithm</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>pp_consensus.controversy</dt>
+<dd><p class="first last">Holds the controversy rating generated by the controversy ranking algorithm</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>pp_consensus.consensus</dt>
+<dd><p class="first last">This is the consensus object itself</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>pp_consensus.votes</dt>
+<dd><p class="first last">Number of votes on this object</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Requires user:</th><td class="field-body"><ul class="first last">
+<li><dl class="first docutils">
+<dt>pp_consensus.user_updown</dt>
+<dd><p class="first last">Returns user voting information if parameter is present</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>pp_consensus.user_rating</dt>
+<dd><p class="first last">Returns user voting information if parameter is present</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>An example HTML template:</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre>{% pp_consensus_get object=object user=request.user %}
+        
+        {{pp_consensus.interest}}
+        
+        {{pp_consensus.consensus}}
 
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_info">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_consensus_info</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_consensus_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_user_block">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_consensus_user_block</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_consensus_user_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_consensus_user_block" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_get_ranked_decision">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_get_ranked_decision</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_get_ranked_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_get_ranked_decision" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_get_ranked_vote">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_get_ranked_vote</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_get_ranked_vote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_get_ranked_vote" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_get_reporting_percentage">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_get_reporting_percentage</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_get_reporting_percentage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_get_reporting_percentage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_get_votes">
-<tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_get_votes</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_get_votes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_get_votes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+        <span class="nt">&lt;p&gt;</span> Object has {{pp_consensus.votes}} votes <span class="nt">&lt;/p&gt;</span>
+{% endpp_consensus_get %}
+</pre></div>
+</td></tr></table></div>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_rating_form">
@@ -186,7 +182,68 @@ weighted voting to the entire set.</p>
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_rating_js">
 <tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_rating_js</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_rating_js"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_rating_js" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Used to populate the context with 5-star rating javascript. Remember to place this code in the appropriate
+markup. This object requires that the consensus object is in the context. An example
+with a consensus object is shown below.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> &#8211; django.db.model.Model object</li>
+<li><strong>user</strong> &#8211; djngo.contrib.auth.models.User object</li>
+<li><strong>cons</strong> &#8211; pirate_consensus.models.Consensus object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><dl class="first docutils">
+<dt>pp_consensus.rating_js</dt>
+<dd><p class="first last">block of javascript code</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>An example HTML template:</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre>    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+
+        <span class="p">{</span><span class="o">%</span> <span class="nx">pp_consensus_get</span> <span class="nx">object</span><span class="o">=</span><span class="nx">object</span><span class="p">.</span><span class="nx">id</span> <span class="o">%</span><span class="p">}</span>   
+
+            <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">consensus</span> <span class="o">%</span><span class="p">}</span>
+                  <span class="p">{</span><span class="o">%</span> <span class="nx">pp_rating_js</span> <span class="nx">object</span><span class="o">=</span><span class="nx">object</span> <span class="nx">user</span><span class="o">=</span><span class="nx">user</span> <span class="nx">cons</span><span class="o">=</span><span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">consensus</span> <span class="o">%</span><span class="p">}</span>
+
+                   <span class="p">{{</span><span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">rating_js</span><span class="o">|</span><span class="nx">safe</span><span class="p">}}</span> 
+
+                  <span class="p">{</span><span class="o">%</span> <span class="nx">endpp_rating_js</span> <span class="o">%</span><span class="p">}</span>
+
+            <span class="p">{</span><span class="o">%</span> <span class="nx">endif</span> <span class="o">%</span><span class="p">}</span>
+
+        <span class="p">{</span><span class="o">%</span> <span class="nx">endpp_consensus_get</span> <span class="o">%</span><span class="p">}</span>
+
+    <span class="nt">&lt;/script&gt;</span>
+</pre></div>
+</td></tr></table></div>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_spectrum_form">
@@ -202,9 +259,81 @@ weighted voting to the entire set.</p>
 <dl class="function">
 <dt id="openassembly.pirate_consensus.templatetags.consensustags.pp_spectrum_js">
 <tt class="descclassname">openassembly.pirate_consensus.templatetags.consensustags.</tt><tt class="descname">pp_spectrum_js</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_consensus/templatetags/consensustags.html#pp_spectrum_js"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_consensus.templatetags.consensustags.pp_spectrum_js" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Used to populate the context with 10 point color spectrum voting javascript. Remember to place this code in the appropriate
+markup. This object requires that the consensus object is in the context. An example
+with a consensus object is shown below.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> &#8211; django.db.model.Model object</li>
+<li><strong>user</strong> &#8211; djngo.contrib.auth.models.User object</li>
+<li><strong>cons</strong> &#8211; pirate_consensus.models.Consensus object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><dl class="first docutils">
+<dt>pp_consensus.rating_js</dt>
+<dd><p class="first last">block of javascript code</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>An example HTML template:</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</pre></div></td><td class="code"><div class="highlight"><pre>    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
 
-</div>
+        <span class="p">{</span><span class="o">%</span> <span class="nx">pp_consensus_get</span> <span class="nx">object</span><span class="o">=</span><span class="nx">object</span><span class="p">.</span><span class="nx">id</span> <span class="o">%</span><span class="p">}</span>   
+
+            <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">consensus</span> <span class="o">%</span><span class="p">}</span>
+                  <span class="p">{</span><span class="o">%</span> <span class="nx">pp_rating_js</span> <span class="nx">object</span><span class="o">=</span><span class="nx">object</span> <span class="nx">user</span><span class="o">=</span><span class="nx">user</span> <span class="nx">cons</span><span class="o">=</span><span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">consensus</span> <span class="o">%</span><span class="p">}</span>
+
+                   <span class="p">{{</span><span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">rating_js</span><span class="o">|</span><span class="nx">safe</span><span class="p">}}</span> 
+
+                  <span class="p">{</span><span class="o">%</span> <span class="nx">endpp_rating_js</span> <span class="o">%</span><span class="p">}</span>
+
+                  <span class="p">{</span><span class="o">%</span> <span class="nx">pp_spectrum_js</span> <span class="nx">object</span><span class="o">=</span><span class="nx">object</span> <span class="nx">user</span><span class="o">=</span><span class="nx">user</span> <span class="nx">cons</span><span class="o">=</span><span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">consensus</span> <span class="o">%</span><span class="p">}</span>
+
+                   <span class="p">{{</span><span class="nx">pp_consensus</span><span class="p">.</span><span class="nx">spectrum_js</span><span class="o">|</span><span class="nx">safe</span><span class="p">}}</span>
+
+                  <span class="p">{</span><span class="o">%</span> <span class="nx">endpp_spectrum_js</span> <span class="o">%</span><span class="p">}</span>
+
+            <span class="p">{</span><span class="o">%</span> <span class="nx">endif</span> <span class="o">%</span><span class="p">}</span>
+
+        <span class="p">{</span><span class="o">%</span> <span class="nx">endpp_consensus_get</span> <span class="o">%</span><span class="p">}</span>
+
+    <span class="nt">&lt;/script&gt;</span>
+</pre></div>
+</td></tr></table></div>
+</dd></dl>
+
 </div>
 
 
@@ -213,14 +342,6 @@ weighted voting to the entire set.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">templatetags Package</a><ul>
-<li><a class="reference internal" href="#module-openassembly.pirate_consensus.templatetags.consensustags"><tt class="docutils literal"><span class="pre">consensustags</span></tt> Module</a></li>
-</ul>
-</li>
-</ul>
-
   <h4>Previous topic</h4>
   <p class="topless"><a href="openassembly.pirate_consensus.html"
                         title="previous chapter">pirate_consensus Package</a></p>
@@ -264,13 +385,13 @@ weighted voting to the entire set.</p>
         <li class="right" >
           <a href="openassembly.pirate_consensus.html" title="pirate_consensus Package"
              >previous</a> |</li>
-        <li><a href="index.html">ver1_0  documentation</a> &raquo;</li>
+        <li><a href="index.html">OA  documentation</a> &raquo;</li>
           <li><a href="openassembly.html" >openassembly Package</a> &raquo;</li>
           <li><a href="openassembly.pirate_consensus.html" >pirate_consensus Package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2012, Author.
+        &copy; Copyright 2012, Frank Grove.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`logintags` Module
+:mod:`logintags`
 -----------------------
 
 .. automodule:: openassembly.pirate_login.templatetags.logintags

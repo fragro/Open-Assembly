@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`verificationtags` Module
+:mod:`verificationtags`
 ------------------------------
 
 .. automodule:: openassembly.oa_verification.templatetags.verificationtags

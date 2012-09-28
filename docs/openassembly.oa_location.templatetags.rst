@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`locationtags` Module
+:mod:`locationtags`
 --------------------------
 
 .. automodule:: openassembly.oa_location.templatetags.locationtags

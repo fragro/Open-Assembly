@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`messagetags` Module
+:mod:`messagetags`
 -------------------------
 
 .. automodule:: openassembly.pirate_messages.templatetags.messagetags
@@ -9,7 +7,7 @@ templatetags Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`notificationtags` Module
+:mod:`notificationtags`
 ------------------------------
 
 .. automodule:: openassembly.pirate_messages.templatetags.notificationtags

@@ -1,7 +1,5 @@
-templatetags Package
-====================
 
-:mod:`platformtags` Module
+:mod:`platformtags`
 --------------------------
 
 .. automodule:: openassembly.oa_platform.templatetags.platformtags
