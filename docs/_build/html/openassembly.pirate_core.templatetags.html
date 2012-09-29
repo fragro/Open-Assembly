@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>json_filters &mdash; OA  documentation</title>
+    <title>pp_url &mdash; OA  documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -58,12 +58,58 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-openassembly.pirate_core.templatetags.json_filters">
-<span id="json-filters"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">json_filters</span></tt><a class="headerlink" href="#module-openassembly.pirate_core.templatetags.json_filters" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-openassembly.pirate_core.templatetags.pp_url">
+<span id="pp-url"></span><span id="pirate-core-templatetags-pp-url"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">pp_url</span></tt><a class="headerlink" href="#module-openassembly.pirate_core.templatetags.pp_url" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="openassembly.pirate_core.templatetags.json_filters.jsonify">
-<tt class="descclassname">openassembly.pirate_core.templatetags.json_filters.</tt><tt class="descname">jsonify</tt><big>(</big><em>object</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/json_filters.html#jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.json_filters.jsonify" title="Permalink to this definition">¶</a></dt>
+<dt id="openassembly.pirate_core.templatetags.pp_url.get_reverse">
+<tt class="descclassname">openassembly.pirate_core.templatetags.pp_url.</tt><tt class="descname">get_reverse</tt><big>(</big><em>pattern</em>, <em>kwargs</em>, <em>content_type_id=None</em>, <em>obj_id=None</em>, <em>start=None</em>, <em>end=None</em>, <em>dimension=None</em>, <em>scroll_to=None</em>, <em>returnurl=None</em>, <em>htmlsafe=None</em>, <em>simplebox=None</em>, <em>is_hash=True</em>, <em>sort_type=None</em>, <em>phase=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/pp_url.html#get_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.pp_url.get_reverse" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="openassembly.pirate_core.templatetags.pp_url.pp_url">
+<tt class="descclassname">openassembly.pirate_core.templatetags.pp_url.</tt><tt class="descname">pp_url</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/pp_url.html#pp_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.pp_url.pp_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>This block tag will produce a url that will link to the designated view or pattern
+name, and then will optionally populate the request passed to that view with
+either a specific ORM object, or a numerical range (start...end), as long as
+the pirate_core.url_middleware.UrlMiddleware is included in the projects&#8217;
+MIDDLEWARE_CLASSES. Any kwargs included in addition to &#8220;view&#8221;, &#8220;object&#8221;, &#8220;start&#8221;
+and &#8220;end&#8221; will be passed to redirect in order to produce the url for the designated
+view.</p>
+<p>The default value for &#8220;view&#8221; is &#8220;pp-page&#8221;, which expects that the kwarg &#8220;template&#8221; be
+included, passing in the name of the template being linked to.</p>
+<p>For example:</p>
+<p>{% pp_url object=object template=&#8221;filename.html&#8221; %}</p>
+<p>{% pp_url template=&#8221;filename.html&#8221; start=0 end=30 dimension=&#8221;n&#8221; %}</p>
+<p>{% pp_url template=&#8221;filename.html&#8221; %}</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pirate_topics.models</span> <span class="kn">import</span> <span class="n">Topic</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span> <span class="o">=</span> <span class="n">Topic</span><span class="p">(</span><span class="n">summary</span><span class="o">=</span><span class="s">&quot;A test topic.&quot;</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="s">&quot;test-topic&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">group_members</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">load</span> <span class="o">=</span> <span class="s">&quot;{</span><span class="si">% lo</span><span class="s">ad pp_url %}&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url template=&#39;example.html&#39; object=topic %}&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
+<span class="go">u&#39;/p/example/k-test-topic&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url template=&#39;example.html&#39; object=topic start=0 end=30 %}&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
+<span class="go">u&#39;/p/example/k-test-topic/s-0/e-30&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url template=&#39;example.html&#39; start=0 end=30 dimension=&#39;new&#39; %}&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
+<span class="go">u&#39;/p/example/s-0/e-30/d-new&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </div>
 <div class="section" id="module-openassembly.pirate_core.templatetags.pp_combo_form">
@@ -108,13 +154,15 @@ This save method should be called with commit=True when a valid POST and
 a path are both supplied, but it should be called with commit=False if
 a valid path  is supplied but a valid POST is not.</li>
 </ul>
-<p>Setup...
-&gt;&gt;&gt; from django import template
-&gt;&gt;&gt; from pirate_core import ComboFormFactory, HttpRedirectException
-&gt;&gt;&gt; from pirate_issues.models import Issue, Topic
-&gt;&gt;&gt; from pirate_issues.templatetags.issuetags import IssueForm
-&gt;&gt;&gt; from pirate_extensions.templatetags.taggingtags import TagForm
-&gt;&gt;&gt; from tagging.models import Tag, TaggedItem</p>
+<p>Setup...</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pirate_core</span> <span class="kn">import</span> <span class="n">ComboFormFactory</span><span class="p">,</span> <span class="n">HttpRedirectException</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pirate_issues.models</span> <span class="kn">import</span> <span class="n">Issue</span><span class="p">,</span> <span class="n">Topic</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pirate_issues.templatetags.issuetags</span> <span class="kn">import</span> <span class="n">IssueForm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pirate_extensions.templatetags.taggingtags</span> <span class="kn">import</span> <span class="n">TagForm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tagging.models</span> <span class="kn">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TaggedItem</span>
+</pre></div>
+</div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">add_to_builtins</span><span class="p">(</span><span class="s">&#39;customtags.templatetags.customtags&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -141,29 +189,29 @@ a valid path  is supplied but a valid POST is not.</li>
 <span class="go">u&#39;&lt;p&gt;&lt;label for=&quot;id_topic&quot;&gt;Topic:&lt;/label&gt; &lt;select name=&quot;topic&quot; id=&quot;id_topic&quot;&gt; &lt;option value=&quot;&quot; selected=&quot;selected&quot;&gt;---------&lt;/option&gt; &lt;option value=&quot;1&quot;&gt;Opinions and Views.&lt;/option&gt; &lt;/select&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_name&quot;&gt;Name:&lt;/label&gt; &lt;input id=&quot;id_name&quot; type=&quot;text&quot; name=&quot;name&quot; value=&quot;DEF&quot; maxlength=&quot;140&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_text&quot;&gt;Text:&lt;/label&gt; &lt;textarea id=&quot;id_text&quot; rows=&quot;10&quot; cols=&quot;40&quot; name=&quot;text&quot;&gt;&lt;/textarea&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_interest&quot;&gt;Interest:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;interest&quot; value=&quot;0.0&quot; id=&quot;id_interest&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_controversy&quot;&gt;Controversy:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;controversy&quot; value=&quot;0.0&quot; id=&quot;id_controversy&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_comments&quot;&gt;Comments:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;comments&quot; value=&quot;0&quot; id=&quot;id_comments&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_tags&quot;&gt;Tags:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;tags&quot; id=&quot;id_tags&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_form_id_0&quot;&gt;Form id:&lt;/label&gt; &lt;input type=&quot;hidden&quot; name=&quot;form_id_0&quot; value=&quot;Fc8b6368985a9ad50492ccd96ee7de9e3&quot; id=&quot;id_form_id_0&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_1&quot; value=&quot;Ff5fe7ac70fa4aab31f26632adfc4e4fe&quot; id=&quot;id_form_id_1&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_2&quot; value=&quot;F02c06e8500480e06cecc20e409912a77&quot; id=&quot;id_form_id_2&quot; /&gt;&lt;/p&gt;&#39;</span>
 </pre></div>
 </div>
-<p>If POST or issue are completetly absent from the context it should make no difference.
-#Note this doesn&#8217;t currently work due to the use of native_tags, which converts unknown 
-#template variables to strings instead of to None as they should be handled.
-#&gt;&gt;&gt; result2 = template.Template(ts).render(template.Context({}))
-#&gt;&gt;&gt; &#8221; &#8221;.join(result2.split())
-#u&#8217;THIS NEEDS TO BE REPLACED&#8217;</p>
-<p>If an issue is included in the results, then that issue&#8217;s tags should appear in the form.
-&gt;&gt;&gt; result3 = template.Template(ts).render(template.Context({&#8220;post&#8221;:None, &#8220;issue&#8221;:issue}))
-&gt;&gt;&gt; &#8221; &#8221;.join(result3.split())
-u&#8217;&lt;p&gt;&lt;label for=&#8221;id_topic&#8221;&gt;Topic:&lt;/label&gt; &lt;select name=&#8221;topic&#8221; id=&#8221;id_topic&#8221;&gt; &lt;option value=&#8221;&#8220;&gt;&#8212;&#8212;&#8212;&lt;/option&gt; &lt;option value=&#8221;1&#8221; selected=&#8221;selected&#8221;&gt;Opinions and Views.&lt;/option&gt; &lt;/select&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_name&#8221;&gt;Name:&lt;/label&gt; &lt;input id=&#8221;id_name&#8221; type=&#8221;text&#8221; name=&#8221;name&#8221; value=&#8221;DEF&#8221; maxlength=&#8221;140&#8221; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_text&#8221;&gt;Text:&lt;/label&gt; &lt;textarea id=&#8221;id_text&#8221; rows=&#8221;10&#8221; cols=&#8221;40&#8221; name=&#8221;text&#8221;&gt;My opinion on tax cuts.&lt;/textarea&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_interest&#8221;&gt;Interest:&lt;/label&gt; &lt;input type=&#8221;text&#8221; name=&#8221;interest&#8221; value=&#8221;0.0&#8221; id=&#8221;id_interest&#8221; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_controversy&#8221;&gt;Controversy:&lt;/label&gt; &lt;input type=&#8221;text&#8221; name=&#8221;controversy&#8221; value=&#8221;0.0&#8221; id=&#8221;id_controversy&#8221; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_comments&#8221;&gt;Comments:&lt;/label&gt; &lt;input type=&#8221;text&#8221; name=&#8221;comments&#8221; value=&#8221;0&#8221; id=&#8221;id_comments&#8221; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_tags&#8221;&gt;Tags:&lt;/label&gt; &lt;input type=&#8221;text&#8221; name=&#8221;tags&#8221; id=&#8221;id_tags&#8221; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&#8221;id_form_id_0&#8221;&gt;Form id:&lt;/label&gt; &lt;input type=&#8221;hidden&#8221; name=&#8221;form_id_0&#8221; value=&#8221;F3f08dc1112a3c32ed9628840b9f40dbe&#8221; id=&#8221;id_form_id_0&#8221; /&gt;&lt;input type=&#8221;hidden&#8221; name=&#8221;form_id_1&#8221; value=&#8221;Fe8ac33ce836a7f9e497dd37c29281eaa&#8221; id=&#8221;id_form_id_1&#8221; /&gt;&lt;input type=&#8221;hidden&#8221; name=&#8221;form_id_2&#8221; value=&#8221;F55b12f88c3c1bbc1272b5f1720883e25&#8221; id=&#8221;id_form_id_2&#8221; /&gt;&lt;/p&gt;&#8217;</p>
-<p>Now, this tests whether or not a form submission including a POST dictionary works.
-&gt;&gt;&gt; POST = {}
-&gt;&gt;&gt; POST[&#8220;name&#8221;] = &#8220;Increase the pay of members of congress.&#8221;
-&gt;&gt;&gt; POST[&#8220;text&#8221;] = issue.text
-&gt;&gt;&gt; POST[&#8220;topic&#8221;] = issue.topic.pk
-&gt;&gt;&gt; POST[&#8220;form_id_0&#8221;] = IssueForm.form_id(instance=issue)
-&gt;&gt;&gt; POST[&#8220;tags&#8221;] = &#8220;congress budget&#8221;
-&gt;&gt;&gt; POST[&#8220;form_id_1&#8221;] = TagForm.form_id(instance=issue)</p>
-<p>As part of the setup, figure out what the ComboForm&#8217;s form_id field name is going to be
-&gt;&gt;&gt; form1 = IssueForm.create(instance=issue) # ComboForm needs form1 to be valid.
-&gt;&gt;&gt; form2 = TagForm.create(instance=form1.instance) # form2 needs to be valid.
-&gt;&gt;&gt; ComboForm = ComboFormFactory(form1, form2).get_form_class()
-&gt;&gt;&gt; POST[&#8220;form_id_2&#8221;] = ComboForm.form_id()</p>
+<p>If an issue is included in the results, then that issue&#8217;s tags should appear in the form.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">result3</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&quot;post&quot;</span><span class="p">:</span><span class="bp">None</span><span class="p">,</span> <span class="s">&quot;issue&quot;</span><span class="p">:</span><span class="n">issue</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result3</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+<span class="go">u&#39;&lt;p&gt;&lt;label for=&quot;id_topic&quot;&gt;Topic:&lt;/label&gt; &lt;select name=&quot;topic&quot; id=&quot;id_topic&quot;&gt; &lt;option value=&quot;&quot;&gt;---------&lt;/option&gt; &lt;option value=&quot;1&quot; selected=&quot;selected&quot;&gt;Opinions and Views.&lt;/option&gt; &lt;/select&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_name&quot;&gt;Name:&lt;/label&gt; &lt;input id=&quot;id_name&quot; type=&quot;text&quot; name=&quot;name&quot; value=&quot;DEF&quot; maxlength=&quot;140&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_text&quot;&gt;Text:&lt;/label&gt; &lt;textarea id=&quot;id_text&quot; rows=&quot;10&quot; cols=&quot;40&quot; name=&quot;text&quot;&gt;My opinion on tax cuts.&lt;/textarea&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_interest&quot;&gt;Interest:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;interest&quot; value=&quot;0.0&quot; id=&quot;id_interest&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_controversy&quot;&gt;Controversy:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;controversy&quot; value=&quot;0.0&quot; id=&quot;id_controversy&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_comments&quot;&gt;Comments:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;comments&quot; value=&quot;0&quot; id=&quot;id_comments&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_tags&quot;&gt;Tags:&lt;/label&gt; &lt;input type=&quot;text&quot; name=&quot;tags&quot; id=&quot;id_tags&quot; /&gt;&lt;/p&gt; &lt;p&gt;&lt;label for=&quot;id_form_id_0&quot;&gt;Form id:&lt;/label&gt; &lt;input type=&quot;hidden&quot; name=&quot;form_id_0&quot; value=&quot;F3f08dc1112a3c32ed9628840b9f40dbe&quot; id=&quot;id_form_id_0&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_1&quot; value=&quot;Fe8ac33ce836a7f9e497dd37c29281eaa&quot; id=&quot;id_form_id_1&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;form_id_2&quot; value=&quot;F55b12f88c3c1bbc1272b5f1720883e25&quot; id=&quot;id_form_id_2&quot; /&gt;&lt;/p&gt;&#39;</span>
+</pre></div>
+</div>
+<p>Now, this tests whether or not a form submission including a POST dictionary works.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Increase the pay of members of congress.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">issue</span><span class="o">.</span><span class="n">text</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;topic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">issue</span><span class="o">.</span><span class="n">topic</span><span class="o">.</span><span class="n">pk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;form_id_0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IssueForm</span><span class="o">.</span><span class="n">form_id</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">issue</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;congress budget&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;form_id_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TagForm</span><span class="o">.</span><span class="n">form_id</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">issue</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As part of the setup, figure out what the ComboForm&#8217;s form_id field name is going to be</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">form1</span> <span class="o">=</span> <span class="n">IssueForm</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">issue</span><span class="p">)</span> <span class="c"># ComboForm needs form1 to be valid.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">form2</span> <span class="o">=</span> <span class="n">TagForm</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">form1</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span> <span class="c"># form2 needs to be valid.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ComboForm</span> <span class="o">=</span> <span class="n">ComboFormFactory</span><span class="p">(</span><span class="n">form1</span><span class="p">,</span> <span class="n">form2</span><span class="p">)</span><span class="o">.</span><span class="n">get_form_class</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">POST</span><span class="p">[</span><span class="s">&quot;form_id_2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ComboForm</span><span class="o">.</span><span class="n">form_id</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
 <span class="gp">... </span>  <span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&quot;post&quot;</span><span class="p">:</span><span class="n">POST</span><span class="p">,</span> <span class="s">&quot;issue&quot;</span><span class="p">:</span><span class="n">issue</span><span class="p">}))</span>
 <span class="gp">... </span><span class="k">except</span> <span class="n">HttpRedirectException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
@@ -190,62 +238,6 @@ u&#8217;&lt;p&gt;&lt;label for=&#8221;id_topic&#8221;&gt;Topic:&lt;/label&gt; &l
 <span class="gp">&gt;&gt;&gt; </span><span class="n">TaggedItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Tag</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</div>
-<div class="section" id="module-openassembly.pirate_core.templatetags.pp_url">
-<span id="pp-url"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">pp_url</span></tt><a class="headerlink" href="#module-openassembly.pirate_core.templatetags.pp_url" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="openassembly.pirate_core.templatetags.pp_url.get_reverse">
-<tt class="descclassname">openassembly.pirate_core.templatetags.pp_url.</tt><tt class="descname">get_reverse</tt><big>(</big><em>pattern</em>, <em>kwargs</em>, <em>content_type_id=None</em>, <em>obj_id=None</em>, <em>start=None</em>, <em>end=None</em>, <em>dimension=None</em>, <em>scroll_to=None</em>, <em>returnurl=None</em>, <em>htmlsafe=None</em>, <em>simplebox=None</em>, <em>is_hash=True</em>, <em>sort_type=None</em>, <em>phase=None</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/pp_url.html#get_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.pp_url.get_reverse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="openassembly.pirate_core.templatetags.pp_url.pp_url">
-<tt class="descclassname">openassembly.pirate_core.templatetags.pp_url.</tt><tt class="descname">pp_url</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/pp_url.html#pp_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.pp_url.pp_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>This block tag will produce a url that will link to the designated view or pattern
-name, and then will optionally populate the request passed to that view with
-either a specific ORM object, or a numerical range (start...end), as long as
-the pirate_core.url_middleware.UrlMiddleware is included in the projects&#8217;
-MIDDLEWARE_CLASSES. Any kwargs included in addition to &#8220;view&#8221;, &#8220;object&#8221;, &#8220;start&#8221;
-and &#8220;end&#8221; will be passed to redirect in order to produce the url for the designated
-view.</p>
-<p>The default value for &#8220;view&#8221; is &#8220;pp-page&#8221;, which expects that the kwarg &#8220;template&#8221; be
-included, passing in the name of the template being linked to.</p>
-<p>For example:</p>
-<p>{% pp_url view=&#8221;pp-page&#8221; object=issue template=&#8221;filename.html&#8221; %}</p>
-<p>{% pp_url template=&#8221;filename.html&#8221; start=0 end=30 %}</p>
-<p>{% pp_url template=&#8221;filename.html&#8221; %}</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">template</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pirate_issues.models</span> <span class="kn">import</span> <span class="n">Topic</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span> <span class="o">=</span> <span class="n">Topic</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&quot;A test topic.&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">load</span> <span class="o">=</span> <span class="s">&quot;{</span><span class="si">% lo</span><span class="s">ad pp_url %}&quot;</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url view=&#39;pp-page&#39; template=&#39;example.html&#39; object=topic %}&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
-<span class="go">u&#39;/example.html?_t=...&amp;_o=...&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url template=&#39;example.html&#39; object=topic start=0 end=30 %}&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
-<span class="go">u&#39;/example.html?_t=...&amp;_o=...&amp;_s=0&amp;_e=30&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url template=&#39;example.html&#39; start=0 end=30 %}&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
-<span class="go">u&#39;/example.html?_s=0&amp;_e=30&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="s">&quot;{% pp_url view=&#39;hello.views.hello_view&#39; start=0 end=30 %}&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">Context</span><span class="p">({</span><span class="s">&#39;topic&#39;</span><span class="p">:</span><span class="n">topic</span><span class="p">}))</span>
-<span class="go">u&#39;/helloworld/?_s=0&amp;_e=30&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">topic</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -300,7 +292,7 @@ included, passing in the name of the template being linked to.</p>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
 <dl class="attribute">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.DeleteForm.base_fields">
-<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x6262cd0&gt;}</em><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.DeleteForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x283a2d0&gt;}</em><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.DeleteForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -316,7 +308,7 @@ included, passing in the name of the template being linked to.</p>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">django.forms.forms.Form</span></tt></p>
 <dl class="attribute">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.TagForm.base_fields">
-<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x6262bd0&gt;, 'tag': &lt;django.forms.fields.CharField object at 0x6262c50&gt;}</em><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.TagForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">base_fields</tt><em class="property"> = {'form_id': &lt;django.forms.fields.CharField object at 0x283a1d0&gt;, 'tag': &lt;django.forms.fields.CharField object at 0x283a250&gt;}</em><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.TagForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -329,7 +321,15 @@ included, passing in the name of the template being linked to.</p>
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.cleansignature">
 <tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">cleansignature</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.cleansignature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><strong>Filter</strong></p>
+<blockquote>
+<div><p>Removes <tt class="docutils literal"><span class="pre">?</span></tt> and everything after from urls.</p>
+<p>for example:</p>
+</div></blockquote>
+<div class="highlight-html"><div class="highlight"><pre>{{object.file.url|cleansignature}}
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.get_link_tag_list">
@@ -357,7 +357,15 @@ for recommendation.</p>
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.percent">
 <tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">percent</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/tag_helpers.html#percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.percent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><strong>Filter</strong></p>
+<blockquote>
+<div><p>Takes a float value and returns it as a percentage. Only makes sense for float values in the range [0,1].</p>
+<p>for example:</p>
+</div></blockquote>
+<div class="highlight-html"><div class="highlight"><pre>{{object.consensus_percent|percent}}
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_datetime_less_than">
@@ -398,15 +406,6 @@ Usage is as follows:</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_get_url">
-<tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">pp_get_url</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/tag_helpers.html#pp_get_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.pp_get_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>This block tag can create or process forms to get tags.
-This tag is primarily used for accessing sharing functions of social websites,
-and the url can be made safe for this via the &#8216;safe&#8217; argument.
-Usage is as follows:</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_has_tags">
 <tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">pp_has_tags</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/tag_helpers.html#pp_has_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.pp_has_tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if &#8220;object&#8221; has a Tag model associated with it.</p>
@@ -415,17 +414,99 @@ Usage is as follows:</p>
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_ordered_tuple">
 <tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">pp_ordered_tuple</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/tag_helpers.html#pp_ordered_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.pp_ordered_tuple" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key1</strong> (<em>str</em>) &#8211; Some key or object id</li>
+<li><strong>key2</strong> (<em>str</em>) &#8211; Some key or object id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><dl class="first docutils">
+<dt>pp_tag.key</dt>
+<dd><p class="first last">ordered key</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Usage</strong></p>
+<p>For instance we might need a unique identifier for 2-users, 2-objects, or something else.
+This template tag is primarily used by the node.js chat as a key in the Redis keystore that represents
+a P2P chat between 2 users.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_random_id">
 <tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">pp_random_id</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/tag_helpers.html#pp_random_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.pp_random_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Usually used for assigning a random id to guests in chat.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>slice</strong> (<em>int</em>) &#8211; length of random key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul>
+<li><dl class="first docutils">
+<dt>pp_tag.id</dt>
+<dd>a randomized id value with length <tt class="docutils literal"><span class="pre">slice</span></tt></dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-html"><div class="highlight"><pre>{% pp_random_id slice=5 %}
+
+    {{pp_tag.id}}
+
+{% endrandom_id %}
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_slice">
 <tt class="descclassname">openassembly.pirate_core.templatetags.tag_helpers.</tt><tt class="descname">pp_slice</tt><big>(</big><em>context</em>, <em>nodelist</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/openassembly/pirate_core/templatetags/tag_helpers.html#pp_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openassembly.pirate_core.templatetags.tag_helpers.pp_slice" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong> (a list of <tt class="docutils literal"><span class="pre">QuerySet</span></tt> object) &#8211; length of random key</li>
+<li><strong>amt</strong> (<em>int</em>) &#8211; length of slice</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><dl class="first docutils">
+<dt>pp_tag.sliced</dt>
+<dd><p class="first last">list sliced similar to the l[0:amt] function in Python</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-html"><div class="highlight"><pre>{% pp_slice obj=list slice=5 %}
+
+    {{pp_tag.sliced}}
+
+{% endpp_slice %}
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="openassembly.pirate_core.templatetags.tag_helpers.pp_tag_form">
@@ -466,9 +547,8 @@ Usage is as follows:</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">json_filters</span></tt></a></li>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">pp_url</span></tt></a></li>
 <li><a class="reference internal" href="#module-openassembly.pirate_core.templatetags.pp_combo_form"><tt class="docutils literal"><span class="pre">pp_combo_form</span></tt></a></li>
-<li><a class="reference internal" href="#module-openassembly.pirate_core.templatetags.pp_url"><tt class="docutils literal"><span class="pre">pp_url</span></tt></a></li>
 <li><a class="reference internal" href="#module-openassembly.pirate_core.templatetags.show_stars"><tt class="docutils literal"><span class="pre">show_stars</span></tt></a></li>
 <li><a class="reference internal" href="#module-openassembly.pirate_core.templatetags.tag_helpers"><tt class="docutils literal"><span class="pre">tag_helpers</span></tt></a></li>
 </ul>

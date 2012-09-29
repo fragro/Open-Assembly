@@ -1,11 +1,13 @@
+.. _pirate_core.templatetags.pp_url:
 
-:mod:`json_filters`
---------------------------
+:mod:`pp_url`
+--------------------
 
-.. automodule:: openassembly.pirate_core.templatetags.json_filters
+.. automodule:: openassembly.pirate_core.templatetags.pp_url
     :members:
     :undoc-members:
     :show-inheritance:
+
 
 :mod:`pp_combo_form`
 ---------------------------
@@ -15,13 +17,6 @@
     :undoc-members:
     :show-inheritance:
 
-:mod:`pp_url`
---------------------
-
-.. automodule:: openassembly.pirate_core.templatetags.pp_url
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 :mod:`show_stars`
 ------------------------

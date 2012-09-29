@@ -1,3 +1,5 @@
+.. _templatetags:
+
 ***************************************
 Decoupling Design and Development
 ***************************************
@@ -17,6 +19,8 @@ This function calls ``pp_consensus_get`` from the :mod:`consensustags` module an
 
 You can easily filter the data from the template tag's context using other templatetags found in Django libraries or elsewhere.
 
+Example
+--------------
 
 .. code-block:: html
 
@@ -36,6 +40,9 @@ You can easily filter the data from the template tag's context using other templ
 		{% endpp_consensus_get %}
 	</body>
 
+
+Context Variables
+--------------------
 
 As you can see the function relies on the ``object`` variable, which is loaded by the :mod:`oa_cache module`. For designers all you really need to know is that the following is available to you as Django template objects in any template you create. These are commonly used as parameters to template tag functions, or can be used to populate the template with contextual data you are presenting to the user.
 
@@ -76,4 +83,54 @@ Here's an example of how one might use these objects in a template.
 pp_url Links
 #################
 
-Django allows you to drop links into your templates fairly easily.
+Django allows you to drop links into your templates fairly easily. You need to use the :ref:`pirate_core.templatetags.pp_url` template tag.
+
+This block tag will produce a url that will link to the designated view or pattern
+name, and then will optionally populate the request passed to that view with
+either a specific ORM object, or a numerical range (start...end), as long as
+the pirate_core.url_middleware.UrlMiddleware is included in the projects'
+MIDDLEWARE_CLASSES. Any kwargs included in addition to "view", "object", "start"
+and "end" will be passed to redirect in order to produce the url for the designated
+view.
+
+The default value for "view" is "pp-page", which expects that the kwarg "template" be
+included, passing in the name of the template being linked to.
+
+For example:
+
+.. code-block:: html
+
+	{% pp_url object=object template="filename.html" %}
+
+	{% pp_url template="filename.html" start=0 end=30 dimension="n" %}
+
+	{% pp_url template="filename.html" %}
+
+
+Try the following from the Django shell from ``manage.py`` in the openassembly directory.
+
+.. code-block:: bash
+
+	python manage.py shell
+
+.. code-block:: bash
+
+	>>> from django import template
+	>>> from pirate_topics.models import Topic
+	>>> topic = Topic(summary="A test topic.", shortname="test-topic", description="test", group_members=0)
+	>>> topic.save()
+	>>> load = "{% load pp_url %}"
+
+	>>> ts = "{% pp_url template='example.html' object=topic %}"
+	>>> template.Template(load + ts).render(template.Context({'topic':topic}))
+	u'/p/example/k-test-topic'
+
+	>>> ts = "{% pp_url template='example.html' object=topic start=0 end=30 %}"
+	>>> template.Template(load + ts).render(template.Context({'topic':topic}))
+	u'/p/example/k-test-topic/s-0/e-30'
+
+	>>> ts = "{% pp_url template='example.html' start=0 end=30 dimension='new' %}"
+	>>> template.Template(load + ts).render(template.Context({'topic':topic}))
+	u'/p/example/s-0/e-30/d-new'
+
+	>>> topic.delete()

@@ -7,11 +7,22 @@ Welcome to Open Assembly's documentation!
 =======================================================
 
 
+About
+##########
+
+.. toctree::
+   :maxdepth: 4
+
+   about
+
+
+
 Installation
 #############
 
 .. toctree::
    :maxdepth: 4
+
 
    installation
 
