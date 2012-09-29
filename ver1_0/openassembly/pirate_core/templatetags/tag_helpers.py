@@ -35,6 +35,17 @@ from django.template.defaultfilters import floatformat
 
 @register.filter
 def percent(value):
+    """
+    **Filter**
+
+    Takes a float value and returns it as a percentage. Only makes sense for float values in the range [0,1].
+
+    for example:
+
+.. code-block:: html
+
+        {{object.consensus_percent|percent}}
+    """
     if value is None:
         return None
     try:
@@ -46,6 +57,17 @@ def percent(value):
 
 @register.filter
 def cleansignature(value):
+    """
+    **Filter**
+
+    Removes ``?`` and everything after from urls.
+
+    for example:
+
+.. code-block:: html
+
+        {{object.file.url|cleansignature}}
+    """
     if '?' not in value:
         return value
     t = value.index('?')
@@ -57,6 +79,21 @@ def cleansignature(value):
 ###users. This way the template can order keys even if received from multiple users
 @block
 def pp_ordered_tuple(context, nodelist, *args, **kwargs):
+    """
+    :param key1: Some key or object id
+    :type key1: str 
+    :param key2: Some key or object id
+    :type key2: str 
+    :returns:
+        * pp_tag.key
+            ordered key
+
+    **Usage**
+
+    For instance we might need a unique identifier for 2-users, 2-objects, or something else.
+    This template tag is primarily used by the node.js chat as a key in the Redis keystore that represents
+    a P2P chat between 2 users.
+    """
     context.push()
     namespace = get_namespace(context)
 
@@ -78,6 +115,25 @@ def pp_ordered_tuple(context, nodelist, *args, **kwargs):
 
 @block
 def pp_random_id(context, nodelist, *args, **kwargs):
+    """
+    Usually used for assigning a random id to guests in chat.
+
+    :param slice: length of random key
+    :type slice: int 
+    :returns:
+        * pp_tag.id
+            a randomized id value with length ``slice``
+
+    .. code-block:: html
+
+        {% pp_random_id slice=5 %}
+
+            {{pp_tag.id}}
+
+        {% endrandom_id %}
+
+
+    """
     context.push()
     namespace = get_namespace(context)
 
@@ -94,6 +150,26 @@ def pp_random_id(context, nodelist, *args, **kwargs):
 
 @block
 def pp_slice(context, nodelist, *args, **kwargs):
+
+    """
+    :param obj: length of random key
+    :type obj: a list of ``QuerySet`` object
+    :param amt: length of slice
+    :type amt: int
+    :returns:
+        * pp_tag.sliced
+            list sliced similar to the l[0:amt] function in Python
+
+    .. code-block:: html
+
+        {% pp_slice obj=list slice=5 %}
+
+            {{pp_tag.sliced}}
+
+        {% endpp_slice %}
+
+
+    """
     context.push()
     namespace = get_namespace(context)
 
@@ -210,42 +286,6 @@ def pp_time_difference_str(context, nodelist, *args, **kwargs):
 
     return output
 
-
-@block
-def pp_get_url(context, nodelist, *args, **kwargs):
-    '''
-    This block tag can create or process forms to get tags.
-    This tag is primarily used for accessing sharing functions of social websites,
-    and the url can be made safe for this via the 'safe' argument.
-    Usage is as follows:
-
-    '''
-    context.push()
-    namespace = get_namespace(context)
-
-    obj = kwargs.get('object',None)
-    safe = kwargs.get('safe', None)
-    dimension = kwargs.get('dimension', None)
-    curr_url = kwargs.get('url', None)
-    
-    if safe is not None: ampstr = '%26'
-    else: ampstr = '&'    
-    
-    content_type = ContentType.objects.get_for_model(obj)
-    if curr_url is not None: path = curr_url + "/_t=" + str(content_type.pk) + "/_o=" + str(obj.pk)
-    else: path = '/index.html#item' + "/_t=" + str(content_type.pk) + "/_o=" + str(obj.pk)
-    
-    if dimension is not None: path += "/_d=" + str(dimension)
-    
-    namespace['url'] = DOMAIN_NAME + path
-
-    output = nodelist.render(context)
-    context.pop()
-    return output  
-
-
-"""This templatetags library exposes the functionality of django-tagging in a 
-        oa-politics templatetags pattern"""
         
 def get_link_tag_list(user,obj,add_tags_in_object=True, get_links=False):
     """Transforms a list of tags into htmls links to add_tag, used in ajax. 

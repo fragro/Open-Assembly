@@ -27,7 +27,7 @@ TEMPLATE_DICT = {'/user_profile.html': '/p/user', '/None': '/?hash=#', '/issues.
 
 @function
 def pp_url(*args, **kwargs):
-    '''
+    """
     This block tag will produce a url that will link to the designated view or pattern
     name, and then will optionally populate the request passed to that view with
     either a specific ORM object, or a numerical range (start...end), as long as
@@ -41,36 +41,34 @@ def pp_url(*args, **kwargs):
 
     For example:
 
-    {% pp_url view="pp-page" object=issue template="filename.html" %}
+    {% pp_url object=object template="filename.html" %}
 
-    {% pp_url template="filename.html" start=0 end=30 %}
+    {% pp_url template="filename.html" start=0 end=30 dimension="n" %}
 
     {% pp_url template="filename.html" %}
 
     >>> from django import template
-    >>> from pirate_issues.models import Topic
-    >>> topic = Topic(text="A test topic.")
+    >>> from pirate_topics.models import Topic
+    >>> topic = Topic(summary="A test topic.", shortname="test-topic", description="test", group_members=0)
     >>> topic.save()
     >>> load = "{% load pp_url %}"
 
-    >>> ts = "{% pp_url view='pp-page' template='example.html' object=topic %}"
+    >>> ts = "{% pp_url template='example.html' object=topic %}"
     >>> template.Template(load + ts).render(template.Context({'topic':topic}))
-    u'/example.html?_t=...&_o=...'
+    u'/p/example/k-test-topic'
 
     >>> ts = "{% pp_url template='example.html' object=topic start=0 end=30 %}"
     >>> template.Template(load + ts).render(template.Context({'topic':topic}))
-    u'/example.html?_t=...&_o=...&_s=0&_e=30'
+    u'/p/example/k-test-topic/s-0/e-30'
 
-    >>> ts = "{% pp_url template='example.html' start=0 end=30 %}"
+    >>> ts = "{% pp_url template='example.html' start=0 end=30 dimension='new' %}"
     >>> template.Template(load + ts).render(template.Context({'topic':topic}))
-    u'/example.html?_s=0&_e=30'
-
-    >>> ts = "{% pp_url view='hello.views.hello_view' start=0 end=30 %}"
-    >>> template.Template(load + ts).render(template.Context({'topic':topic}))
-    u'/helloworld/?_s=0&_e=30'
+    u'/p/example/s-0/e-30/d-new'
 
     >>> topic.delete()
-    '''
+
+    >>> topic.delete()
+    """
     obj = kwargs.pop('object', None)
     start = kwargs.pop('start', None)
     end = kwargs.pop('end', None)
