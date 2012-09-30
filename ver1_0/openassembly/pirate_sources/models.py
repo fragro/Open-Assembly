@@ -5,8 +5,6 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-import PIL
-from PIL import Image
 from StringIO import StringIO
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -48,40 +46,6 @@ class IMGSource(models.Model):
 
         self.save()
 
-    def rescale(self, data, width, height, force=True):
-        """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-
-        image = Image.open(data.path)
-
-      # normalize image mode
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-        image.thumbnail((width, height), Image.ANTIALIAS)
-        image.save(data.path, 'JPEG', quality=100)
-        """
-        img = data
-        if not force:
-            img.thumbnail((max_width, max_height), PIL.Image.ANTIALIAS)
-        else:
-            src_width, src_height = img.size
-            src_ratio = float(src_width) / float(src_height)
-            dst_width, dst_height = max_width, max_height
-            dst_ratio = float(dst_width) / float(dst_height)
-
-            if dst_ratio < src_ratio:
-                crop_height = src_height
-                crop_width = crop_height * dst_ratio
-                x_offset = float(src_width - crop_width) / 2
-                y_offset = 0
-            else:
-                crop_width = src_width
-                crop_height = crop_width / dst_ratio
-                x_offset = 0
-                y_offset = float(src_height - crop_height) / 3
-            img = img.crop((x_offset, y_offset, x_offset + int(crop_width), y_offset + int(crop_height)))
-            img = img.resize((dst_width, dst_height), PIL.Image.ANTIALIAS)
-"""
-        return img
 
     @property
     def filename(self):

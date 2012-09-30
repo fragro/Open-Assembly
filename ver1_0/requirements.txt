@@ -1,4 +1,3 @@
-PIL
 python-memcached==1.48
 pymongo
 git+https://github.com/django-nonrel/mongodb-engine.git#egg=django_mongodb_engine
