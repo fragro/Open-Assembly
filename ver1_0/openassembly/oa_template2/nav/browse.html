@@ -10,7 +10,7 @@
                 <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='h' %}', 1, 'Groups');">by Members</a><i class="icon-list-alt icon-white"></i></li>
                 <li><a onClick="push_dashboard('{% pp_url template='topics.html' dimension='c' %}', 1, 'Groups');">by Proposals</a><i class="icon-list-alt icon-white"></i></li>
                 <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='topic' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>
-                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='iptopic'  %}', 1, 'Location');">Near Me</a><i class="icon-list-alt icon-white"></i></li>   
+                {% comment %}<li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='iptopic'  %}', 1, 'Location');">Near Me</a><i class="icon-list-alt icon-white"></i></li>{% endcomment %}   
             </ul>
         </div>
         <div class="col col3">
@@ -21,7 +21,7 @@
                 <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='h' %}', 1, 'Proposals');">by Hot</a><i class="icon-list-alt icon-white"></i></li>
                 <li><a onClick="push_dashboard('{% pp_url template='proposals.html' dimension='c' %}', 1, 'Proposals');">by Controversy</a><i class="icon-list-alt icon-white"></i></li> 
                 <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='question' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>       
-                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='ipquestion' %}', 1, 'Location');">Near Me</a><i class="icon-list-alt icon-white"></i></li>                 
+                {% comment %}<li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='ipquestion' %}', 1, 'Location');">Near Me</a><i class="icon-list-alt icon-white"></i></li>{% endcomment %}                 
             </ul>
         </div>
         <div class="col col3">
@@ -32,7 +32,7 @@
                 <li><a onClick="push_dashboard('{% pp_url template='users.html' dimension='j' %}', 1, 'Members');">by Last Login</a><i class="icon-list-alt icon-white"></i></li>
                 <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='topic' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>
                 <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='user' %}', 1, 'Location');">by Location</a><i class="icon-list-alt icon-white"></i></li>
-                <li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='ipuser' %}', 1, 'Location');">Near Me</a><i class="icon-list-alt icon-white"></i></li>
+                {% comment %}<li><a onClick="push_dashboard('{% pp_url template='location.html' dimension='ipuser' %}', 1, 'Location');">Near Me</a><i class="icon-list-alt icon-white"></i></li>{% endcomment %}
 
             </ul>
         </div>
