@@ -120,7 +120,7 @@ Now the Solr server should be ready to jive with our Django DB schema.
 Run the Development Server
 ############################
 
-Now Open a Terminal, navigate to Open-Assembly/ver1_0/openassembly and Run the Django Server
+Now Open a Terminal, navigate to Open-Assembly/ver1_0/openassembly and Run the Django Server. Remember that if you installed your dependencies in a virtualenv using the command ``source OA_ENV/bin/activate`` you must be in that virtual environment when running these from your shell.
 
 .. code-block:: bash
 

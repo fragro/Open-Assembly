@@ -1,9 +1,6 @@
 from multiprocessing import Pool
 from StringIO import StringIO
 
-import boto
-from django.conf import settings
-
 
 from django.contrib.auth.models import User
 
@@ -14,8 +11,6 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import mimetypes
 
 from pirate_sources.models import IMGSource
-
-import PIL
 
 
 class S3CustomBackend(AbstractUploadBackend):
