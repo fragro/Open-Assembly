@@ -68,7 +68,7 @@ try:
     )
 
     MEDIA_ROOT = '/home/dotcloud/store/media/'
-    STATIC_ROOT = '/home/dotcloud/current/static/'
+    STATIC_ROOT = '/home/dotcloud/current/data/static/'
     MEDIA_URL = '/media/'
 
     GEOIP_PATH = STATIC_ROOT + 'GeoLiteCity.dat'
