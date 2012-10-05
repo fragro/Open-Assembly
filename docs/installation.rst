@@ -134,7 +134,7 @@ Next we will transfer the static files from the various modules into our static_
 
     python manage.py collectstatic
 
-We want to rebuild the index in Solr once you have accumulated some data in your development environment, if you want to modify the search design or code. This command will do that for you. The production server will take care of this with a cron job.
+We want to rebuild the index in Solr once you have accumulated some data in your development environment, if you want to modify the search design or code. If this is your first time starting the server you can skip this step. The production server will take care of this with a cron job.
 
 .. code-block:: bash
 
