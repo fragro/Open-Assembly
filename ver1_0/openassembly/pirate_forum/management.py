@@ -121,10 +121,13 @@ ph3.nextphase = None
 ph3.save()
 
 ########TEMPORARY FIX FOR PRODUCTION AFTER DEPLOYMENT GET RID OF THIS
-for i in Notification.objects.all():
-	i.sender_pk = i.sender.pk
-	i.save()
+try:
+	for i in Notification.objects.all():
+		i.sender_pk = i.sender.pk
+		i.save()
 
+except:
+	pass
 #Fix all the existing consensus objects
 ###DANGEROUS OPERATION, SHOULD ONLY BE DONE ONCE
 

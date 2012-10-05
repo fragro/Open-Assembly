@@ -234,69 +234,70 @@ def get_ranked_list(parent, start, end, dimension, ctype_list, phase=None):
 @task(ignore_result=True)
 def update_rankings(sender, cons):
 
-    #update reporting percentage
-    upvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__gt=6)
-    downvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__lt=6)
-    try:
-        topic = Topic.objects.get(pk=cons.content_object.parent.pk)
-        groups = MyGroup.objects.filter(topic=topic)
-
+    if not isinstance(cons.content_object, User):
+        #update reporting percentage
+        upvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__gt=6)
+        downvotes = UpDownVote.objects.filter(object_pk=cons.object_pk, vote__lt=6)
         try:
-            cons.reporting_percent = (upvotes.count() + downvotes.count()) / float(groups.count())
-        except:
-            cons.reporting_percent = 0.0
+            topic = Topic.objects.get(pk=cons.content_object.parent.pk)
+            groups = MyGroup.objects.filter(topic=topic)
 
-        try:
-            cons.consensus_percent = upvotes.count() / float(upvotes.count() + downvotes.count())
-        except:
-            cons.consensus_percent = 0.0
-    except:
-        pass
-    #update the various ranking algorithms
-    pis = cons.content_object
-    spectrum = cons.spectrum.get_list()
-    try:
-        rating = cons.rating.get_list()
-    except:
-        #add rating to consensus if first rating
-        rt = Rating()
-        cons.rating = rt
-        rt.save()
-        rating = cons.rating.get_list()
-    cons.save()
-    dt = cons.submit_date
-    timeDiff = (dt - datetime.datetime(2010, 7, 5, 20, 16, 19, 539498)).seconds
-    timeNormFactor = (dt - datetime.datetime.now()).seconds
-
-    dt = timeDiff / float(timeNormFactor)
-
-    sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)), ('best', calc_best(dt, spectrum, rating)))]
-
-    ###I don't know why, but this fails if it's where it should be up above...
-    from pirate_ranking.models import Ranking
-    for scores in sols:
-        for dim, sc in scores:
             try:
-                obj = Ranking.objects.get(object_pk=pis.id, dimension=dim)
-                obj.score = sc
-                obj.save()
+                cons.reporting_percent = (upvotes.count() + downvotes.count()) / float(groups.count())
             except:
-                contype = ContentType.objects.get_for_model(pis)
-                newrank = Ranking(content_object=pis, dimension=dim, score=sc,
-                            consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
-                newrank.save()
-            if dim == 'hot':
-                setattr(cons, 'interest', sc)
-            if dim == 'cont':
-                setattr(cons, 'controversy', sc)
-            if dim == 'best':
-                setattr(cons, 'best', sc)
-            cons.save()
-    ##Now we want to publish the vote event in the redis for nodejs to update
-    print '*' * 50
-    print 'publishing to: ' + str(cons.content_object.user.username)
-    if sender != 'null':
-        redis_client().publish(cons.content_object.user.username, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
+                cons.reporting_percent = 0.0
+
+            try:
+                cons.consensus_percent = upvotes.count() / float(upvotes.count() + downvotes.count())
+            except:
+                cons.consensus_percent = 0.0
+        except:
+            pass
+        #update the various ranking algorithms
+        pis = cons.content_object
+        spectrum = cons.spectrum.get_list()
+        try:
+            rating = cons.rating.get_list()
+        except:
+            #add rating to consensus if first rating
+            rt = Rating()
+            cons.rating = rt
+            rt.save()
+            rating = cons.rating.get_list()
+        cons.save()
+        dt = cons.submit_date
+        timeDiff = (dt - datetime.datetime(2010, 7, 5, 20, 16, 19, 539498)).seconds
+        timeNormFactor = (dt - datetime.datetime.now()).seconds
+
+        dt = timeDiff / float(timeNormFactor)
+
+        sols = [(('hot', calc_hot(dt, spectrum, rating)), ('cont', calc_controversial(dt, spectrum, rating)), ('best', calc_best(dt, spectrum, rating)))]
+
+        ###I don't know why, but this fails if it's where it should be up above...
+        from pirate_ranking.models import Ranking
+        for scores in sols:
+            for dim, sc in scores:
+                try:
+                    obj = Ranking.objects.get(object_pk=pis.id, dimension=dim)
+                    obj.score = sc
+                    obj.save()
+                except:
+                    contype = ContentType.objects.get_for_model(pis)
+                    newrank = Ranking(content_object=pis, dimension=dim, score=sc,
+                                consensus_pk=cons.id, content_type=contype, object_pk=pis.id)
+                    newrank.save()
+                if dim == 'hot':
+                    setattr(cons, 'interest', sc)
+                if dim == 'cont':
+                    setattr(cons, 'controversy', sc)
+                if dim == 'best':
+                    setattr(cons, 'best', sc)
+                cons.save()
+        ##Now we want to publish the vote event in the redis for nodejs to update
+        print '*' * 50
+        print 'publishing to: ' + str(cons.content_object.user.username)
+        if sender != 'null':
+            redis_client().publish(cons.content_object.user.username, json.dumps({'message': 'Someone voted on', 'object': str(cons.content_object.summary), 'type': 'vote', 'object_pk': str(cons.content_object.pk)}))
 
 #When a vote is created via the consensus engine, this callback updates
 #the issue ranked score, for each dimension
