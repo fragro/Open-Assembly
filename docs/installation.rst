@@ -127,11 +127,25 @@ Now Open a Terminal, navigate to Open-Assembly/ver1_0/openassembly and Run the D
 
 	python manage.py syncdb
 
+
+Next we will transfer the static files from the various modules into our static_dev_server folder. You need to run this command every time you add a new file to a static folder or add a new module with static files. `More on static files in Django <https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/>`_.
+
+.. code-block:: bash
+
+    python manage.py collectstatic
+
+We want to rebuild the index in Solr once you have accumulated some data in your development environment, if you want to modify the search design or code. This command will do that for you. The production server will take care of this with a cron job.
+
+.. code-block:: bash
+
+    python manage.py rebuild_index
+
 If syncdb fails the first time, a second try should succeed.
 
 .. code-block:: bash
 
 	python manage.py runserver
+
 
 Start Redis Server
 ----------------------------
