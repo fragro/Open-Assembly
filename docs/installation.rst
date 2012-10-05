@@ -71,25 +71,26 @@ If you aren't using Redis for anything else we recommend placing the redis-2.4.1
 Node.js
 ############################
 
-Install node.js and npm on Ubuntu or follow the instructions `here <https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager>`_.
+Install from source (check `here <http://nodejs.org/download/>`_ for the latest version):
 
 .. code-block:: bash
 
+	wget http://nodejs.org/dist/v0.8.11/node-v0.8.11.tar.gz
 
-	sudo apt-get install python-software-properties
+	tar xzf node-v0.8.11.tar.gz
 
-	sudo add-apt-repository ppa:chris-lea/node.js
+	cd node-v0.8.11
 
-	sudo apt-get update
+	make
 
-	sudo apt-get install nodejs npm
+	sudo make install
+
 
 Now you need to install the dependencies. Goto Open-Assembly/oanode/ and run the command
 
 .. code-block:: bash
 
 	npm install
-
 
 Solr
 ############################
