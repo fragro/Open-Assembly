@@ -290,10 +290,8 @@ variables the same as you would the S3 settings.
 .. code-block:: bash
 
 	dotcloud env set \
-	    'S3FS_ACCESSKEY=MYSECRETACCESSKEY' \
-	    'S3FS_BUCKET=openassembly-store' \
-	    'S3FS_SECRETKEY=MYSECRETS3FSKEY'
-
+	    'RECAPTCHA_PUBLIC_KEY=6LehG9oSAAAAAD256YWh5x_STpHRlEIxd3TKR3is' \
+	    'RECAPTCHA_PRIVATE_KEY=6LehG9oSAAAAAKU-4rViXJrsGBgj7gImL0MMu3ae'
 
 Then navigate to the Open-Assembly/ folder and connect/push to dotcloud.
 
