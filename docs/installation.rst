@@ -200,7 +200,7 @@ Navigate to the Open-Assembly/oanode directory in a new terminal.
 Amazon S3 Support
 ---------------------------
 
-To setup your OA application for images, create a file called 'local_environment.json' in your home folder. The contents should look something like this, except substituted for your own variables from S3. The mountpoint "/home/user/media/" could be any existing directory on your filesystem. S3FS_ACCESSKEY, S3FS_SECRETKEY and S3FS_BUCKET must be setup from your `S3 management console <http://aws.amazon.com/console/>`_.
+To setup your OA application for images, create a file called 'local_environment.json' in your home folder. The contents should look something like this, except substituted for your own variables from S3. The mountpoint "/home/user/media/" could be any existing directory on your filesystem. S3FS_ACCESSKEY, S3FS_SECRETKEY and S3FS_BUCKET must be setup from your `S3 management console <http://aws.amazon.com/console/>`_. If this is not available the django-storages will default to HashStorage.
 
 .. code-block:: bash
 
@@ -236,11 +236,11 @@ First clone from git if you did not do so setting up a development server. This 
 
 	git clone git://github.com/fragro/Open-Assembly.git
 
-Next you just need to create a sandbox app in dotcloud. Replace ''appname'' with what you want to call your deployment of OA. If you want to use the git repository to push the latest version. Otherwise remove --git
+Next you just need to create a sandbox app in dotcloud. Replace ''appname'' with what you want to call your deployment of OA.
 
 .. code-block:: bash
 
-	dotcloud create --git appname
+	dotcloud create appname
 
 First you need to specify some important environment variables from S3 and your Email host. First the required environment variables for S3 Amazon cloud server, where image files are stored.
 
@@ -258,20 +258,23 @@ To setup your OA application for images, create a file called 'local_environment
 
 Note if you do not have S3 or want to use a different method of file/image storage, please see the settings.py file in ver1_0/openassembly and change the value of DEFAULT_FILE_STORAGE to specify the storages backed you want. For more information on the different backends, see `django storages <http://django-storages.readthedocs.org/en/latest/>`_ documentation .
 
-OA also requires Setting of Email and Password within Open-Assembly/ver1_0/openassembly/settings.py
+OA also requires Setting of EMAIL_HOST_USER, EMAIL_HOST and EMAIL_PASSWORD within the dotcloud environment variables. This allows you to easily include your own email host.
 
-You can modify the local version and upload to dotcloud via the --rsync method.
+You can modify the local version before you push to dotcloud.
 
 .. code-block:: bash
 
-	dotcloud var set appname EMAIL_PASSWORD=mysecretpassword
+	dotcloud env set \
+		'EMAIL_PASSWORD=mysecretpassword' \
+		'EMAIL_HOST_USER=myemail@gmail.com' \
+		'EMAIL_HOST=smtp.gmail.com' \
 
 .. code-block:: python
 
-    DEFAULT_FROM_EMAIL = 'myfancyemail@myhost.com'
+    DEFAULT_FROM_EMAIL = env['EMAIL_HOST_USER']
     EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.myhost.com'
-    EMAIL_HOST_USER = 'myfancyemail@myhost.com'
+    EMAIL_HOST = env['EMAIL_HOST']
+    EMAIL_HOST_USER = env['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
     EMAIL_PORT = 587
 
@@ -281,6 +284,17 @@ You also must set the EMAIL_PASSWORD environment variable in `Dotcloud environme
 
 	dotcloud var set appname EMAIL_PASSWORD=mysecretpassword
 
+You'll also need to setup reCaptcha to keep those pesky spam bots off your back. Go to the `reCaptcha <http://www.google.com/recaptcha/whyrecaptcha>`_  website to get a Public and Private key from Google. Set those environment
+variables the same as you would the S3 settings.
+
+.. code-block:: bash
+
+	dotcloud env set \
+	    'S3FS_ACCESSKEY=MYSECRETACCESSKEY' \
+	    'S3FS_BUCKET=openassembly-store' \
+	    'S3FS_SECRETKEY=MYSECRETS3FSKEY'
+
+
 Then navigate to the Open-Assembly/ folder and connect/push to dotcloud.
 
 .. code-block:: bash
@@ -288,7 +302,7 @@ Then navigate to the Open-Assembly/ folder and connect/push to dotcloud.
 	dotcloud connect appname
 	dotcloud push
 
-That's it! You deployed your own verstion of OA live. If you want to make your OA deployment scalable and reliable you will need to access the billing details from Dotcloud and your app to Live, but sandbox apps will work for small groups that don't mind using the dotcloud URL
+That's it! You deployed your own verstion of OA live and at the end of output there should be a url. If the push fails for some reason try again. If the push times out, go to dashboard.dotcloud.com and check on the status of your OA install live. If you want to make your OA deployment scalable and reliable you will need to access the billing details from Dotcloud and your app to Live, but sandbox apps will work for small groups that don't mind using the dotcloud URL.
 
 
 Other Hosts

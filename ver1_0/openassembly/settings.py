@@ -16,8 +16,10 @@ TWITTER_AUTHORIZATION_URL = ''
 settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
 
+#your secret key
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
+#using haystack search with solr
 HAYSTACK_SITECONF = 'openassembly.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_INCLUDE_SPELLING = True
@@ -25,24 +27,58 @@ HAYSTACK_INCLUDE_SPELLING = True
 AWS_STORAGE_BUCKET_NAME = 'oa-public-downloads'
 AWS_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
 
+#change this to the file storage you prefer http://django-storages.readthedocs.org/en/latest/
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
+#gather our secret and confidential keys from either the dotcloud environment or the local computer
 try:
-
     ###IF DEPLOYING ON DOTCLOUD THIS WILL SUCCEED
-    with open(os.path.expanduser('~/environment.json')) as f:
-        env = json.load(f)
+    env = json.load(open(os.path.expanduser('~/environment.json')))
 
-    #FOR S3 UPLOADS
+except:
+    ###localhost, check the home directory
+    env = json.load(open(os.path.expanduser('~/local_environment.json')))
+
+
+#RECAPTCHA
+try:
+    #recaptcha services, if you have specified your own key
+    RECAPTCHA_PUBLIC_KEY = env['RECAPTCHA_PUBLIC_KEY']
+    RECAPTCHA_PRIVATE_KEY = env['RECAPTCHA_PRIVATE_KEY']
+except:
+    #recaptcha not configured correctly, here's some insecure keys
+    RECAPTCHA_PUBLIC_KEY = '6LehG9oSAAAAAD256YWh5x_STpHRlEIxd3TKR3is'
+    RECAPTCHA_PRIVATE_KEY = '6LehG9oSAAAAAKU-4rViXJrsGBgj7gImL0MMu3ae'
+
+### Specify your email in the environmental variables for dotcloud.
+##  If you hack the throwaway account I will be a sad panda, and waste 30 seconds creating another.
+try:
+    DEFAULT_FROM_EMAIL = env['EMAIL_HOST_USER']
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = env['EMAIL_HOST']
+    EMAIL_HOST_USER = env['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+    EMAIL_PORT = 587
+except:
+    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_HOST_PASSWORD = 'this is a password'
+    EMAIL_PORT = 587
+
+
+
+try:
+    #DOTCLOUD ASSUMES S3 STORAGE. CANNOT USE HASHSTORAGE DUE TO DOTCLOUD SCALING.
+    #please either specify your own S3 or use a different backend
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_ACCESS_KEY_ID = env['S3FS_ACCESSKEY']
     AWS_SECRET_ACCESS_KEY = env['S3FS_SECRETKEY']
 
     HAYSTACK_SOLR_URL = env['DOTCLOUD_SEARCH_HTTP_URL']
 
-    #DOMAIN_NAME = 'http://openassemblytest-fragro.dotcloud.com/'
-    #DOMAIN = 'http://openassemblytest-fragro.dotcloud.com'
-
+    #check the dotcloud environment variables for your DOTCLOUD_WWW_HTTP_URL
     if env['DOTCLOUD_WWW_HTTP_URL'] == "http://openassembly1-fragro.dotcloud.com/":
         DOMAIN_NAME = 'http://www.openassembly.org/'
         DOMAIN = 'http://www.openassembly.org'
@@ -55,7 +91,6 @@ try:
 
     DATABASES = {
         'default': {
-
             'ENGINE': 'django_mongodb_engine',
             'NAME': 'admin',
             'HOST': env['DOTCLOUD_DB_MONGODB_URL'],
@@ -73,7 +108,6 @@ try:
     MEDIA_URL = '/media/'
 
     GEOIP_PATH = STATIC_ROOT + 'GeoLiteCity.dat'
-
 
     # Configure Celery using the RabbitMQ credentials found in the DotCloud
     # environment.
@@ -94,9 +128,9 @@ try:
 
     try:
         ETHERPAD_API = env['ETHERPAD_API']
-    except: #maybe etherpad api is not setup yet
+    except:
+        #maybe etherpad api is not setup yet
         ETHERPAD_API = None
-
 
     #SWITCHED TO REDIS
     CACHES = {
@@ -117,13 +151,12 @@ try:
 
 
 except:
-
+    # make sure that you have the local_environment.json file in your home folder here.
+    # this setup assumes that you have left the ports of the various services as the default.
     try:
-        with open(os.path.expanduser('~/local_environment.json')) as f:
-            loc_env = json.load(f)
-                #FOR S3 UPLOADS
-        AWS_ACCESS_KEY_ID = loc_env['S3FS_ACCESSKEY']
-        AWS_SECRET_ACCESS_KEY = loc_env['S3FS_SECRETKEY']
+        #FOR S3 UPLOADS
+        AWS_ACCESS_KEY_ID = env['S3FS_ACCESSKEY']
+        AWS_SECRET_ACCESS_KEY = env['S3FS_SECRETKEY']
 
     except:
         DEFAULT_FILE_STORAGE = 'storages.backends.hashpath.HashPathStorage'
@@ -182,6 +215,7 @@ except:
     NODEJS_HOST = 'localhost'
     NODEJS_PORT = 8080
 
+#SETUP RECAPTCHA KEYS
 
 ADMINS = (('Open Assembly', 'openassemblycongresscritter@gmail.com'),)
 MANAGERS = ADMINS
@@ -236,6 +270,7 @@ INSTALLED_APPS = [
     'oa_search', #openassemblys implementation of django-haystack
     'storages',
     'ajaxuploader',
+    'captcha',
 ]
 
 
@@ -321,8 +356,8 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
@@ -332,9 +367,9 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers':['null'],
+            'handlers': ['null'],
             'propagate': True,
-            'level':'INFO',
+            'level': 'INFO',
         },
         'django.request': {
             'handlers': ['mail_admins'],
@@ -362,20 +397,3 @@ CELERY_QUEUES = {
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
-
-
-try:
-    DEFAULT_FROM_EMAIL = 'openassemblycongresscritter@gmail.com'
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'openassemblycongresscritter@gmail.com'
-    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
-    EMAIL_PORT = 587
-except:
-    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_HOST_PASSWORD = 'this is a password'
-    EMAIL_PORT = 587
-

@@ -37,3 +37,4 @@ ajaxuploader
 boto
 git+https://github.com/django-nonrel/django-nonrel@master
 git+https://github.com/django-nonrel/djangotoolbox@master
+django-recaptcha

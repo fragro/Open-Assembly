@@ -7,6 +7,7 @@
             {{ pp_login.form.form_id}}
             {% csrf_token %}
         <input type="submit" class="btn headless_login" value="Login"></input>
+        {% if pp_login.errors %}<div class="forgotpassword"><a class="nobbq" href="{% url django.contrib.auth.views.password_reset %}">Forgot your password?</a></div>{% endif %}
 
             <script>
             $(document).ready(function() {

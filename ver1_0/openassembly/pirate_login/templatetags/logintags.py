@@ -12,6 +12,8 @@ from django.contrib.auth import authenticate, login
 from django.core.validators import validate_email
 from tracking.models import utils, Visitor
 
+from captcha.fields import ReCaptchaField
+
 from pirate_topics.models import MyGroup
 
 from pirate_forum.models import View
@@ -265,6 +267,7 @@ class RegisterForm(forms.ModelForm):
     password1 = forms.CharField(label=_(u'Password'), widget=forms.PasswordInput(render_value=False))
     password2 = forms.CharField(label=_(u'Password Check'), widget=forms.PasswordInput(render_value=False))
     email = forms.CharField(label=_(u'Email'), validators=[validate_email])
+    captcha = ReCaptchaField()
 
 
 @block
