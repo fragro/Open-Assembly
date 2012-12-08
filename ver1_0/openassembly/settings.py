@@ -37,8 +37,11 @@ try:
 
 except:
     ###localhost, check the home directory
-    env = json.load(open(os.path.expanduser('~/local_environment.json')))
-
+    try:
+        env = json.load(open(os.path.expanduser('~/local_environment.json')))
+    except:
+        #no environment variables
+        pass
 
 #RECAPTCHA
 try:
