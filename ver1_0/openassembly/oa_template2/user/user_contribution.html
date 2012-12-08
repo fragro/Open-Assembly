@@ -1,59 +1,24 @@
-{% pp_get_reputation_events user=object start=start end=end %}
-    {% for note in pp_reputation.reputation_events %}
-        <div class="notitem activity">
+{% pp_get_reputation_events user=object page=phase %}
+    {% for note in pp_reputation.reputation_events.object_list %}
 
-                        <!-- this bunch of junk just turns out to be a piece of text -->
-                        {% if note.related_object.text %}  
+        {% include 'user/contribution_listing.html' %}
 
-                            <span class="user_icon"><i class="icon-comment"></i></span>
-
-                            <div class="time">{{note.created_dt|timesince}} ago</div>
-
-                            <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
-
-                            <div class="content">
-
-                                    <a data-href="{{note.get_absolute_url}}">
-
-                                        {{ note.related_object.text}}
-
-
-                        {% else %}
-
-                            {% if note.related_object.content_object.summary %}
-
-                                <span class="user_icon"><i class="icon-fire"></i></span>
-
-                                <div class="time">{{note.created_dt|timesince}} ago</div>
-
-                                <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
-                            
-                                <div class="content">
-
-                                        <a data-href="{{note.get_absolute_url}}">
-                                      
-                                             {{note.related_object.content_object.summary}}
-       
-                            {% else %}
-
-                                <span class="user_icon"><i class="icon-ok-circle"></i></span>
-
-                                <div class="time">{{note.created_dt|timesince}} ago</div>
-
-                                <p style="display:none;" class="sorttime"> {{note.created_dt|date:"U" }}</p>
-
-                                <div class="content">
-
-                                        <a data-href="{{note.get_absolute_url}}">
-
-                                            Vote {{note.related_object}}
-
-
-                            {% endif %}
-                        {% endif %}
-                    </a>
-            </div>
-        </div>
+    {% empty %}
+    <div class="alert"><h3>No contributions from this user</h3></div>
     {% endfor %} 
+
+        <ul class="pager">
+                {% if pp_reputation.reputation_events.has_previous %}
+                    <li><a data-href="{% pp_url template='user.html' dimension='c' object=object phase=pp_reputation.reputation_events.previous_page_number %}">Previous</a></li>
+                {% else %}
+                <li class="disabled"><a data-href="#">Previous</a></li>
+                {% endif %}
+
+                {% if pp_reputation.reputation_events.has_next %}
+                    <li><a data-href="{% pp_url template='user.html' dimension='c' object=object phase=pp_reputation.reputation_events.next_page_number %}">Next</a></li>
+                {% else %}
+                    <li class="disabled"><a data-href="#">Next</a></li>
+                {% endif %}
+        </ul>
 
 {% endpp_get_reputation_events %}

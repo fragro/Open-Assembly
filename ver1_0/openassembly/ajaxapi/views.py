@@ -184,8 +184,8 @@ def remove_group(request):
             my.delete()
             topic.group_members -= 1
             topic.save()
-            group_name = topic.pk
-            results = {'FAIL': False,  'redirect': topic.get_absolute_url(), 'group': '#' + str(group_name)}
+            results = {'user': user.username, 'FAIL': False,  'redirect': topic.get_absolute_url(),
+                'object_pk': topic.pk, 'ctype': ContentType.objects.get_for_model(topic).pk, 'user': user.username}
         else:
             results = {'FAIL:': True}
     else:
@@ -214,7 +214,8 @@ def add_group(request):
             if not is_new:
                 results = {'FAIL': True}
             else:
-                results = {'FAIL': False, 'redirect': topic.get_absolute_url(), 'group': render_to_string('nav/mygroup.html', {'group': my})}
+                results = {'FAIL': False, 'redirect': topic.get_absolute_url(),
+                            'object_pk': topic.pk, 'ctype': ContentType.objects.get_for_model(topic).pk, 'user': user.username}
         else:
             results = {'FAIL:': True}
     else:

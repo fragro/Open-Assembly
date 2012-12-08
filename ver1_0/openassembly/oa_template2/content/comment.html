@@ -6,15 +6,12 @@
     {% if object.is_deleted and not object.is_leaf %}
 
         {% if salted %}
-        <ul id="comment{{object.pk}}" class="comment">
+        <ul id="comment{{object.pk}}">
         {% endif %}
 
         <span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
        
         <li>
-        
-            <span class="meta">
-            </span>
         <span id="comment_text{{object.pk}}">
         <p>
         [DELETED]
@@ -35,18 +32,19 @@
             
             <li>
             
+            <p id="comment_text{{object.pk}}">
+                {{object.text|markdown}}
+            </p>
+            <small>
             <a data-href="{% pp_url template='user_profile.html' object=object.user%}" class="author"> {{object.user.username}}</a> 
-                <span class="meta">
                     {% pp_time_difference_str then=object.submit_date %}
-                        {{pp_tag.dt}}
+                        {{pp_tag.dt}} ago
                     {% endpp_time_difference_str %}
                 </span>
-            <span id="comment_text{{object.pk}}" class="a_comment">
-                {{object.text|markdown}}
-            </span>
-            <span id="comment_links{{object.pk}}">
+            </small>
+            <p id="comment_links{{object.pk}}">
                 {% include 'etc/comment_salt.html' %}
-            </span>
+            </p>
             {% if salted %}
             </ul>
             {% endif %}

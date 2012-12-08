@@ -59,20 +59,6 @@
     </div>
       {% endpp_imgsource_form %}
 
-    <div class="imglist">
-
-        {% pp_get_sources object=object type='img' get='all' %}
-
-          {% for img in pp_source.sources %}
-            {% thumbnail img.file "50x50" crop="center" as im %}
-              <a data-href="{% pp_url template='imagepreview.html' object=img %}"><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></a>
-            {% endthumbnail %}
-
-          {% endfor %}
-
-      {% endpp_get_sources %}
-    </div>
-
 
     {% else %}
 
@@ -84,8 +70,6 @@
   {% endcani %}   
 
 {% else %}
-
-NEED TO LOGIN
 
 {% endif %}
 

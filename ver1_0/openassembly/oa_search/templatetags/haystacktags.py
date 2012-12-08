@@ -22,55 +22,57 @@ get_namespace = namespace_get('oa_search')
 Port of the Haystack Search View to our TemplateTag language
 """
 
+
 @block
 def oa_haystack_search(context, nodelist, *args, **kwargs):
 
-	context.push()
-	namespace = get_namespace(context)
+    context.push()
+    namespace = get_namespace(context)
 
-	dimension = kwargs.get('search_key', None)
-	POST =  kwargs.get('POST', None)
+    dimension = kwargs.get('search_key', None)
+    POST = kwargs.get('POST', None)
+    page = kwargs.get('page', None)
+    if page is None:
+        page = 1
 
-	load_all=True
-	form_class=ModelSearchForm
-	searchqueryset=None
-	context_class=RequestContext
-	extra_context=None
-	results_per_page=None
-	
-	query = ''
-	results = EmptySearchQuerySet()
-	
-	if POST is not None:
-		form = form_class(POST, searchqueryset=searchqueryset, load_all=load_all)
-		if form.is_valid():
-			query = form.cleaned_data['q']
-			results = form.search()
-		elif dimension is not None:
-			query = dimension
-			form = form_class({'q': dimension}, searchqueryset=searchqueryset, load_all=load_all)
-			results = form.search()
-	elif query == '':
-		form = form_class(searchqueryset=searchqueryset, load_all=load_all)
-	
-	paginator = Paginator(results, results_per_page or RESULTS_PER_PAGE)
-	
-	try:
-		page = paginator.page(int(POST.get('page', 1)))
-	except InvalidPage:
-		namespace['error'] = "No Such Page of Results"
-	
-	namespace['form'] = form
-	namespace['page'] = page
-	namespace['paginator'] = paginator
-	namespace['query'] = query
-	
-	if getattr(settings, 'HAYSTACK_INCLUDE_SPELLING', False):
-		namespace['suggestion'] = form.get_suggestion()
-	else:
-		namespace['suggestion'] = None
+    load_all = True
+    form_class = ModelSearchForm
+    searchqueryset = None
+    results_per_page = None
 
-	output = nodelist.render(context)
-	context.pop()
+    query = ''
+    results = EmptySearchQuerySet()
 
-	return output
+    if dimension is not None:
+        query = dimension
+        form = form_class({'q': dimension}, searchqueryset=searchqueryset, load_all=load_all)
+        results = form.search()
+    elif POST is not None:
+        form = form_class(POST, searchqueryset=searchqueryset, load_all=load_all)
+        if form.is_valid():
+            query = form.cleaned_data['q']
+            results = form.search()
+    elif query == '':
+        form = form_class(searchqueryset=searchqueryset, load_all=load_all)
+
+    paginator = Paginator(results, results_per_page or RESULTS_PER_PAGE)
+
+    try:
+        page = paginator.page(page)
+    except InvalidPage:
+        namespace['error'] = "No Such Page of Results"
+
+    namespace['form'] = form
+    namespace['page'] = page
+    namespace['paginator'] = paginator
+    namespace['query'] = query
+
+    if getattr(settings, 'HAYSTACK_INCLUDE_SPELLING', False):
+        namespace['suggestion'] = form.get_suggestion()
+    else:
+        namespace['suggestion'] = None
+
+    output = nodelist.render(context)
+    context.pop()
+
+    return output

@@ -1,18 +1,62 @@
+<div class="tabbable tabs-left">
+    <ul class="nav nav-tabs" id="userTab{{object.pk}}">
+        <li class="active"><a href="#itrust{{object.pk}}" data-toggle="tab">I Trust</a></li>
+        <li><a href="#trustme{{object.pk}}" data-toggle="tab">Trust Me</a></li>
+    </ul>
 
-    {% pp_get_subscribers_for_user user=object start=start end=end %}
-       
-        {% for i in pp_subscription.subscribers %}
-            {% pp_get_avatar user=i.subscriber %}
-                <div class="notitem trustme">
-                        <p style="display:none;" class="sorttime"> {{i.created_dt|date:"U" }}</p>
+    <div class="tab-content">
 
-                        <span class="user_icon"><i class="icon-user"></i></span>
-                        <div class="time">{{i.created_dt|timesince}} ago</div>
+
+        <div class="tab-pane" id="trustme{{object.pk}}">
+
+        {% pp_get_subscribers_for_user user=object start=start end=end %}
+           
+            {% for i in pp_subscription.subscribers %}
+                {% pp_get_avatar user=i.subscriber %}
+                    <div class="notitem trustme">
+
+                            <small>{{i.created_dt|timesince}} ago</small>
+
+                            <div class="content">
+
+                                <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
+                                     {% pp_get_sources object=i.subscriber type='img' %}
+                                        {% if pp_source.cur_img %}
+                                            {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
+                                                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                                            {% endthumbnail %}
+                                        {% else %}
+                                            <img src="/static/img/faux_logo.png">
+                                        {% endif %}
+                                    {% endpp_get_sources %}
+
+                            </div>
+                            <p class="pull-right">
+                                <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
+                                    {{i.subscriber.username}}
+                                </a>
+                            </p>
+
+                    </div>
+
+                {% endpp_get_avatar %}
+            {% endfor %}
+        {% endpp_get_subscribers_for_user %}
+        </div>
+        <div class="tab-pane active" id="itrust{{object.pk}}">
+
+        {% pp_get_subscribees_for_user user=object start=start end=end %}
+
+                {% for i in pp_subscription.subscribees %}
+                    <div class="notitem itrust">
+
+
+                        <small>{{i.created_dt|timesince}} ago</small>
 
                         <div class="content">
 
-                            <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
-                                 {% pp_get_sources object=i.subscriber type='img' %}
+                            <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
+                                 {% pp_get_sources object=i.subscribee type='img' %}
                                     {% if pp_source.cur_img %}
                                         {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
                                             <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
@@ -21,57 +65,22 @@
                                         <img src="/static/img/faux_logo.png">
                                     {% endif %}
                                 {% endpp_get_sources %}
+                            </a>
 
                         </div>
-                        <div class="username">
-                            <a data-href="{% pp_url template='user_profile.html' object=i.subscriber %}">
-                                {{i.subscriber.username}}
+
+
+                        <p class="pull-right">
+                            <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
+                                <i class=""></i>{{i.subscribee.username}}
                             </a>
-                        </div>
+                        </p>
+
 
                 </div>
-
-            {% endpp_get_avatar %}
-        {% endfor %}
-    {% endpp_get_subscribers_for_user %}
-
-    {% pp_get_subscribees_for_user user=object start=start end=end %}
-
-            {% for i in pp_subscription.subscribees %}
-                <div class="notitem itrust">
-
-                    <p style="display:none;" class="sorttime"> {{i.created_dt|date:"U" }}</p>
-
-                    <span class="user_icon"><i class="icon-user"></i></span>
-                    <div class="time">{{i.created_dt|timesince}} ago</div>
-
-                    <div class="content">
-
-                        <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
-                             {% pp_get_sources object=i.subscribee type='img' %}
-                                {% if pp_source.cur_img %}
-                                    {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
-                                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-                                    {% endthumbnail %}
-                                {% else %}
-                                    <img src="/static/img/faux_logo.png">
-                                {% endif %}
-                            {% endpp_get_sources %}
-                        </a>
-
-                    </div>
-
-
-                    <div class="username">
-                        <a data-href="{% pp_url template='user_profile.html' object=i.subscribee %}">
-                            {{i.subscribee.username}}
-                        </a>
-                    </div>
-
-
-            </div>
-            {% endfor %}
-    {% endpp_get_subscribees_for_user %}
-                        
-
-    <!-- end .profile_follows -->
+                {% endfor %}
+        {% endpp_get_subscribees_for_user %}
+        </div>
+    </div>               
+</div>
+        <!-- end .profile_follows -->

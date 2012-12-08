@@ -6,8 +6,9 @@
         
     <div class="currentLocation" id="currentLocation{{object.pk}}">
         {% for lat, lon, loc in oa_loc.places %}
-            <span><b>Current Location:</b> {{ loc.summary }}</span> <span onclick="deleteLocation('{{object.pk}}');" class="btn"><i class="icon-warning-sign icon-left"></i>Remove</span>
+            <span class="badge badge-info"><i class="icon-globe"></i> Location</span> {{ loc.summary }}<span onclick="deleteLocation('{{object.pk}}');" class="btn btn-warning"><i class="icon-warning-sign icon-left"></i>Remove</span>
         {% endfor %}
+        <hr>
     </div>
 {% endoa_location_get %}
 

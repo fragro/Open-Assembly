@@ -2,16 +2,16 @@
 {% pp_user_login_form request=request %}
     <form id="pp_user_login_form" action="" method="post">
             <span class="error">{{ pp_login.errors }}{% if pp_login.complete %}<img src="/static/img/1.gif">{% endif %}</span>
-            <input type="text"  name="name" id="id_name" class="input-medium" placeholder="Username">
-            <input type="password"  name="password" id="id_password" class="input-medium" placeholder="Password">
+            <input type="text"  name="name" id="id_name" class="input-medium headless_input" placeholder="Username"></input>
+            <input type="password"  name="password" id="id_password" class="input-medium headless_input" placeholder="Password"></input>
             {{ pp_login.form.form_id}}
             {% csrf_token %}
-        <input type="submit" class="headless_login"></input>
+        <input type="submit" class="btn headless_login" value="Login"></input>
 
             <script>
             $(document).ready(function() {
                 {% if pp_login.complete %}
-                    js_redirect('/');   
+                    js_redirect(location.href);   
                 {% endif %}
             });
               $("form#pp_user_login_form").submit(function(e){

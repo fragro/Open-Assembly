@@ -80,7 +80,7 @@ function js_redirect(location)
     window.location = location;
 }
 
-function add_tag(tag, obj_id, c_type, app_type){ 
+function add_tag(tag, obj_id, c_type, app_type){
 $.post("/add_tag/", {tag: tag, obj: obj_id, c_type:c_type, app_type:app_type },
   function(data) {
       if(data.FAIL !== true){
@@ -134,7 +134,11 @@ $.post("/add_group/", {topic: topic, user: user},
         //history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
         //getContent();
         //$('.thumbnail_list').prepend(data.group);
-        js_redirect(data.redirect);
+        load_usersaltcache('#mygroups', data.user, '', '',
+            {'hash': '/p/mygroups/d-mygroups/p-1'});
+        console.log(data);
+        load_usersaltcache('#oa_addgroup', data.user, data.object_pk , data.ctype,
+            {'hash': '/p/addgroup'});
       }
  }, "json");
 }
@@ -147,7 +151,11 @@ $.post("/remove_group/", {topic: topic, user: user},
         //history.pushState({load:true, module:'Reload', url: data.redirect}, '', data.redirect);
         //getContent();
         //$(data.group).remove();
-        js_redirect(data.redirect);
+        load_usersaltcache('#mygroups', data.user, '', '',
+            {'hash': '/p/mygroups/d-mygroups/p-1'});
+        console.log(data);
+        load_usersaltcache('#oa_addgroup', data.user, data.object_pk , data.ctype,
+            {'hash': '/p/addgroup'});
       }
  }, "json");
 }
@@ -284,14 +292,14 @@ function addObject(e){
                         else{
                           $(data2.output[item].div).html(data2.output[item].html);
                         }
-                        // if(data2.output[item].scroll_to === true){
-                        //         var hash = location.href;
-                        //         var dom = $('#domain').html();
-                        //         var tempkey = hash.replace(dom, '');
-                        //         tempkey = tempkey.replace('http:', '');
-                        //         tempkey = tempkey.replace(/\//g,"");
-                        //         $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});                        
-                        // }
+                        /*if(data2.output[item].scroll_to === true){
+                                var hash = location.href;
+                                var dom = $('#domain').html();
+                                var tempkey = hash.replace(dom, '');
+                                tempkey = tempkey.replace('http:', '');
+                                tempkey = tempkey.replace(/\//g,"");
+                                $(data2.output[item].div).slideto({'div_offset': -400, 'thadiv': '#page' + tempkey, 'highlight_color':'#d6e3ec'});                        
+                        }*/
                     }
                     //hrefLess();
                 }, "json");
@@ -344,8 +352,22 @@ function rememberTabs() {
     }
 }
 
-function load_usersaltcache(div, user, obj_pk, ctype_pk){
-    $.get("/load_usersaltcache/", {div: div, hash: location.href, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
+function load_usersaltcache(div, user, obj_pk, ctype_pk, options){
+    var h;
+    if(options !== undefined){
+      if(options.hash === undefined || options.hash === null){
+        h = location.href;
+      }
+      else{
+        h = options.hash;
+      }
+    }
+    else{
+        h = location.href;
+    }
+    console.log('salt caching' + h);
+    console.log(options);
+    $.get("/load_usersaltcache/", {div: div, hash: h, user: user, obj_pk: obj_pk, ctype_pk: ctype_pk},
         function(data) {
                 for(var item in data.output){
                     if(data.output[item].type == 'prepend'){
@@ -355,6 +377,7 @@ function load_usersaltcache(div, user, obj_pk, ctype_pk){
                         $(data.output[item].div).append(data.output[item].html);
                     }
                     if(data.output[item].type == 'html'){
+                        console.log($(data.output[item].div).html());
                         $(data.output[item].div).html(data.output[item].html);
                     }
                     if(data.output[item].toggle === true){
@@ -409,27 +432,30 @@ function getContent(options){
 //            }
     d = {};
     d['hash'] = location.href;
-    var dom = $('#domain').html();
     d['empty'] = ($('#content').is(':empty'));
     d['width'] = screen.width;
     d['height'] = screen.height;
-    var tempkey = d['hash'].replace(dom, '');
-    tempkey = tempkey.replace('http:', '');
-    tempkey = tempkey.replace(/\//g,"");
+    var tempkey = get_key(d['hash']);
     var ss = sessionStorage.getItem(tempkey);
+    var current = sessionStorage.getItem('current');
+    console.log(tempkey);
     var render;
-    if(ss != 'True' || 'reload' in options){
+    console.log('test');
+    console.log(ss);
+    if(ss === null || 'reload' in options || ss !== location.href){
       $.get("/load_page/", d,
         function(OAdata) {
            var render = OAdata.rendertype;
            if(OAdata.FAIL !== true){
                   for(var item in OAdata.output){
-                      if(('reload' in options && OAdata.output[item].div == '#tab_ruler')){
+                      if(('reload' in options|| ss !== null && ss !== location.href) && OAdata.output[item].div == '#tab_ruler'){
 
                       }
                       else{
-                          if(OAdata.output[item].div == '#pages' && 'reload' in options){
-                              $(options.div).html(OAdata.output[item].html);
+                          if(OAdata.output[item].div == '#pages' && ('reload' in options || ss !== null && ss !== location.href)){
+                              console.log('#page' + tempkey);
+                              console.log('so american...'  + $('#page' + tempkey).html());
+                              $('#page' + tempkey).replaceWith(OAdata.output[item].html);
                           }
                           else{
                             if(OAdata.output[item].type == 'prepend'){
@@ -441,8 +467,10 @@ function getContent(options){
                             if(OAdata.output[item].type == 'html'){
                                 $(OAdata.output[item].div).html(OAdata.output[item].html);
                             }
-                            if(OAdata.output[item].div == '#pages' && !('reload' in options)){
-                                toggleMinMax(OAdata.key, render);
+                            if(OAdata.output[item].div == '#pages' && !('reload' in options || ss !== null && ss !== location.href)){
+                                //set the current div
+                                toggleMinMax(tempkey, render, location.href, 'popstate' in options);
+                                sessionStorage.setItem('current', tempkey);
                             }
                           }
                       }
@@ -452,10 +480,10 @@ function getContent(options){
                 //location.hash = data.url
             }
             if(OAdata.FAIL === true){
-                alert('fail');
+                alert('Some problems were detected.');
                 js_redirect('/404.html?');
             }
-            sessionStorage.setItem(OAdata.key, 'True');
+            sessionStorage.setItem(tempkey, location.href);
             //hrefLess();
             rememberTabs();
 
@@ -469,8 +497,22 @@ function getContent(options){
        }, "json");
 
     }
-    if (ss === 'True' && !('reload' in options) && render != 'message'){
-        toggleMinMax(tempkey, render);
+    if (ss !== undefined && ss !== null && !('reload' in options  || ss !== null && ss !== location.href) && render != 'message'){
+        toggleMinMax(tempkey, render, location.href, 'popstate' in options);
+    }
+}
+
+function get_key(hash){
+  var dom = $('#domain').html();
+  var input = hash.replace(dom, '');
+    input = input.replace('http:', '');
+    //tempkey = tempkey.replace(/\//g,"");
+    var regex = /\/p\/\w*\/k-[\w-]*/g;
+    if(regex.test(input)) {
+      var matches = input.match(regex);
+      return matches[0].replace(/\//g,""); //cannot have / characters in key
+    } else {
+      return input.replace(/\//g,"");
     }
 }
 
@@ -492,7 +534,7 @@ function sort_dashboard(sorted){
 }
 
 function adjustchat(obj_pk){
-    $('#chat_ctrl' + obj_pk).css('marginTop', $('#' + obj_pk).height()-63 + "px");
+    $('#chat_ctrl' + obj_pk).css('marginTop', $('#' + obj_pk).height()-45 + "px");
 }
 
 
@@ -734,19 +776,20 @@ function leftzoom(dashpk, path, dash_id, type, obj){
     }
 }
 
-function toggleMinMax(t, render){
-    var curtab = $('#current_tab').html();
-    var keepif = (curtab == '');
-    var is_add = $('#minmax' + t).find('i').hasClass('icon-plus-sign');
-    var nempty = $('#pages').find('.current').length == 0;
 
-    if(nempty && is_add){
+function toggleMinMax(t, render, url, popstate){
+    var curtab = sessionStorage.getItem('current');
+    var keepif = (curtab === null);
+    var nempty = $('#pages').find('.current').length === 0;
+
+    if(nempty){
         $('#overlay').show();
     }
 
-    if(!nempty && !is_add){
+    if(!nempty && t == curtab){
         $('#overlay').hide();
-        history.pushState({load:true, module:'noload', url: '/'}, '', '/');
+        console.log('pushing state 1');
+        if(!popstate){history.pushState({load:true, module:'leave', url: '/'}, '', '/');}
         $("html").css("overflow", "auto");
 
     }
@@ -755,7 +798,7 @@ function toggleMinMax(t, render){
 
         if(render == 'message'){
             var tarb = $('#tab' + t).position();
-            if(tarb != null){
+            if(tarb !== null){
               $('#page' + t).css('left', tarb.left);
             }
             $('#overlay').hide();
@@ -766,29 +809,40 @@ function toggleMinMax(t, render){
         }
 
         //add new pagev
-        var url = '/p/' + render + '/' + t.replace('p' + render, '');
-        history.pushState({load:true, module:'noload', url: url}, '', url);
+
+        console.log(history.state);
+        var dom = $('#domain').html();
+        var tempkey = sessionStorage.getItem(t);
+        if(tempkey !== null){
+          tempkey = tempkey.replace(dom, '');
+          tempkey = tempkey.replace('http://', '');
+          console.log('pushing state 2' + popstate + ' url=' + tempkey);
+        }
+        else{
+          tempkey = url;
+        }
+        if(!popstate){history.pushState({load:true, module:'leave', url: tempkey}, '', tempkey);}
         $('#page' + t).show();
         $('#tab' + t).addClass('current-icon');
         $('#page' + t).addClass('current');
-        $('#minmax' + t).find('i').toggleClass('icon-minus-sign icon-plus-sign');
         //set the current div
-        $('#current_tab').html(t);
+        sessionStorage.setItem('current', t);
         if(render == 'message'){
             $('#page' + t).scrollTo('max');
+        
         }
     }
     else{
-        $('#current_tab').html('');
+        //minimze the current object
+        sessionStorage.setItem('current', null);
     }
     if(!keepif){
         //remove the old page
         $('#page' + curtab).removeClass('current');
         $('#page' + curtab).hide();
         $('#tab' + curtab).removeClass('current-icon');
-        $('#minmax' + curtab).find('i').toggleClass('icon-plus-sign icon-minus-sign');
     }
-};
+}
 
 // Closes/removes Page/Tab
 function tabRemove(tab){
@@ -801,12 +855,13 @@ function tabRemove(tab){
     tabobj.remove();
     $('#page' + tab).remove();
     sessionStorage.removeItem(tab);
-    var curtab = $('#current_tab').html();
+    var curtab = sessionStorage.getItem('current');
     if (curtab == tab){
-        history.pushState({load:true, module:'noload', url: '/'}, '', '/');
+        history.replaceState({load:true, module:'leave', url: '/'}, '', '/');
         $('#current_tab').html('');
         $('#overlay').hide();
         $("html").css("overflow", "auto");
+        sessionStorage.setItem('current', null);
     }
     rememberTabs();
 
@@ -838,23 +893,20 @@ function hrefLess() {
 
 //minimize all pages
 function minimizeAll(){
-    var curtab = $('#current_tab').html();
-    if(curtab !== ''){
-        history.pushState({load:true, module:'noload', url: ''}, '', '/');
-        if($('#page' + curtab).hasClass('current')){
-            $('#page' + curtab).removeClass('current');
-            $('#page' + curtab).hide();
-        }
-        if($('#tab' + curtab).hasClass('current-icon')){
-            $('#tab' + curtab).removeClass('current-icon');
-        }
-        $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-        $('#overlay').hide();
-        $('#current_tab').html('');
-        $("html").css("overflow", "auto");
+      curtab = sessionStorage.getItem('current');
+      history.pushState({load:true, module:'leave', url: ''}, '', '/');
+      if(curtab !== null){
+          $('#page' + curtab).removeClass('current');
+          $('#page' + curtab).hide();
+          $('#tab' + curtab).removeClass('current-icon');
 
-    }
+      }
+      $('#overlay').hide();
+      sessionStorage.setItem('current', null);
+      $("html").css("overflow", "auto");
+
 }
+
 
 
 //For viewing edits dynamically

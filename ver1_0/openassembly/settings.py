@@ -34,8 +34,9 @@ try:
         env = json.load(f)
 
     #FOR S3 UPLOADS
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_ACCESS_KEY_ID = env['S3FS_ACCESSKEY']
-    AWS_SECRET_ACCESS_KEY =  env['S3FS_SECRETKEY']
+    AWS_SECRET_ACCESS_KEY = env['S3FS_SECRETKEY']
 
     HAYSTACK_SOLR_URL = env['DOTCLOUD_SEARCH_HTTP_URL']
 
@@ -101,7 +102,7 @@ try:
     CACHES = {
         'default': {
             'BACKEND': 'redis_cache.cache.RedisCache',
-            'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST']+':'+env['DOTCLOUD_CACHE_REDIS_PORT'],
+            'LOCATION': env['DOTCLOUD_CACHE_REDIS_HOST'] + ':' + env['DOTCLOUD_CACHE_REDIS_PORT'],
             'OPTIONS': {
                 'DB': 1,
                 'PASSWORD': env['DOTCLOUD_CACHE_REDIS_PASSWORD'],
@@ -122,13 +123,10 @@ except:
             loc_env = json.load(f)
                 #FOR S3 UPLOADS
         AWS_ACCESS_KEY_ID = loc_env['S3FS_ACCESSKEY']
-        AWS_SECRET_ACCESS_KEY =  loc_env['S3FS_SECRETKEY']
+        AWS_SECRET_ACCESS_KEY = loc_env['S3FS_SECRETKEY']
 
     except:
-        pass
-        #maybe the user is building docs
-
-
+        DEFAULT_FILE_STORAGE = 'storages.backends.hashpath.HashPathStorage'
 
     HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
 
@@ -152,7 +150,6 @@ except:
     MEDIA_URL = '/media/'
 
     GEOIP_PATH = PROJECT_ROOT + '/openassembly/static/GeoLiteCity.dat'
-
 
     BROKER_HOST = 'localhost'
     BROKER_PORT = 6379
@@ -202,41 +199,41 @@ INSTALLED_APPS = [
     'customtags',
     'tagging',
     'filetransfers',
-    'openassembly.pirate_core',
-    'openassembly.pirate_deliberation',
-    'openassembly.pirate_permissions',
-    'openassembly.pirate_ranking',
-    'openassembly.pirate_consensus',
-    'openassembly.pirate_reputation',
-    'openassembly.pirate_messages',
-    'openassembly.pirate_login',
-    'openassembly.pirate_profile',
-    'openassembly.pirate_sources',
-    'openassembly.pirate_comments',
-    'openassembly.pirate_badges',
-    'openassembly.pirate_flags',
-    'openassembly.pirate_social',
-    'openassembly.pirate_forum',
-    'openassembly.pirate_actions',
-    'openassembly.pirate_topics',
+    'pirate_core',
+    'pirate_deliberation',
+    'pirate_permissions',
+    'pirate_ranking',
+    'pirate_consensus',
+    'pirate_reputation',
+    'pirate_messages',
+    'pirate_login',
+    'pirate_profile',
+    'pirate_sources',
+    'pirate_comments',
+    'pirate_badges',
+    'pirate_flags',
+    'pirate_social',
+    'pirate_forum',
+    'pirate_actions',
+    'pirate_topics',
     'markitup',
-    'openassembly.oa_verification',
-    'openassembly.oa_filmgenome',
+    'oa_verification',
+    'oa_filmgenome',
     'notification',
     'search',
-    'openassembly.oa_suggest',
+    'oa_suggest',
     'tracking',
     'djcelery',
-    'openassembly.oa_dashboard',
+    'oa_dashboard',
     'sorl.thumbnail',
-    'openassembly.oa_cache',
+    'oa_cache',
     'django_mongodb_engine',
-    'openassembly.oa_location',
+    'oa_location',
     'pygeoip',
     'dbindexer',
     'autoload',
     'djangotoolbox',
-    'openassembly.oa_search', #openassemblys implementation of django-haystack
+    'oa_search', #openassemblys implementation of django-haystack
     'storages',
     'ajaxuploader',
 ]

@@ -70,6 +70,7 @@ def pp_comment_delete(context, nodelist, *args, **kwargs):
     if user.is_authenticated() and user == obj.user and POST is not None:
         if POST.get("form_id") == "pp_delete_form":
             if obj.is_leaf:
+                print 'deleting object'
                 obj.delete()
                 if obj.reply_to is not None:
                     obj.reply_to.is_leaf = True

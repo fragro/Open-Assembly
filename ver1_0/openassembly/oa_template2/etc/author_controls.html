@@ -4,15 +4,16 @@
 
     {% include 'forms/location_form.html' %}
 
-<a class="btn btn_green" data-href="{% pp_url template='submit.html' object=object dimension='edit' %}"><i class="icon-edit icon-left icon-white"></i>Edit</a>
+		<a class="btn btn-primary" data-href="{% pp_url template='submit.html' object=object dimension='edit' %}"><i class="icon-edit icon-left icon-white"></i>Edit</a>
 {% endifequal %}
 {% if object.user == user or user.is_staff %}
-
-<span class="btn btn_blue" onClick="checkDelete('{{pp_consensus.consensus.content_type.pk}}', '{{object.pk}}');"><i class="icon-warning-sign icon-left icon-white"></i>
-  	Delete</span>
-
-    <input id="nukecheck" type="checkbox" name="vehicle" value="Deleted" />Sure You Want to Delete?
-
-</span>
+	{% pp_get_contenttype_id object=object %}
+		<a class="btn btn-warning" onClick="checkDelete('{{pp_source.ctype_pk}}', '{{object.pk}}');">
+			<i class="icon-warning-sign icon-left icon-white"></i> Delete
+		</a>
+	{% endpp_get_contenttype_id %}
+    	<input id="nukecheck" type="checkbox" name="vehicle" value="Deleted" />Sure You Want to Delete?
+	</span>
+    <hr>
 
 {% endif %}

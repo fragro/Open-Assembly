@@ -5,16 +5,20 @@
 
 {% block content %}
 
-<div class="right_oriented">
+<div class="row">
 
-    <div id="create_group" class="left_content">
+    <div id="create_group" class="span5">
 
         {% pp_topic_form POST=request.POST user=user root=object %}
 
+                <div><p class="lead"><img src="/static/img/group.png"> Create a New Group</p></div>
+                <hr>
+
                 {% if pp_topic.complete %}
 
-                Topic Created
-
+                <div class="alert"><h3>Topic Created</h3>
+                <p>You're being redirected to your new group...</p>
+                </div>
                 {% else %}
 
                     <form id="pp_topic_form" method="post" action="">
@@ -67,22 +71,21 @@
         {% endpp_topic_form %}
 
     </div>
-
-    <div class="right_content">
-
-        <div class="contents">
-
-        <img src="/static/img/joyu_normal.png">
-        <p class="text triangle-right left">
-
-            Want to create a community? <br><br> Create a group, invite your neighbors, and act together. <br><br>
-
-            The whole is greater than the sum of its parts.
+         
+    <div class="span3 offset1 alert alert-info">
+        <h3>Should I create a group?</h3>
+        <p>
+            Before you create that group sit and think. Do you need to create a group? You'll need to gather group members. That means inviting folks to come join the discussion and take action with you. Maybe they are local or perhaps on the internet. Open Assembly is about bringing to reality the world we want to see.
+        </p>
+        <p>
+            That takes action.
 
         </p>
-        </div>
-
-    </div>
+        <h4>Moderation and Censorship</h4>
+        <p>
+            There is no moderation or censorship in OA so when you invite a user to a closed group be sure you trust them. They can only voluntarily leave the group. As group Facilitator you will be responsible for maintaining some important aspects of these decision making systems however in the future the Facilitator role may be deprecated by allowing users to vote for the required percent of the group to agree and the number of people that need to vote before something is accepted by the group.
+        </p>
+</div>
 
 </div>
 

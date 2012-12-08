@@ -4,7 +4,6 @@ from django import template
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
-import string
 
 
 from customtags.decorators import function_decorator
@@ -117,7 +116,6 @@ def pp_url(*args, **kwargs):
             rev_kwargs['simplebox'] = True
         if phase_key is not None:
             rev_kwargs['phase'] = phase_key
-
         if dimension is not None:
             output = get_reverse(pattern, kwargs, dimension=dimension, **rev_kwargs)
         else:

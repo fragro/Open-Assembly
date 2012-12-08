@@ -1,20 +1,15 @@
-<p style="display:none;" class="sorttime"> {{i.submit_date|date:"U" }}</p>
-    <span class="user_icon"><i class="icon-envelope"></i></span>
+{% extends 'user/user_listing.html' %}
 
-    <div class="time">{{i.submit_date|timesince}} ago</div>
+    {% block icon %}
+        <div class="img">
+         {% pp_get_sources object=i.sender type='img' %}{% if pp_source.cur_img %}{% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}{% else %}<img src="/static/img/faux_logo.png">{% endif %}{% endpp_get_sources %}
+        </div>
+    {% endblock %}
 
-	<div class="content">
+    {% block meta %}
+    <small>{{i.submit_date|timesince}} ago</small>
+    {% endblock %}
 
-		<div class="img">
-		 {% pp_get_sources object=i.sender type='img' %}{% if pp_source.cur_img %}{% thumbnail pp_source.cur_img.file "50x50" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}{% else %}<img src="/static/img/faux_logo.png">{% endif %}{% endpp_get_sources %}
-
- 		<a data-href="{{i.link}}">{{i.text|safe}}</a>
-
-		</div>
-	</div>
-    <div class="username">
-        <a data-href="{% pp_url template='user_profile.html' object=i.sender%}">
-            {{i.sender.username}} {% if count %} ({{count}}) {% endif %}
-        </a>
-    </div>
-
+    {% block text %}
+    <a data-href="{{i.link}}">{{i.text|safe}}</a>
+    {% endblock %}

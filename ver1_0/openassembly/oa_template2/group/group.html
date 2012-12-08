@@ -7,176 +7,99 @@
 
 {% block content %}
 
-{% cani object=object user=user %}
-        {% if pp_permissions.permission %}
-          {% pp_get_contenttype_id object=object %}
-            <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
-          {% endpp_get_contenttype_id %}
+<div class="row">
+    <div class="avatar span1">
+        {% cani object=object user=user %}
+            {% if pp_permissions.permission %}
+              {% pp_get_contenttype_id object=object %}
+                <a id="avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
+              {% endpp_get_contenttype_id %}
 
-        {% else %}
-            <a>
-        {% endif %}
-    {% endcani %}  
-
-            {% include 'etc/object_img_100.html' %}
-            </a>
-
-    {% if not object.parent.summary == '__NULL__' %}
-
-    <h3><a data-href="{{object.parent.get_absolute_url}}">{{object.parent.summary}}</a></h3>
-
-    {% endif %}
-
-    <h1>{{object.summary}}</h1>
-
-    <!--changing image power of facilitator -->
-    
-
-         <div id="group_stats">
-            {% oa_location_get object=object start=0 end=1 %}
-                {% for lat, lon, place in oa_loc.places %}
-                    {{place}} | 
-                {% endfor %}
-            {% endoa_location_get %}
-            {% if object.more_info %}<a href="{{object.more_info}}">{{object.more_info}}</a> | {% endif %}
-                     {% oa_get_group_settings object=object %}
-                 {% if pp_topic.settings.open_group %}Open{% else %}Closed{% endif %} Group |
-                 {{ pp_topic.settings.percent_reporting|percent}} Reporting Requirement | 
-                 {{ pp_topic.settings.consensus_percentage|percent}} Consensus Requirement | {{object.children}} Proposals
-
-                     {% endoa_get_group_settings %}
-         </div>
-
-                <div style="display:block;">
-                    <h3>Mission</h3>
-
-                    {{object.description|markdown }}
-                </div>
-
-            {% cani object=object user=user %}
-                {% if pp_permissions.permission %}
-
-                    <a class="btn btn_blue" style="margin-right:10px;" data-href="{% pp_url object=object template='interact.html' %}">Facilitate</a>
-
-                    {% if object.parent.summary == '__NULL__' %}
-                        <a class="btn btn_blue" style="margin-right:10px;" data-href="{% pp_url object=object template='create_group.html' %}">Create Affinity Group</a>
-                    {% endif %}
-     
-                {% endif %}
-            {% endcani %}
-                <a class="btn btn_green" style="margin-right:10px;" data-href="{% pp_url template='submit.html' dimension='tem' object=object %}">Submit Proposal</a>
-
-                {% include 'forms/oa_addgroup_form.html' %}
-    <div>
-          {% pp_get_topic_list topic=object %}
-            {% if pp_topic.count > 0 %}
-                <div class="panel ptall1 pwide2">
-                    <div class="panel_content">
-                        <div class="panel_header">
-                            <h3>Affinity Groups</h3>
-                            <ul class="panel_controls">
-                            </ul>
-                        </div>
-                        <div class="panel_inner">
-                            <p>
-                                <ul>
-                                {% if pp_topic.topic_list %}
-                                    {% for topic in pp_topic.topic_list %}
-                                        <li><a data-href="{{topic.get_absolute_url}}">{{topic.summary}}</a></li>
-                                    {% endfor %}
-                                {% endif %}
-                                </ul>      
-                            </p>
-                        </div>
-                    </div>
-                </div>              
-
+            {% else %}
+                <a>
             {% endif %}
-        {% endpp_get_topic_list %}   
-                <div class="panel ptall1 pwide2">
-                    <div class="panel_content">
-                        <div class="panel_header">
-                           {% pp_get_questions object=object dimension="n" start=start end=end phase="issues" %}
+        {% endcani %}  
 
-                            <h3>{{pp_blob.count}} Proposal{{pp_blob.count|pluralize}}</h3>
-                            <ul class="panel_controls">
-                            </ul>
-                        </div>
-                        <div class="panel_inner">
-                            <p>
-                                        {% if pp_blob.count > 0 %}
-                                            <ul>
-                                                {% for object in pp_blob.blob_list %}
-                                                    <li>{% include 'content/temp_check_small.html' %}
-                                                    <a data-href="{% pp_url object=object.content_object template='detail.html' %}">
-                                                        {{object.content_object.summary }}
-                                                    </a>
-                                                    </li>
-                                                {% endfor %}
-                                        {% endif %}
-                                        {% if pp_blob.count > end %}
-                                            <i>To See More Proposals use MyGroup > Proposals to access through Dashboard</i>
-                                        {% endif %}
-                                        </ul>
+                {% include 'etc/object_img_100.html' %}
+                </a>
+    </div>
+    <div class="span8">
+        <div class="row">
+            <ul class="breadcrumb">
+              <li>
+                {% if not object.parent.summary == '__NULL__' %}
 
-                            {% endpp_get_questions %}
+                    <h3><a data-href="{{object.parent.get_absolute_url}}">{{object.parent.summary}}</a><span class="divider">/</span></h3>
+
+                {% endif %}
+            </li>
+              <li class="active"><h2>{{object.summary}}</h2></li>
+            </ul>
+
+
+        </div>
+        <div class="row">
+            {% include 'group/group_menu.html' %}
+        </div>
+        <!--changing image power of facilitator -->
+        
+    </div>
+</div>
+<div class="row">
+    <div class="span10">
+          <ul class="nav nav-tabs" id="myTab{{object.pk}}">
+            <li class="active"><a href="#proposals{{object.pk}}" data-toggle="tab">Proposals</a></li>
+            <li><a href="#groups{{object.pk}}" data-toggle="tab">Affinity Groups</a></li>
+            <li><a href="#members{{object.pk}}" data-toggle="tab">Members</a></li>
+            <li><a href="#facilitators{{object.pk}}" data-toggle="tab">Faciliators</a></li>
+            <li><a href="#mission{{object.pk}}" data-toggle="tab">Mission</a></li>
+          </ul>
+
+        <div class="tab-content">
+
+            <div class="tab-pane" id="mission{{object.pk}}">
+                <h3>Mission</h3>
+                <div class="span4">{{object.description|markdown }}</div>
+                {% include 'group/group_interaction.html' %}
+                <div class="span3">              
+                     <div class="alert">
+                        <h3>What is the reporting and agreement requirements?</h3>
+                            <p>These determine what is required for this groupt to put its stamp of approval on a spark. Certain groups
+                            may want to only act on the most popular sparks because this allows the group to include the largest majortiy of
+                            activists, increasing its potential.
                             </p>
-                        </div>
-                    </div>
+                     </div> 
                 </div>
-                
-    
-        {% oa_mygroup_users object=object start=start end=end %}
-    
 
-                <div class="panel ptall1 pwide2">
-                <div class="panel_content">
-                    <div class="panel_header">
-                        <h3>{{pp_topic.count}} Member{{pp_topic.count|pluralize}}</h3>
-                        <ul class="panel_controls">
-                        </ul>
-                    </div>
-                    <div class="panel_inner">
-                        <p><ul>
-                           {% for mygroup in pp_topic.groups %}
-                                <li>
-                                <a data-href="{% pp_url template='user_profile.html' object=mygroup.user %}">{{mygroup.user}}</a>
-                                </li>
-                            {% endfor %}
-                            {% if pp_topic.count > end %}
-                                <i>To See More Members use MyGroup > Members to access through Dashboard</i>
-                            {% endif %}
-                            </ul>
-                        </p>
-                    </div>
-                </div>
             </div>
-            <div class="panel ptall1 pwide2">
-                <div class="panel_content">
-                    <div class="panel_header">
-                        <h3>{{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}</h3>
-                        <ul class="panel_controls">
-                        </ul>
-                    </div>
-                    <div class="panel_inner">
-                        <p>
-                            <ul>
-                            {% has_permissions object=object name='facilitator-permission' %}
 
-                                {% for mygroup in pp_permissions.permissions %}
-                                    <li><a data-href="{% pp_url template='user_profile.html' object=mygroup.user %}">{{mygroup.user}}</a></li>
-                                {% endfor %}
-                            {% endhas_permissions %}       
+            <div class="tab-pane" id="groups{{object.pk}}">
 
-                            </ul>
-                        </p>
-                    </div>
-                </div>
+                {% include 'group/group_topiclist.html' %}
+
             </div>
-    {% endoa_mygroup_users %}      
 
-  
+            <div class="tab-pane" id="members{{object.pk}}">
+
+                {% include 'group/group_memberlist.html' %}
+
+            </div>
+
+            <div class="tab-pane active" id="proposals{{object.pk}}">
+
+                {% include 'group/group_proposallist.html' %}
+
+            </div>
+
+            <div class="tab-pane" id="facilitators{{object.pk}}">
+
+                {% include 'group/group_adminlist.html' %}
+
+            </div>
+
+        </div>
+
   </div>
-    
-
+                
+</div>
 {% endblock %}

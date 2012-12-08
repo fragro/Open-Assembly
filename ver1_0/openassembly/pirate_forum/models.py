@@ -44,7 +44,7 @@ def get_pretty_url(ctype_pk, obj_pk):
             val.save()
         #cache.set('/' + key, (ctype_pk, obj_pk))
     except:
-        raise ValueError(key)
+        raise
     return val.slug
 
 
@@ -250,6 +250,7 @@ class View(models.Model):
     path = models.CharField(max_length=120)
     rendertype = models.CharField(max_length=20)
     modified_dt = models.DateTimeField(blank=True, null=True)
+    created_dt = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __unicode__(self):
         return str(self.object_pk) + ' : ' + str(self.num)
@@ -328,28 +329,19 @@ class BlobForm(forms.ModelForm):
                 attrs={'cols': '20', 'rows': '10'}), initial="", label="Description")
 
 
-class BlobEditForm(forms.ModelForm):
+class BlobEditForm(forms.Form):
 
     def save(self, commit=True):
         newo = super(BlobEditForm, self).save(commit=commit)
         if newo.created_dt == None:
             newo.created_dt = datetime.datetime.now()
-            ctype = ContentType.objects.get_for_model(Nomination)
-            newo.child = ctype
-            newo.children = 0
         newo.modified_dt = datetime.datetime.now()
         return newo
 
-    class Meta:
-        model = Question
-        exclude = ('parent', 'parent_pk', 'parent_type',
-            'user', 'child', 'children', 'permission_req',
-            'created_dt', 'modified_dt', 'forumdimension')
-
-    blobsummary = forms.CharField(max_length=100,
+    summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
                 attrs={'size': '70', 'class': 'inputText'}), initial="")
-    blobdescription = forms.CharField(widget=MarkItUpWidget(
+    description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="", label="Description")
 
 

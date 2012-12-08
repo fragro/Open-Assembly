@@ -8,8 +8,6 @@
         {% if salted %}
         <ul id="comment{{object.pk}}" class="comment">
         {% endif %}
-
-        <span class="avatar"><img src="/static/img/avatar_20x18.jpg" alt="{{object.user.username}}"></span>
        
         <li>
         
@@ -17,7 +15,7 @@
             </span>
         <span id="comment_text{{object.pk}}">
         <p>
-        [DELETED]
+        <small>[DELETED]</small>
         </p>
         </span>
 
@@ -29,24 +27,23 @@
 
             {% if salted %}
             <ul id="comment{{object.pk}}" class="comment">
-            {% endif %}
-
-            {% include 'etc/object_img_25_user.html' %}
-            
+            {% endif %}            
             <li>
-            
+            <p id="comment_text{{object.pk}}">
+                {{object.text|markdown}}
+            </p>
+            <blockquote class="comment_author"><small>
+            by {% include 'etc/object_img_25_user.html' %}
             <a data-href="{% pp_url template='user_profile.html' object=object.user%}" class="author"> {{object.user.username}}</a> 
                 <span class="meta">
                     {% pp_time_difference_str then=object.submit_date %}
-                        {{pp_tag.dt}}
+                        {{pp_tag.dt}} ago
                     {% endpp_time_difference_str %}
                 </span>
-            <span id="comment_text{{object.pk}}" class="a_comment">
-                {{object.text|markdown}}
-            </span>
-            <span id="comment_links{{object.pk}}">
+            </small></blockquote>
+            <p id="comment_links{{object.pk}}">
                 {% include 'etc/comment_salt.html' %}
-            </span>
+            </p>
             {% if salted %}
             </ul>
             {% endif %}

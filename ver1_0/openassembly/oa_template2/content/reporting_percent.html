@@ -1,20 +1,47 @@
 {% load tag_helpers %}
-<div class="reporting_percent">
-    {% pp_get_reporting_percentage object=object group=pp_topic.root %}
+<div id="rep{{object.pk}}" class="row">
+    <div class="span3">
+    {% pp_get_root object=object %}
+        {% oa_get_group_settings object=pp_topic.root %}
+            {% pp_get_reporting_percentage object=object group=pp_topic.root %}
 
-        {% if pp_consensus.consensus.reporting_percent > pp_topic.settings.reporting_percent %}
-            <b style="color:#008e25">Currently Reporting</b> {{pp_consensus.consensus.reporting_percent|percent}}
-        {% else %}
-            <b>Reporting:</b> {{pp_consensus.consensus.reporting_percent|percent}}
-        {% endif %}
-        <br>
-       {% if pp_consensus.consensus.consensus_percent > pp_topic.settings.consensus_percent %}
-            <b style="color:#008e25">Current Consensus</b> {{pp_consensus.consensus.consensus_percent|percent}}
-        {% else %}
-            <b>Consensus:</b> {{pp_consensus.consensus.consensus_percent|percent}}
-        {% endif %}
-        <br>
-        <b style="color:#d0b500;">Avg. Quality:</b> {{pp_consensus.consensus.rating.mean}}
+            {{pp_topic.settings.consensus_percent}}
+                <table class="table table-borderless">
+                    <tr>
+                        <td>
+                            <span data-placement="left" rel="tooltip" title="Current percentage of users in the group that have cast a vote on this content. The group is set to require {{pp_topic.settings.percent_reporting|percent}} ballots cast before this content is official.">Ballots Cast</span></td>
+                        {% if pp_consensus.consensus.reporting_percent > pp_topic.settings.percent_reporting %}
+                            <td>
+                                <span class="badge badge-success">{{pp_consensus.consensus.reporting_percent|percent}}</span>
+                            </td>
+                        {% else %}
+                            <td>
+                                <span class="badge">{{pp_consensus.consensus.reporting_percent|percent}}</span>
+                            </td>
+                        {% endif %}
+                        </tr>
+                    <tr>
+                        <td>
+                            <span data-placement="left" rel="tooltip" title="Percentage of users in this group that consent. The current required agreement percent is {{pp_topic.settings.consensus_percentage|percent}}.">Agreement</span>
+                        </td>
+                       {% if pp_consensus.consensus.consensus_percent > pp_topic.settings.consensus_percentage %}
+                             <td>
+                                <span class="badge badge-success">{{pp_consensus.consensus.consensus_percent|percent}}</span>
+                            </td>
+                        {% else %}
+                            <td>
+                                <span class="badge">{{pp_consensus.consensus.consensus_percent|percent}}</span>
+                            </td>
+                        {% endif %}
+                        </tr>
+                    <tr>
+                        <td><span data-placement="left" rel="tooltip" title="Average difficulty of the content as perceived by the crowd.">Difficulty</span></td> <td><span class="badge badge-warning">{{pp_consensus.consensus.rating.mean}}</span></td>
+                    </tr>
+                </table>
 
-    {% endpp_get_reporting_percentage %}
+            {% endpp_get_reporting_percentage %}
+        {% endoa_get_group_settings %}
+    {% endpp_get_root %}
+
+    </div>
 </div>

@@ -7,8 +7,8 @@
 
 {% block content%}
 
-<div class="left_oriented">
-    <div class="left_content">
+    <div class="row">
+        <div class="span6">
 
         {% if user.is_authenticated %}
             
@@ -19,50 +19,39 @@
                         {% include 'forms/pp_blobedit_form.html' %}
 
                 {% else %}
+                    <div><p class="lead"><img src="/static/img/fire.png"> Create a New Spark</p></div>
+                    <hr>
+                    {% pp_get_blob_subcontext dimension='tem' %}
+                           
 
-                    {% if object == 'submit' %}
-                    
-                        {% pp_get_blob_subcontext dimension='tem' %}
-                               
+                            {% include 'forms/pp_blob_form.html' %}
+                        
 
-                                {% include 'forms/pp_blob_form.html' %}
-                            
-
-                        {% endpp_get_blob_subcontext %}
-
-                    {% endif %}
+                        </div>
+                        
+                        <div class="span2  offset1 alert alert-info">
+                            <h3>What's a Spark?</h3>
+                            <p>
+                                Sparks can be whatever you want. They can be an idea, a document, a policy, or maybe a question to the masses. The ideal Spark is something the group can decide is a good idea or not, and has an actionable task the group can work together to accomplish.
+                            </p>
+                            <p>
+                                Once you've created your Spark you can add images that describe the spark, or link a location if this Spark is local to a geographic area. Others can vote on the Spark and drive it up the rankings. Users can take action on this Spark so if your Spark is action oriented provide the knowledge to accomplish the task.
+                            </p>
+                    </div>
+                    {% endpp_get_blob_subcontext %}
 
                 {% endif %}
 
         {% else %}
-
+    </div>
+    <div class="span 2 alert alert-error">
         <h2><a data-href="{% pp_url template='register.html' %}" >Login or Register to Submit Content!</a></h2>
-
-        {% endif %}
-
-    </div>
-
-    <div class="right_content">
-
-        <div class="contents">
-
-        <img src="/static/img/joyu_normal.png">
-        <p class="text triangle-right right">
-
-            A spark is a guide to let people take part in an action in the real or digital world.  
-            <br><br>
-
-            The best sparks outline a specific action that a person can do
-            alone or in a group to improve their community or themselves.
-            <br><br>
-
-            To achieve change on a global level the spark must start with you.
-
+        <p> Looks like you aren't logged in. Maybe you accidently logged out, or forgot to login.
         </p>
-        </div>
-
     </div>
+    {% endif %}
 </div>
+
 
 {% endblock content %}
 

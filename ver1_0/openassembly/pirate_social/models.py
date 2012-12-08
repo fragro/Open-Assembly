@@ -64,7 +64,6 @@ class RelationshipEvent(models.Model):
         # Enforce unique tag association per object
         verbose_name = _('relationship event')
         verbose_name_plural = _('relationship events')
-        unique_together = (('initiator', 'ini_object_pk', 'tar_object_pk'),)
 
     def __str__(self):
         return u'[%s:%s]' % (self.initiator.username, self.created_on)

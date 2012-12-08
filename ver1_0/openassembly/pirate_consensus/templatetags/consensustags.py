@@ -12,12 +12,12 @@ from django.db.models import Q
 
 from pirate_core.views import HttpRedirectException, namespace_get
 from pirate_consensus.models import  UpDownVote, Consensus,  ConfirmRankedVote, RankedVote, WeightedVote, RankedDecision, RatingVote, SpectrumHolder
-
 from pirate_core.widgets import HorizRadioRenderer
 
 from customtags.decorators import block_decorator
 register = template.Library()
 block = block_decorator(register)
+
 
 RATINGS_CHOICES = (
     (1, "Empty of Value"),
@@ -56,6 +56,16 @@ SPECTRUM_COLORS = {
 }
 
 get_namespace = namespace_get('pp_consensus')
+
+
+
+class RatingForm(forms.Form):
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_rating_form")
+    rating = forms.ChoiceField(choices=RATINGS_CHOICES)
+    
+class SpectrumForm(forms.Form):
+    form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_spectrum_form")
+    spectrum = forms.ChoiceField(choices=SPECTRUM_CHOICES.items())
 
 
 @block
@@ -236,61 +246,6 @@ def pp_consensus_get(context, nodelist, *args, **kwargs):
     return output
 
 
-#Creates fields for creation of a consensus object, to be added to the object that is being referenced. This form includes settings for time constraints, if allowed at the global level. Some objects such as issues require a consensus object and therefore do not have a form attached.
-@block
-def pp_consensus_form(context, nodelist, *args, **kwargs): 
-    """
-    Populates the context with a ConsensusForm, allowing users to select what
-    voting type is applied to the object or the objects children.
-    
-    Unless the number of related objects is limited, for example solutions to 
-    a problem, plurality voting is required. As the number of objects considered
-    for voting increases, it becomes increasingly impossible to rank or apply 
-    weighted voting to the entire set.
-    """
-    context.push()
-    namespace = get_namespace(context)
-
-    obj = kwargs.pop('object', None)
-    POST = kwargs.pop('POST', None)
-
-    
-    if POST is not None and POST.get("form_id") == "pp_consensus_form":
-
-        form = ConsensusForm(POST)
-        if form.is_valid():
-            vote_type = form.cleaned_data['vote_type']
-            if vote_type == "Ranked Voting":
-                vt = ContentType.objects.get_for_model(RankedVote)
-            elif vote_type == "Up/Down Voting":
-                vt = ContentType.objects.get_for_model(UpDownVote)
-            elif vote_type == "Weighted Voting":
-                vt = ContentType.objects.get_for_model(WeightedVote)
-            
-            con = Consensus.objects.get(object_pk=obj.pk) 
-            
-            if obj.child != None:
-                con.child_vote_type = vt
-                con.save()
-                
-            namespace['complete'] = True
-            namespace['vote_type'] = con.child_vote_type                                  
-    else:
-        form = ConsensusForm()
-        con = Consensus.objects.get(object_pk=obj.pk)
-        if con.child_vote_type != None:
-            namespace['complete'] = True
-            namespace['vote_type'] = con.child_vote_type
-        else:
-            namespace['complete'] = False
-    namespace['form'] = form
-
-        
-    output = nodelist.render(context)
-    context.pop()
-
-    return output
-    
 @block
 def pp_rating_form(context, nodelist, *args, **kwargs): 
     """

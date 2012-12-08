@@ -57,7 +57,7 @@ def get_comments(parent, start, end, dimension, ctype_list):
     comment_tree = []
 
     comments = Comment.objects.all()
-    comments = comments.filter(object_pk=object_pk, is_root=True)
+    comments = comments.filter(object_pk=object_pk, is_root=True, is_deleted=False)
     comments = comments.order_by('-submit_date')
     count = comments.filter(is_deleted=False).count()
 
@@ -67,5 +67,3 @@ def get_comments(parent, start, end, dimension, ctype_list):
         else:
             comment_tree.append(get_children(object_pk, c))
     return comment_tree, count
-
-

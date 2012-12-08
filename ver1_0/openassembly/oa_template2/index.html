@@ -14,6 +14,8 @@
         {% include 'etc/meta.html' %}
 
         <title>Open Assembly</title>
+
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
         <meta http-equiv="X-UA-Compatible" content="IE=9">
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/static/css/style.0.1.css">
@@ -22,11 +24,8 @@
         <link rel="stylesheet" type="text/css" href="/static/jquery.ui.stars.css">
         <link rel="stylesheet" type="text/css" href="/static/markitup/sets/markdown/style.css" />
         <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
-        <script type="text/javascript">var switchTo5x=true;</script>
-        <script type="text/javascript" src="http://w.sharethis.com/button/button.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
 
-    </head>
-    <body>
         <div style="display:none;" id="domain">{{ request.META.HTTP_HOST }}</div>
         
         <div id="rail" class="clearfix">
@@ -45,12 +44,12 @@
                     <!--Will develop this feature in the next version -->
                     {% include 'nav/bookmarks.html' %}
                     <!-- My Groups -->
-                    {% include 'nav/mygroups.html' %}
+                    <li class="dropdown"><div id="mygroups">{% include 'nav/mygroups.html' %}</div></li>
 
                <li class="dropdown">
                     <a data-href="#"><i class="icon-white icon-cog icon-left"></i> Settings <i class="icon-white icon-chevron-down icon-right"></i></a>
                     <div class="dropdown_menu col1 last shortpad">
-                        <ul>
+                        <ul class="dropdown_list">
                             <li><a data-href="/p/help">About</a></li>
                             <li><a class="nobbq" data-href="/logout/" data-href="/logout/">Logout</a></li>
                             <li><a data-href="/p/report_abuse">Submit Feedback</a></li>
@@ -73,27 +72,29 @@
             </ul>
             <!-- end #nav -->
         </div>
-        <!-- Pages -->
-        <div id="pages">
+        <div class="container">
+            <!-- Pages -->
+            <div id="pages">
 
-            <!--[if IE]>
-              <div id="page_ie" class="page current" style="display:block;">
-                  <div class="sink">
-                        <h1>Sorry Your Browser is not Supported</h1>
-                        <h2>To use Open Assembly try <a href="www.google.com/chrome/">Chrome</a>, <a href="www.mozilla.org/en-US/firefox/new/">Firefox</a>, or <a href="www.apple.com/safari/">Safari</a></h2>          
+                <!--[if IE]>
+                  <div id="page_ie" class="page current" style="display:block;">
+                      <div class="sink">
+                            <h1>Sorry Your Browser is not Supported</h1>
+                            <h2>To use Open Assembly try <a href="www.google.com/chrome/">Chrome</a>, <a href="www.mozilla.org/en-US/firefox/new/">Firefox</a>, or <a href="www.apple.com/safari/">Safari</a></h2>          
+                      </div>
                   </div>
-              </div>
-            <![endif]-->
+                <![endif]-->
 
-            <!-- Page1 -->  
-            {{pp_cache.data.pages|safe}}
+                <!-- Page1 -->  
+                {{pp_cache.data.pages|safe}}
 
-            {% block extracontent %}
+                {% block extracontent %}
 
-            {% endblock %}
+                {% endblock %}
 
+            </div>
         </div>
-        
+
         <!-- Panels -->
         <div id="panels">
             {% if request.user.is_authenticated %}
@@ -115,7 +116,6 @@
         <!-- Tabs -->
         <div id="tabs" class="clearfix">
 
-            <div id="current_tab">{{pp_cache.key}}</div>
             <div id="tab_ruler"></div>
 
             {{pp_cache.data.tab_ruler|safe}}
@@ -126,8 +126,7 @@
             </div>
             <div id="tab_width"></div> 
         </div>
- 
-
+     
         <audio id="audio1" src="/static/sounds/tabla.wav" preload="auto" autobuffer>
         </audio>
 
@@ -269,14 +268,11 @@
 
                 //SET INITIAL PAGE LOAD ITEM AS TRUE
                 var hash = location.href;
-                var dom = $('#domain').html();
-                var tempkey = hash.replace(dom, '');
-                tempkey = tempkey.replace('http:', '');
-                tempkey = tempkey.replace(/\//g,"");
+                var tempkey = get_key(hash);
                 if(tempkey !== ''){
-                    sessionStorage.setItem(tempkey, 'True');
+                    sessionStorage.setItem(tempkey, hash);
+                    sessionStorage.setItem('current', tempkey)
                 }
-
 
                 // Delete panel
                 $('.delete_panel').click(function(){
@@ -300,8 +296,6 @@
                 //     $template.find('.min_max').attr('id', page_id);
                 //     $tab_ruler.append($template.html());
                 // });
-                
-                
                 // Removes Bookmark
                 $('.bookmark_dropdown .icon-remove-sign').click(function(){
                     var $bookmark = $(this).closest('li');
@@ -324,9 +318,9 @@
                     tabobj.remove();
                     $('#page' + tab).remove();
                     sessionStorage.removeItem(tab);
-                    var curtab = $('#current_tab').html();
+                    var curtab = sessionStorage.getItem('current');
                     if (curtab == tab){
-                        $('#current_tab').html('');
+                        sessionStorage.setItem('current', null);
                         $('#overlay').hide();
                         $("html").css("overflow", "auto");
                     }
@@ -341,7 +335,6 @@
                     helper: 'clone'
                 });
 
-                
                 // Masonry Hack - http://jsfiddle.net/desandro/XMfwZ/1/
                 var t = $('#panels');
                 
@@ -373,19 +366,19 @@
                         var result = String(t.sortable('toArray'));
                         sort_dashboard(result);
                         ui.item.parent().masonry('reload');
-
-
                     }
                 });
 
                 //This lets us load chunk by chunk with AJAX
                 $(window).bind("popstate", function(evt) {
                  var state = evt.originalEvent.state;
+                    console.log('popping::');
+                     console.log(state.module);
                      if (state && state.module === "leave") {
                            if(state.url == '/'){
                                 minimizeAll();
                            }
-                           getContent({});
+                           getContent({'popstate': true});
                      }
                      if (state && state.module === "nobbq") {
                            js_redirect(state.url);
@@ -403,11 +396,12 @@
                         }
                         var that = $(this);
                         var url = (typeof that.data('href') != 'undefined') ? that.data('href').replace('{{DOMAIN}}', '') : '';
-                        console.log(that.data('href'));
                         if (allowPush(e, url, that)) {
                             e.preventDefault();
                             history.pushState({load:true, module:'leave', url: url}, '', url);
-                            getContent({});            
+                            console.log('delegate::');
+                            console.log(url);
+                            getContent({'popstate': true});            
                         }
                         else{ 
                             //need to load some error msg
@@ -420,17 +414,7 @@
                     var keycode = e.which
                     if(keycode == 27){
                         //remove the old page
-                        var curtab = $('#current_tab').html();
-                        if(curtab !== ''){
-                            $('#overlay').hide();
-                            $("html").css("overflow", "auto");
-                            $('#current_tab').html('');
-                            $('#page' + curtab).removeClass('current');
-                            $('#page' + curtab).hide();
-                            $('#min_max' + curtab).removeClass('current-icon');
-                            $('#minmax' + curtab).find('i').toggleClass('icon-minus-sign icon-plus-sign');
-                            $('#tab' + curtab).removeClass('current-icon');
-                        }
+                        minimizeAll();
                     }
                 }
 

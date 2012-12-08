@@ -34,6 +34,25 @@ from django.template.defaultfilters import floatformat
 
 
 @register.filter
+def objectClass(value):
+    """
+    **Filter**
+
+    Takes a float value and returns it as a percentage. Only makes sense for float values in the range [0,1].
+
+    for example:
+
+.. code-block:: html
+
+        {{object.consensus_percent|percent}}
+    """
+    if value is None:
+        return None
+    else:
+        return value._meta.verbose_name
+
+
+@register.filter
 def percent(value):
     """
     **Filter**
@@ -52,7 +71,6 @@ def percent(value):
         return floatformat(value * 100.0, 0) + '%'
     except:
         return '0 %'
-
 
 
 @register.filter

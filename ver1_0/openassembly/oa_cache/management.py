@@ -267,6 +267,11 @@ ppreplycache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.
     template="forms/pp_reply_form.html", div_id="#pp_reply_form", jquery_cmd="html", is_recursive=True,
     is_toggle=True, object_specific=True, load_last=True)
 
+ppdeleteformcache, is_new = UserSaltCache.objects.get_or_create(model_cache=comcache.pk,
+        template="forms/pp_delete_form.html", div_id="#pp_delete_form", jquery_cmd="html", is_recursive=True,
+        is_toggle=True, object_specific=True)
+
+
 pptopiccache, is_new = UserSaltCache.objects.get_or_create(template="forms/pp_topic_form.html",
                          div_id="#create_group", jquery_cmd="html", redirect=True)
 
@@ -388,7 +393,20 @@ ppurlsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppc
 pp_editsdcache, is_new = SideEffectCache.objects.get_or_create(user_salt_cache=ppeditcache.pk,
         template="content/comment_edit.html", div_id="#comment_text", jquery_cmd="html", object_specific=True)
 
+###MYGROUPS NAVIGATION
 
+mygroup_cache, is_new = UserSaltCache.objects.get_or_create(template="nav/mygroups.html",
+                         div_id="#mygroups", jquery_cmd="html")
+
+
+oaaddgroup_cache, is_new = UserSaltCache.objects.get_or_create(template="forms/oa_addgroup_form.html",
+                         div_id="#oa_addgroup", jquery_cmd="html", object_specific=True)
+
+#ACTION
+actioncache, is_new = ModelCache.objects.get_or_create(template="action/detail.html",
+                div_id="#pages", content_type="action", main=True, jquery_cmd="append")
+action_tab_cache, is_new = UserSaltCache.objects.get_or_create(model_cache=actioncache.pk, template="skeleton/tab_template.html",
+                         div_id="#tab_ruler", jquery_cmd="prepend")
 
 
 # #FORMS

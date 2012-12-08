@@ -82,39 +82,49 @@
         </div>
         <!-- Alot of chat specific formatting here to overcome some of the limitations of the panel for placing static content -->
         {% if dashobj.boardname == 'Chat' %}
-        <div id="user_container{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" style="border:1px #ccc solid;border-top:0;border-right:0;float:left;width:20%;overflow:hidden;" class="utall{{dashobj.zoom_y|add:'1'}}" >
+        <div id="user_container{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" class="user_container utall{{dashobj.zoom_y|add:'1'}}" >
                 <b>USERS</b>
                 <div id="users{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}"></div>
         </div>
         {% endif %} 
 
-        <div {% if dashobj.boardname == 'Chat' %}style="width:80%;"{% endif %} class="panel_inner" id="panel_inner{{dashobj.pk}}">
-            <p> 
-            <ul id="panel_inner_list">
-                {% for k, b in board.items %}
-                    {{b|safe}}
-                {% endfor %}
-            </ul>
-            {% if start != 0 %}
-                <a class="btn btn_blue" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'-20'}}, {{end|add:'-20'}});">Previous</a>
-            {% endif %}
-            {% if start|add:'20' < count %}
-                <a class="btn btn_blue" onClick="refresh_dashboard('{{dashobj.plank}}', 1, {{start|add:'20'}}, {{end|add:'20'}});">Next</a>
-            {% endif %}
-            </p>
+        <div {% if dashobj.boardname == 'Chat' %}style="width:80%;"{% endif %} class="panel_inner {% if dashobj.boardname == 'Chat' or dashobj.plank == '/p/location' %} noscroll{% endif %}" id="panel_inner{{dashobj.pk}}">
+            {% if dashobj.plank != '/p/location' %}<p> {% endif %}
+                <ul id="panel_inner_list">
+                    {% for k, b in board.items %}
+                        {{b|safe}}
+                    {% endfor %}
+                </ul>
+                {% if dashobj.boardname != 'Chat' and dashobj.plank != '/p/location' %}
+                    <ul class="pager">
+                    {% if start != 0 %}
+                        <li class="previous"><a class="btn" onClick="refresh_dashboard('{{dashobj.plank}}', 1, '{{dashobj.pk}}', {{start|add:'-20'}}, {{end|add:'-20'}});">&larr;</a>
+                    {% else %}
+                        <li class="previous disabled"><a class="btn">&larr;</a>
+                    {% endif %}
+                    </li>
+                    {% if start|add:'20' < count %}
+                        <li class="next"><a class="btn" onClick="refresh_dashboard('{{dashobj.plank}}', 1, '{{dashobj.pk}}', {{start|add:'20'}}, {{end|add:'20'}});">&rarr;</a>
+                    {% else %}
+                        <li class="next disabled &rarr;"><a class="btn">&rarr;</a>
+                    {% endif %}
+                    </ul>
+                {% endif %}
+            {% if dashobj.plank != '/p/location' %}</p> {% endif %}
 
+            {% if dashobj.boardname == 'Chat' %}
+            <div id="chat_ctrl{{dashobj.pk}}">
+                    <input style="width:75%;" id="data{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" />
+                    <input type="button" class="btn btn-mini" id="datasend{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" value="send" />
+                </div>
+
+                <script>
+                $(function(){
+                    $('#chat_ctrl{{dashobj.pk}}').css('marginTop', $('#{{dashobj.pk}}').height()-45 + "px");
+                });
+                </script>
+            {% endif %}
         </div>
-        {% if dashobj.boardname == 'Chat' %}
-        <div style="padding-left:21%;position:relative;margin-top:{% if dashobj.zoom_y == 0 %}36%;{% endif %}{% if dashobj.zoom_y == 1 %}91%;{% endif %}{% if dashobj.zoom_y == 2 %}14%;{% endif %}" id="chat_ctrl{{dashobj.pk}}">
-                <input style="width:75%;" id="data{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" />
-                <input type="button" id="datasend{% if obj.pk %}{{obj.pk}}{% else %}welcome_chat{% endif %}" value="send" />
-            </div>
 
-            <script>
-            $(function(){
-                $('#chat_ctrl{{dashobj.pk}}').css('marginTop', $('#{{dashobj.pk}}').height()-63 + "px");
-            });
-            </script>
-        {% endif %} 
     </div>
 </div>

@@ -1,47 +1,50 @@
 <!-- need all the DIV IDs in this html template -->
 
-{% if user.is_authenticated and pp_topic.in_group and not pp_topic.settings.open_group or user.is_authenticated and not pp_topic.in_group and pp_topic.settings.open_group or user.is_authenticated and pp_topic.in_group %}
 
-       
-    {% if object.child and pp_consensus.consensus.phase.curphase.phasename == 'nom' %}
-        Proposal Response
-            <div id="pp_blob_child">
-                {% include 'forms/pp_blob_child.html'%}
-            </div>
-
-    {% endif %}
+{% pp_get_root object=object %} 
+    {% oa_get_group_settings object=pp_topic.root %}
+        
+        {% oa_ingroup object=pp_topic.root user=user %}
 
 
-        <div id="pp_comment_form">
-                {% include 'forms/pp_comment_form.html'%}
-        </div>
+            {% if user.is_authenticated and pp_topic.in_group and not pp_topic.settings.open_group or user.is_authenticated and not pp_topic.in_group and pp_topic.settings.open_group or user.is_authenticated and pp_topic.in_group %}
 
-    <div class="hidden">
-        Argue For
-        
-            <div id="pp_argument_form_yea">
-        
-            </div>
-        
-        Argue Against
-        
-            <div id="pp_argument_form_nay">
-        
-            </div>
-        
-        Add Sources/Citations or Tags
-        
-            <div id="pp_tagsource_form">
-        
-            </div>
-            <div id="pp_tag_form">
-        
-            </div>
-            <div id="pp_urlsource_form">
-         
-            </div>
-    </div>
 
-{% endif %}
+                    
+                    <div class="row">
+                    <div class="span5" id="pp_comment_form">
+                                {% include 'forms/pp_comment_form.html'%}
+                        </div>
+                    </div>
 
-  
+            {% else %}
+
+
+                <div class="alert"><h3>
+
+
+                    {% if not user.is_authenticated %}
+
+                        To Comment on this Spark you must create an account or login. 
+
+                    {% endif %}
+
+                    {% if not pp_topic.in_group and not pp_topic.settings.open_group %}
+
+                        Sorry the group hosting this Spark is closed to comments from non-members. Request to join
+                        this group to comment on this content.
+                        
+                    {% endif %}
+
+
+
+                </h3></div>
+
+
+
+            {% endif %}
+
+        {% endoa_ingroup %}
+
+    {% endoa_get_group_settings %}
+{% endpp_get_root %}

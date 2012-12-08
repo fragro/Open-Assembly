@@ -1,46 +1,56 @@
 {% extends 'skeleton/page.html' %}
-<script type="text/javascript" src="/static/js/jquery.isotope.min.js"></script>
 
 {% block content %}
 
-            
-			{% include 'user/user_info.html' %}
+    {% pp_get_user_profile user=object %}
 
-		<div class="usercontainer" id="container{{object.pk}}">
+		{% include 'user/user_info.html' %}
+
+        <div class="tab-content">
 
 			{% if user == object %}
 
-					{% include 'user/user_messages.html' %}
 
-			{% endif %}
-			                
+	      	    <div class="tab-pane {% if dimension == 'm' %}active{% endif %}" id="mes{{object.pk}}">
+  	          	    
+						{% include 'user/user_messages.html' %}
 
-			{% include 'user/user_social.html' %}
+	            </div>
+	           
+				{% endif %}
+				              
+	      	    <div class="tab-pane {% if dimension == 't' or not dimension %}active{% endif %}" id="trust{{object.pk}}">
 
+					{% include 'user/user_social.html' %}
+
+	            </div>
+
+	      	    <div class="tab-pane {% if dimension == 'c' %}active{% endif %}" id="cont{{object.pk}}">
+
+					{% include 'user/user_contribution.html' %}
+
+	            </div>
+
+	            <div class="tab-pane" id="about_me{{object.pk}}">
+
+		            {% if pp_profile.profile.about_me %}
+	                    <div class="row">
+	                    	<div class="span6 offset2">
+	                    		<p>{{pp_profile.profile.about_me}}</p>
+	                    	</div>
+	                    </div>
+		            {% endif %}
+
+	        	</div>
+
+	      	    <div class="tab-pane {% if dimension == 'a' %}active{% endif %}" id="actions{{object.pk}}">
+
+					{% include 'user/actionlist.html' %}
+
+	            </div>
 			   
-			{% include 'user/user_contribution.html' %}
-
 		</div>
-                     
-
-<script>
-
-    $(document).ready(function(){
-	  $('#container{{object.pk}}').isotope({
-          // options
-            getSortData : {
-			    time : function ( $elem ) {
-			      return $elem.find('.sorttime').text();
-			    },
-		  	},
-          itemSelector : '.notitem',
-          layoutMode : 'fitRows',
-          sortBy : 'time',
-		  sortAscending : false,
-        });
-	});
-</script>
-
+    {% endpp_get_user_profile %}
 
 
 {% endblock %}

@@ -5,6 +5,7 @@ from pirate_permissions.models import Permission, PermissionsGroup
 
 import re
 from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from markitup.widgets import MarkItUpWidget
 
@@ -242,9 +243,25 @@ def pp_get_topic_list(context, nodelist, *args, **kwargs):
         topic_list = Topic.objects.filter(parent=root).order_by('-children')
     else:
         topic_list = Topic.objects.filter(parent=Topic.objects.null_dimension()).order_by('-children')
-
-    namespace['topic_list'] = topic_list
     namespace['count'] = topic_list.count()
+
+    page = kwargs.get('page', 1)
+    dimension = kwargs.get('dimension', 1)
+
+    if page is None or dimension != 't':
+        page = 1
+
+    paginator = Paginator(topic_list, 10)
+
+    try:
+        topic_list = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        topic_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        topic_list = paginator.page(paginator.num_pages)
+    namespace['topic_list'] = topic_list
     output = nodelist.render(context)
     context.pop()
 
@@ -331,16 +348,28 @@ def pp_mygroups(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     user = kwargs.get('user', None)
-    start = kwargs.get('start', None)
-    end = kwargs.get('end', None)
+    page = kwargs.get('page', 1)
+    dimension = kwargs.get('dimension', 1)
+
+    if page is None or dimension != 'mygroups':
+        page = 1
 
     if user.is_authenticated():
-        mygroups = MyGroup.objects.filter(user=user)[int(start):int(end)]
+        mygroups = MyGroup.objects.filter(user=user)
+        paginator = Paginator(mygroups, 8)
+
+        try:
+            mygroups = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            mygroups = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            mygroups = paginator.page(paginator.num_pages)
 
         namespace['mygroups'] = mygroups
-
-        namespace['count'] = mygroups.count()
-        namespace['half'] = int(float(mygroups.count()) / 2.0)
+        namespace['count'] = mygroups.object_list.count()
+        namespace['half'] = int(float(mygroups.object_list.count()) / 2.0)
 
     output = nodelist.render(context)
     context.pop()
@@ -350,6 +379,8 @@ def pp_mygroups(context, nodelist, *args, **kwargs):
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
+
+
 def _slugify(value):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,

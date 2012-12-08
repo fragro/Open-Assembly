@@ -2,7 +2,7 @@
 
 {% load consensustags %}
 
-{% pp_consensus_get object=object.pk %}
+   {% pp_consensus_get object=object.pk %}
 
           {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
              {{pp_consensus.consensus.chart_data }}
@@ -22,7 +22,8 @@
                             plotBorderWidth: null,
                             backgroundColor: "none",
                             plotShadow: false,
-                            height: 270
+                            height: 150,
+                            width: 150,
                         },
                         title: {
                             text: ''
@@ -60,16 +61,8 @@
                      <!-- NEED THIS ID -->
                       <div id='chart{{object.pk}}'> </div>
 
-                           <b class="avg_quality_rating">Avg. Quality Rating</b>
-
-                           {% if pp_consensus.mean_information %}
-                              {{pp_consensus.mean_information|floatformat:"1"}}
-                           {% else %}
-                           N/A 
-                           {% endif %}
-
-                     </div>
                   {% endif %}
           {% endpp_consensus_chart %}
 
-{% endpp_consensus_get %}
+   {% endpp_consensus_get %}
+

@@ -26,7 +26,7 @@ class Location(models.Model):
 
 
 class Place(models.Model):
-	parent_pk = models.IntegerField(_('Parent Message PK'), blank=True, null=True)
+	parent_pk = models.IntegerField(_('Parent PK'), blank=True, null=True)
 	summary = models.ForeignKey('Location', blank=True, null=True)
 	object_pk = models.CharField(_('object ID'), max_length=100)
 	content_object = generic.GenericForeignKey(ct_field="content_type", fk_field="object_pk")

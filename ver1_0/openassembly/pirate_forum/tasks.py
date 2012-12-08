@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 import datetime
 
+
 @task(ignore_result=True)
 def create_edit(obj_pk, user_pk, ctype_pk, text1, text2):
     selftype = ContentType.objects.get(pk=ctype_pk)

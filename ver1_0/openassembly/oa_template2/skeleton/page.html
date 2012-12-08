@@ -8,20 +8,30 @@
 
 	  <div class="page_controls">
 
-        <span class="ctrl"><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign"></i></a></span>
-        <span class="ctrl">
-        <a onClick="refresh('/p/' + '{{template}}/' + '{{key}}'.replace('p{{template}}', ''), '#page{{key}}');"><i class="icon-refresh"></i></a>
-        </span>
-        <span class="ctrl"><a onClick="toggleMinMax('{{key}}', '{{template}}');"><i class="icon-minus"></i></a></span>
+        <a onClick="toggleMinMax('{{key}}', '{{template}}', null, false);"><span class="btn btn-mini"><i class="icon-minus"></i></span></a>
+        <a onClick="refresh('/p/' + '{{template}}/' + '{{key}}'.replace('p{{template}}', ''), '#page{{key}}');">
+        <span class="btn btn-mini">
+        <i class="icon-refresh"></i></a></span>
+        <a onClick="tabRemove('{{key}}');"><span class="btn btn-mini"><i class="icon-remove-sign"></i></span></a>
+
 
 	  </div>
 
       <div class="sink">
 
-      {% block content %}
+      <div class="row">
+
+          <div class="span10 center">
+
+              {% block content %}
 
 
-      {% endblock %}
+              {% endblock %}
+
+          </div>
+
+
+      </div>
 
       </div>
       

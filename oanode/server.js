@@ -2,6 +2,9 @@ var fs = require('fs');
 var app = require('express').createServer(),
     redis = require('socket.io/node_modules/redis'),
     io = require('socket.io').listen(app);
+//    ron = require('ron');
+
+//var userspace = require("./user.js");
 
 
 //CHAT SOCKETIO CODE
@@ -19,16 +22,17 @@ process.on('SIGTERM', function () {
 try{
   //dotcloud environment parametes for hooking into our own redis server
   var env = JSON.parse(fs.readFileSync('/home/dotcloud/environment.json', 'utf-8'));
-  var port = env['DOTCLOUD_CACHE_REDIS_PORT'];
-  var host = env['DOTCLOUD_CACHE_REDIS_HOST'];
-  var nodeport = 42801; 
+  var port = env.DOTCLOUD_CACHE_REDIS_PORT;
+  var host = env.DOTCLOUD_CACHE_REDIS_HOST;
+  var nodeport = 42801;
+
   //connect to redis
   var sub = redis.createClient(port, host);
-  sub.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
-  var store = redis.createClient(port, host); 
-  store.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
+  sub.auth(env.DOTCLOUD_CACHE_REDIS_PASSWORD);
+  var store = redis.createClient(port, host);
+  store.auth(env.DOTCLOUD_CACHE_REDIS_PASSWORD);
   var p2p = redis.createClient(port, host);
-  p2p.auth(env['DOTCLOUD_CACHE_REDIS_PASSWORD'])
+  p2p.auth(env.DOTCLOUD_CACHE_REDIS_PASSWORD);
 
  }
 catch(e){
@@ -38,10 +42,16 @@ catch(e){
   var host = 'localhost';
   var sub = redis.createClient(port, host);
   var store = redis.createClient(port, host);
-  var p2p = redis.createClient(port, host); 
+  var p2p = redis.createClient(port, host);
 }
-// 
 
+/*  // Client connection
+client = ron({
+    port: port,
+    host: host,
+    name: 'auth'
+});
+*/
 
 //var store = redis.createClient(port, host);
 // pub.auth('pass', function(){console.log("adentro! pub")});
@@ -52,7 +62,8 @@ app.listen(nodeport);
 
 //returns new_user, true if this user has joined this chat for the first time this session
 function init_user(username, sessionid, socketid, room, type){
-  if(room != null){
+  //u = userspace.init(socketid, username, 1);
+  if(room !== null){
     var u1 = users[sessionid];
     var new_user = true;
     if(u1){
@@ -66,7 +77,7 @@ function init_user(username, sessionid, socketid, room, type){
     }
     else{
       users[sessionid] = {'username': username, 'socketid': socketid, 'sessionid': sessionid, 'chats': {}, 'p2p': {}};
-      users[sessionid][type][room] = 1; 
+      users[sessionid][type][room] = 1;
     }
     return new_user;
   }
@@ -106,7 +117,7 @@ function user_online(user){
 function socket_throughput(user, message){
   console.log("client1 channel " + user + ": " + message);
       store.get(user, function (err, reply) {
-        if(reply != null){
+        if(reply !== null){
           //user is online
           console.log('reply from redis: ' + reply.toString());
           var sessionid = reply.toString();
@@ -179,7 +190,7 @@ io.sockets.on('connection', function (socket) {
 
   //chekc if the user is currently subscribed to nodejs
   socket.on('is_online', function(username, key, sessionid){
-    is_online = user_online(username)
+    is_online = user_online(username);
     if(is_online){
       io.sockets.socket(socket.id).emit('updateP2P', 'SERVER', ' ', key, sessionid, 'ONLINE');
     }

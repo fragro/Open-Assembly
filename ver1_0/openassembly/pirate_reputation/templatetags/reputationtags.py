@@ -11,6 +11,7 @@ from pirate_core import namespace_get
 import settings
 from notification import models as notification
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from customtags.decorators import block_decorator
 register = template.Library()
@@ -98,8 +99,9 @@ def pp_get_reputation_events(context, nodelist, *args, **kwargs):
     namespace = get_namespace(context)
 
     user = kwargs.get('user', None)
-    start = kwargs.get('start', 0)
-    end = kwargs.get('end', 10)
+    page = kwargs.get('page', 1)
+    if page is None:
+        page = 1
 
     if user is not None and isinstance(user, User):
         #get argument score
@@ -110,10 +112,20 @@ def pp_get_reputation_events(context, nodelist, *args, **kwargs):
         cnt = 0
 
     namespace['count'] = cnt
-    namespace['reputation_events'] = rep[start:end]
 
-    namespace['rangelist'] = get_rangelist(start, end, namespace['count'])
+    paginator = Paginator(rep, 10)
 
+    try:
+        rep = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        rep = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        rep = paginator.page(paginator.num_pages)
+    except:
+        raise
+    namespace['reputation_events'] = rep
     output = nodelist.render(context)
     context.pop()
     return output

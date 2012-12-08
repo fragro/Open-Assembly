@@ -1,7 +1,7 @@
 {% load blobtags %}
 {% pp_blob_edits object=object edit_num=edit_num %}
-    <b>{{pp_blob.count}} Edit{{pp_blob.count|pluralize}}</b><i>{% if pp_blob.count > 0 %}
-<br>{% if pp_blob.latest_edit %} Edit {% if edit_num == None %} {{pp_blob.edit_itr}}{% else %} {{pp_blob.edit_itr}}{% endif %} : {{pp_blob.latest_edit.time}}{% else %}Original : {{object.created_dt}}{% endif %}</i>
+    <b>{{pp_blob.count}} Edit{{pp_blob.count|pluralize}}</b>{% if pp_blob.count > 0 %}
+<br>{% if pp_blob.latest_edit %} Edit {% if edit_num == None %} {{pp_blob.edit_itr}}{% else %} {{pp_blob.edit_itr}}{% endif %} : {{pp_blob.latest_edit.time}}{% else %}Original : {{object.created_dt}}{% endif %}
     <br>
     	<span id="edit_num{{object.pk}}" class="{{edit_num}}" style="display:none;"></span>
 	    	<span id="current_edit{{object.pk}}" class="{{pp_blob.latest_edit_pk}}" style="display:none;"></span>

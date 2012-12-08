@@ -62,6 +62,7 @@ class Notification(models.Model):
     def __unicode__(self):
         return str(self.content_type) + ':' + str(self.object_pk)
 
+
 class MessageForm(forms.ModelForm):
 
     def save(self, commit=True):

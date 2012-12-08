@@ -6,56 +6,99 @@
 
 {% block content %}
 
-    <div id="oa_search_form">
+
+    <div id="oa_search_form" class="row">
     {% oa_haystack_search search_key=dimension POST=request.POST %}
 
-    <form method="get" action="." id="haystack_form">
+        <div class="span8 offset2">
 
-        <h2>Search</h2>
+            <form method="get" action="." id="haystack_form">
 
-        <div style='display:none'><input type='hidden' name='form_id' value='oa_search_form' /></div>
-        <table>
-            {{ oa_search.form.as_table }}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <input type="submit" value="Search">
-                </td>
-            </tr>
-        </table>
+                <div style='display:none'><input type='hidden' name='form_id' value='oa_search_form' /></div>
+                    {% for field in oa_search.form %}
+                        {% if field.html_name == 'q' %}
+                            <input type="text" class="input-block-level" placeholder="Search" name="q" id="id_q">
+                        {% endif %}
+                        {% if field.html_name == 'models' %}
+                            {% for value, text in oa_search.form.models.field.choices %}
+                               <label class="checkbox inline"for="id_models_{{forloop.counter0}}">
+                                    <input type="checkbox" name="models" value="{% if value == 'Topics' %}Groups{% endif %}{% if value == 'Locations'%}Locations{% endif %}{% if value == 'Questions'%}Sparks{% endif %}" id="id_models_{{forloop.counter0}}">
+                                    {% if text == 'Topics' %}<i class="icon-user"></i> Groups{% endif %}{% if text == 'Locations'%}<i class="icon-globe"></i> Locations{% endif %}{% if text == 'Questions'%}<i class="icon-fire"></i> Sparks{% endif %}
+                                   </label>
+                            {% endfor %}
+                        {% endif %}
 
-        {% if oa_search.query %}
-            <h3>Results</h3>
+                    {% endfor %}
+        </div>
+        <div class="span1"><input class="btn btn-primary" type="submit" value="Search"></div>
 
-            {% for result in oa_search.page.object_list %}
-                <p>
-                    <a data-href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
-                </p>
-            {% empty %}
-                <p>No results found.</p>
-            {% endfor %}
+    </div>
+    <div class="row">
+        <div class="span8 offset2">
 
-            {% if oa_search.page.has_previous or oa_search.page.has_next %}
-                <div>
-                    {% if oa_search.page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if oa_search.page.has_previous %}</a>{% endif %}
-                    |
-                    {% if oa_search.page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if oa_search.page.has_next %}</a>{% endif %}
+            {% if oa_search.query %}
+                <h3>Results</h3>
+                {% for result in oa_search.page.object_list %}
+                <div class="search row">
+
+                    <div class="span1">
+
+                        {% if result.object|objectClass == 'question' %}
+                                <img class="img_polaroid" src="/static/img/fire.png">
+                        {% endif %}
+                        {% if result.object|objectClass == 'topic' %}
+                                <img class="img_polaroid" src="/static/img/group.png">
+                        {% endif %}
+                        {% if result.object|objectClass == 'action' %}
+                                <img class="img_polaroid" src="/static/img/action.png">
+                        {% endif %}
+                        {% if result.object|objectClass == 'location' %}
+                                <img class="img_polaroid" src="/static/img/location.png">
+                        {% endif %}
+                    </div>
+                    <div class="span7">
+                        <a data-href="{{ result.object.get_absolute_url }}">{{ result.object.summary }}</a>
+                        <blockquote>by {{result.object.user}}</blockquote>
+                    </div>
                 </div>
+                {% empty %}
+                <div class="alert">
+                    <h3>No results found.</h3>
+                </div>
+                {% endfor %}
+
+                {% if oa_search.page.has_previous or oa_search.page.has_next %}
+                    <ul class="pager">
+                        <li>   
+                        {% if oa_search.page.has_previous %}
+                            <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">&laquo; Previous</a>
+                        {% else %}
+                            <a href="#">&laquo; Previous</a>
+                        {% endif %}
+                        </li>
+                        <li>
+                        {% if oa_search.page.has_next %}
+                        <a href="?q={{ query }}&amp;page={{ page.next_page_number }}">Next &raquo;</a>
+                        {% else %}
+                            <a href="#">Next &raquo;</a>
+                        {% endif %}
+                        </li>
+                    </div>
+                {% endif %}
+            {% else %}
+                {# Show some example queries to run, maybe query syntax, something else? #}
             {% endif %}
-        {% else %}
-            {# Show some example queries to run, maybe query syntax, something else? #}
-        {% endif %}
 
-        <script>
-              $("form#haystack_form").submit(function(e){
-                    addObject(e);
-                    var url = '/p/search/d-' + $('#id_q').val()
-                    history.replaceState({load:true, module:'leave', url: url}, '', url);
-              });
-        </script>
-    </form>
-    {% endoa_haystack_search %}
-
+            <script>
+                  $("form#haystack_form").submit(function(e){
+                        addObject(e);
+                        var url = '/p/search/d-' + $('#id_q').val()
+                        history.replaceState({load:true, module:'leave', url: url}, '', url);
+                  });
+            </script>
+        </form>
+        {% endoa_haystack_search %}
+    </div>
 </div>
 
 {% endblock %}

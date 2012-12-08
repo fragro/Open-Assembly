@@ -1,4 +1,5 @@
 from dbindexer.api import register_index
-from tagging.models import Tag
-
-register_index(MyModel, {'name': 'icontains'})
+from pirate_forum.models import View
+# dbindexes.py:
+register_index(View, {'modified_dt': 'month', 'modified_dt': 'day',
+						'modified_dt': 'year', 'created_dt': 'month', 'created_dt': 'day', 'created_dt': 'year'})

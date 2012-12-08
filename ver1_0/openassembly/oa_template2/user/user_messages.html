@@ -1,23 +1,26 @@
   
-{% pp_notification_list_get start=start end=end user=object %}
+{% pp_notification_list_get page=phase dimension=dimension user=object %}
 
 
-     {% for i, count, type in pp_messages.notifications %}
+     {% for i in pp_messages.notifications.object_list %}
 
-         {% if type == "read" %}
-
-            <div class="notitem notifications read">{% include 'user/notification.html' %}</div>
-
-        {% endif %}
-
-         {% if type == "unread" %}
-
-            <div class="notitem notifications unread">{% include 'user/notification.html' %}</div>
-
-        {% endif %}
+            <div class="notifications read">{% include 'user/notification.html' %}</div>
 
      {% endfor %}
 
+         <ul class="pager">
+            {% if pp_messages.notifications.has_previous %}
+                <li><a data-href="{% pp_url template='user.html' dimension='m' object=object phase=pp_messages.notifications.previous_page_number %}">Previous</a></li>
+            {% else %}
+            <li class="disabled"><a data-href="#">Previous</a></li>
+            {% endif %}
+
+            {% if pp_messages.notifications.has_next %}
+                <li><a data-href="{% pp_url template='user.html' dimension='m' object=object phase=pp_messages.notifications.next_page_number %}">Next</a></li>
+            {% else %}
+                <li class="disabled"><a data-href="#">Next</a></li>
+            {% endif %}
+        </ul>
 
     {% endpp_notification_list_get %} 
 

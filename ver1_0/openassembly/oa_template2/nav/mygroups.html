@@ -1,12 +1,10 @@
-<li class="dropdown">
     <a data-href="#"><i class="icon-white icon-user icon-left"></i> My Groups <i class="icon-white  icon-chevron-down icon-right"></i></a>
     <div class="dropdown_menu">
         <div class="col col2">
-            <ul class="thumbnail_list">
-
-                {% pp_mygroups user=request.user start=0 end=15 %}
+            <ul class="thumbnail_list dropdown_list">
+                {% pp_mygroups user=request.user page=phase dimension=dimension %}
                             
-                    {% for group in pp_topic.mygroups %}  
+                    {% for group in pp_topic.mygroups.object_list %}  
                         {% include 'nav/mygroup.html' %}
 
                         {% if pp_topic.half == forloop.counter %}
@@ -19,9 +17,24 @@
 
                     {% endfor %}
                     {% if pp_topic.count > 10 %}<li><a data-href="#">View All</a></li>{% endif %}
-                {% endpp_mygroups %}
-
             </ul>
+
+
         </div>
+            <div>
+            
+                {% if pp_topic.mygroups.has_previous %}
+                    <span class="pull-left btn btn-inverse" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.previous_page_number}}'});">Previous</span>
+                {% else %}
+                    <span class="pull-left btn btn-inverse disabled" data-href="#">Previous</span>
+                {% endif %}
+                {% if pp_topic.mygroups.has_next %}
+                    <span class="pull-right btn btn-inverse" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.next_page_number}}'});">Next</span>
+                {% else %}
+                    <span class="pull-right btn btn-inverse disabled"data-href="#">Next</span>
+                {% endif %}
+            </div>
+    
+        {% endpp_mygroups %}
+
     </div>
-</li>

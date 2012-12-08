@@ -8,13 +8,13 @@
 
             <div id="errors" class="errors">{{ pp_comment.errors }}</div>
                     <input type="hidden" name="form_id" value="pp_comment_form" id="id_form_id"/>
-                    <textarea id="id_text{{object.pk}}" rows="10" cols="40" name="text">     </textarea>
+                    <textarea id="id_text{{object.pk}}" rows="10" cols="40" name="text"></textarea>
                     {{ pp_comment.form.parent}}
                     {{pp_comment.form.form_id}}
                     {{csrf_string|safe}}
                 {% if user.is_authenticated and user.is_active %} 
                                                             
-                <span style="margin-right:10px;" id="commentsubmission{{object.pk}}"><input id="commentsubmission{{object.pk}}button"type="submit" class='button btn btn_green' value="Post Comment"></span>
+                <span style="margin-right:10px;" id="commentsubmission{{object.pk}}"><input id="commentsubmission{{object.pk}}button"type="submit" class='btn' value="Post Comment"></span>
                 <a class="helptext" style="font-weight:normal; text-decoration:none;" href="javascript:;" onmousedown="toggleSlide('pp_formatting_help');">formatting help</a>   
                 <span id="submit_pp_reply_form{{object.pk}}">
 
@@ -37,11 +37,6 @@
 
 
     {% endpp_comment_form %}
-
-
-        <div class="share">
-            {% include 'share.html' %}
-        </div>
 
     </form>
 

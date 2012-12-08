@@ -7,11 +7,11 @@ First make sure you have all the requirements installed to run a development ser
 Open Assembly Installation
 ############################
 
-Install `Git <http://git-scm.com/>`_ if it isn't already installed.
+Install `Git <http://git-scm.com/>`_ and HG if these version control libraries isn't already installed.
 
 .. code-block:: bash
 
-	sudo apt-get install git-core
+	sudo apt-get install git-core mercurial
 
 We recommend PIP and VirtualEnv to satisfy dependencies.
 
@@ -197,6 +197,19 @@ Navigate to the Open-Assembly/oanode directory in a new terminal.
 
 	node server.js
 
+Amazon S3 Support
+---------------------------
+
+To setup your OA application for images, create a file called 'local_environment.json' in your home folder. The contents should look something like this, except substituted for your own variables from S3. The mountpoint "/home/user/media/" could be any existing directory on your filesystem. S3FS_ACCESSKEY, S3FS_SECRETKEY and S3FS_BUCKET must be setup from your `S3 management console <http://aws.amazon.com/console/>`_.
+
+.. code-block:: bash
+
+	{"S3FS_ACCESSKEY": "ASIODUAS27FSAS2",
+		"S3FS_BUCKET": "openassembly-store",
+		"S3FS_MOUNTPOINT": "/home/user/media/",
+		"S3FS_SECRETKEY": "aos8ddas8foafkl2l2oka9sk9akdo2"
+	}
+
 Usage
 ----------------------------
 
@@ -215,29 +228,43 @@ To push to production we recommend Dotcloud. It is actually much easier to push 
 Using Dotcloud
 ############################
 
-Dotcloud makes deploying Open Assembly easy. First create an account with dotcloud and install the CLI `here <http://docs.dotcloud.com/0.4/firststeps/install/>`_
+Dotcloud makes deploying Open Assembly easy. First create an account with dotcloud and install the CLI `here <http://docs.dotcloud.com/0.9/firststeps/install/>`_
 
-Next you just need to create a sandbox app in dotcloud. Replace ''appname'' with what you want to call your deployment of OA.
-
-.. code-block:: bash
-
-	dotcloud create appname
-
-First clone from git if you did not do so setting up a development server.
+First clone from git if you did not do so setting up a development server. This leads to the development repository, which may be unstable from time to time. We are starting a release cycle and will soon have a stable package available.
 
 .. code-block:: bash
 
 	git clone git://github.com/fragro/Open-Assembly.git
 
-Then navigate to the Open-Assembly/ folder and push to dotcloud.
+Next you just need to create a sandbox app in dotcloud. Replace ''appname'' with what you want to call your deployment of OA. If you want to use the git repository to push the latest version. Otherwise remove --git
 
 .. code-block:: bash
 
-	dotcloud push appname
+	dotcloud create --git appname
 
-That's it! You deployed your own verstion of OA live. If you want to make your OA deployment scalable and reliable you will need to access the billing details from Dotcloud and your app to Live, but sandbox apps will work for small groups that don't mind using the dotcloud URL
+First you need to specify some important environment variables from S3 and your Email host. First the required environment variables for S3 Amazon cloud server, where image files are stored.
 
-Requires Setting of Email and Password within Open-Assembly/ver1_0/openassembly/settings.py
+Amazon S3 Support
+---------------------------
+
+To setup your OA application for images, create a file called 'local_environment.json' in your home folder. The contents should look something like this, except substituted for your own variables from S3. The mountpoint "/home/user/media/" could be any existing directory on your filesystem. S3FS_ACCESSKEY, S3FS_SECRETKEY and S3FS_BUCKET must be setup from your `S3 management console <http://aws.amazon.com/console/>`_.
+
+.. code-block:: bash
+
+	dotcloud env set \
+	    'S3FS_ACCESSKEY=MYSECRETACCESSKEY' \
+	    'S3FS_BUCKET=openassembly-store' \
+	    'S3FS_SECRETKEY=MYSECRETS3FSKEY'
+
+Note if you do not have S3 or want to use a different method of file/image storage, please see the settings.py file in ver1_0/openassembly and change the value of DEFAULT_FILE_STORAGE to specify the storages backed you want. For more information on the different backends, see `django storages <http://django-storages.readthedocs.org/en/latest/>`_ documentation .
+
+OA also requires Setting of Email and Password within Open-Assembly/ver1_0/openassembly/settings.py
+
+You can modify the local version and upload to dotcloud via the --rsync method.
+
+.. code-block:: bash
+
+	dotcloud var set appname EMAIL_PASSWORD=mysecretpassword
 
 .. code-block:: python
 
@@ -253,6 +280,16 @@ You also must set the EMAIL_PASSWORD environment variable in `Dotcloud environme
 .. code-block:: bash
 
 	dotcloud var set appname EMAIL_PASSWORD=mysecretpassword
+
+Then navigate to the Open-Assembly/ folder and connect/push to dotcloud.
+
+.. code-block:: bash
+
+	dotcloud connect appname
+	dotcloud push
+
+That's it! You deployed your own verstion of OA live. If you want to make your OA deployment scalable and reliable you will need to access the billing details from Dotcloud and your app to Live, but sandbox apps will work for small groups that don't mind using the dotcloud URL
+
 
 Other Hosts
 ############################

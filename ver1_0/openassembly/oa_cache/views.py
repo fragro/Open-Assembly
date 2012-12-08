@@ -16,7 +16,16 @@ import settings
 import BeautifulSoup
 from types import ListType
 from collections import defaultdict
-import settings
+import re
+
+
+#applies regex to format keys
+def get_key(key):
+    try:
+        m = re.search('p\/\w*\/k-[\w-]*', key)
+        return m.group(0).replace('/', '')
+    except:
+        return key.replace('/', '')
 
 
 def get_object_or_none(ctype_id, obj_id):
@@ -125,7 +134,7 @@ as a reference for the template, div, and other necessary inforamtion.
             #if no ModelCache, then there are multiple elements on one page and we need to specify via div_id
             if usc.object_specific:
                     div_id += obj_id
-            retkey = key.replace('/', '')
+            retkey = get_key(key)
             if not usc.is_recursive:
                 render = usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', 'n'),
                                 'key': retkey, 'object': obj, 'user': user, 'csrf_string': csrf_t,
@@ -172,16 +181,17 @@ def get_cache_or_render(user, key, empty, forcerender=True, request=None, extrac
     load_last = []
     counts = {}
 
-    #need to determine the computational load of adding all the settings dict to the context, if any. Should be a heavier memory load at most, but
-    #I don't see how this could slow down the cpu necessarily if we are using hashing
-    extracontext.update({'template': rendertype, 'user': user, 'key': key.replace('/', ''), 'settings': settings})
-
     #get the obj if it exists
     ctype_id = paramdict.get('TYPE_KEY', None)
     obj_id = paramdict.get('OBJ_KEY', None)
     dimension = paramdict.get('DIM_KEY', None)
     scroll_to = paramdict.get('SCROLL_KEY', None)
     phase = paramdict.get('PHASE_KEY', None)
+
+    #need to determine the computational load of adding all the settings dict to the context, if any. Should be a heavier memory load at most, but
+    #I don't see how this could slow down the cpu necessarily if we are using hashing
+    extracontext.update({'template': rendertype, 'user': user, 'key': get_key(key), 'settings': settings, 'phase': phase})
+
     try:
         obj = get_object_or_none(ctype_id, obj_id)
     except:
@@ -527,7 +537,7 @@ decreased the latency of the system.
         else:
             div_id = usc.div_id
         render = {'div': div_id, 'type': usc.jquery_cmd, 'html':
-                    usc.render(RequestContext(request, {'dimension': paramdict.get('DIM_KEY', None),
+                    usc.render(RequestContext(request, {'phase': paramdict.get('PHASE_KEY', ''), 'dimension': paramdict.get('DIM_KEY', None),
                     'object': obj, 'user': user, 'sort_type': paramdict.get('CTYPE_KEY', '')}))}
 
         data['output'] = [render]

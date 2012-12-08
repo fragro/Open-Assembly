@@ -1,112 +1,89 @@
-<div class="user_info">
-{% if user == object %}
-    {% pp_consensus_get object=object.pk %}
-        {% include 'user/user_activity.html' %}
-    {% endpp_consensus_get %}
-{% endif %}
+<div class="row">
+    <div class="span2">
 
-{% pp_get_avatar user=object %}
+    {% include 'user/user_avatar.html' %}
+    </div>
+    <div class="span2">
+        <h1 class="page_title">{{object.username}}</h1>
+    </div>
+    <div class="span4">
 
-    {% pp_get_contenttype_id object=object %}
-
-        {% if user = object and user.is_authenticated %}
-            <a id="avatar" data-href="/p/upload/o-{{user.id}}/t-{{pp_source.ctype_pk}}">
-
-            {% pp_get_sources object=object type='img' %}
-                {% if pp_source.cur_img %}
-                    {% thumbnail pp_source.cur_img.file "100x100" crop="center" as im %}
-                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-                    {% endthumbnail %}
-                {% else %}
-                    <img src="/static/img/faux_logo100.png">
+          <div class="row">
+              <ul class="nav nav-pills" id="userTab{{object.pk}}">
+                <li {% if dimension == 't' or not dimension %}class="active"{% endif %}><a href="#trust{{object.pk}}" data-toggle="tab">Social</a></li>
+                {% if user == object %}
+                    <li {% if dimension == 'm' %}class="active"{% endif %}><a href="#mes{{object.pk}}" data-toggle="tab">Notifications</a></li>
                 {% endif %}
-
-            {% endpp_get_sources %}
-            </a>
-
-        {% else %}
-            <span id="avatar">
-                {% include 'etc/object_img_100.html' %}
-            </span>
-        {% endif %}
-
-    {% endpp_get_contenttype_id %}
-
-{% endpp_get_avatar %}
+                <li {% if dimension == 'c' %}class="active"{% endif %}><a href="#cont{{object.pk}}" data-toggle="tab">Contribution</a></li>
+                <li {% if dimension == 'a' %}class="active"{% endif %}><a href="#actions{{object.pk}}" data-toggle="tab">Actions</a></li>
+                {% if pp_profile.profile.about_me %}<li><a href="#about_me{{object.pk}}" data-toggle="tab">About Me</a></li>{% endif %}                
 
 
-<div class="usercircle circle">
-    <label>{{object.date_joined|date:"d/m/y"}}</label>
-    <div class="title"> Joined </div>
-</div>
+              </ul>
+            </div>
+        <div class="row">
+            {% if user != object %}
 
+                    {% pp_has_subscription subscriber=user subscribee=object %}
+                            {% if not pp_subscription.has_subscription %}
+                                <a class="btn" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-up icon-left"></i>Trust</a> 
 
-{% comment %}
-     {% pp_get_reputation user=object %}
-        <div class="circle usercircle">
-             <label>{{pp_reputation.reputation}}</label>
-                 <div class="title"> Contributions </div>
+                            {% else %}
+                                <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-down icon-left"></i>Stop Trusting</a>
+                            {% endif %}
+
+                            <a class="btn" data-href="{% pp_url template='message.html' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
+
+                    {% endpp_has_subscription %}
+                                
+            {% endif %}
         </div>
-     {% endpp_get_reputation %}
-{% endcomment %}
-
-
-{% pp_subscriber_count user=object %}                
-    <div class="circle usercircle">
-       <label> {{pp_subscription.count}}</label>
-           <div class="title"> Trusted By </div>
-
     </div>
-{% endpp_subscriber_count %}
 
-{% pp_subscribee_count user=object %}                
-    <div class="circle usercircle">
-        <label>{{pp_subscription.count}}</label>
-        <div class="title"> Trusts </div>
+        <div class="span2">
+            {% if user == object %}
+                {% pp_consensus_get object=object.pk %}
+                    {% include 'user/user_activity.html' %}
+                {% endpp_consensus_get %}
+            {% endif %}
     </div>
-{% endpp_subscribee_count %} 
-
-
-<h1 class="page_title">{{object.username}}</h1>
-{% pp_get_user_profile user=object %}
-    {% if pp_profile.profile.about_me %}
-            <div style="margin-bottom:5px;">{{pp_profile.profile.about_me}}</div>
-    {% endif %}
-{% endpp_get_user_profile %}
-
-
-
-{% if user != object %}
-
-{% pp_has_subscription subscriber=user subscribee=object %}
-        {% if not pp_subscription.has_subscription %}
-            <a class="btn" onClick="support(true, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-up icon-left"></i>Trust</a> 
-
-        {% else %}
-            <a class="btn" onClick="support(false, '{{object.pk}}', '{{request.user.pk}}')"><i class="icon-chevron-down icon-left"></i>Stop Trusting</a>
-        {% endif %}
-
-        <a class="btn" data-href="{% pp_url template='message.html' object=object %}"><i class="icon-envelope icon-left"></i>Message</a>
-
-
-{% endpp_has_subscription %}
-            
-
-{% endif %}
-
-
-<span class="btn" onClick="$('#container{{object.pk}}').isotope({ filter: '*' });"><i class="icon-home icon-left"></i>All</span>
-
-{% if object == user %}
-    <span class="btn btn_red" onClick="$('#container{{object.pk}}').isotope({ filter: '.notifications' });"><i class="icon-envelope icon-white icon-left"></i>Notifications</span>
-{% endif %}
-<span class="btn btn_blue" onClick="$('#container{{object.pk}}').isotope({ filter: '.activity' });"><i class="icon-user icon-white icon-left"></i>Activity</span>
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.trustme' });"><i class="icon-arrow-left icon-white icon-left"></i>Trusts {{object.username}}</span>
-<span class="btn btn_green" onClick="$('#container{{object.pk}}').isotope({ filter: '.itrust' });"><i class="icon-arrow-right icon-white icon-left"></i>{{object.username}} Trusts</span>
-
-{% if request.user == object %}
-<a class="btn" data-href="{% pp_url template='pp_profile_form.html' object=request.user %}"><i class="icon-pencil icon-left"></i>Edit Profile</a>
-{% endif %}
-
-
 </div>
+    {% comment %}
+
+    <div class="user_info span6 pull-right">
+
+
+    <div class="usercircle circle">
+        <label>{{object.date_joined|date:"d/m/y"}}</label>
+        <div class="title"> Joined </div>
+    </div>
+
+
+         {% pp_get_reputation user=object %}
+            <div class="circle usercircle">
+                 <label>{{pp_reputation.reputation}}</label>
+                     <div class="title"> Contributions </div>
+            </div>
+         {% endpp_get_reputation %}
+
+
+    {% pp_subscriber_count user=object %}                
+        <div class="circle usercircle">
+           <label> {{pp_subscription.count}}</label>
+               <div class="title"> Trusted By </div>
+
+        </div>
+    {% endpp_subscriber_count %}
+
+    {% pp_subscribee_count user=object %}                
+        <div class="circle usercircle">
+            <label>{{pp_subscription.count}}</label>
+            <div class="title"> Trusts </div>
+        </div>
+    {% endpp_subscribee_count %}
+
+
+    </div>
+</div>
+    {% endcomment %}
+

@@ -3,40 +3,27 @@
 
 {% if not object.is_deleted %}
 
-    <ul id="comment_links{{object.pk}}" class="comment_links">
+    <div id="comment_links{{object.pk}}" class="button-toolbar">
     {% if user.is_authenticated %}
-            <li>
-                <a onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">reply</a>
-            </li>
-
+                <a class="btn btn-small" onmousedown="toggleSlide('pp_reply_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">Reply</a>
             {% comment %}
-            <li>
-                <a href="{{object.get_absolute_url}}">permalink</a>
-            </li>
+               <a class="btn btn-small" href="{{object.get_absolute_url}}">permalink</a>
             {% endcomment %}
 
             {% if user == object.user %}
-            <li>
-                <a onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_delete_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">edit</a>
-            </li>
-                <li>
-                    <a style="color:red;" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">delete</a>
-                </li>
-            {% endif %}
+                <a class="btn btn-small" onmousedown="toggleSlide('pp_edit_form{{object.pk}}');slideup('pp_formatting_help{{object.pk}}');slideup('pp_delete_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">edit</a>
+                <a class="btn btn-mini" onmousedown="toggleSlide('pp_delete_form{{object.pk}}');slideup('pp_edit_form{{object.pk}}');slideup('pp_reply_form{{object.pk}}');">delete</a>
+           {% endif %}
 
     {% else %}
-            <li>
-                <a data-href="{% pp_url template='register.html' %}" >reply</a>
-            </li>
+                <a class="btn btn-small" data-href="{% pp_url template='register.html' %}" >reply</a>
             {% comment %}
-            <li>
-                <a href="{{object.get_absolute_url}}">permalink</a>
-            </li>
+                <a class="btn btn-small" href="{{object.get_absolute_url}}">permalink</a>
             {% endcomment %}
 
     {% endif %}
 
-        </ul>
+        </div>
         
 
     {% if user == object.user %}

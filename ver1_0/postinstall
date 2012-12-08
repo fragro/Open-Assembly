@@ -25,6 +25,7 @@ setup_django() {
     python waitfordb.py
     python $app_name/manage.py syncdb --noinput
     python $app_name/manage.py rebuild_index --noinput
+    crontab /home/dotcloud/current/jobs/crontab
 }
 
 setup_django_celery() {

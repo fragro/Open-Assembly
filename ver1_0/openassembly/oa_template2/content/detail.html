@@ -17,8 +17,8 @@
 {% load commenttags %}
 {% load blobtags %}
 
-
 {% block content %}
+
 
     <script type="text/javascript">
 
@@ -45,162 +45,149 @@
     });
 
     </script>
-    <div class="pad" id="pad{{object.pk}}">
 
-    {% if user.is_authenticated and user.is_active %}
-        <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe>
 
-    {% else %}
+    <div class="row">
 
-        {% pp_get_pad object=object %}
+    	<div class="span10">
 
-            {{pp_source.text|safe}}
+      		{% include 'content/info.html' %}
 
-        {% endpp_get_pad %}
-    {% endif %}
+      	</div>
     </div>
-    <h3><a data-href="{% pp_url object=object.parent template='group.html' %}">{{object.parent.summary}}</a></h3>
-    <h1><a data-href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
-   
-    {% pp_get_root object=object %} 
-        {% oa_get_group_settings object=pp_topic.root %}
-        
-        {% oa_ingroup object=pp_topic.root user=user %}
+<div class="row">
+    <div class="span5">
+          <blockquote><small>by {% include 'etc/object_img_25_user.html' %} <a data-href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}</small></blockquote>
 
-           {% pp_consensus_get object=object.pk user=user %}
+        <div id="description{{object.pk}}">
+            {{object.description|markdown }}
+        </div>
 
+          {% oa_location_get object=object start=0 end=1 %}
+              {% for lat, lon, loc in oa_loc.places %}
+                  <span class="badge"><i class="icon-globe icon-white"></i> {{ loc.summary }}</span>
+              {% endfor %}
+          {% endoa_location_get %}
 
-                <div style="margin-bottom:10px;">
-                    {% comment %}
-                        {% if pp_consensus.consensus.interest > 1000 %}
-                            <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
-                        {% else %}
-                            <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
-                        {% endif %}
-                    {% endcomment %}
-                         by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}</div>
-
-                        <div id="description{{object.pk}}">
-                            {{object.description|markdown }}
-                        </div>
-
-                        {% if object.location %}
-                        <ul class="tags">
-                            <li class="title"><b>Location:</b></li>
-                            <li>{{object.location}}</li>
-                        </ul><br>
-                        {% endif %}
-
-                        {% if object.target %}
-                        <ul class="tags">
-                            <li class="title"><b>Boycott Target:</b></li>
-                            <li>{{object.target}}</li>
-                        </ul><br>
-                        {% endif %}
-
-                
-                <!--don't fuck with this too much, pretty much all of this is used for voting -->
-                
-                        <div id="temp_check{{object.pk}}" class="detail_temp_check">{% include 'content/temp_check.html' %}</div>
-                 
-
-                        <div class="vote_controls">       
-                            Vote <span id="spectrum_vote"></span>
-                            Agreement: <span id="stars-cap-spec"></span>
-
-                            {% pp_spectrum_form object=object user=user %}
-                            <form method="post" action="">
-
-                                <div id="stars-wrapper-spec{{object.id}}">
-                                    {{pp_consensus.form.spectrum}}
-                                    {{pp_consensus.form.form_id}}
-                                </div>
-                                
-                                {{csrf_string|safe}}
-
-                                <noscript><input type="submit" class='button green' value="Rating"></noscript>
-
-                            </form>
-                            {% endpp_spectrum_form %}
-                            <br><br>
-                            Difficulty: <span id="stars-cap-rate"></span>
-                            {% pp_rating_form object=object user=user %}
-
-                            <form method="post" action="">
-
-                                <div id="stars-wrapper-rate{{object.id}}">
-                                
-                                {{ pp_consensus.form.rating}}
-                                {{pp_consensus.form.form_id}}
-                                </div>
-                                
-                                {{csrf_string|safe}}
-
-                            <noscript><input type="submit" class='button green' value="Rating"> </noscript>
-
-                            </form>
-                            {% endpp_rating_form %}
-                        
-                        <br>
-                        <div class="edits" id="edits{{object.pk}}">
-                            {% include 'etc/edits.html' %}
-                        </div>
-
-                        {% include 'content/reporting_percent.html' %}
-
-                        </div>
-
-            <!--fuck around free for all down here! -->
-
-<br><br>
-           
-<div class="edits"> 
-
-    <div class="edit_ctrl">
-            {% include 'etc/author_controls.html' %}
-
-            {% include 'forms/imgsource.html' %}
+          {% pp_get_views object=object %}
+              <span class="pull-right badge badge-info"><i class="icon-eye-open icon-white"></i> {{ pp_blob.count }} Views</span> 
+          {% endpp_get_views %}
 
     </div>
-<br>
-            <!--number currently reporting -->
+    	<div class="span5">
 
-</div>
-        
-        {% endpp_consensus_get %}
+          <ul class="nav nav-tabs" id="myTab{{object.pk}}">
+            <li class="active"><a href="#voting{{object.pk}}" data-toggle="tab">Voting</a></li>
+            <li><a href="#doc{{object.pk}}" data-toggle="tab">Pad</a></li>
+            <li><a href="#edits_ctrl{{object.pk}}" data-toggle="tab">Edits</a></li>
+            <li><a href="#images{{object.pk}}" data-toggle="tab">Images</a></li>
+            <li><a href="#comment{{object.pk}}" data-toggle="tab">Comment</a></li>
+            <li><a href="#action{{object.pk}}" data-toggle="tab">Act</a></li>
+            {% if object.user == request.user or user.is_staff %}
+              <li><a href="#author_controls{{object.pk}}" data-toggle="tab">Author</a></li>
+            {% endif %}
+              
+          </ul>
 
-        {% include 'forms/detail_input.html' %}
+        <div class="tab-content">
 
-    {% endoa_ingroup %}
+      	    <div class="tab-pane active" id="voting{{object.pk}}">
 
-{% endoa_get_group_settings %}
-{% endpp_get_root %}
+            	{% include 'content/voting.html' %}
+
+            </div>
+
+            <div class="tab-pane" id="doc{{object.pk}}">
+
+              {% include 'content/pad.html'%}
+
+            </div>
+
+      	    <div class="tab-pane" id="edits_ctrl{{object.pk}}">
+
+  	            <div class="edits" id="edits{{object.pk}}">
+                    {% include 'etc/edits.html' %}
+  	            </div>
+	           
+           </div>
+          {% if object.user == request.user or user.is_staff %}
+
+             <div class="tab-pane" id="author_controls{{object.pk}}"> 
+                  {% include 'etc/author_controls.html' %}
+            </div>
+          {% endif %}
+            <div class="tab-pane" id="comment{{object.pk}}">
+
+               {% include 'forms/detail_input.html' %}
+
+            </div>
+
+            <div class="tab-pane" id="action{{object.pk}}">
+
+               {% include 'forms/action_form.html' %}
+
+            </div>
+    		
+            <div class="tab-pane" id="images{{object.pk}}">
+              {% include 'forms/imgsource.html' %}
+
+              {% include 'content/imglist.html' %}
+
+            </div>
+  
+    	 </div>
+
+    	</div>
+
+    </div>
+    <hr>
+    <div class="row">
+        <div class="span10">
 
        
 
-    {% pp_comment_count object=object.id %}
 
-        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>
+    {% comment %}
+        {% pp_get_argument_count object=object arg_type='yea' %}
 
-    {% endpp_comment_count %}
+            <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a>
+
+        {% endpp_get_argument_count %}
+
+        {% pp_get_argument_count object=object arg_type='nay' %}
+
+            <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+
+        {% endpp_get_argument_count %}
+    {% endcomment %}
 
 
-{% comment %}
-    {% pp_get_argument_count object=object arg_type='yea' %}
+          <ul class="nav nav-tabs" id="bottomTab{{object.pk}}">
+            <li class="active"><a href="#content_children{{object.pk}}" data-toggle="tab">
 
-        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a>
 
-    {% endpp_get_argument_count %}
+        {% pp_comment_count object=object.id %}
 
-    {% pp_get_argument_count object=object arg_type='nay' %}
+            {{pp_comment.count}} Comment{{pp_comment.count|pluralize}}
 
-        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+        {% endpp_comment_count %}
 
-    {% endpp_get_argument_count %}
-{% endcomment %}
+            </a></li>
+            <li><a href="#action_list{{object.pk}}" data-toggle="tab">Actions</a></li>
+            
+          </ul>
+        <div class="tab-content">
 
-    <div id="content_children{{object.pk}}" class="content_children">                                
-                               
+          <div class="tab-pane" id="action_list{{object.pk}}">
+
+             {% include 'content/actionlist.html' %}
+
+          </div>
+
+          <div class="tab-pane active" id="content_children{{object.pk}}">
+          </div>
+        </div>
+
     </div>
-
+  </div>
 {% endblock %}

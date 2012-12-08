@@ -2,14 +2,15 @@
 {% load pp_url %}
 
 
-
             {% pp_blob_form POST=request.POST user=user dimension='tem' parent=object sub=pp_blob.sub %}
 
                 {% if pp_blob.form_complete %}
 
-                <h2>Content Successfully Submitted</h2>
+               <div class="alert alert-info">
+                    <h2>Content Successfully Submitted</h2>
 
-                <a class="btn btn_blue" data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">View Your Proposal</a>
+                    <a class="btn" data-href="{% pp_url template='detail.html' object=pp_blob.path %}" onClick="tabRemove('{{key}}');">View Your Proposal</a>
+                </div>
 
                 {% else %}
                         <script src="/static/markitup/ajax_csrf.js" type="text/javascript"></script>
@@ -22,25 +23,25 @@
 
                                     <div class="submission">
 
-                                    <b>{{field.label_tag}}</b>
+                                    <blockquote>{{field.label_tag}}</blockquote>
                                     
                                     {% if field.errors %}{% for err in field.errors %}<b style="color:red;">{{ err }}</b>{% endfor %}{% endif %}
 
-                                    {% if not field.help_text %}<br>{% endif %}{{ field }}{% if field.help_text %}<br>{{field.help_text}}{% endif %}
-                                    
+                                    {% if not field.help_text %}{% endif %}{{ field }}{% if field.help_text %}<p>{{field.help_text}}</p>{% endif %}
+        
                                     {% if field.html_name == 'group' %}
                                         <div><b style="color:red;">{{ pp_blob.grouperrors }}</b></div>
-                                            <h3>Your Groups</h3>
+                                            <h5>My Groups</h5>
+                                            <ul class="nav nav-pills">
                                             {% pp_show_blobchoices user=user %}
-                                                {% for name, url in pp_blob.choices %}
-                                                    <span class="group_choices"><a onClick="{{url}}">{{name}}</a></span>
+                                                {% for ch in pp_blob.choices %}
+                                                    <li><a onClick="$('#id_group').val('{{ch.topic.summary}}');">{{ch.topic.summary}}</a></li>
                                                 {% endfor %}
+                                            </ul>
                                             {% endpp_show_blobchoices %}
                                     {% endif %}
 
                                     </div>
-
-
                             {% endfor %}
 
                         {% csrf_token %}
@@ -68,7 +69,6 @@
 
                 
                     <span id="content_side_effect" style="display:none;">["{{pp_blob.object_pk}}", "{{pp_blob.content_type}}"]</span>
-
 
 
             {% endpp_blob_form %}
