@@ -557,17 +557,17 @@ class TopicForm(forms.ModelForm):
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="create_group")
     summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}),  label="Comprehensive Name of the Group")
+                attrs={'size': '50', 'class': 'input-block-level'}),  label="Comprehensive Name of the Group")
     shortname = forms.CharField(max_length=23,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}), label="Short Name (20 Characters or Less)")
+                attrs={'size': '50', 'class': 'input-block-level'}), label="Short Name (20 Characters or Less)")
     more_info = forms.CharField(required=False, max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}), label="Link to Group Website")
+                attrs={'size': '50', 'class': 'input-block-level'}), label="Link to Group Website")
     description = forms.CharField(widget=forms.Textarea, label="Group Description")
     location = forms.CharField(label="Location", max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}), required=False)
+                attrs={'size': '50', 'class': 'input-block-level'}), required=False)
 
 
 #hack to get around markitup selecting divs and
@@ -585,15 +585,15 @@ class EditTopicForm(forms.ModelForm):
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_topic_form")
     summary = forms.CharField( max_length=100,
               widget=forms.TextInput(
-                attrs={'size':'50', 'class':'inputText'}),label="Comprehensive Name of the Group")
+                attrs={'size':'50', 'class':'input-block-level'}),label="Comprehensive Name of the Group")
     shortname = forms.CharField( max_length=20,
               widget=forms.TextInput(
-                attrs={'size':'50', 'class':'inputText'}),label="Short Name (20 Characters or Less)")
+                attrs={'size':'50', 'class':'input-block-level'}),label="Short Name (20 Characters or Less)")
     more_info = forms.CharField(required=False, max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}),label="Link to Group Website") 
+                attrs={'size': '50', 'class': 'input-block-level'}),label="Link to Group Website") 
     description = forms.CharField(widget=forms.Textarea,label="Edit Description")
     location = forms.CharField(label="Location", max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}),required=False)
+                attrs={'size': '50', 'class': 'input-block-level'}),required=False)
     form_id = forms.CharField(widget=forms.HiddenInput(), initial="pp_edittopic_form")

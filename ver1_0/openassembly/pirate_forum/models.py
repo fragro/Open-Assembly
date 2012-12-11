@@ -324,7 +324,7 @@ class BlobForm(forms.ModelForm):
 
     summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '70', 'class': 'inputText'}), initial="")
+                attrs={'size': '70', 'class': 'input-block-level'}), initial="")
     blobdescription = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="", label="Description")
 
@@ -340,7 +340,7 @@ class BlobEditForm(forms.Form):
 
     summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '70', 'class': 'inputText'}), initial="")
+                attrs={'size': '70', 'class': 'input-block-level'}), initial="")
     description = forms.CharField(widget=MarkItUpWidget(
                 attrs={'cols': '20', 'rows': '10'}), initial="", label="Description")
 
@@ -363,6 +363,5 @@ class NominationForm(forms.ModelForm):
 
     summary = forms.CharField(max_length=100,
               widget=forms.TextInput(
-                attrs={'size': '50', 'class': 'inputText'}), initial="")
+                attrs={'size': '50', 'class': 'input-block-level'}), initial="")
     description = forms.CharField(widget=forms.Textarea(), initial="")
-

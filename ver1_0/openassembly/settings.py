@@ -53,24 +53,6 @@ except:
     RECAPTCHA_PUBLIC_KEY = '6LehG9oSAAAAAD256YWh5x_STpHRlEIxd3TKR3is'
     RECAPTCHA_PRIVATE_KEY = '6LehG9oSAAAAAKU-4rViXJrsGBgj7gImL0MMu3ae'
 
-### Specify your email in the environmental variables for dotcloud.
-##  If you hack the throwaway account I will be a sad panda, and waste 30 seconds creating another.
-try:
-    DEFAULT_FROM_EMAIL = env['EMAIL_HOST_USER']
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = env['EMAIL_HOST']
-    EMAIL_HOST_USER = env['EMAIL_HOST_USER']
-    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
-    EMAIL_PORT = 587
-except:
-    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
-    EMAIL_HOST_PASSWORD = 'this is a password'
-    EMAIL_PORT = 587
-
-
 
 try:
     #DOTCLOUD ASSUMES S3 STORAGE. CANNOT USE HASHSTORAGE DUE TO DOTCLOUD SCALING.
@@ -400,3 +382,20 @@ CELERY_QUEUES = {
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/p/user/k-%s" % o.username,
 }
+
+### Specify your email in the environmental variables for dotcloud.
+##  If you hack the throwaway account I will be a sad panda, and waste 30 seconds creating another.
+try:
+    DEFAULT_FROM_EMAIL = env['EMAIL_HOST_USER']
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = env['EMAIL_HOST']
+    EMAIL_HOST_USER = env['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = env['EMAIL_PASSWORD']
+    EMAIL_PORT = 587
+except:
+    DEFAULT_FROM_EMAIL = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'htusybrmlaosirgtntksurtasrr@gmail.com'
+    EMAIL_HOST_PASSWORD = 'this is a password'
+    EMAIL_PORT = 587

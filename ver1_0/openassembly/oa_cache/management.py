@@ -248,7 +248,7 @@ tempcheckcache, is_new = UserSaltCache.objects.get_or_create(model_cache=detailc
             template="content/temp_check.html", div_id="#temp_check", jquery_cmd="html", object_specific=True)
 
 tempchecksmallcache, is_new = UserSaltCache.objects.get_or_create(model_cache=propcache.pk,
-            template="content/temp_check_small.html", div_id="#temp_check_small", jquery_cmd="#panels", 
+            template="content/temp_check_small.html", div_id="#temp_check_small", jquery_cmd="#panels",
             object_specific=True, cache=True)
 
 ####ADMIN

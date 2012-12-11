@@ -219,7 +219,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                         mg, is_new = MyGroup.objects.get_or_create(user=user, topic=ref.topic)
                                         ref.topic.group_members += 1
                                         ref.topic.save()
-                                    namespace['errors'] = 'Account created and group joined!'
+                                    namespace['success'] = 'Account created and group joined!'
                                     #except:
                                     #    namespace['errors'] = "Illegal Referral Key"
                                 else:
@@ -240,7 +240,7 @@ def pp_user_registration_form(context, nodelist, *args, **kwargs):
                                               email_body,
                                               'fragro@gmail.com',
                                               [user.email])
-                                    namespace['errors'] = 'Check your email for confirmation!'
+                                    namespace['success'] = 'Check your email for confirmation!'
                     else:
                         namespace['errors'] = "Passwords are not the same. Try again."
             except HttpRedirectException, e:
