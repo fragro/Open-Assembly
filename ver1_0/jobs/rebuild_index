@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd ../openassembly/
+python manage.py rebuild_index --noinput

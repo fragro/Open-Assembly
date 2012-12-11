@@ -1,0 +1,2 @@
+MAILTO="fragro@gmail.com"
+59 23 * * * ~/current/jobs/rebuild_index
