@@ -22,6 +22,7 @@
 
                 {% include 'etc/object_img_100.html' %}
                 </a>
+    
     </div>
     <div class="span8">
         <div class="row">
@@ -34,6 +35,7 @@
                 {% endif %}
             </li>
               <li class="active"><h2>{{object.summary}}</h2></li>
+              {% include 'views.html' %}
             </ul>
 
 
@@ -48,7 +50,7 @@
 <div class="row">
     <div class="span10">
           <ul class="nav nav-tabs" id="myTab{{object.pk}}">
-            <li class="active"><a href="#proposals{{object.pk}}" data-toggle="tab">Proposals</a></li>
+            <li class="active"><a href="#proposals{{object.pk}}" data-toggle="tab">Sparks</a></li>
             <li><a href="#groups{{object.pk}}" data-toggle="tab">Affinity Groups</a></li>
             <li><a href="#members{{object.pk}}" data-toggle="tab">Members</a></li>
             <li><a href="#facilitators{{object.pk}}" data-toggle="tab">Faciliators</a></li>

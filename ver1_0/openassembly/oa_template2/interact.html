@@ -2,43 +2,29 @@
 
 
 {% block content %}
- 
 {% oa_get_group_settings object=object %}
 
-    <a class="btn btn_green" style="margin-right:10px; margin-bottom:20px;" data-href="{% pp_url template='submit.html' object=object dimension='tem' %}">Submit a New Propsal</a>
-
     {% cani object=object user=user %}
-        {% if pp_permissions.permission %}
+        {% if pp_permissions.permission %} 
+            <ul class="nav nav-pills" id="interact{{object.pk}}">
+              <li class="active"><a href="#fac{{object.pk}}" data-toggle="tab">Settings</a></li>
+              <li><a href="#mem{{object.pk}}" data-toggle="tab">Invite Members</a></li>
+              <li><a href="#add{{object.pk}}" data-toggle="tab">Add Facilitators</a></li>
+              <li><a href="#tform{{object.pk}}" data-toggle="tab">Create Affinity Group</a></li>
+              <li><a href="#ginfo{{object.pk}}" data-toggle="tab">Edit Group Info</a></li>
+              <li><a href="#ginfo2{{object.pk}}" data-toggle="tab">Set Location</a></li>
+              <li><a href="#ginfo3{{object.pk}}" data-toggle="tab">Change Image</a></li>
 
+            </ul>
 
-            <h2>Facilitator Settings</h2>
-
-                        {% include 'forms/oa_group_settings_form.html' %}
-
-            <h2>Invite Members</h2>
-
-                            {% include 'forms/oa_referral_form.html' %}
-
-            <h2>Add Facilitators</h2>
-
-                            {% include 'forms/oa_facilitators_form.html' %}
-                
-            <h2>Create Working Group</h2>
-
-                        <div id="pp_topic_form">
-                        {% include 'forms/pp_topic_form.html' %}
-                        </div>
-
-            <h2>Edit Group Info</h2>
-                        <div id="pp_edittopic_form">
-                        {% include 'forms/pp_edittopic_form.html' %}
-                        </div>
-
-
-            {% include 'forms/location_form.html' %}
-
-            <h2>Change Image</h2>
-                {% cani object=object user=user %}
+            <div class="tab-content">
+              <div class="tab-pane active" id="fac{{object.pk}}">{% include 'forms/oa_group_settings_form.html' %}</div>
+              <div class="tab-pane" id="mem{{object.pk}}">{% include 'forms/oa_referral_form.html' %}</div>
+              <div class="tab-pane" id="add{{object.pk}}">{% include 'forms/oa_facilitators_form.html' %}</div>
+              <div class="tab-pane" id="tform{{object.pk}}">{% include 'forms/pp_topic_form.html' %}</div>
+              <div class="tab-pane" id="ginfo{{object.pk}}">{% include 'forms/pp_edittopic_form.html' %}</div>
+              <div class="tab-pane" id="ginfo2{{object.pk}}">{% include 'forms/location_form.html' %}</div>
+              <div class="tab-pane" id="ginfo3{{object.pk}}">
                     {% if pp_permissions.permission %}
                       {% pp_get_contenttype_id object=object %}
                             <a id="interact_avatar" data-href="/p/upload/o-{{object.pk}}/t-{{pp_source.ctype_pk}}">
@@ -48,11 +34,20 @@
                     {% else %}
                         <a>
                     {% endif %}
-                {% endcani %}  
+              </div>
+            </div>
+
         {% endif %}
     {% endcani %}       
 
 {% endoa_get_group_settings %}
 
+
+<script>
+  $(function () {
+    $('#interact{{object.pk}}').tab();
+  })
+</script>
+ 
 {% endblock %}
 

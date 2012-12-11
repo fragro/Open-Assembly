@@ -8,17 +8,17 @@
 <ul class="tab" id="tabholdertab{{key}}">
     <li id="tab{{key}}" class="current-icon">
         <a class="tab_title" data-href="javascript:;" data-href="javascript:;" onClick="toggleMinMax('{{key}}', '{{template}}', null, false);">{{object|title}} {{rendertype|title}}</a><span class="tab_mask">&nbsp;</span>
-        {% comment %}
-        <ul>
-            <li id="minmax{{key}}"class="min_max">
-                <a onClick="toggleMinMax('{{key}}', '{{template}}', null, false);">
-                    <i class="icon-minus-sign icon-white"></i>
-                </a>
-            </li>
+        <ul>                    
+    {% comment %}
+                <li id="minmax{{key}}"class="min_max">
+                    <a onClick="toggleMinMax('{{key}}', '{{template}}', null, false);">
+                        <i class="icon-minus-sign icon-white"></i>
+                    </a>
+                </li>
+            {% endcomment %}
 
             <li><a onClick="tabRemove('{{key}}');"><i class="icon-remove-sign icon-white"></i></a></li>
         </ul>
-        {% endcomment %}
     </li>
 </ul>
 {% else %}

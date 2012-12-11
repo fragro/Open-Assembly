@@ -10,9 +10,16 @@
                 {{ pp_login.form.captcha}}
                 {{ pp_login.form.form_id}}
                 {% csrf_token %}
-            <button type="submit" class="btn btn-primary btn_green"><i class="icon-user icon-white icon-left"></i> Register</button>
-            {{pp_login.errors}}<br>{{ pp_login.form.errors }}
-            </form>
+            <button type="submit" class="btn btn-primary"><i class="icon-user icon-white icon-left"></i> Register</button>
+        </form>
+
+            {% if pp_login.errors %}
+                <div class="alert alert-error">{{pp_login.errors}}</div>
+            {% endif %}
+            {% if pp_login.success %}
+                <div class="alert alert-success">{{pp_login.success}}</div>
+            {% endif %}
+            <br>{{ pp_login.form.errors }}
     {% endpp_user_registration_form %}
     </div>
     <div class="span5 offset1">

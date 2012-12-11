@@ -1,0 +1,27 @@
+<div class="btn-group">
+
+        {% cani object=object user=user %}
+            {% if pp_permissions.permission %}
+
+                <a class="btn btn-small" href="#" data-href="{% pp_url object=object template='interact.html' %}"><i class="icon-wrench"></i>Facilitate</a>
+
+                {% if object.parent.summary == '__NULL__' %}
+                    <a class="btn btn-small" href="#" class="btn" data-href="{% pp_url object=object template='create_group.html' %}"><i class="icon-user"></i> Create Affinity Group</a>
+                {% endif %}
+
+            {% endif %}
+        {% endcani %}
+</div>
+<div class="btn-group">
+
+            <a class="btn btn-small" href="#" data-href="{% pp_url template='submit.html' dimension='tem' object=object %}"><i class="icon-pencil"></i> Submit Proposal</a>
+
+</div>
+
+<div class="btn-group pull-right">
+
+
+            <div id="oa_addgroup{{object.pk}}"> {% include 'forms/oa_addgroup_form.html' %}</div>
+
+
+</div>

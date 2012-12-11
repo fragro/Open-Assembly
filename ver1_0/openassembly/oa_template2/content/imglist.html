@@ -1,0 +1,32 @@
+	
+<div class="row">
+		{% pp_get_sources object=object type='img' get='all' %}
+
+		  {% for img in pp_source.sources %}
+
+				{% if forloop.counter|divisibleby:4 %}
+					<div class="row"><div class="span1">
+				{% else %}
+				<div class="span1">
+				{% endif %}
+			    {% thumbnail img.file "90x90" crop="center" as im %}
+			      <a data-href="{% pp_url template='imagepreview.html' object=img %}"><img class="img-polaroid" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></a>
+			    {% endthumbnail %}
+
+				{% if forloop.counter|divisibleby:4 %}
+					</div>
+				{% endif %}
+				</div>
+
+
+		  {% empty %}
+		  <div class="span4 alert">
+
+		  	<h3>No Images Uploaded to this Spark</h3>
+
+		  </div>
+		  {% endfor %}
+
+		{% endpp_get_sources %}
+
+</div>

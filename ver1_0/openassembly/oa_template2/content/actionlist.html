@@ -1,0 +1,29 @@
+	
+		{% pp_get_actions object=object page=phase %}
+
+			{% for action in pp_action.actions.object_list %}
+
+				<h3><a data-href="{% pp_url template='action.html' object=action %}">Action from {{action.user}}</a></h3>
+				<small>on {{action.created_dt}}</small>
+				<p>{{action.description}}</p>
+
+			{% endfor %}
+
+<ul class="pager">
+    <li>
+        {% if pp_topic.mygroups.has_previous %}
+            <a class="btn" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.previous_page_number}}'});">Previous</a>
+        {% else %}
+            <a class="btn disabled" data-href="#">Previous</a>
+        {% endif %}
+    </li>
+        <li>
+        {% if pp_topic.mygroups.has_next %}
+            <a class="btn"onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.next_page_number}}'});">Next</a>
+        {% else %}
+            <a class="btn disabled" data-href="#">Next</a>
+        {% endif %}
+    </li>
+</ul>
+
+		{% endpp_get_actions %}

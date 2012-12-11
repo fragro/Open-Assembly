@@ -20,44 +20,19 @@
 {% block content %}
 
 
-    <script type="text/javascript">
-
-    $(document).ready(function() {
-        {% pp_consensus_get object=object.id %}   
-
-            {% if pp_consensus.consensus %}
-                  {% pp_rating_js object=object user=user cons=pp_consensus.consensus %}
-
-                   {{pp_consensus.rating_js|safe}} 
-
-                  {% endpp_rating_js %}
-
-                  {% pp_spectrum_js object=object user=user cons=pp_consensus.consensus %}
-
-                   {{pp_consensus.spectrum_js|safe}}
-
-                  {% endpp_spectrum_js %}
-
-            {% endif %}
-
-        {% endpp_consensus_get %}
-
-    });
-
-    </script>
-
-
     <div class="row">
 
     	<div class="span10">
 
-      		{% include 'content/info.html' %}
+      		{% include 'action/info.html' %}
+
 
       	</div>
     </div>
-<div class="row">
+
+    <div class="row">
     <div class="span5">
-          <blockquote><small>by {% include 'etc/object_img_25_user.html' %} <a data-href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}} <a href="{% pp_url object=object template='detail.html' %}"><i class="bookmark icon-bookmark"></i></a></small></blockquote>
+          <blockquote><small>by {% include 'etc/object_img_25_user.html' %} <a data-href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}</small></blockquote>
 
         <div id="description{{object.pk}}">
             {{object.description|markdown }}
@@ -73,12 +48,9 @@
     	<div class="span5">
 
           <ul class="nav nav-tabs" id="myTab{{object.pk}}">
-            <li class="active"><a href="#voting{{object.pk}}" data-toggle="tab">Voting</a></li>
-            <li><a href="#doc{{object.pk}}" data-toggle="tab">Pad</a></li>
             <li><a href="#edits_ctrl{{object.pk}}" data-toggle="tab">Edits</a></li>
             <li><a href="#images{{object.pk}}" data-toggle="tab">Images</a></li>
             <li><a href="#comment{{object.pk}}" data-toggle="tab">Comment</a></li>
-            <li><a href="#action{{object.pk}}" data-toggle="tab">Act</a></li>
             {% if object.user == request.user or user.is_staff %}
               <li><a href="#author_controls{{object.pk}}" data-toggle="tab">Author</a></li>
             {% endif %}
@@ -86,18 +58,6 @@
           </ul>
 
         <div class="tab-content">
-
-      	    <div class="tab-pane active" id="voting{{object.pk}}">
-
-            	{% include 'content/voting.html' %}
-
-            </div>
-
-            <div class="tab-pane" id="doc{{object.pk}}">
-
-              {% include 'content/pad.html'%}
-
-            </div>
 
       	    <div class="tab-pane" id="edits_ctrl{{object.pk}}">
 
@@ -118,11 +78,6 @@
 
             </div>
 
-            <div class="tab-pane" id="action{{object.pk}}">
-
-               {% include 'forms/action_form.html' %}
-
-            </div>
     		
             <div class="tab-pane" id="images{{object.pk}}">
               {% include 'forms/imgsource.html' %}
@@ -137,6 +92,8 @@
 
     </div>
     <hr>
+
+
     <div class="row">
         <div class="span10">
 
@@ -186,4 +143,5 @@
 
     </div>
   </div>
+
 {% endblock %}

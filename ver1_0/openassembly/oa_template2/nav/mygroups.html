@@ -16,25 +16,26 @@
                         {% endif %}
 
                     {% endfor %}
-                    {% if pp_topic.count > 10 %}<li><a data-href="#">View All</a></li>{% endif %}
             </ul>
 
 
         </div>
-            <div>
-            
-                {% if pp_topic.mygroups.has_previous %}
-                    <span class="pull-left btn btn-inverse" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.previous_page_number}}'});">Previous</span>
-                {% else %}
-                    <span class="pull-left btn btn-inverse disabled" data-href="#">Previous</span>
-                {% endif %}
-                {% if pp_topic.mygroups.has_next %}
-                    <span class="pull-right btn btn-inverse" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.next_page_number}}'});">Next</span>
-                {% else %}
-                    <span class="pull-right btn btn-inverse disabled"data-href="#">Next</span>
-                {% endif %}
-            </div>
-    
+            {% if pp_topic.mygroups.has_previous or pp_topic.mygroups.has_next %}
+                <div>
+                
+                    {% if pp_topic.mygroups.has_previous %}
+                        <span class="pull-left btn btn-inverse" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.previous_page_number}}'});">Previous</span>
+                    {% else %}
+                        <span class="pull-left btn btn-inverse disabled" data-href="#">Previous</span>
+                    {% endif %}
+                    {% if pp_topic.mygroups.has_next %}
+                        <span class="pull-right btn btn-inverse" onClick="load_usersaltcache('#mygroups', '{{request.user.username}}', '', '', {'hash': '/p/mygroups/d-mygroups/p-{{pp_topic.mygroups.next_page_number}}'});">Next</span>
+                    {% else %}
+                        <span class="pull-right btn btn-inverse disabled"data-href="#">Next</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+        
         {% endpp_mygroups %}
 
     </div>

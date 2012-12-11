@@ -8,20 +8,22 @@
 {% endblock %}
 
 {% block listing %}
-	<div id="temp_check_small{{object.pk}}" class="panel_list_img"></div>
-    <div class="ov_hid" id="{{key}}">
+    <div id="{{key}}">
+        <div id="temp_check_small{{object.pk}}" class="panel_list_img"></div>
+        <div>
+            <a data-href="{% pp_url object=object.content_object template='detail.html' %}">
+                {{object.content_object.summary }}
+            </a>
+        
+            <div id='{{dashobj.pk}}{{object.pk}}details' class="listingdetails">
+            	<i class="icon-hand-up"></i> {{object.votes}} vote{{object.votes|pluralize}}
+        	    {% pp_comment_count object=object.content_object.id %}
 
-    <a data-href="{% pp_url object=object.content_object template='detail.html' %}">
-        {{object.content_object.summary }}
-    </a>
-	</div>
+            		<i class="icon-envelope"></i> {{pp_comment.count}} comment{{pp_comment.count|pluralize}}
+            	{% endpp_comment_count %}
+            </div>
+        </div>
 
-    <div id='{{dashobj.pk}}{{object.pk}}details' class="listingdetails">
-    	<i class="icon-hand-up"></i> {{object.votes}} vote{{object.votes|pluralize}}
-	    {% pp_comment_count object=object.content_object.id %}
-
-    		<i class="icon-envelope"></i> {{pp_comment.count}} comment{{pp_comment.count|pluralize}}
-    	{% endpp_comment_count %}
     </div>
     <script>
 

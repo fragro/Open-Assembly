@@ -1,0 +1,9 @@
+ <ul class="breadcrumb">
+    <li>
+        <h3><a data-href="{% pp_url object=object.parent template='group.html' %}">{{object.parent.summary}}</a><span class="divider">/</span></h3>
+    </li>
+    <li class="active">
+        <h1>{{object.summary}}</h1>
+    </li>
+         {% include 'views.html' %}
+</ul>

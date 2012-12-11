@@ -1,0 +1,7 @@
+
+<a href="http://twitter.com/home?status={{object|urlencode}}+{{request.META.HTTP_HOST|urlencode}}{{object.get_absolute_url|urlencode}}" target="_blank"><img  class="icon-" src="/static/img/twatter.png"></a>
+
+<!-- Place this tag where you want the share button to render. -->
+<a href="https://plus.google.com/share?url={{request.META.HTTP_HOST|urlencode}}{{object.get_absolute_url|urlencode}}" target="_blank"><img  class="icon-" src="/static/img/gplus.png"></a>
+
+<a href="http://www.facebook.com/share.php?u={{request.META.HTTP_HOST|urlencode}}{{object.get_absolute_url|urlencode}}&title={{object|urlencode}}" target="_blank"><img class="icon-" src="/static/img/farcebook.png"></a>

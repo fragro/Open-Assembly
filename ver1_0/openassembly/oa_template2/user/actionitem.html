@@ -1,0 +1,13 @@
+{% extends 'user/user_listing.html' %}
+{% block icon %}
+<img src="/static/img/walk.png">
+{% endblock %}
+
+{% block meta %}
+	<small>on {{action.created_dt}}</small>
+{% endblock %}					
+
+{% block text %}
+<h3>{{action.content_object}}</h3>
+<p>{{action.description}}</p>
+{% endblock %}

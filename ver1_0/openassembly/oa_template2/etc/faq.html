@@ -4,109 +4,122 @@
 
 {% block content %}
 
-        <h2>What is Open Assembly?</h2>
+        <div class="row">
 
-                <p>OpenAssembly is a non-partisan site that looks to revolutionize the collaborative power of the internet. OA allows users to brainstorm a democratic platform, argue the ideal course of action, and reach consensus on those actions. These features were fully functional in the previous design, and we are using your feedback to reinegrate them into our new innovative design.</p>
+                <div class="span4">
+                        <p>
+                        Developers who are interested should head over to the OA Development working group, to see what features users want to
+                        add to Open Assembly. Or you can contribute monetarily which helps our developers focus on Open Source software rather than doing freelance work for corporations.
+                        <a class="wepay-widget-button wepay-green" id="wepay_widget_anchor_4fef4ec800e65" href="https://www.wepay.com/donations/160310">Contribute</a>
+                        </p>
+                        <script type="text/javascript">
+                                var WePay = WePay || {};
+                                WePay.load_widgets = WePay.load_widgets || function() { };
+                                WePay.widgets = WePay.widgets || [];
+                                WePay.widgets.push( {
+                                        object_id:160310,
+                                        widget_type:"donation_campaign",
+                                        anchor_id:"wepay_widget_anchor_4fef4ec800e65",
+                                        widget_options: {
+                                                allow_anonymous:"true",
+                                                button_text:"Contribute"
+                                        }
+                                });
+                                if (!WePay.script) {
+                                        WePay.script = document.createElement('script');WePay.script.type = 'text/javascript';WePay.script.async = true;
+                                        WePay.script.src = 'https://static.wepay.com/min/js/widgets.v2.js';
+                                        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(WePay.script, s);
+                                } else if (WePay.load_widgets) {
+                                        WePay.load_widgets();
+                                }
+                        </script>    
+                </div>
+                <div class="span4">
+                </div>
+        </div>  
+        
+        <div class="row">
+                  
+                <div class="span1">
+                </div>
+                <div class="span7">
+                        
+                        <h2>What is Open Assembly?</h2>
 
-                <ul>
+                                <p>OpenAssembly is a non-partisan site that looks to revolutionize the collaborative power of the internet. OA allows users to brainstorm a democratic platform, argue the ideal course of action, and reach consensus on those actions. These features were fully functional in the previous design, and we are using your feedback to reinegrate them into our new innovative design.</p>
 
-                <li><b> Discuss: </b> Open Assembly features a forum where you can discuss issues that are of interest to you and deliberate over the pros and cons of those issues </li>
+                                <ul>
 
-                <li><b>Vote: </b> Express yourself by declaring both your subjective agreement on an idea and your opinion on the objective quality. No longer must you upvote a poorly written idea that you agree with.
+                                <li><b> Discuss: </b> Open Assembly features a forum where you can discuss issues that are of interest to you and deliberate over the pros and cons of those issues </li>
 
-                <li><b> Decide: </b> You can make timed decisions or poll the group. Rank the nominated proposals to identify and focus on the best or accept all the solutions the group suggests</li>
+                                <li><b>Vote: </b> Express yourself by declaring both your subjective agreement on an idea and your opinion on the objective quality. No longer must you upvote a poorly written idea that you agree with.
 
-                <li><b> Configure: </b> Set the consent and reporting requirement that works best for your group, from traditional majority rule
-                or complete consenus.</li>
-                </ul>
+                                <li><b> Decide: </b> You can make timed decisions or poll the group. Rank the nominated proposals to identify and focus on the best or accept all the solutions the group suggests</li>
 
-
-        <h2>How does the Consenus Engine work?</h2>
-
-                <p>
-                To facilitate a new participatory democracy OA employs modern voting methods. OA uses the proposal and response model, where citizens send proposals to the group. These proposals can be accepted or denied and responses can be accepted or denied. This allows the users to make the proposals as specific or general as they want and experiment with what the meaning and content of the response.
-                </p>
-                <p>
-                Users set a period for responding to the proposal, and a timed period for voting where responses can no longer be submitted. The proposal must pass the consensus and reporting requirements of the group and the reponses must pass the consensus requirement. In the future we may optionally apply the quorum or reporting requirement to the responses as well.
-                </p>
-                <p>
-                During the voting phase users may optionally rank the responses in the order of their preference. This gives
-                </p>
-
-
-        <h2>What is the role of the Facilitator?</h2>
-
-                <p>
-                The Facilitator is responsible for maintaining the settings of the group and inviting other members into the group. The
-                Facilitator cannot moderate or remove members once they have been added. The Facilitator should respect the organization
-                they empower, only invite members that pass organizational policy, and maintain the consensus/reporting percentages determined
-                by the organizaation. Facilitators can also add other members as facilitators to increase the ability for the group to invite users.
-                </p>
-
-        <h2>What technology is Open Assembly built on? </h2>
-                <p>
-                Open assembly is built on Python/Django, and uses a homegrown template tags system to decouple the design of the site templates
-                from backend logic. This eases the ability for designers to create custom themes and easily plug new features into Open Assembly. OA also makes use of HTML5, Javascript, and jQuery to make the interface more intuitive and reactive for users. Combined with memcached, this
-                also allows the site to quickly serve highly dynamic aggregated voting data or other content.
-                </p>
-
-        <h2>How do I get involved with this project?</h2>
-
-                <p>
-                Developers who are interested should head over to the OA Development working group, to see what features users want to
-                add to Open Assembly.
-                </p>
-
-        <h2>Why doesn't Open Assembly work on my computer?</h2>
-
-                <p>Currently Open Assembly does not support users who have Javascript disabled. We are working to extend our website
-                to provide full functionality for NOJS users, but at this time you must have Javascript enabled to fully
-                interact with OA.
-                </p>
+                                <li><b> Configure: </b> Set the consent and reporting requirement that works best for your group, from traditional majority rule
+                                or complete consenus.</li>
+                                </ul>
 
 
-        <h2 id="philosophy">Our Philosophy</h2>
+                        <h2>How does the Consenus Engine work?</h2>
 
-                <p>
-                The developers of Open Assembly are dedicated to the ideals of democracy and self-governance. If a government
-                no longer operates for the People, and by the People, that government must be dissolved. To truly seek a new
-                model of democratic discourse and governance we must explore new models of democracy within our communities online and in the real world. Once these new models are proven superior we can non-violently overthrow the suboptimal regimes of the world and liberate all of mankind through a truly Global Human Republic. In the US we should invoke Article 5 of the Constitution to facilitate the fundamental democratic upgrades needed for the 21st century.
-                </p>
+                                <p>
+                                To facilitate a new participatory democracy OA employs modern voting methods. OA uses the proposal and response model, where citizens send proposals to the group. These proposals can be accepted or denied and responses can be accepted or denied. This allows the users to make the proposals as specific or general as they want and experiment with what the meaning and content of the response.
+                                </p>
+                                <p>
+                                Users set a period for responding to the proposal, and a timed period for voting where responses can no longer be submitted. The proposal must pass the consensus and reporting requirements of the group and the reponses must pass the consensus requirement. In the future we may optionally apply the quorum or reporting requirement to the responses as well.
+                                </p>
+                                <p>
+                                During the voting phase users may optionally rank the responses in the order of their preference. This gives
+                                </p>
 
-                <p>
-                We would appreciate support from developers, web designers or graphic designers. OpenAssembly is located on <a href="http://openassemblycode.org">openassemblycode</a> and licensed under New BSD. The site runs on <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a>.
-                </p>
 
+                        <h2>What is the role of the Facilitator?</h2>
+
+                                <p>
+                                The Facilitator is responsible for maintaining the settings of the group and inviting other members into the group. The
+                                Facilitator cannot moderate or remove members once they have been added. The Facilitator should respect the organization
+                                they empower, only invite members that pass organizational policy, and maintain the consensus/reporting percentages determined
+                                by the organizaation. Facilitators can also add other members as facilitators to increase the ability for the group to invite users.
+                                </p>
+
+                        <h2>What technology is Open Assembly built on? </h2>
+                                <p>
+                                Open assembly is built on Python/Django, and uses a homegrown template tags system to decouple the design of the site templates
+                                from backend logic. This eases the ability for designers to create custom themes and easily plug new features into Open Assembly. OA also makes use of HTML5, Javascript, and jQuery to make the interface more intuitive and reactive for users. Combined with memcached, this
+                                also allows the site to quickly serve highly dynamic aggregated voting data or other content.
+                                </p>
+
+                        <h2>How do I get involved with this project?</h2>
+
+                                <p>
+                                Developers who are interested should head over to the OA Development working group, to see what features users want to
+                                add to Open Assembly.
+                                </p>
+
+                        <h2>Why doesn't Open Assembly work on my computer?</h2>
+
+                                <p>Currently Open Assembly does not support users who have Javascript disabled. We are working to extend our website
+                                to provide full functionality for NOJS users, but at this time you must have Javascript enabled to fully
+                                interact with OA.
+                                </p>
+
+
+                        <h2 id="philosophy">Our Philosophy</h2>
+
+                                <p>
+                                The developers of Open Assembly are dedicated to the ideals of democracy and self-governance. If a government
+                                no longer operates for the People, and by the People, that government must be dissolved. To truly seek a new
+                                model of democratic discourse and governance we must explore new models of democracy within our communities online and in the real world. Once these new models are proven superior we can non-violently overthrow the suboptimal regimes of the world and liberate all of mankind through a truly Global Human Republic. In the US we should invoke Article 5 of the Constitution to facilitate the fundamental democratic upgrades needed for the 21st century.
+                                </p>
+
+                                <p>
+                                We would appreciate support from developers, web designers or graphic designers. OpenAssembly is located on <a href="http://openassemblycode.org">openassemblycode</a> and licensed under New BSD. The site runs on <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a>.
+                                </p>
+                        </div>
                 </div>
 
-        <h2>How do I get Contribute?</h2>
-
-                <p>
-                Developers who are interested should head over to the OA Development working group, to see what features users want to
-                add to Open Assembly. Or you can contribute monetarily which helps our developers focus on Open Source software rather than doing freelance work for corporations.
-                <a class="wepay-widget-button wepay-green" id="wepay_widget_anchor_4fef4ec800e65" href="https://www.wepay.com/donations/160310">Contribute</a>
-                <script type="text/javascript">
-                        var WePay = WePay || {};
-                        WePay.load_widgets = WePay.load_widgets || function() { };
-                        WePay.widgets = WePay.widgets || [];
-                        WePay.widgets.push( {
-                                object_id:160310,
-                                widget_type:"donation_campaign",
-                                anchor_id:"wepay_widget_anchor_4fef4ec800e65",
-                                widget_options: {
-                                        allow_anonymous:"true",
-                                        button_text:"Contribute"
-                                }
-                        });
-                        if (!WePay.script) {
-                                WePay.script = document.createElement('script');WePay.script.type = 'text/javascript';WePay.script.async = true;
-                                WePay.script.src = 'https://static.wepay.com/min/js/widgets.v2.js';
-                                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(WePay.script, s);
-                        } else if (WePay.load_widgets) {
-                                WePay.load_widgets();
-                        }
-                </script>
-        
+        </div>
 
 
 {% endblock %}

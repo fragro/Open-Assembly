@@ -1,0 +1,36 @@
+{% load actiontags %}
+
+<form id='pp_action_form{{object.pk}}' method="post" action="">
+
+{% pp_action_form POST=request.POST user=user object=object  %}
+
+        {{pp_action.error}}
+        {{ pp_action.form.errors}}
+
+            <textarea id="id_description{{object.pk}}" rows="10" cols="40" name="description"></textarea>          
+
+            {{pp_action.form.form_id}}
+            {% csrf_token %}
+
+       <blockquote class="pull-right"><i class="icon-info-sign"></i>Submit actions you have taken in the real or virtual world to fulfill this Spark. These actions are best when you
+       give a good description and upload evidence of the action via photos.</blockquote>
+       <button class="btn" id="loc_input" type="submit">Submit Action</button>
+       <span id="submit_pp_action_form{{object.pk}}"></span>
+
+
+{% endpp_action_form %}
+    <!-- a fooking hack for some intangible error, feel free to try to find out where and how this happens... -->
+        <script>
+            
+            $(document).ready(function(){
+                if($('#id_description{{object.pk}}').val() == '       '){
+                    $('#id_description{{object.pk}}').val('');  
+                }
+            });
+
+          $("form#pp_action_form{{object.pk}}").submit(function(e){
+                $("#submit_pp_action_form{{object.pk}}").html("<img src='/static/img/loader.gif' class='loader'>");
+                addObject(e);
+            });
+        </script>
+</form>

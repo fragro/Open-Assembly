@@ -1,0 +1,31 @@
+{% extends 'skeleton/page.html' %}
+
+{% load pp_url %}
+{% load argumenttags %}
+{% load messagetags %}
+{% load profiletags %}
+{% load topictags %}
+{% load reputationtags %}
+{% load notificationtags %}
+{% load markup %}
+{% load badgetags %}
+{% load consensustags %}
+{% load subscriptiontags %}
+{% load sourcetags %}
+{% load filetransfers %}
+{% load tag_helpers %}
+{% load commenttags %}
+{% load blobtags %}
+
+
+{% block content %}
+
+<ul class="nav nav-tabs">
+  <li class="active">
+    <a href="#">Document</a>
+  </li>
+  <li><a href="#">Pad</a></li>
+  <li><a href="#">Vote</a></li>
+</ul>
+
+{% endblock %}

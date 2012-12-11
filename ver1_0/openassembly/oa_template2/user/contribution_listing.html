@@ -1,0 +1,29 @@
+{% extends 'user/user_listing.html' %}
+    <!-- this bunch of junk just turns out to be a piece of text -->
+
+{% block icon %}
+    {% if note.related_object.text %}  
+        <span class="user_icon"><i class="icon-comment"></i></span>
+    {% else %}{% if note.related_object.content_object.summary %}
+        <span class="user_icon"><i class="icon-fire"></i></span>
+    {% else %}
+        <span class="user_icon"><i class="icon-cog"></i></span>
+    {% endif %}{% endif %}
+{% endblock %}
+
+
+{% block meta %}<small>{{note.created_dt|timesince }} ago</small>{% endblock %}
+
+
+{% block text %}
+    {% if note.related_object.text %}  
+        <a data-href="{{note.get_absolute_url}}">{{ note.related_object.text}}</a>
+    {% else %}{% if note.related_object.content_object.summary %}
+        <a data-href="{{note.get_absolute_url}}">{{note.related_object.content_object.summary}}
+        </a>
+        <blockquote><small>{{note.related_object.content_object.description}}</small></blockquote>
+    {% else %}
+        <a data-href="{{note.get_absolute_url}}">Vote {{note.related_object}}</a>
+    {% endif %}{% endif %}
+
+{% endblock %}

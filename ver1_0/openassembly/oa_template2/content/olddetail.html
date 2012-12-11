@@ -1,0 +1,206 @@
+{% extends 'skeleton/page.html' %}
+
+{% load pp_url %}
+{% load argumenttags %}
+{% load messagetags %}
+{% load profiletags %}
+{% load topictags %}
+{% load reputationtags %}
+{% load notificationtags %}
+{% load markup %}
+{% load badgetags %}
+{% load consensustags %}
+{% load subscriptiontags %}
+{% load sourcetags %}
+{% load filetransfers %}
+{% load tag_helpers %}
+{% load commenttags %}
+{% load blobtags %}
+
+
+{% block content %}
+
+    <script type="text/javascript">
+
+    $(document).ready(function() {
+        {% pp_consensus_get object=object.id %}   
+
+            {% if pp_consensus.consensus %}
+                  {% pp_rating_js object=object user=user cons=pp_consensus.consensus %}
+
+                   {{pp_consensus.rating_js|safe}} 
+
+                  {% endpp_rating_js %}
+
+                  {% pp_spectrum_js object=object user=user cons=pp_consensus.consensus %}
+
+                   {{pp_consensus.spectrum_js|safe}}
+
+                  {% endpp_spectrum_js %}
+
+            {% endif %}
+
+        {% endpp_consensus_get %}
+
+    });
+
+    </script>
+    <div class="pad" id="pad{{object.pk}}">
+
+    {% if user.is_authenticated and user.is_active %}
+        <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe>
+
+    {% else %}
+
+        {% pp_get_pad object=object %}
+
+            {{pp_source.text|safe}}
+
+        {% endpp_get_pad %}
+    {% endif %}
+    </div>
+    <h3><a data-href="{% pp_url object=object.parent template='group.html' %}">{{object.parent.summary}}</a></h3>
+    <h1><a data-href="{% pp_url object=object template='detail.html' %}">{{object.summary}}</a></h1>
+   
+    {% pp_get_root object=object %} 
+        {% oa_get_group_settings object=pp_topic.root %}
+        
+        {% oa_ingroup object=pp_topic.root user=user %}
+
+           {% pp_consensus_get object=object.pk user=user %}
+
+
+                <div style="margin-bottom:10px;">
+                    {% comment %}
+                        {% if pp_consensus.consensus.interest > 1000 %}
+                            <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:0 }}</a>
+                        {% else %}
+                            <a href="{{object.get_absolute_url}}">{{ pp_consensus.consensus.interest|floatformat:1 }}</a>
+                        {% endif %}
+                    {% endcomment %}
+                         by <a href="{% pp_url template='user_profile.html' object=object.user %}">{{object.user.username}}</a> on {{object.created_dt}}</div>
+
+                        <div id="description{{object.pk}}">
+                            {{object.description|markdown }}
+                        </div>
+
+                        {% if object.location %}
+                        <ul class="tags">
+                            <li class="title"><b>Location:</b></li>
+                            <li>{{object.location}}</li>
+                        </ul><br>
+                        {% endif %}
+
+                        {% if object.target %}
+                        <ul class="tags">
+                            <li class="title"><b>Boycott Target:</b></li>
+                            <li>{{object.target}}</li>
+                        </ul><br>
+                        {% endif %}
+
+                
+                <!--don't fuck with this too much, pretty much all of this is used for voting -->
+                
+                        <div id="temp_check{{object.pk}}" class="detail_temp_check">{% include 'content/temp_check.html' %}</div>
+                 
+
+                        <div class="vote_controls">       
+                            Vote <span id="spectrum_vote"></span>
+                            Agreement: <span id="stars-cap-spec"></span>
+
+                            {% pp_spectrum_form object=object user=user %}
+                            <form method="post" action="">
+
+                                <div id="stars-wrapper-spec{{object.id}}">
+                                    {{pp_consensus.form.spectrum}}
+                                    {{pp_consensus.form.form_id}}
+                                </div>
+                                
+                                {{csrf_string|safe}}
+
+                                <noscript><input type="submit" class='button green' value="Rating"></noscript>
+
+                            </form>
+                            {% endpp_spectrum_form %}
+                            <br><br>
+                            Difficulty: <span id="stars-cap-rate"></span>
+                            {% pp_rating_form object=object user=user %}
+
+                            <form method="post" action="">
+
+                                <div id="stars-wrapper-rate{{object.id}}">
+                                
+                                {{ pp_consensus.form.rating}}
+                                {{pp_consensus.form.form_id}}
+                                </div>
+                                
+                                {{csrf_string|safe}}
+
+                            <noscript><input type="submit" class='button green' value="Rating"> </noscript>
+
+                            </form>
+                            {% endpp_rating_form %}
+                        
+                        <br>
+                        <div class="edits" id="edits{{object.pk}}">
+                            {% include 'etc/edits.html' %}
+                        </div>
+
+                        {% include 'content/reporting_percent.html' %}
+
+                        </div>
+
+            <!--fuck around free for all down here! -->
+
+<br><br>
+           
+<div class="edits"> 
+
+    <div class="edit_ctrl">
+            {% include 'etc/author_controls.html' %}
+
+            {% include 'forms/imgsource.html' %}
+
+    </div>
+<br>
+            <!--number currently reporting -->
+
+</div>
+        
+        {% endpp_consensus_get %}
+
+        {% include 'forms/detail_input.html' %}
+
+    {% endoa_ingroup %}
+
+{% endoa_get_group_settings %}
+{% endpp_get_root %}
+
+       
+
+    {% pp_comment_count object=object.id %}
+
+        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='comments' %}">{{pp_comment.count}} Comments</a>
+
+    {% endpp_comment_count %}
+
+
+{% comment %}
+    {% pp_get_argument_count object=object arg_type='yea' %}
+
+        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='yea' %}">{{pp_argumentation.count}} Pros</a>
+
+    {% endpp_get_argument_count %}
+
+    {% pp_get_argument_count object=object arg_type='nay' %}
+
+        <a class="hidden" href="{% pp_url template='detail.html' object=object scroll_to='content_children' dimension='nay' %}">{{pp_argumentation.count}} Cons</a>
+
+    {% endpp_get_argument_count %}
+{% endcomment %}
+
+    <div id="content_children{{object.pk}}" class="content_children">                                
+                               
+    </div>
+
+{% endblock %}

@@ -1,0 +1,130 @@
+<div class="row">
+    <div class="span2">
+        <div id="temp_check{{object.pk}}" class="detail_temp_check span2">
+
+    <!--Requires a consensus object -->
+
+    {% load consensustags %}
+
+       {% pp_consensus_get object=object.pk %}
+
+              {% pp_consensus_chart object=pp_consensus.consensus votecount=pp_consensus.count %}
+                 {{pp_consensus.consensus.chart_data }}
+
+                   {% if pp_consensus.chart %}
+                   
+                    <script>
+
+                    var chart1; // globally available
+                    $(document).ready(function() {
+
+                        chart1 = new Highcharts.Chart({
+                            chart: {
+                                renderTo: 'chart{{object.pk}}',
+                                type: 'pie',
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                backgroundColor: "none",
+                                plotShadow: false,
+                                height: 150,
+                                width: 150,
+                            },
+                            title: {
+                                text: ''
+                            },
+                            tooltip: {
+                                formatter: function() {
+                                    return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +' %';
+                                }
+                            },
+                            yAxis: {
+                                title: {
+                                    text: 'Consensus'
+                                }
+                            },
+                            plotOptions: {
+                                pie: {
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: false
+                                    },
+                                    shadow: false
+                                }
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            series: {{pp_consensus.chart_data|safe}},
+                        });
+
+                    });
+
+                    </script>
+
+                         <!-- NEED THIS ID -->
+                          <div id='chart{{object.pk}}'> </div>
+
+                      {% endif %}
+              {% endpp_consensus_chart %}
+
+        </div>
+    </div>
+
+    <div class="span3">       
+        <div>
+        <span data-placement="left" rel="tooltip" title="Consent, Dissent, or Stand Aside. You Decide.">Vote</span> <span id="spectrum_vote"></span>
+        </div>
+        <div>
+        <span data-placement="left" rel="tooltip" title="Specify the intensity of your agreement or disagreement.">Agreement</span> <span id="stars-cap-spec"></span>
+        </div>
+
+        {% pp_spectrum_form object=object user=user %}
+        <form method="post" action="">
+
+            <div id="stars-wrapper-spec{{object.id}}">
+                {{pp_consensus.form.spectrum}}
+                {{pp_consensus.form.form_id}}
+            </div>
+            
+            {{csrf_string|safe}}
+
+            <noscript><input type="submit" class='button green' value="Rating"></noscript>
+
+        </form>
+        {% endpp_spectrum_form %}
+        <span data-placement="left" rel="tooltip" title="Your perceived difficulty required to implement this spark.">Difficulty</span> <span id="stars-cap-rate"></span>
+        {% pp_rating_form object=object user=user %}
+
+        <form method="post" action="">
+
+            <div id="stars-wrapper-rate{{object.id}}">
+            
+            {{ pp_consensus.form.rating}}
+            {{pp_consensus.form.form_id}}
+            </div>
+            
+            {{csrf_string|safe}}
+
+        <noscript><input type="submit" class='button green' value="Rating"> </noscript>
+
+        </form>
+        {% endpp_rating_form %}
+
+
+    {% include 'content/reporting_percent.html' %}
+
+    </div>
+</div>
+{% comment %}
+<div class="row">
+    <div class="span5">
+        {% include 'content/views_chart.html' %}
+    </div>
+</div>
+{% endcomment %}
+   {% endpp_consensus_get %}
+    <script src="/static/js/bootstrap.min.js"></script>
+   <script type="text/javascript">
+    try{$("[rel=tooltip]").tooltip();}catch(e){}
+</script>

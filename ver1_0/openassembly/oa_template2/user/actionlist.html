@@ -1,0 +1,22 @@
+
+			{% pp_get_actions object=obj page=phase %}
+				
+				{% for action in pp_action.actions.object_list %}
+
+					{% include 'user/actionitem.html' %}
+
+				{% endfor %}		
+		<ul class="pager">
+		        {% if pp_action.actions.has_previous %}
+		            <li><a data-href="{% pp_url template='user.html' dimension='a' object=object phase=pp_action.actions.previous_page_number %}">Previous</a></li>
+	           	{% else %}
+				<li class="disabled"><a data-href="#">Previous</a></li>
+		        {% endif %}
+
+		        {% if pp_action.actions.has_next %}
+		            <li><a data-href="{% pp_url template='user.html' dimension='a' object=object phase=pp_action.actions.next_page_number %}">Next</a></li>
+   	           	{% else %}
+					<li class="disabled"><a data-href="#">Next</a></li>
+		        {% endif %}
+		</ul>
+		{% endpp_get_actions %}

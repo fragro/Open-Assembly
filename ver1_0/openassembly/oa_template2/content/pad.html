@@ -1,0 +1,16 @@
+
+    {% if user.is_authenticated and user.is_active %}
+        <div class="pad" id="pad{{object.pk}}">
+
+            <iframe src="http://notes.occupy.net/p/{{object.pk}}?showControls=true&showChat=true&showLineNumbers=false&useMonospaceFont=false&userName={{user.username}}&noColors=false" width=600 height=500></iframe>
+        </div>
+    {% else %}
+    	<div class="alert"><h3>Sorry you must be logged in to view the collaborative document</h2></div>
+{% comment %}
+        {% pp_get_pad object=object %}
+
+            {{pp_source.text|safe}}
+
+        {% endpp_get_pad %}
+{% endcomment %}
+    {% endif %}

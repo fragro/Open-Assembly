@@ -1,0 +1,24 @@
+         <div class="span2">
+             <dl class="horizontal">
+                {% oa_location_get object=object start=0 end=1 %}
+                    {% for lat, lon, place in oa_loc.places %}
+                        <dt>Location <i class="icon-globe"></i></dt>
+                        <dd> {{place}} </dd>
+                    {% endfor %}
+                {% endoa_location_get %}
+                    
+                {% if object.more_info %}
+                    <dt>Web Site</dt>
+                    <dd><a href="{{object.more_info}}">{{object.more_info}}</a></dd>
+                {% endif %}
+                 {% oa_get_group_settings object=object %}
+                    <dt> Access </dt>
+                     <dd>{% if pp_topic.settings.open_group %}<span class="label label-info">Open{% else %}<span class="label label-inverse">Closed{% endif %} Group</span></dd>
+                     <dt>Reporting Requirement</dt>
+                     <dd><span class="label label-success">{{ pp_topic.settings.percent_reporting|percent}}</span></dd>
+                     <dt>Agreement Requirement </dt>
+                     <dd><span class="label label-success">{{ pp_topic.settings.consensus_percentage|percent}}</span></dd>
+
+                 {% endoa_get_group_settings %}
+             </dl>
+        </div>

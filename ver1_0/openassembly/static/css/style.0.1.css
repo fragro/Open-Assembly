@@ -755,12 +755,12 @@ a {
 .panel_inner li{
     width:100%;
     list-style:none;
-    height:50px;
+    min-height:50px;
     margin-top:5px;
     margin-bottom:5px;
 }
 .listing {
-    line-height:50px;
+    line-height:51px;
 }
 .menu {
     z-index:2;
@@ -787,7 +787,6 @@ a:hover {
     text-decoration:none;
 }
 .page textarea {
-    width:100%;
     resize:vertical;
     display:block;
 }
@@ -872,6 +871,7 @@ label, b, strong {
     font-size:0.9em;
     color:black;
     opacity:0.3;
+    margin-left:50px;
 }
 #user_activity_chart {
     margin-top:-10px;
@@ -888,11 +888,6 @@ label, b, strong {
 }
 #submitform5 p {
     margin-bottom:10px;
-}
-#submitform5, #oa_referral_form, #oa_facilitators_form, div#pp_topic_form, div#pp_edittopic_form, #custom_upload_form, #group_stats {
-    padding-bottom:20px;
-    border-bottom:1px #dbdbdb solid;
-    margin-bottom:20px;
 }
 #group_stats {
     width:90%;
@@ -1439,7 +1434,7 @@ input.headless_login:hover {
     width:20%;
 }
 .ov_hid {
-    width:80%;
+    width:100%;
     float:left;
     word-wrap:break-word;
 }
@@ -1595,12 +1590,6 @@ ul.tab {
     float: none;
     margin: 0 auto;
 }
-.inputText {
-  display: block;
-  width: 100%;
-  min-height: 28px;        
-  .box-sizing(border-box); 
-}
 blockquote.comment_author {
     margin: 0px;
 }
@@ -1633,4 +1622,7 @@ blockquote.comment_author {
 }
 .forgotpassword a:hover {
     background:rgba(0,0,0,.1);
+}
+.bookmark:hover {
+    opacity:.5;
 }

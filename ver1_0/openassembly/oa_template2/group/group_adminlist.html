@@ -1,0 +1,16 @@
+
+<h3>{{pp_permissions.count}} Facilitator{{pp_permissions.count|pluralize}}</h3>
+
+    <ul class="unstyled">
+    {% has_permissions object=object name='facilitator-permission' %}
+
+        {% for mygroup in pp_permissions.permissions %}
+            <li class="listing">
+                <div class="panel_list_img">
+                    {% include 'etc/object_img_50_mygroup.html' %}
+                </div>
+            <a data-href="{% pp_url template='user_profile.html' object=mygroup.user %}">{{mygroup.user}}</a></li>
+        {% endfor %}
+    {% endhas_permissions %}       
+
+    </ul>

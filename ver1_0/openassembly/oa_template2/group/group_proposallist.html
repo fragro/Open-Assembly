@@ -1,0 +1,40 @@
+
+
+{% pp_get_questions object=object dimension="n" page=phase phase="issues" %}
+
+            {% if pp_blob.count > 0 %}
+                <ul class="unstyled">
+                    {% for object in pp_blob.blob_list %}
+                        <li class="listing">{% include 'content/temp_check_small.html' %}
+                        <a data-href="{% pp_url object=object.content_object template='detail.html' %}">
+                            {{object.content_object.summary }}
+                        </a>
+                        </li>
+                    {% endfor %}
+
+         <ul class="pager">
+            {% if pp_blob.blob_list.has_previous %}
+                <li><a data-href="{% pp_url template='group.html' dimension='t' object=object phase=pp_blob.blob_list.previous_page_number %}">Previous</a></li>
+            {% else %}
+            <li class="disabled"><a data-href="#">Previous</a></li>
+            {% endif %}
+
+            {% if pp_blob.blob_list.has_next %}
+                <li><a data-href="{% pp_url template='group.html' dimension='t' object=object phase=pp_blob.blob_list.next_page_number %}">Next</a></li>
+            {% else %}
+                <li class="disabled"><a data-href="#">Next</a></li>
+            {% endif %}
+        </ul>  
+         {% else %}
+
+            <div class="alert"><h3>What's an Spark?</h3>
+            <p>Sparks can be whatever you want. They can be an idea, a document, a policy, or maybe a question to the masses.
+            The ideal Spark is something the group can decide is a good idea or not, and has an actionable task the group
+            can work together to accomplish.
+            </p>
+        <small>There are no Sparks for this Group. </small>
+            </div> 
+            {% endif %}
+            </ul>
+
+{% endpp_get_questions %}

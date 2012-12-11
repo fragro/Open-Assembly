@@ -1,0 +1,38 @@
+{% pp_get_topic_list topic=object dimension=dimension page=phase %}
+    {% if pp_topic.count > 0 %}
+
+            <ul class="unstyled">
+            {% if pp_topic.topic_list %}
+                {% for topic in pp_topic.topic_list.object_list %}
+                    <li class="listing">
+                <div class="panel_list_img">
+                    {% include 'etc/object_img_50_topic.html' %}
+                </div>
+                    <a href="#" data-href="{{topic.get_absolute_url}}">{{topic.summary}}</a></li>
+                {% endfor %}
+            {% endif %}
+            </ul>  
+            
+        <ul class="pager">
+        {% if pp_topic.topic_list.has_previous %}
+            <li><a data-href="{% pp_url template='group.html' dimension='t' object=object phase=pp_topic.topic_list.previous_page_number %}">Previous</a></li>
+        {% else %}
+        <li class="disabled"><a data-href="#">Previous</a></li>
+        {% endif %}
+
+        {% if pp_topic.topic_list.has_next %}
+            <li><a data-href="{% pp_url template='group.html' dimension='t' object=object phase=pp_topic.topic_list.next_page_number %}">Next</a></li>
+        {% else %}
+            <li class="disabled"><a data-href="#">Next</a></li>
+        {% endif %}
+        </ul>  
+        
+    {% else %}
+    
+    <div class="alert"><h3>What's an Affinity Group?</h3>
+    <p>Affinity Groups as subgroups that allow members of the main group to divide decision making from within different categories, values, or campagins. Currently facilitators can create subgroups.
+    </p>
+    <small>There are no Affinity Groups for this Group. </small>
+    </div> 
+    {% endif %}
+{% endpp_get_topic_list %}
