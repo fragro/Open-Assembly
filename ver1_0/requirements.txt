@@ -18,7 +18,7 @@ hg+http://bitbucket.org/fragro/django-tracking#egg=tracking
 hg+http://bitbucket.org/nator/django-markitup#egg=markitup
 hg+http://bitbucket.org/twanschik/nonrel-search#egg=search
 django-celery==3.0.4
-celery==3.0.6
+celery==5.2.2
 setproctitle
 redis
 pytz
